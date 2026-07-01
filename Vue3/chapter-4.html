@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第四章 · 组件化与 props/emit</title>
+<link rel="icon" href="img/sticker/mascot.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<script type="application/json" id="voicePlaylist">
+[
+  {"id":"ch4","title":"第四章 组件化与 props/emit","src":"audio/ch4.mp3"}
+]
+</script>
+
+<div class="layout">
+  <aside class="sidebar">
+    <a class="back-link" href="index.html">← 返回 Vue3 目录</a>
+    <h1>第四章<br>组件化<br>props / emit</h1>
+    <div class="sub">选项式 API · 父子通信</div>
+    <div class="progress-wrap"><div id="barFill"></div></div>
+    <div id="barNum">0 / 0</div>
+    <ul class="nav">
+      <li><a href="#goal"><span class="no">01</span>学习目标</a></li>
+      <li><a href="#bg"><span class="no">02</span>零基础背景包</a></li>
+      <li><a href="#problem"><span class="no">03</span>这章回答什么</a></li>
+      <li><a href="#map"><span class="no">04</span>结构地图</a></li>
+      <li><a href="#core"><span class="no">05</span>核心判断</a></li>
+      <li><a href="#concept"><span class="no">06</span>关键概念</a></li>
+      <li><a href="#socratic"><span class="no">07</span>苏格拉底关卡</a></li>
+      <li><a href="#task"><span class="no">08</span>闯关任务</a></li>
+      <li><a href="#miss"><span class="no">09</span>误解与边界</a></li>
+      <li><a href="#gap"><span class="no">10</span>背景知识缺口</a></li>
+      <li><a href="#report-sec"><span class="no">11</span>学习报告</a></li>
+    </ul>
+  </aside>
+
+  <main class="main">
+
+    <div class="hero">
+      <img class="mascot" src="img/sticker/mascot.png" alt="捞鱼">
+      <div>
+        <h2>第四章 · 组件化与 props/emit</h2>
+        <p>组件复用 ｜ props 单向数据流 ｜ emit 子→父 ｜ emits 校验｜含 <span class="stat" id="quizCount">…</span> 道互动关卡</p>
+      </div>
+      <button class="voice-btn" data-voice-id="ch4">🎧 听这章</button>
+    </div>
+
+    <!-- 01 目标 -->
+    <section id="goal">
+      <span class="sec-id" data-sec="学习目标">01 · 学习目标</span>
+      <h2>学完这一章你要能做到</h2>
+      <div class="card">
+        <ul class="bul">
+          <li><strong>说清组件是什么</strong>：UI 的独立可复用单元，把界面拆成小块互相组合。</li>
+          <li><strong>默写选项式组件的 props 声明</strong>：数组式和对象式（带校验），并解释单向数据流。</li>
+          <li><strong>用 emit 实现子→父通信</strong>：子组件触发事件、父组件监听，并知道 emits 选项的作用。</li>
+          <li><strong>区分 props（父→子）与 emit（子→父）</strong>：知道数据为什么单向流动、为什么不直接改 props。</li>
+          <li>能指出至少 2 个常见误解（如"子组件直接改 props""props 和 emit 两个方向随意用"）。</li>
+        </ul>
+        <div class="note"><b>阅读路径</b>：背景包 → 结构地图 → 核心判断 → 关键概念 → 做关卡题 → 生成报告。</div>
+      </div>
+      <div class="card paper">
+        <span class="tag" style="background:var(--brick);color:#FFE9B0;">项目约束延续</span>
+        <p>本章所有组件示例仍用<strong>选项式 API</strong>：<code>props</code> 是组件选项、<code>emits</code> 是组件选项，<code>this.$emit</code> 触发事件。禁用 <code>defineProps</code>、<code>defineEmits</code> 这类组合式宏。</p>
+        <span class="src"><b>原文依据</b>：《初心与使命》——「禁止使用"组合式"API」。</span>
+      </div>
+    </section>
+
+    <!-- 02 背景 -->
+    <section id="bg">
+      <span class="sec-id" data-sec="背景包">02 · 零基础背景包</span>
+      <h2>读这章前先知道的 4 件事</h2>
+
+      <div class="card">
+        <span class="tag bg">背景①</span><b>页面写大了会失控，所以要拆</b>
+        <p>前三章你把所有逻辑、模板写在一个组件里。一旦页面复杂（几十个功能块），<strong>一个文件装不下、改一处怕牵连别处</strong>。组件化的核心动机就是把大页面拆成小块，每块独立维护、互相组合。</p>
+        <div class="note">读这章需要它：否则你不知道为什么要发明"组件"这个概念。</div>
+      </div>
+
+      <div class="card">
+        <span class="tag bg">背景②</span><b>组件 = 一个可复用的"自定义元素"</b>
+        <p>组件本质是你<strong>自己造一个标签</strong>，比如 <code>&lt;TodoItem&gt;</code>，它在页面里就像 <code>&lt;div&gt;</code> 一样能用，但行为是你定义的。组件内部有自己的 data、methods、template，对外通过 props（进）和 emit（出）沟通。</p>
+        <div class="note">读这章需要它：这是理解 props/emit 的前提——组件是有"接口"的黑盒。</div>
+      </div>
+
+      <div class="card">
+        <span class="tag bg">背景③</span><b>"数据归谁管"是组件化的核心问题</b>
+        <p>拆了组件后，<strong>状态（数据）该放在父组件还是子组件？</strong>这决定了数据怎么流动。Vue 的答案是：数据归一方管，通过 props 向下传、通过 emit 向上通知，<strong>不直接互相改</strong>。这叫单向数据流。</p>
+        <div class="note">读这章需要它：props 和 emit 的设计就是为了维持这个单向流动。</div>
+      </div>
+
+      <div class="card">
+        <span class="tag bg">背景④</span><b>HTML 属性不区分大小写</b>
+        <p>HTML 里 <code>data-id</code> 和 <code>dataId</code> 是两个不同属性，且<strong>浏览器会把属性名转小写</strong>。所以在模板里写 props 时要用 kebab-case（短横线），而 JS 里声明用 camelCase（驼峰）。Vue 会自动转换。</p>
+        <div class="note">读这章需要它：否则你会困惑"为什么 props 声明用驼峰、模板里写短横线"。</div>
+      </div>
+    </section>
+
+    <!-- 03 问题定位 -->
+    <section id="problem">
+      <span class="sec-id" data-sec="问题定位">03 · 这章在回答什么</span>
+      <h2>表面 vs 深层问题</h2>
+      <div class="card paper">
+        <p><strong>表层</strong>：怎么定义组件、怎么传 props、怎么触发 emit。</p>
+        <p><strong>深层</strong>：组件化后，数据在父子组件之间该怎么流动？为什么 Vue 强制单向数据流、严禁子组件改 props？这套设计解决了什么问题？</p>
+        <p><strong>只记一个问题</strong>：<span style="background:var(--marker);padding:2px 6px;border-radius:4px;">父组件要把数据给子组件用 props，子组件要通知父组件用 emit——为什么不能反过来、为什么不能直接改？</span></p>
+        <div class="note">带着这个问题读「05 核心判断」，尤其是判断②（单向数据流）。</div>
+      </div>
+    </section>
+
+    <!-- 04 结构地图 -->
+    <section id="map">
+      <span class="sec-id" data-sec="结构地图">04 · 结构地图</span>
+      <h2>组件通信：一个"黑盒接口"模型</h2>
+      <div class="card">
+        <p>把组件想成一个黑盒：<strong>props 是入口（父→子）、emit 是出口（子→父）</strong>。父组件通过 props 把数据"喂"进子组件，子组件不直接改这些数据，而是通过 emit 事件"通知"父组件，由父组件决定怎么改。这就维持了清晰的数据流向。</p>
+      </div>
+      <div class="flow">
+        <div class="flow-step"><span class="num">1</span><b>组件定义</b>｜用选项对象定义一个可复用单元，有独立的 data/methods/template。</div>
+        <div class="flow-step hot"><span class="num">2</span><b>props（父→子）</b> ⭐<b>入口</b>｜父组件通过 props 把数据传给子组件；子组件声明要接收哪些。</div>
+        <div class="flow-step hot"><span class="num">3</span><b>emit（子→父）</b> ⭐<b>出口</b>｜子组件用 <code>this.$emit</code> 触发事件；父组件用 <code>@事件名</code> 监听。</div>
+        <div class="flow-step"><span class="num">4</span><b>单向数据流</b>｜数据从父流向子，子不直接改 props，要改就 emit 通知父改。</div>
+      </div>
+      <div class="note">节点关系：props 和 emit 是<strong>一对方向相反的通道</strong>，共同构成父子通信。单向数据流是它们的设计准则，不是 props 或 emit 单独的属性。</div>
+    </section>
+
+    <!-- 05 核心判断 -->
+    <section id="core">
+      <span class="sec-id" data-sec="核心判断">05 · 核心判断</span>
+      <h2>6 条核心判断（每条都带原文依据）</h2>
+
+      <div class="card">
+        <span class="tag fact">事实</span><b>① 组件允许我们将 UI 划分为独立的、可重用的部分。</b>
+        <p>这是组件化的官方定义。每个组件有自己的模板、逻辑、样式，封装好后像一个自定义元素一样在父组件里使用。</p>
+        <span class="src"><b>原文依据</b>：Vue《组件基础》——「组件允许我们将 UI 划分为独立的、可重用的部分」。</span>
+      </div>
+
+      <div class="card">
+        <span class="tag judge">判断</span><b>② 所有的 props 都遵循单向绑定原则：子组件严禁直接修改 props。</b>
+        <p>这是 props 最重要的一条铁律。父组件传下来的 props，子组件只能读、不能直接改。要"改"就得通过 emit 通知父组件去改。这样数据流向始终清晰（父→子），便于追踪和调试。</p>
+        <span class="src"><b>原文依据</b>：Vue《Props》——「所有的 props 都遵循着单向绑定原则」「props 严禁被子组件更改」。</span>
+      </div>
+
+      <div class="card">
+        <span class="tag fact">事实</span><b>③ props 声明用 camelCase（JS），模板传递用 kebab-case（HTML）。</b>
+        <p>因为 HTML 属性不区分大小写且会转小写。JS 里声明 <code>props: { postTitle: String }</code>，模板里写 <code>:post-title="..."</code>。Vue 自动转换两者。</p>
+        <span class="src"><b>原文依据</b>：Vue《Props》——camelCase 与 kebab-case 的转换说明。</span>
+      </div>
+
+      <div class="card">
+        <span class="tag fact">事实</span><b>④ props 可用对象式声明做校验：类型、必填、默认值、自定义校验。</b>
+        <p>数组式 <code>props: ['title']</code> 只声明名字；对象式 <code>props: { title: { type: String, required: true, default: '' } }</code> 能加校验。校验失败时 Vue 在控制台警告（开发环境）。</p>
+        <span class="src"><b>原文依据</b>：Vue《Props》——Prop 校验（type/required/default/validator）。</span>
+      </div>
+
+      <div class="card">
+        <span class="tag fact">事实</span><b>⑤ 子组件用 this.$emit 触发事件，父组件用 v-on（@）监听。</b>
+        <p>这是子→父通信的标准方式。子组件里 <code>this.$emit('submit', data)</code>，父组件模板里 <code>&lt;ChildComp @submit="handleSubmit" /&gt;</code>。事件名建议用 kebab-case。</p>
+        <span class="src"><b>原文依据</b>：Vue《组件事件》——触发与监听事件。</span>
+      </div>
+
+      <div class="card">
+        <span class="tag judge">判断</span><b>⑥ emits 选项可以声明并校验组件触发的事件。</b>
+        <p>和 props 校验类似，<code>emits</code> 选项声明组件会触发哪些事件，还能加校验函数。这既是文档（告诉使用者这个组件会 emit 什么），也能防止事件名拼写错误。</p>
+        <span class="src"><b>原文依据</b>：Vue《组件事件》——emits 选项（数组式/对象式，对象式可带校验）。</span>
+      </div>
+    </section>
+
+    <!-- 06 关键概念 -->
+    <section id="concept">
+      <span class="sec-id" data-sec="关键概念">06 · 关键概念拆解</span>
+      <h2>6 个关键概念</h2>
+
+      <div class="card">
+        <h3>① 组件（选项式定义）</h3>
+        <p><b>定义</b>：一个用选项对象描述的可复用 UI 单元。本项目里就是 <code>.vue</code> 文件导出的 <code>export default { ... }</code>。</p>
+        <div class="walkthrough">
+          <div class="wt-step">
+            <div class="step-no">子组件 TodoItem.vue（选项式）</div>
+<pre style="margin:0;font-family:var(--font-mono);font-size:.8rem;overflow-x:auto;background:#fff;">export default {
+  props: ['todo'],              // 接收父传来的 todo
+  emits: ['remove'],            // 声明会触发 remove 事件
+  methods: {
+    onRemove() {
+      this.$emit('remove', this.todo.id)   // 通知父组件
+    }
+  }
+}</pre>
+          </div>
+        </div>
+        <div class="note">父组件用 <code>&lt;TodoItem :todo="item" @remove="handleRemove" /&gt;</code> 组合它。</div>
+      </div>
+
+      <div class="card">
+        <h3>② props（父→子的入口）</h3>
+        <p><b>定义</b>：组件的 <code>props</code> 选项，声明它要从父组件接收哪些数据。</p>
+        <table class="t">
+          <tr><th>声明方式</th><th>写法</th><th>能力</th></tr>
+          <tr><td>数组式</td><td><code>props: ['title', 'likes']</code></td><td>只声明名字</td></tr>
+          <tr><td>对象式</td><td><code>props: { title: String }</code></td><td>+ 类型</td></tr>
+          <tr><td>对象式完整</td><td><code>{ title: { type: String, required: true, default: '' } }</code></td><td>+ 必填/默认/校验</td></tr>
+        </table>
+        <div class="warn"><b>不要误解成</b>：props 是"双向"的。它是<strong>单向入口</strong>，子组件不能直接改。</div>
+      </div>
+
+      <div class="card">
+        <h3>③ 单向数据流</h3>
+        <p><b>定义</b>：数据从父组件流向子组件（通过 props），子组件不直接改 props，要变更就 emit 通知父组件。</p>
+        <p><b>为什么这么设计</b>：如果子组件能直接改 props，数据来源就模糊了——"这个值到底是父改的还是子改的？"调试会变成噩梦。单向流动让每次变更都可追溯。</p>
+        <span class="src"><b>原文依据</b>：Vue《Props》——「所有的 props 都遵循着单向绑定原则」。</span>
+        <div class="note"><b>子组件想"改"props 怎么办？</b>：两种合规做法——① 把 props 转成本地 data（<code>data() { return { local: this.propVal } }</code>）再改本地副本；② 直接 emit 事件让父改。</div>
+      </div>
+
+      <div class="card">
+        <h3>④ emit（子→父的出口）</h3>
+        <p><b>定义</b>：子组件用 <code>this.$emit('事件名', 载荷)</code> 触发一个自定义事件，父组件用 <code>@事件名</code> 监听。</p>
+<pre style="margin:6px 0;font-family:var(--font-mono);font-size:.8rem;overflow-x:auto;background:#fff;">&lt;!-- 子组件内部 --&gt;
+this.$emit('update', newValue)
+
+&lt;!-- 父组件模板 --&gt;
+&lt;ChildComp @update="handleUpdate" /&gt;</pre>
+        <div class="warn"><b>不要误解成</b>：emit 是"调用父组件的方法"。它是<strong>发一个事件</strong>，父组件决定怎么响应（也可能不响应）。解耦的关键。</div>
+      </div>
+
+      <div class="card">
+        <h3>⑤ emits 选项（声明+校验事件）</h3>
+        <p><b>定义</b>：组件的 <code>emits</code> 选项，声明这个组件会触发哪些事件，类似 props 声明。</p>
+        <div class="walkthrough">
+          <div class="wt-step">
+            <div class="step-no">emits 两种写法</div>
+<pre style="margin:0;font-family:var(--font-mono);font-size:.8rem;overflow-x:auto;background:#fff;">// 数组式：只声明
+emits: ['update', 'remove']
+
+// 对象式：带校验
+emits: {
+  update(payload) {
+    return payload !== undefined   // 返回 false → 控制台警告
+  }
+}</pre>
+          </div>
+        </div>
+        <div class="note">emits 选项不是必须的，但官方推荐——它是组件的"接口文档"，也帮助 Vue 区分自定义事件和原生事件。</div>
+      </div>
+
+      <div class="card">
+        <h3>⑥ props vs emit（方向对比）</h3>
+        <table class="t">
+          <tr><th>维度</th><th>props</th><th>emit</th></tr>
+          <tr><td>方向</td><td>父 → 子</td><td>子 → 父</td></tr>
+          <tr><td>载体</td><td>数据/值</td><td>事件 + 载荷</td></tr>
+          <tr><td>子组件</td><td>接收（只读）</td><td>触发</td></tr>
+          <tr><td>父组件</td><td>传递</td><td>监听（@事件名）</td></tr>
+          <tr><td>校验选项</td><td><code>props</code></td><td><code>emits</code></td></tr>
+        </table>
+        <div class="note"><b>口诀</b>：props 是"传进来"（只读），emit 是"喊一声"（父决定怎么办）。两者配合实现单向数据流。</div>
+      </div>
+    </section>
+
+    <!-- 07 苏格拉底关卡 -->
+    <section id="socratic">
+      <span class="sec-id" data-sec="苏格拉底关卡">07 · 苏格拉底式阅读关卡</span>
+      <h2>先想清楚这几问</h2>
+      <div class="card paper">
+        <p>这一组考<strong>理解</strong>：单向数据流为什么这么设计？props 和 emit 各是什么方向？camelCase/kebab-case 为什么不同？</p>
+      </div>
+
+      <div class="task" data-task="q1" data-answer="B"
+           data-ok="对！官方原话：所有的 props 都遵循单向绑定原则，严禁子组件直接更改。" data-no="单向数据流是 props 的核心铁律。回顾「05 核心判断②」。"
+           data-src="原文依据：《Props》单向数据流" data-review="回到「05 核心判断②」复习">
+        <div class="q"><span class="qno">Q1</span>子组件拿到父组件传来的 props，可以直接修改它吗？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. 可以，props 就是给我用的</button>
+          <button class="opt" data-val="B">B. 不可以，props 严禁被子组件更改（单向数据流）</button>
+          <button class="opt" data-val="C">C. 可以，但要先通知父组件</button>
+          <button class="opt" data-val="D">D. 看情况，number 类型可以</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q2" data-answer="A"
+           data-ok="正确！props 是父→子（入口），emit 是子→父（出口）。两者方向相反，共同维持单向数据流。" data-no="方向记反了。回顾「04 结构地图 / 06 概念⑥」。"
+           data-src="原文依据：《组件基础》+《组件事件》" data-review="回到「04 结构地图」复习">
+        <div class="q"><span class="qno">Q2</span>props 和 emit 的数据/通知方向分别是？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. props 父→子，emit 子→父</button>
+          <button class="opt" data-val="B">B. props 子→父，emit 父→子</button>
+          <button class="opt" data-val="C">C. 都是父→子</button>
+          <button class="opt" data-val="D">D. 都是子→父</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q3" data-answer="C"
+           data-ok="对！因为 HTML 属性不区分大小写且会转小写，所以模板用 kebab-case（post-title），JS 声明用 camelCase（postTitle），Vue 自动转换。" data-no="HTML 属性大小写规则决定的。回顾「02 背景④ / 05 核心判断③」。"
+           data-src="原文依据：《Props》camelCase/kebab-case" data-review="回到「05 核心判断③」复习">
+        <div class="q"><span class="qno">Q3</span>为什么 JS 里声明 props 用 camelCase（postTitle），但模板里传值用 kebab-case（:post-title）？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. 没有为什么，随便写</button>
+          <button class="opt" data-val="B">B. camelCase 性能更好</button>
+          <button class="opt" data-val="C">C. HTML 属性不区分大小写且会转小写，Vue 自动转换两种命名</button>
+          <button class="opt" data-val="D">D. kebab-case 是新语法，camelCase 是旧的</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q4" data-answer="A"
+           data-ok="正确！emits 选项声明组件会触发哪些事件，还能带校验，相当于组件的事件接口文档。" data-no="emits 选项就是声明+校验事件。回顾「05 核心判断⑥ / 06 概念⑤」。"
+           data-src="原文依据：《组件事件》emits 选项" data-review="回到「05 核心判断⑥」复习">
+        <div class="q"><span class="qno">Q4</span>组件的 <code>emits</code> 选项的作用是？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. 声明（并可选校验）组件会触发哪些事件</button>
+          <button class="opt" data-val="B">B. 声明组件接收哪些 props</button>
+          <button class="opt" data-val="C">C. 触发一个事件</button>
+          <button class="opt" data-val="D">D. 监听父组件的事件</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+    </section>
+
+    <!-- 08 闯关任务 -->
+    <section id="task">
+      <span class="sec-id" data-sec="闯关任务">08 · 闯关任务 · 落到代码上</span>
+      <h2>把概念落到代码上</h2>
+      <div class="card paper">
+        <p>这一组考<strong>应用</strong>：给场景选通信方式、读代码判对错、识别单向数据流违规。</p>
+      </div>
+
+      <div class="task" data-task="q5" data-answer="B"
+           data-ok="对！子组件想通知父组件"数据变了"，应该用 this.$emit 触发事件，父组件监听后决定怎么改。这是单向数据流的标准做法。" data-no="子→父用 emit。回顾「05 核心判断⑤ / 06 概念④」。"
+           data-src="原文依据：《组件事件》$emit" data-review="回到「06 关键概念④」复习">
+        <div class="q"><span class="qno">Q5</span>子组件里用户点了按钮，需要通知父组件"删除这一项"，应该用？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. 直接修改父组件的 data</button>
+          <button class="opt" data-val="B">B. this.$emit('remove', id) 触发事件，父组件用 @remove 监听</button>
+          <button class="opt" data-val="C">C. 修改自己的 props</button>
+          <button class="opt" data-val="D">D. 调用父组件的方法（直接引用）</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q6" data-answer="C"
+           data-ok="正确！对象式 props 能加 type/required/default/validator 校验，数组式只能声明名字。" data-no="对象式才能校验。回顾「05 核心判断④ / 06 概念②」。"
+           data-src="原文依据：《Props》Prop 校验" data-review="回到「06 关键概念②」复习">
+        <div class="q"><span class="qno">Q6</span>要对一个 prop 做"必须是字符串、必填、默认空串"的校验，应该用？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. 数组式：props: ['title']</button>
+          <button class="opt" data-val="B">B. 在 mounted 里手动 if 判断</button>
+          <button class="opt" data-val="C">C. 对象式：props: { title: { type: String, required: true, default: '' } }</button>
+          <button class="opt" data-val="D">D. 用 watch 监听</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q7" data-answer="A"
+           data-ok="对！这违反了单向数据流——props 严禁被子组件更改。正确做法是转成本地 data 副本再改，或 emit 通知父组件。" data-no="直接给 props 赋值违反单向数据流。回顾「05 核心判断② / 06 概念③」。"
+           data-src="原文依据：《Props》单向数据流" data-review="回到「06 关键概念③」复习">
+        <div class="q"><span class="qno">Q7</span>下面子组件代码有什么问题？<br><code>methods: { onClick() { this.title = '新标题' } }</code>（title 是 props）</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. 违反单向数据流，props 不能被子组件直接赋值</button>
+          <button class="opt" data-val="B">B. 没问题，正常修改</button>
+          <button class="opt" data-val="C">C. 缺少 this</button>
+          <button class="opt" data-val="D">D. 应该用 computed</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q8" data-answer="B"
+           data-ok="完全正确！这是选项式组件的完整接口：props 声明入口、emits 声明出口、this.$emit 触发事件。父组件用 :prop 传值、@event 监听。" data-no="选项式三件套：props/emits/this.$emit。回顾「06 概念①」。"
+           data-src="原文依据：《组件基础》+《Props》+《组件事件》" data-review="回到「06 关键概念①」死磕">
+        <div class="q"><span class="qno">Q8</span>本项目（选项式）里，一个子组件要"接收 title 数据 + 通知父组件 update 事件"，正确的声明是？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. data() 声明 title，methods 里 this.$on('update')</button>
+          <button class="opt" data-val="B">B. props: ['title'], emits: ['update'], 触发时 this.$emit('update', val)</button>
+          <button class="opt" data-val="C">C. computed: { title() {...} }, watch: { update() {...} }</button>
+          <button class="opt" data-val="D">D. import { defineProps, defineEmits } from 'vue'</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+    </section>
+
+    <!-- 09 误解与边界 -->
+    <section id="miss">
+      <span class="sec-id" data-sec="误解与边界">09 · 误解与边界</span>
+      <h2>4 个最容易踩的坑</h2>
+
+      <div class="card">
+        <h3>误解①：子组件可以直接改 props</h3>
+        <p><b>真相</b>：props 严禁被子组件更改（单向数据流）。要"改"就转成本地 data 副本，或 emit 通知父组件。直接赋值会触发 Vue 警告，且数据来源混乱。</p>
+        <span class="src"><b>原文依据</b>：《Props》——「props 严禁被子组件更改」。</span>
+      </div>
+      <div class="card">
+        <h3>误解②：props 和 emit 方向随意</h3>
+        <p><b>真相</b>：props 永远是父→子，emit 永远是子→父，方向固定。不能"用 props 把子组件的数据传给父"，那是 emit 的活。</p>
+      </div>
+      <div class="card">
+        <h3>误解③：模板里 props 用驼峰写</h3>
+        <p><b>真相</b>：HTML 属性会转小写，<code>:postTitle</code> 会被浏览器变成 <code>:posttitle</code>，匹配不上。模板里必须用 kebab-case（<code>:post-title</code>），JS 声明用 camelCase，Vue 自动转换。</p>
+      </div>
+      <div class="card">
+        <h3>误解④：emit 是"调用父组件的方法"</h3>
+        <p><b>真相</b>：emit 是<strong>发一个事件</strong>，不是直接调用。父组件监听并决定怎么响应（也可能不响应）。这是解耦的关键——子组件不需要知道父组件会做什么。</p>
+      </div>
+      <div class="warn"><b>边界</b>：本章覆盖组件基础、props（声明/传递/校验/单向流）、emit（触发/监听/emits 校验）。跨层级通信（provide/inject、状态管理 Pinia）、插槽 slot、动态组件/keep-alive 不在本章——它们是进阶，需要时查官方文档。</div>
+    </section>
+
+    <!-- 10 背景知识缺口 -->
+    <section id="gap">
+      <span class="sec-id" data-sec="背景缺口">10 · 背景知识缺口</span>
+      <h2>要完全吃透还差什么</h2>
+      <div class="card">
+        <p><b>现在就该补（阻碍写组件）：</b></p>
+        <ul class="bul">
+          <li><b>组件注册</b>（全局 vs 局部）—— 怎么让一个组件在另一个组件里可用。本项目的 <code>.vue</code> + <code>import</code> 是局部注册。</li>
+          <li><b>自定义事件的命名习惯</b>—— 用 kebab-case（如 <code>update-count</code>），避免和原生事件冲突。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <p><b>可以晚点补：</b></p>
+        <ul class="bul">
+          <li><b>provide / inject</b>—— 跨多层组件传数据，避免 props 逐层透传。</li>
+          <li><b>插槽 slot</b>—— 父组件往子组件里"塞内容"，比 props 传模板更灵活。</li>
+          <li><b>Pinia（状态管理）</b>—— 多组件共享状态，大型项目必备。</li>
+        </ul>
+      </div>
+      <div class="note"><b>下一步追问</b>：「企微 H5 项目里，这些组件怎么和企微的 JSAPI 结合？页面怎么调起企微的选文档接口？」—— 这是第五章「企微 JSAPI 与消息渲染」的主题，但第五章需要等你补充内部文档（101499/101544）后再写。</div>
+    </section>
+
+    <!-- 11 报告 -->
+    <section id="report-sec">
+      <span class="sec-id" data-sec="学习报告">11 · 学习报告</span>
+      <h2>生成你的第四章报告</h2>
+      <div class="report-box">
+        <div class="rep-btns">
+          <button id="genReport">生成学习报告</button>
+          <button id="copyReport" class="alt">复制报告</button>
+        </div>
+        <div id="report">（点击"生成学习报告"后显示完成情况与错题清单。）</div>
+      </div>
+      <div class="wrong-box" style="margin-top:14px;">
+        <h3>📋 错题回流区</h3>
+        <ul id="wrongBox"><li style="color:#888">还没有错题。答错的题会自动收集到这里。</li></ul>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  这个工具帮你建立组件化与 props/emit 的理解，但不能替代动手拆组件和读官方文档。学习愉快 🐟<br>
+  由 <a href="https://lyzbcy.github.io/" target="_blank" rel="noopener">捞鱼</a> 制作
+</footer>
+
+<!-- promo -->
+<div class="float-btn" id="floatBtn">🐟 关于捞鱼</div>
+<div class="modal-mask" id="modalMask">
+  <div class="modal">
+    <button class="close" id="closeModal">×</button>
+    <div class="author">
+      <img src="https://s41.ax1x.com/2025/12/05/pZmPZPH.png" alt="捞鱼">
+      <div>
+        <div class="name">捞鱼</div>
+        <div class="sig">「一个弱小但有梦想的开发者」</div>
+        <span class="studio">捞鱼工作室</span><br>
+        <a class="goto" href="https://lyzbcy.github.io/about/" target="_blank" rel="noopener">了解更多 →</a>
+      </div>
+    </div>
+    <div class="qr-grid">
+      <div class="qr-cell"><div class="ttl">QQ 学习群</div><img src="img/sticker/qq-group.jpg" alt="QQ群二维码"><div class="desc">扫码进群一起学习</div></div>
+      <div class="qr-cell"><div class="ttl">赞赏支持</div><img src="img/sticker/reward-qr.jpg" alt="赞赏二维码"><div class="desc">请捞鱼喝杯奶茶</div></div>
+      <div class="qr-cell">
+        <div class="ttl">微信表情包</div>
+        <div class="sticker-row"><img src="img/sticker/ok.png" alt=""><img src="img/sticker/no.png" alt=""><img src="img/sticker/study.png" alt=""></div>
+        <img src="img/sticker/sticker-qr.png" alt="微信表情包二维码">
+        <div class="desc">📱 长按或扫码使用</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var qc=document.getElementById('quizCount');
+  if(qc)qc.textContent=document.querySelectorAll('.task').length;
+  var STAMP_MAP={
+    '学习目标':'study.png','背景包':'study.png','问题定位':'study.png',
+    '结构地图':'ok.png','核心判断':'ok.png','关键概念':'study.png',
+    '苏格拉底关卡':'no.png','闯关任务':'final.png',
+    '误解与边界':'no.png','背景缺口':'study.png','学习报告':'final.png'
+  };
+  document.querySelectorAll('.sec-id[data-sec]').forEach(function(el){
+    var key=el.getAttribute('data-sec'),img=STAMP_MAP[key];
+    if(img){var i=document.createElement('img');i.className='stamp';i.src='img/sticker/'+img;i.alt='';el.insertBefore(i,el.firstChild);}
+  });
+  var mask=document.getElementById('modalMask');
+  document.getElementById('floatBtn').addEventListener('click',function(){mask.classList.add('open');});
+  document.getElementById('closeModal').addEventListener('click',function(){mask.classList.remove('open');});
+  mask.addEventListener('click',function(e){if(e.target===mask)mask.classList.remove('open');});
+})();
+</script>
+
+<script>
+(function(){
+  "use strict";
+  function $all(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));}
+  function selectedVals(t){return $all('.opt.selected',t).map(function(o){return o.getAttribute('data-val');}).sort();}
+  function setFb(t,state,html){var fb=t.querySelector('.feedback');if(!fb)return;fb.className='feedback'+(state?(' '+state):'');fb.innerHTML=html;}
+  function updateBar(){
+    var all=$all('.task'),done=$all('.task[data-answered="1"]');
+    var fill=document.getElementById('barFill'),num=document.getElementById('barNum');
+    if(fill)fill.style.width=all.length?(done.length/all.length*100)+'%':'0%';
+    if(num)num.textContent=done.length+' / '+all.length;
+  }
+  function renderWrong(){
+    var box=document.getElementById('wrongBox');if(!box)return;
+    var wrong=$all('.task[data-answered="1"][data-correct="0"]');
+    if(!wrong.length){box.innerHTML='<li style="color:#888">还没有错题。答错的题会自动收集到这里。</li>';return;}
+    box.innerHTML='';
+    wrong.forEach(function(t){var li=document.createElement('li');li.textContent='【'+(t.getAttribute('data-task')||'')+'】'+(t.getAttribute('data-review')||'回到对应模块复习');box.appendChild(li);});
+  }
+  function check(t){
+    var type=t.getAttribute('data-type'),ok=false;
+    if(type==='selects'){
+      var sels=$all('select.match',t),allok=true,empty=false;
+      sels.forEach(function(s){if(!s.value)empty=true;if(s.value!==s.getAttribute('data-correct'))allok=false;});
+      if(empty){setFb(t,'no','请先把每一项都选好再检查。');return;}
+      ok=allok;
+    }else{
+      var sel=selectedVals(t);
+      if(!sel.length){setFb(t,'no','请先选择一个选项再检查。');return;}
+      var ans=(t.getAttribute('data-answer')||'').split(',').map(function(x){return x.trim();}).sort();
+      ok=(sel.join('|')===ans.join('|'));
+    }
+    var body=ok?(t.getAttribute('data-ok')||'回答正确。'):(t.getAttribute('data-no')||'再想想。');
+    var src=t.getAttribute('data-src');
+    setFb(t,ok?'ok':'no',(ok?'✅ ':'❌ ')+body+(src?('<span class="src">'+src+'</span>'):''));
+    t.setAttribute('data-answered','1');t.setAttribute('data-correct',ok?'1':'0');
+    updateBar();renderWrong();
+  }
+  function genReport(){
+    var box=document.getElementById('report');if(!box)return;
+    var all=$all('.task'),done=$all('.task[data-answered="1"]'),right=$all('.task[data-answered="1"][data-correct="1"]');
+    var lines=['=== 第四章 组件化与props/emit 学习报告 ===','完成题目：'+done.length+' / '+all.length,'答对：'+right.length+' 题',''];
+    var wrong=$all('.task[data-answered="1"][data-correct="0"]');
+    if(wrong.length){lines.push('我答错的题（建议复习）：');wrong.forEach(function(t){lines.push('- '+(t.getAttribute('data-task')||'')+'：'+(t.getAttribute('data-review')||''));});}
+    else{lines.push('暂无错题。');}
+    box.textContent=lines.join('\n');
+  }
+  document.addEventListener('click',function(e){
+    var c=e.target.closest?e.target:null;
+    var opt=c&&e.target.closest('.opt');
+    if(opt){var t=opt.closest('.task');if(!t)return;
+      if(t.getAttribute('data-multi')==='true'){opt.classList.toggle('selected');}
+      else{$all('.opt',t).forEach(function(o){o.classList.remove('selected');});opt.classList.add('selected');}
+      return;}
+    var btn=c&&e.target.closest('.check');
+    if(btn){var tk=btn.closest('.task');if(tk)check(tk);return;}
+    if(e.target&&e.target.id==='genReport'){genReport();return;}
+    if(e.target&&e.target.id==='copyReport'){var r=document.getElementById('report');if(r&&navigator.clipboard)navigator.clipboard.writeText(r.textContent);return;}
+  });
+  function init(){updateBar();renderWrong();}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+
+<!-- ===== 后台语音：右侧书签脊 + 圆润玩具风播放器（带字幕） ===== -->
+<button id="voiceFab" aria-label="打开后台语音"><span class="fab-icon">🎧</span><span class="fab-text">后台语音</span></button>
+<div id="voicePlayer">
+  <button class="vp-close" aria-label="关闭">✕</button>
+  <div class="vp-head">🎧 后台语音 · 连续播放</div>
+  <div class="vp-title">—</div>
+  <div class="vp-controls">
+    <button class="vp-prev" aria-label="上一章">⏮</button>
+    <button class="vp-play" aria-label="播放/暂停">▶</button>
+    <button class="vp-next" aria-label="下一章">⏭</button>
+  </div>
+  <input class="vp-seek" type="range" min="0" max="1000" value="0" aria-label="进度">
+  <div class="vp-time"><span class="vp-cur">00:00</span><span class="vp-dur">00:00</span></div>
+  <div class="vp-sub">点开播放后，这里会同步显示字幕</div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  if(window.__voiceEngine) return;
+  window.__voiceEngine = true;
+  var listNode = document.getElementById('voicePlaylist');
+  if(!listNode){ return; }
+  var TRACKS = [];
+  try { TRACKS = JSON.parse(listNode.textContent.trim()); } catch(e){ return; }
+  if(!TRACKS.length) return;
+  var player = document.getElementById('voicePlayer');
+  var fab = document.getElementById('voiceFab');
+  var audio = new Audio(); audio.preload = 'metadata';
+  var cur = 0, ranges = [], total = 0, seeking = false;
+  function $(s){ return player ? player.querySelector(s) : null; }
+  function fmt(s){ s=Math.max(0,Math.floor(s||0)); var m=Math.floor(s/60), x=s%60;
+    return (m<10?'0':'')+m+':'+(x<10?'0':'')+x; }
+  var probe = TRACKS.map(function(){ return {dur:0}; });
+  function tryFinalize(){
+    if(probe.some(function(p){return !p.dur;})) return;
+    ranges = []; total = 0;
+    probe.forEach(function(p){ ranges.push({dur:p.dur, start:total}); total += p.dur; });
+    var d = $('.vp-dur'); if(d) d.textContent = fmt(total);
+    var sk = $('.vp-seek'); if(sk){ sk.max = Math.max(1000, Math.floor(total*10)); }
+  }
+  TRACKS.forEach(function(t, i){
+    var a = new Audio(); a.preload = 'metadata'; a.src = t.src;
+    a.addEventListener('loadedmetadata', function(){ probe[i].dur = a.duration || 0; tryFinalize(); });
+    a.addEventListener('error', function(){ probe[i].dur = 0; tryFinalize(); });
+  });
+  function load(i){ cur = i; audio.src = TRACKS[i].src; var ti = $('.vp-title'); if(ti) ti.textContent = TRACKS[i].title || ('第 '+(i+1)+' 段'); markBtn(i); }
+  function play(){ audio.play().then(function(){ show(); setPlayIcon(true); if(fab) fab.classList.add('beat'); }).catch(function(){}); }
+  function pause(){ audio.pause(); setPlayIcon(false); if(fab) fab.classList.remove('beat'); }
+  function toggle(){ audio.paused ? play() : pause(); }
+  function next(){ if(cur < TRACKS.length-1){ load(cur+1); play(); } else { pause(); } }
+  function prev(){ var abs = absTime(); if(cur > 0 && abs - ranges[cur].start < 3){ load(cur-1); play(); } else { audio.currentTime = 0; } }
+  function absTime(){ return ranges[cur] ? ranges[cur].start + (audio.currentTime||0) : (audio.currentTime||0); }
+  function setPlayIcon(on){ var b=$('.vp-play'); if(b) b.textContent = on ? '⏸' : '▶'; }
+  function show(){ if(player) player.classList.add('show'); }
+  function hide(){ if(player) player.classList.remove('show'); }
+  function markBtn(i){ document.querySelectorAll('.voice-btn[data-voice-id]').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-voice-id') === TRACKS[i].id); }); }
+  audio.addEventListener('timeupdate', function(){ if(seeking) return; if(!ranges[cur]) return; var abs = absTime(); var sk = $('.vp-seek'); var c = $('.vp-cur'); if(sk && total) sk.value = Math.round(abs / total * (sk.max||1000)); if(c) c.textContent = fmt(abs); });
+  audio.addEventListener('ended', function(){ if(cur < TRACKS.length-1){ load(cur+1); play(); } else { setPlayIcon(false); if(fab) fab.classList.remove('beat'); } });
+  function seekToFraction(frac){ if(!total) return; var target = Math.max(0, Math.min(total, frac * total)); var i = 0; while(i < ranges.length-1 && ranges[i].start + ranges[i].dur < target){ i++; } if(i !== cur){ cur = i; audio.src = TRACKS[i].src; var ti=$('.vp-title'); if(ti) ti.textContent = TRACKS[i].title||('第 '+(i+1)+' 段'); markBtn(i); } audio.currentTime = target - ranges[i].start; var c=$('.vp-cur'); if(c) c.textContent = fmt(target); }
+  document.addEventListener('click', function(e){ var t = e.target; var vb = t.closest ? t.closest('.voice-btn[data-voice-id]') : null; if(vb){ var id = vb.getAttribute('data-voice-id'), idx = -1; TRACKS.forEach(function(tr, k){ if(tr.id === id) idx = k; }); if(idx >= 0){ load(idx); play(); } return; } if(t.id === 'voiceFab'){ show(); if(audio.paused && !audio.src){ load(0); } if(audio.paused){ play(); } return; } if(!player || !player.contains(t)) return; if(t.classList.contains('vp-play')){ toggle(); return; } if(t.classList.contains('vp-prev')){ prev(); return; } if(t.classList.contains('vp-next')){ next(); return; } if(t.classList.contains('vp-close')){ pause(); hide(); return; } });
+  var sk = $('.vp-seek');
+  if(sk){ sk.addEventListener('input', function(){ seeking = true; if(total){ var c=$('.vp-cur'); if(c) c.textContent = fmt((sk.value/(sk.max||1000))*total); } }); sk.addEventListener('change', function(){ seekToFraction(sk.value/(sk.max||1000)); seeking = false; }); }
+})();
+</script>
+
+<script>
+(function(){
+  "use strict";
+  if(window.__subEngine) return;
+  window.__subEngine = true;
+  var listNode = document.getElementById("voicePlaylist");
+  if(!listNode) return;
+  var subBox = document.querySelector("#voicePlayer .vp-sub");
+  if(!subBox) return;
+  var subs = []; var curSrc = null;
+  function esc(s){ var d=document.createElement("div"); d.textContent=s; return d.innerHTML; }
+  function loadSubFor(src){ if(!src){ subs=[]; return; } curSrc = src; var jsonUrl = src.replace(/\.mp3$/i, ".json"); jsonUrl = jsonUrl.replace(/^.*?([a-zA-Z0-9_\/-]+\.json)$/,"$1"); fetch(jsonUrl).then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); }).then(function(arr){ subs = Array.isArray(arr) ? arr : []; }).catch(function(){ subs = []; }); }
+  function renderSub(t){ if(!subs.length){ return; } var hit=null, idx=-1; for(var i=0;i<subs.length;i++){ if(t>=subs[i].start && t<subs[i].end){ hit=subs[i]; idx=i; break; } } if(!hit){ var prev=null; for(var j=0;j<subs.length;j++){ if(subs[j].start<=t) prev=subs[j]; else break; } subBox.classList.remove("active"); subBox.innerHTML = prev ? esc(prev.text) : ""; return; } subBox.classList.add("active"); var prevHtml = idx>0 ? '<span style="opacity:.45">'+esc(subs[idx-1].text)+'</span> ' : ""; subBox.innerHTML = prevHtml + '<span class="cur">' + esc(hit.text) + "</span>"; }
+  function findAudio(){ var els = document.querySelectorAll("audio"); for(var i=0;i<els.length;i++){ if(els[i].src) return els[i]; } return null; }
+  var audio = findAudio(); var tryCount = 0; var findTimer = setInterval(function(){ audio = findAudio(); if(audio || tryCount++ > 60){ clearInterval(findTimer); bind(); } }, 100);
+  function bind(){ if(!audio) return; audio.addEventListener("timeupdate", function(){ if(audio.src !== curSrc){ loadSubFor(audio.src); } renderSub(audio.currentTime || 0); }); audio.addEventListener("play", function(){ if(audio.src !== curSrc){ loadSubFor(audio.src); } }); }
+})();
+</script>
+
+</body>
+</html>

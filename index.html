@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>计算机知识 · 学习地图合集</title>
+<link rel="icon" href="Vue3/img/sticker/mascot.png">
+<style>
+:root{
+  --cream:#FAF6EB;
+  --paper:#F3EDDD;
+  --forest:#1E3A24;
+  --sky:#BCD8EE;
+  --sage:#AFCDA8;
+  --ink:#1A2018;
+  --marker:#F5E08A;
+  --brick:#B5482A;
+  --font-display:"Archivo Black","Noto Sans SC","PingFang SC",sans-serif;
+  --font-head:"Poppins","Noto Sans SC","PingFang SC",sans-serif;
+  --font-body:-apple-system,"PingFang SC","Noto Sans SC",sans-serif;
+  --radius-card:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:var(--font-body);
+  background:var(--cream);
+  color:var(--ink);
+  line-height:1.7;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+.hero{
+  background:var(--forest);color:#EAF3E6;
+  padding:54px 24px 46px;text-align:center;
+}
+.hero .mascot{
+  width:84px;height:84px;border-radius:50%;object-fit:cover;
+  background:#fff;border:4px solid var(--marker);margin-bottom:14px;
+}
+.hero h1{font-family:var(--font-display);font-size:2rem;color:#fff;letter-spacing:.5px;margin-bottom:8px;}
+.hero p{color:#CFE3C7;font-size:.96rem;max-width:560px;margin:0 auto;}
+.hero .stat{font-family:monospace;color:var(--marker);}
+.wrap{max-width:1000px;width:100%;margin:0 auto;padding:40px 24px;flex:1;}
+.wrap > h2{
+  font-family:var(--font-head);font-size:1.35rem;color:var(--forest);
+  margin-bottom:6px;
+}
+.wrap .sub{color:#7A6E54;font-size:.9rem;margin-bottom:26px;}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+  gap:20px;
+}
+.card{
+  background:#fff;border:1px solid #E6DCC2;border-radius:var(--radius-card);
+  padding:0;overflow:hidden;text-decoration:none;color:inherit;
+  transition:transform .18s,box-shadow .18s;border-top:5px solid var(--sage);
+  display:flex;flex-direction:column;
+}
+.card:hover{transform:translateY(-4px);box-shadow:0 8px 20px rgba(30,58,36,.12);}
+.card .thumb{
+  height:120px;background:var(--paper);
+  display:flex;align-items:center;justify-content:center;font-size:2.6rem;
+}
+.card .body{padding:16px 18px 18px;flex:1;display:flex;flex-direction:column;}
+.card .tag{
+  display:inline-block;font-size:.7rem;font-family:monospace;
+  background:var(--sage);color:#23451F;padding:2px 9px;border-radius:999px;
+  align-self:flex-start;margin-bottom:8px;
+}
+.card h3{font-family:var(--font-head);color:var(--forest);font-size:1.1rem;margin-bottom:6px;}
+.card p{font-size:.88rem;color:#5A5040;flex:1;}
+.card .go{margin-top:12px;color:var(--brick);font-weight:600;font-size:.86rem;}
+.card.soon{opacity:.62;border-top-color:#D8C9A8;}
+.card.soon .thumb{background:#EFE9D8;}
+.card.soon .tag{background:#E0D6BB;color:#8A7E5A;}
+.card.soon .go{color:#8A7E5A;}
+footer{
+  text-align:center;padding:26px 24px 36px;font-size:.82rem;color:#7A6E54;
+}
+footer a{color:#1d70b8;text-decoration:underline;font-weight:700;}
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <img class="mascot" src="Vue3/img/sticker/mascot.png" alt="捞鱼">
+  <h1>计算机知识 · 学习地图合集</h1>
+  <p>捞鱼把要啃下来的技术知识，做成一张张有官方文档依据、能交互、能复盘的理解地图。<br>
+  目前 <span class="stat" id="cnt">…</span> 个栏目上线，持续更新中。</p>
+</section>
+
+<div class="wrap">
+  <h2>📚 所有栏目</h2>
+  <p class="sub">点击卡片进入对应学习地图。新栏目会陆续加入。</p>
+
+  <div class="grid" id="grid">
+
+    <!-- Vue3（已上线） -->
+    <a class="card" href="Vue3/index.html">
+      <div class="thumb">💚</div>
+      <div class="body">
+        <span class="tag">已上线</span>
+        <h3>Vue3 · 前端框架</h3>
+        <p>响应老田企微前端需求，强制选项式 API。第一章：Vue3 入门起手式，含两大核心功能、模板语法与 8 道互动关卡。</p>
+        <div class="go">进入学习地图 →</div>
+      </div>
+    </a>
+
+    <!-- 占位：企微 JSAPI -->
+    <div class="card soon">
+      <div class="thumb">📱</div>
+      <div class="body">
+        <span class="tag">敬请期待</span>
+        <h3>企微 JSAPI · 前端能力</h3>
+        <p>企微 JSAPI 初始化、消息渲染组件、中转页重定向。规划中。</p>
+        <div class="go">即将上线</div>
+      </div>
+    </div>
+
+    <!-- 占位：Python -->
+    <div class="card soon">
+      <div class="thumb">🐍</div>
+      <div class="body">
+        <span class="tag">敬请期待</span>
+        <h3>Python 3.12 · 基础</h3>
+        <p>语法、模块、常用标准库的学习地图。规划中。</p>
+        <div class="go">即将上线</div>
+      </div>
+    </div>
+
+    <!-- 占位：更多 -->
+    <div class="card soon">
+      <div class="thumb">✨</div>
+      <div class="body">
+        <span class="tag">敬请期待</span>
+        <h3>更多栏目</h3>
+        <p>前端工程化、网络、数据库等更多主题在路上。</p>
+        <div class="go">即将上线</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  这个仓库收录捞鱼做的计算机类学习地图。<br>
+  由 <a href="https://lyzbcy.github.io/" target="_blank" rel="noopener">捞鱼</a> 制作
+</footer>
+
+<script>
+// 已上线栏目数 = 非占位卡片数（数据驱动，加栏目自动更新）
+document.getElementById('cnt').textContent =
+  document.querySelectorAll('#grid .card:not(.soon)').length;
+</script>
+
+</body>
+</html>

@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第一章 · Vue3 入门 · 选项式 API 起手式</title>
+<link rel="icon" href="img/sticker/mascot.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="layout">
+  <!-- ===== 侧边栏 ===== -->
+  <aside class="sidebar">
+    <a class="back-link" href="index.html">← 返回 Vue3 目录</a>
+    <h1>第一章<br>Vue3 入门</h1>
+    <div class="sub">选项式 API · 渐进式框架</div>
+    <div class="progress-wrap"><div id="barFill"></div></div>
+    <div id="barNum">0 / 0</div>
+    <ul class="nav">
+      <li><a href="#goal"><span class="no">01</span>学习目标</a></li>
+      <li><a href="#bg"><span class="no">02</span>零基础背景包</a></li>
+      <li><a href="#problem"><span class="no">03</span>这章回答什么</a></li>
+      <li><a href="#map"><span class="no">04</span>Vue3 结构地图</a></li>
+      <li><a href="#core"><span class="no">05</span>核心判断</a></li>
+      <li><a href="#concept"><span class="no">06</span>关键概念</a></li>
+      <li><a href="#socratic"><span class="no">07</span>苏格拉底关卡</a></li>
+      <li><a href="#task"><span class="no">08</span>闯关任务</a></li>
+      <li><a href="#miss"><span class="no">09</span>误解与边界</a></li>
+      <li><a href="#gap"><span class="no">10</span>背景知识缺口</a></li>
+      <li><a href="#report-sec"><span class="no">11</span>学习报告</a></li>
+    </ul>
+  </aside>
+
+  <!-- ===== 主区 ===== -->
+  <main class="main">
+
+    <div class="hero">
+      <img class="mascot" src="img/sticker/mascot.png" alt="捞鱼">
+      <div>
+        <h2>第一章 · Vue3 入门 —— 选项式 API 起手式</h2>
+        <p>声明式渲染 + 响应式 + 模板语法 ｜ 本项目<strong style="color:#fff;">强制选项式 API</strong>｜含 <span class="stat" id="quizCount">…</span> 道互动关卡</p>
+      </div>
+    </div>
+
+    <!-- 01 目标 -->
+    <section id="goal">
+      <span class="sec-id" data-sec="学习目标">01 · 学习目标</span>
+      <h2>学完这一章你要能做到</h2>
+      <div class="card">
+        <ul class="bul">
+          <li><strong>用一句话说清 Vue 是什么</strong>，并指出它的两个核心功能（声明式渲染、响应式）。</li>
+          <li><strong>默写一个选项式 API 组件的三件套</strong>：<code>data()</code>、<code>methods</code>、<code>mounted</code>，并说出它们各自的职责。</li>
+          <li><strong>区分五种模板写法</strong>：文本插值、属性绑定、事件绑定、双向绑定、原始 HTML，并知道对应的指令。</li>
+          <li><strong>解释响应式</strong>：改了 <code>this.count</code>，为什么页面上的数字会自动变。</li>
+          <li>能指出至少 2 个入门误解（如「把组合式和选项式混用」「以为 <code>{{ }}</code> 能写任意 JS」）。</li>
+        </ul>
+        <div class="note"><b>阅读路径</b>：背景包 → Vue3 结构地图 → 核心判断 → 关键概念 → 做关卡题 → 生成报告。</div>
+      </div>
+      <div class="card paper">
+        <span class="tag" style="background:var(--brick);color:#FFE9B0;">项目约束</span>
+        <p>老田的硬性要求：<strong>本项目采用「选项式 API」，禁止使用「组合式 API」</strong>。学完后你应能解释为什么团队要统一风格，并识别一份代码是哪种 API。这一章全程围绕选项式展开。</p>
+        <span class="src"><b>原文依据</b>：《初心与使命》——「我们采用的是"选项式"API，不是组合式，为保持风格统一，禁止使用"组合式"API」。</span>
+      </div>
+    </section>
+
+    <!-- 02 背景 -->
+    <section id="bg">
+      <span class="sec-id" data-sec="背景包">02 · 零基础背景包</span>
+      <h2>读这章前先知道的 4 件事</h2>
+
+      <div class="card">
+        <span class="tag bg">背景①</span><b>什么是「框架」</b>
+        <p>写网页本质是操作 HTML（结构）+ CSS（样式）+ JavaScript（行为）。<strong>原生 JS 要你手动找到元素、手动改内容</strong>（<code>document.getElementById</code> 之类）。框架帮你把这些重复劳动抽象掉，给你一套规则，照着写就行。Vue 就是干这个的。</p>
+        <div class="note">读这章需要它：否则你不知道「为什么有了 JS 还要 Vue」。</div>
+      </div>
+
+      <div class="card">
+        <span class="tag bg">背景②</span><b>什么是 DOM</b>
+        <p>DOM（Document Object Model）= 浏览器把 HTML 解析成的一棵「元素树」。<strong>页面上看到的每个标签，都是这棵树上的一个节点</strong>。所谓「更新页面」，本质就是改这棵树上的节点。Vue 帮你改 DOM，你只管改「数据」。</p>
+        <div class="note">读这章需要它：响应式就是「数据变 → Vue 自动改 DOM」。</div>
+      </div>
+
+      <div class="card">
+        <span class="tag bg">背景③</span><b>什么是「响应式」（先有个直觉）</b>
+        <p>普通变量改了，页面不会变；<strong>响应式变量改了，页面自动跟着变</strong>。你可以把它想成「数据被装了监控」——谁改它，监控就通知页面刷新。具体原理本章后面讲。</p>
+        <div class="note">这是 Vue 区别于「写死页面」的根本能力，不懂它就等于没懂 Vue。</div>
+      </div>
+
+      <div class="card">
+        <span class="tag bg">背景④</span><b>选项式 vs 组合式 —— 两种「写组件的风格」</b>
+        <p>同一个 Vue3 组件，可以写成两种长相：</p>
+        <ul class="bul">
+          <li><strong>选项式 API（Options API）</strong>：把代码分门别类塞进 <code>data</code>、<code>methods</code>、<code>mounted</code> 等「选项」里，像一个填表。</li>
+          <li><strong>组合式 API（Composition API）</strong>：用 <code>setup()</code> / <code>&lt;script setup&gt;</code> + <code>ref</code>、<code>reactive</code> 函数式地组织。</li>
+        </ul>
+        <p>两者<strong>功能等价，最终产物一样</strong>，区别只在「怎么组织代码」。本项目统一用<strong>选项式</strong>。</p>
+        <div class="warn"><b>不要误解成</b>：组合式比选项式「高级」或「新版」。官方原文：两者只是「不同的 API 风格」，没有高下。</div>
+      </div>
+    </section>
+
+    <!-- 03 问题定位 -->
+    <section id="problem">
+      <span class="sec-id" data-sec="问题定位">03 · 这章在回答什么</span>
+      <h2>表面 vs 深层问题</h2>
+      <div class="card paper">
+        <p><strong>表层</strong>：Vue3 入门怎么写。</p>
+        <p><strong>深层</strong>：Vue 到底解决了什么问题？它「自动更新页面」的承诺，建立在哪两个核心功能上？作为本项目开发者，我为什么必须走选项式这条路？</p>
+        <p><strong>只记一个问题</strong>：<span style="background:var(--marker);padding:2px 6px;border-radius:4px;">我写了状态和方法，Vue 凭什么能让页面自动跟着变？</span></p>
+        <div class="note">带着这个问题读后面所有「核心判断」，你会发现它们都在回答它。</div>
+      </div>
+    </section>
+
+    <!-- 04 结构地图 -->
+    <section id="map">
+      <span class="sec-id" data-sec="结构地图">04 · Vue3 结构地图</span>
+      <h2>一张图看懂 Vue3 入门全貌</h2>
+      <div class="card">
+        <p>Vue 官方自我介绍是一棵<strong>递进式的能力树</strong>——它不是一上来就把全部能力塞给你，而是「需要什么加什么」。读懂这条递进线，就懂了 Vue 的整体形状。</p>
+      </div>
+      <div class="flow">
+        <div class="flow-step"><span class="num">1</span><b>渐进式框架</b>｜核心承诺：可轻可重，按需引入。</div>
+        <div class="flow-step"><span class="num">2</span><b>声明式渲染</b>｜用模板语法「声明」数据和 HTML 的关系，不再手动操作 DOM。</div>
+        <div class="flow-step hot"><span class="num">3</span><b>响应式</b> ⭐<b>灵魂</b>｜数据一变，Vue 自动更新对应的 DOM。</div>
+        <div class="flow-step"><span class="num">4</span><b>模板语法</b>｜<code>{{ }}</code> 文本、<code>v-bind/:</code> 属性、<code>v-on/@</code> 事件、<code>v-model</code> 双向。</div>
+        <div class="flow-step"><span class="num">5</span><b>组件</b>｜把界面拆成可复用的小块，互相组合。</div>
+        <div class="flow-step"><span class="num">6</span><b>上手</b>｜脚手架 / SFC（单文件组件 .vue）→ 进真实项目。</div>
+      </div>
+      <div class="note">节点关系：<strong>声明式渲染 + 响应式</strong>是两个并列的「核心功能」（官方原话），其余都是从它们长出来的能力。</div>
+    </section>
+
+    <!-- 05 核心判断 -->
+    <section id="core">
+      <span class="sec-id" data-sec="核心判断">05 · 核心判断</span>
+      <h2>6 条核心判断（每条都带原文依据）</h2>
+
+      <div class="card">
+        <span class="tag fact">事实</span><b>① Vue 是一套「用于构建用户界面」的「渐进式」框架。</b>
+        <p>这是官方对 Vue 的第一句定性。「构建用户界面」= 做前端 UI；「渐进式」= 不强迫你一次用全部功能。</p>
+        <span class="src"><b>原文依据</b>：Vue 官网《简介》——「Vue 是一套用于构建用户界面的渐进式框架。」</span>
+      </div>
+
+      <div class="card">
+        <span class="tag fact">事实</span><b>② Vue 的核心功能是两个：声明式渲染 + 响应式。</b>
+        <p>不是三个、不是一个，是两个并列的核心。后面所有的模板、指令、组件，都建立在这两个之上。</p>
+        <span class="src"><b>原文依据</b>：Vue 官网《简介》——「两个核心功能：声明式渲染（Declarative Rendering）和响应性（Reactivity）。」</span>
+      </div>
+
+      <div class="card">
+        <span class="tag fact">事实</span><b>③ 声明式渲染 = 你声明「数据和 HTML 的关系」，Vue 替你把 DOM 改好。</b>
+        <p>对比命令式（你写步骤：先找元素、再改它），声明式只描述「最终要长什么样」，过程交给 Vue。</p>
+        <span class="src"><b>原文依据</b>：Vue 官网《简介》——「Vue 基于标准 HTML 拓展了一套模板语法，使得我们可以声明式地描述最终输出的 HTML 和 JavaScript 状态之间的关系。」</span>
+      </div>
+
+      <div class="card">
+        <span class="tag fact">事实</span><b>④ 响应式 = Vue 自动跟踪 JS 状态变化，并在变化时响应式地更新 DOM。</b>
+        <p>这就是「数据变 → 页面自动变」的官方说法。你<strong>不用手动调 DOM</strong>，改数据即可。</p>
+        <span class="src"><b>原文依据</b>：Vue 官网《简介》——「Vue 会自动跟踪 JavaScript 状态变化并在改变发生时响应式地更新 DOM。」</span>
+      </div>
+
+      <div class="card">
+        <span class="tag fact">事实</span><b>⑤ 选项式 API 用一个「包含多个选项的对象」描述组件逻辑。</b>
+        <p>组件本身是一个 JS 对象，它有一组固定「槽位」（选项）：放状态的 <code>data</code>、放方法的 <code>methods</code>、放生命周期的 <code>mounted</code> 等。这些选项里的属性<strong>通过 <code>this</code> 暴露</strong>在组件实例上。</p>
+        <span class="src"><b>原文依据</b>：Vue 官网《简介》——「使用选项式 API，我们可以用包含多个选项的对象来描述组件的逻辑，例如 <code>data</code>、<code>methods</code> 和 <code>mounted</code>。选项所定义的属性都会暴露在函数内的 <code>this</code> 上，<code>this</code> 会指向当前组件实例。」</span>
+      </div>
+
+      <div class="card">
+        <span class="tag judge">判断</span><b>⑥ <code>data()</code> 返回的对象会被 Vue 处理成响应式。</b>
+        <p>这是选项式下「响应式」的入口。你在 <code>data()</code> 里 <code>return</code> 的属性，才具备「改了自动更新页面」的能力；methods 里用 <code>this.xxx</code> 改它，页面就刷新。</p>
+        <span class="src"><b>原文依据</b>：Vue 官网《响应式基础》（选项式）——组件 <code>data</code> 选项返回的对象，Vue 在创建实例时通过响应式系统将其转换为响应式的；在 methods / 钩子中通过 <code>this</code> 访问和修改这些属性。</span>
+      </div>
+    </section>
+
+    <!-- 06 关键概念 -->
+    <section id="concept">
+      <span class="sec-id" data-sec="关键概念">06 · 关键概念拆解</span>
+      <h2>6 个关键概念</h2>
+
+      <div class="card">
+        <h3>① 选项式 API（Options API）</h3>
+        <p><b>定义</b>：用「分门别类的选项对象」组织一个组件。</p>
+        <p><b>长这样</b>：</p>
+        <div class="walkthrough">
+          <div class="wt-step">
+            <div class="step-no">选项式三件套</div>
+<pre style="margin:0;font-family:var(--font-mono);font-size:.82rem;overflow-x:auto;background:#fff;">export default {
+  data() {            // ① 状态
+    return { count: 0 }
+  },
+  methods: {          // ② 方法
+    increment() {
+      this.count++    // 通过 this 访问状态
+    }
+  },
+  mounted() {         // ③ 生命周期：挂载后执行
+    console.log('count =', this.count)
+  }
+}</pre>
+          </div>
+        </div>
+        <div class="warn"><b>不要误解成</b>：data 是直接的对象。它必须是一个<strong>函数 <code>data()</code></strong>，return 一个新对象——这样每个组件实例才有独立的状态。</div>
+      </div>
+
+      <div class="card">
+        <h3>② 文本插值 <code>{{ }}</code></h3>
+        <p><b>定义</b>：双大括号（Mustache 语法），把数据渲染成<strong>纯文本</strong>。</p>
+        <p><code>&lt;span&gt;{{ message }}&lt;/span&gt;</code> 会显示 <code>message</code> 的值。</p>
+        <span class="src"><b>原文依据</b>：《模板语法》——「文本插值……使用的是"Mustache"语法（双大括号）。」</span>
+        <div class="warn"><b>不要误解成</b>：<code>{{ }}</code> 里能写任意 JS。它是表达式，不是代码块；不能写语句（如 <code>if</code>），且<strong>输出永远是纯文本，不是 HTML</strong>。</div>
+      </div>
+
+      <div class="card">
+        <h3>③ 指令（Directives）<code>v-*</code></h3>
+        <p><b>定义</b>：带 <code>v-</code> 前缀的特殊 attribute，给元素附加特殊行为。</p>
+        <p>本章要记住的指令家族：<code>v-bind</code>（属性绑定）、<code>v-on</code>（事件）、<code>v-model</code>（双向）、<code>v-html</code>（原始HTML）、<code>v-if/v-for</code>（条件/循环，后续章）。</p>
+        <span class="src"><b>原文依据</b>：《模板语法》——「指令（Directives）是带有 <code>v-</code> 前缀的特殊 attribute。」</span>
+      </div>
+
+      <div class="card">
+        <h3>④ v-bind 与 v-on 的缩写</h3>
+        <p><b>定义</b>：两个最高频指令都有缩写，正式项目里几乎都用缩写。</p>
+        <table class="t">
+          <tr><th>全写</th><th>缩写</th><th>作用</th></tr>
+          <tr><td><code>v-bind:href="url"</code></td><td><code>:href="url"</code></td><td>属性绑定</td></tr>
+          <tr><td><code>v-on:click="fn"</code></td><td><code>@click="fn"</code></td><td>事件绑定</td></tr>
+        </table>
+        <span class="src"><b>原文依据</b>：《模板语法》——「<code>v-bind</code> 缩写」「<code>v-on</code> 缩写」两节。</span>
+      </div>
+
+      <div class="card">
+        <h3>⑤ v-model（双向绑定）</h3>
+        <p><b>定义</b>：在表单元素上创建<strong>双向数据绑定</strong>——输入框打字会更新数据，数据变了也会反映到输入框。</p>
+        <p><code>&lt;input v-model="message"&gt;</code>：用户输入 → <code>message</code> 变；<code>message</code> 变 → 输入框内容变。</p>
+        <div class="note"><b>类比</b>：v-bind 是「数据 → 视图」单向水管；v-model 是「数据 ⇄ 视图」双向水管。<b>它帮助理解</b>：为什么表单爱用 v-model。<b>它不能代表</b>：v-model 不是万能绑定，主要用于表单类元素。</div>
+      </div>
+
+      <div class="card">
+        <h3>⑥ <code>this</code> 在选项式里指向组件实例</h3>
+        <p><b>定义</b>：在 <code>methods</code> 和生命周期里，<code>this</code> 指向当前组件实例，因此 <code>this.count</code> 能读到 <code>data()</code> 里返回的 <code>count</code>。</p>
+        <p><b>易错</b>：箭头函数没有自己的 <code>this</code>，在 <code>methods</code> 里<strong>不要用箭头函数定义方法</strong>，否则 <code>this</code> 不会指向实例，会读到 <code>undefined</code>。</p>
+        <span class="src"><b>原文依据</b>：《简介》——选项「所定义的属性都会暴露在函数内的 <code>this</code> 上，<code>this</code> 会指向当前组件实例。」</span>
+      </div>
+    </section>
+
+    <!-- 07 苏格拉底关卡 -->
+    <section id="socratic">
+      <span class="sec-id" data-sec="苏格拉底关卡">07 · 苏格拉底式阅读关卡</span>
+      <h2>先别急着写代码 —— 想清楚这几问</h2>
+      <div class="card paper">
+        <p>这一组题考的是<strong>理解</strong>，不是记忆。它们逼你回到原文，判断一句话是事实、判断还是推论，搞清作者为什么这么说。</p>
+      </div>
+
+      <div class="task" data-task="q1" data-answer="C"
+           data-ok="对！这是官方对 Vue 的一句定性陈述，原文照抄自《简介》首句。" data-no="仔细看：'渐进式框架'是官方原话。选 C 才是事实层面的准确转述。"
+           data-src="原文依据：《简介》首句" data-review="回到「05 核心判断①」复习">
+        <div class="q"><span class="qno">Q1</span>「Vue 是一套用于构建用户界面的渐进式框架」—— 这句话在文中的身份是？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. 作者的个人观点（判断）</button>
+          <button class="opt" data-val="B">B. 从其它原理推出的结论（推论）</button>
+          <button class="opt" data-val="C">C. 官方对 Vue 的定性陈述（事实）</button>
+          <button class="opt" data-val="D">D. 用来说明的举例（例子）</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q2" data-answer="B"
+           data-ok="对！声明式渲染和响应式是官方点名的两个核心功能，是并列关系，不是因果。" data-no="核心功能是两个并列项：声明式渲染 + 响应式。不是只讲一个，也不是主次。"
+           data-src="原文依据：《简介》核心功能" data-review="回到「04 结构地图 / 05 核心判断②」复习">
+        <div class="q"><span class="qno">Q2</span>作者列出 Vue 的「核心功能」时，结构是？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. 一个核心：响应式</button>
+          <button class="opt" data-val="B">B. 两个并列核心：声明式渲染、响应式</button>
+          <button class="opt" data-val="C">C. 三个核心：模板、指令、组件</button>
+          <button class="opt" data-val="D">D. 因果链：因为响应式，所以声明式</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q3" data-answer="A"
+           data-ok="正确！'声明'关系、过程交给 Vue，就是声明式渲染的含义。这正是官方原话的转述。" data-no="反了。声明式是'描述结果/关系'，不是'描述操作步骤'。描述步骤的是命令式。"
+           data-src="原文依据：《简介》声明式渲染" data-review="回到「05 核心判断③」复习">
+        <div class="q"><span class="qno">Q3</span>「声明式渲染」最准确的理解是？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. 你描述「数据和 HTML 的关系」，由 Vue 去改 DOM</button>
+          <button class="opt" data-val="B">B. 你写清楚改 DOM 的每一步，Vue 照做</button>
+          <button class="opt" data-val="C">C. Vue 自动帮你生成全部 HTML，你不用写</button>
+          <button class="opt" data-val="D">D. 用 CSS 声明样式</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q4" data-answer="B"
+           data-ok="对！选项式与组合式是'两种风格'，官方明确没有高下之分。本项目用选项式是为了团队风格统一。" data-no="这是常见误解。官方原文：两者只是不同的 API 风格，功能等价，没有高下。"
+           data-src="原文依据：《简介》两种 API 风格 + 《初心与使命》项目约束" data-review="回到「02 背景④ / 05 核心判断⑤」复习">
+        <div class="q"><span class="qno">Q4</span>为什么本项目「禁止使用组合式 API」？这个理由属于？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. 官方规定（事实）</button>
+          <button class="opt" data-val="B">B. 团队为风格统一而定的工程约定（判断/决策）</button>
+          <button class="opt" data-val="C">C. 因为组合式有 bug 不能用（事实）</button>
+          <button class="opt" data-val="D">D. 因为选项式性能更好（推论）</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+    </section>
+
+    <!-- 08 闯关任务 -->
+    <section id="task">
+      <span class="sec-id" data-sec="闯关任务">08 · 闯关任务 · 选项式 API 应用</span>
+      <h2>把概念落到代码上</h2>
+      <div class="card paper">
+        <p>这一组题考<strong>应用</strong>：给场景选语法、读代码判结果。做错了一定回看「06 关键概念」。</p>
+      </div>
+
+      <div class="task" data-task="q5" data-answer="A"
+           data-ok="正确！选项式里状态放在 data() 返回的对象里，methods 放方法，mounted 是生命周期。" data-no="记住：状态放 data，方法放 methods，挂载钩子是 mounted。"
+           data-src="原文依据：《简介》选项式 API" data-review="回到「06 关键概念①」复习">
+        <div class="q"><span class="qno">Q5</span>选项式 API 中，组件的「响应式状态」放在哪个选项里？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. data() 返回的对象</button>
+          <button class="opt" data-val="B">B. methods</button>
+          <button class="opt" data-val="C">C. mounted</button>
+          <button class="opt" data-val="D">D. computed</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q6" data-answer="C"
+           data-ok="对！v-bind 缩写是冒号 :，v-on 缩写是 @。正式项目里几乎都写缩写。" data-no="记反了。v-bind → :（冒号）；v-on → @。"
+           data-src="原文依据：《模板语法》缩写两节" data-review="回到「06 关键概念④」复习">
+        <div class="q"><span class="qno">Q6</span><code>v-bind:href</code> 和 <code>v-on:click</code> 的缩写分别是？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. @href 和 :click</button>
+          <button class="opt" data-val="B">B. #href 和 *click</button>
+          <button class="opt" data-val="C">C. :href 和 @click</button>
+          <button class="opt" data-val="D">D. 都用 %</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q7" data-answer="A"
+           data-ok="完全正确！选项式里通过 this 访问实例上的状态，this.count 才能读到 data 里的 count。" data-no="选项式里访问状态必须用 this.count，因为选项暴露在实例(this)上。"
+           data-src="原文依据：《简介》选项式 this" data-review="回到「05 核心判断⑤ / 06 概念⑥」复习">
+        <div class="q"><span class="qno">Q7</span>methods 里的 <code>increment()</code> 要把 <code>count</code> 加 1，正确写法是？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. this.count++</button>
+          <button class="opt" data-val="B">B. count++</button>
+          <button class="opt" data-val="C">C. data.count++</button>
+          <button class="opt" data-val="D">D. state.count++</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q8" data-answer="B"
+           data-ok="对！箭头函数没有自己的 this，在 methods 里用箭头函数会让 this 不指向组件实例，读到 undefined。这是经典坑。" data-no="经典坑：methods 里用箭头函数 → this 不指向实例。必须用普通函数定义 methods。"
+           data-src="原文依据：《简介》选项式 this + JS 语言规则" data-review="回到「06 关键概念⑥」死磕">
+        <div class="q"><span class="qno">Q8</span>下面写法点击后报错 <code>Cannot read property 'count' of undefined</code>，最可能的原因是？<br><code>methods: { increment: () =&gt; { this.count++ } }</code></div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. data 没声明 count</button>
+          <button class="opt" data-val="B">B. 用了箭头函数，this 不指向组件实例</button>
+          <button class="opt" data-val="C">C. 缺少 v-on 绑定</button>
+          <button class="opt" data-val="D">D. mounted 没写</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+    </section>
+
+    <!-- 09 误解与边界 -->
+    <section id="miss">
+      <span class="sec-id" data-sec="误解与边界">09 · 误解与边界</span>
+      <h2>4 个最容易踩的坑</h2>
+
+      <div class="card">
+        <h3>误解①：组合式比选项式「高级 / 新」，该优先学</h3>
+        <p><b>真相</b>：官方原文说它们是「两种不同的 API 风格」，<strong>没有高下</strong>。本项目明确用选项式，你就照选项式学，别被网上「Vue3 = 组合式」的说法带偏。</p>
+      </div>
+      <div class="card">
+        <h3>误解②：<code>data</code> 是一个普通对象</h3>
+        <p><b>真相</b>：它必须是<strong>函数 <code>data()</code></strong>，返回一个新对象。这样每个组件实例才有各自独立的状态副本；写成普通对象会导致多实例共享同一份状态。</p>
+      </div>
+      <div class="card">
+        <h3>误解③：<code>{{ }}</code> 能输出 HTML</h3>
+        <p><b>真相</b>：双大括号只渲染<strong>纯文本</strong>，会原样显示标签符号。要输出 HTML 得用 <code>v-html</code>，且 <code>v-html</code> 有 XSS 风险，不能用来渲染用户输入。</p>
+        <span class="src"><b>原文依据</b>：《模板语法》——「双大括号将会将数据插值为纯文本，而不是 HTML。」</span>
+      </div>
+      <div class="card">
+        <h3>误解④：methods 里用箭头函数更简洁</h3>
+        <p><b>真相</b>：箭头函数没有自己的 <code>this</code>，在 methods 中会让 <code>this</code> 指向外层而非组件实例，导致 <code>this.count</code> 报错。<strong>methods 必须用普通函数</strong>。</p>
+      </div>
+      <div class="warn"><b>边界</b>：本章只覆盖「简介 + 模板语法 + 响应式基础」三页官方文档的范围。<code>v-if/v-for</code>、<code>computed/watch</code>、组件 props、生命周期全集都不在本章——它们在后续章节。别用本章内容强行解释它们。</div>
+    </section>
+
+    <!-- 10 背景知识缺口 -->
+    <section id="gap">
+      <span class="sec-id" data-sec="背景缺口">10 · 背景知识缺口</span>
+      <h2>要完全吃透还差什么</h2>
+      <div class="card">
+        <p><b>现在就该补（阻碍你写代码）：</b></p>
+        <ul class="bul">
+          <li><b>ES6 模块</b>（<code>export default</code> / <code>import</code>）—— 选项式组件就是用 <code>export default {}</code> 导出的对象。不懂模块语法，第一行就卡住。</li>
+          <li><b>箭头函数 vs 普通函数的 this 差异</b>—— 本章 Q8 已埋点，建议手写验证一遍。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <p><b>可以晚点补（不影响入门）：</b></p>
+        <ul class="bul">
+          <li><b>虚拟 DOM / 响应式底层（Proxy）</b>—— 知道「自动更新」是怎么实现的。先用起来，再深究原理。</li>
+          <li><b>构建工具 Vite / SFC 单文件组件</b>—— 真实项目要 <code>.vue</code> 文件，需配套脚手架。这是「上手」环节，第二章再碰。</li>
+        </ul>
+      </div>
+      <div class="note"><b>下一步追问</b>：「状态变了 Vue 怎么知道哪些 DOM 要更新？」—— 这是响应式原理，留到后续章节。本章只需建立「数据 → 自动更新页面」的因果直觉。</div>
+    </section>
+
+    <!-- 11 报告 -->
+    <section id="report-sec">
+      <span class="sec-id" data-sec="学习报告">11 · 学习报告</span>
+      <h2>生成你的第一章报告</h2>
+      <div class="report-box">
+        <div class="rep-btns">
+          <button id="genReport">生成学习报告</button>
+          <button id="copyReport" class="alt">复制报告</button>
+        </div>
+        <div id="report">（点击"生成学习报告"后显示完成情况与错题清单。）</div>
+      </div>
+      <div class="wrong-box" style="margin-top:14px;">
+        <h3>📋 错题回流区</h3>
+        <ul id="wrongBox"><li style="color:#888">还没有错题。答错的题会自动收集到这里。</li></ul>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  这个工具帮你建立 Vue3 入门的理解地图，但不能替代动手写代码和读官方文档。学习愉快 🐟<br>
+  由 <a href="https://lyzbcy.github.io/" target="_blank" rel="noopener">捞鱼</a> 制作
+</footer>
+
+<!-- promo -->
+<div class="float-btn" id="floatBtn">🐟 关于捞鱼</div>
+<div class="modal-mask" id="modalMask">
+  <div class="modal">
+    <button class="close" id="closeModal">×</button>
+    <div class="author">
+      <img src="https://s41.ax1x.com/2025/12/05/pZmPZPH.png" alt="捞鱼">
+      <div>
+        <div class="name">捞鱼</div>
+        <div class="sig">「一个弱小但有梦想的开发者」</div>
+        <span class="studio">捞鱼工作室</span><br>
+        <a class="goto" href="https://lyzbcy.github.io/about/" target="_blank" rel="noopener">了解更多 →</a>
+      </div>
+    </div>
+    <div class="qr-grid">
+      <div class="qr-cell"><div class="ttl">QQ 学习群</div><img src="img/sticker/qq-group.jpg" alt="QQ群二维码"><div class="desc">扫码进群一起学习</div></div>
+      <div class="qr-cell"><div class="ttl">赞赏支持</div><img src="img/sticker/reward-qr.jpg" alt="赞赏二维码"><div class="desc">请捞鱼喝杯奶茶</div></div>
+      <div class="qr-cell">
+        <div class="ttl">微信表情包</div>
+        <div class="sticker-row"><img src="img/sticker/ok.png" alt=""><img src="img/sticker/no.png" alt=""><img src="img/sticker/study.png" alt=""></div>
+        <img src="img/sticker/sticker-qr.png" alt="微信表情包二维码">
+        <div class="desc">📱 长按或扫码使用</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* promo 浮条 + 章节数据驱动 + sec-id 表情种草 IIFE 注入 */
+(function(){
+  var qc=document.getElementById('quizCount');
+  if(qc)qc.textContent=document.querySelectorAll('.task').length;
+
+  /* sec-id 表情种草：按语义映射，运行时注入，不手改 N 处 HTML */
+  var STAMP_MAP={
+    '学习目标':'study.png','背景包':'study.png','问题定位':'study.png',
+    '结构地图':'ok.png','核心判断':'ok.png','关键概念':'study.png',
+    '苏格拉底关卡':'no.png','闯关任务':'final.png',
+    '误解与边界':'no.png','背景缺口':'study.png','学习报告':'final.png'
+  };
+  document.querySelectorAll('.sec-id[data-sec]').forEach(function(el){
+    var key=el.getAttribute('data-sec'),img=STAMP_MAP[key];
+    if(img){var i=document.createElement('img');i.className='stamp';i.src='img/sticker/'+img;i.alt='';el.insertBefore(i,el.firstChild);}
+  });
+
+  var mask=document.getElementById('modalMask');
+  document.getElementById('floatBtn').addEventListener('click',function(){mask.classList.add('open');});
+  document.getElementById('closeModal').addEventListener('click',function(){mask.classList.remove('open');});
+  mask.addEventListener('click',function(e){if(e.target===mask)mask.classList.remove('open');});
+})();
+</script>
+
+<!-- 固定互动引擎（原样粘贴） -->
+<script>
+(function(){
+  "use strict";
+  function $all(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));}
+  function selectedVals(t){return $all('.opt.selected',t).map(function(o){return o.getAttribute('data-val');}).sort();}
+  function setFb(t,state,html){var fb=t.querySelector('.feedback');if(!fb)return;fb.className='feedback'+(state?(' '+state):'');fb.innerHTML=html;}
+  function updateBar(){
+    var all=$all('.task'),done=$all('.task[data-answered="1"]');
+    var fill=document.getElementById('barFill'),num=document.getElementById('barNum');
+    if(fill)fill.style.width=all.length?(done.length/all.length*100)+'%':'0%';
+    if(num)num.textContent=done.length+' / '+all.length;
+  }
+  function renderWrong(){
+    var box=document.getElementById('wrongBox');if(!box)return;
+    var wrong=$all('.task[data-answered="1"][data-correct="0"]');
+    if(!wrong.length){box.innerHTML='<li style="color:#888">还没有错题。答错的题会自动收集到这里。</li>';return;}
+    box.innerHTML='';
+    wrong.forEach(function(t){var li=document.createElement('li');li.textContent='【'+(t.getAttribute('data-task')||'')+'】'+(t.getAttribute('data-review')||'回到对应模块复习');box.appendChild(li);});
+  }
+  function check(t){
+    var type=t.getAttribute('data-type'),ok=false;
+    if(type==='selects'){
+      var sels=$all('select.match',t),allok=true,empty=false;
+      sels.forEach(function(s){if(!s.value)empty=true;if(s.value!==s.getAttribute('data-correct'))allok=false;});
+      if(empty){setFb(t,'no','请先把每一项都选好再检查。');return;}
+      ok=allok;
+    }else{
+      var sel=selectedVals(t);
+      if(!sel.length){setFb(t,'no','请先选择一个选项再检查。');return;}
+      var ans=(t.getAttribute('data-answer')||'').split(',').map(function(x){return x.trim();}).sort();
+      ok=(sel.join('|')===ans.join('|'));
+    }
+    var body=ok?(t.getAttribute('data-ok')||'回答正确。'):(t.getAttribute('data-no')||'再想想。');
+    var src=t.getAttribute('data-src');
+    setFb(t,ok?'ok':'no',(ok?'✅ ':'❌ ')+body+(src?('<span class="src">'+src+'</span>'):''));
+    t.setAttribute('data-answered','1');t.setAttribute('data-correct',ok?'1':'0');
+    updateBar();renderWrong();
+  }
+  function genReport(){
+    var box=document.getElementById('report');if(!box)return;
+    var all=$all('.task'),done=$all('.task[data-answered="1"]'),right=$all('.task[data-answered="1"][data-correct="1"]');
+    var lines=['=== 第一章 Vue3 入门 学习报告 ===','完成题目：'+done.length+' / '+all.length,'答对：'+right.length+' 题',''];
+    var wrong=$all('.task[data-answered="1"][data-correct="0"]');
+    if(wrong.length){lines.push('我答错的题（建议复习）：');wrong.forEach(function(t){lines.push('- '+(t.getAttribute('data-task')||'')+'：'+(t.getAttribute('data-review')||''));});}
+    else{lines.push('暂无错题。');}
+    box.textContent=lines.join('\n');
+  }
+  document.addEventListener('click',function(e){
+    var c=e.target.closest?e.target:null;
+    var opt=c&&e.target.closest('.opt');
+    if(opt){var t=opt.closest('.task');if(!t)return;
+      if(t.getAttribute('data-multi')==='true'){opt.classList.toggle('selected');}
+      else{$all('.opt',t).forEach(function(o){o.classList.remove('selected');});opt.classList.add('selected');}
+      return;}
+    var btn=c&&e.target.closest('.check');
+    if(btn){var tk=btn.closest('.task');if(tk)check(tk);return;}
+    if(e.target&&e.target.id==='genReport'){genReport();return;}
+    if(e.target&&e.target.id==='copyReport'){var r=document.getElementById('report');if(r&&navigator.clipboard)navigator.clipboard.writeText(r.textContent);return;}
+  });
+  function init(){updateBar();renderWrong();}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+
+</body>
+</html>

@@ -9,6 +9,12 @@
 </head>
 <body>
 
+<script type="application/json" id="voicePlaylist">
+[
+  {"id":"ch2","title":"第二章 单文件组件与脚手架","src":"audio/ch2.mp3"}
+]
+</script>
+
 <div class="layout">
   <!-- ===== 侧边栏 ===== -->
   <aside class="sidebar">
@@ -41,6 +47,7 @@
         <h2>第二章 · 单文件组件与脚手架</h2>
         <p>.vue 三段式 ｜ Vite 脚手架 ｜ 本项目<strong style="color:#fff;">SFC 里仍写选项式</strong>｜含 <span class="stat" id="quizCount">…</span> 道互动关卡</p>
       </div>
+      <button class="voice-btn" data-voice-id="ch2">🎧 听这章</button>
     </div>
 
     <!-- 01 目标 -->
@@ -557,6 +564,131 @@ button { font-weight: bold; }
   });
   function init(){updateBar();renderWrong();}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+
+<!-- ===== 后台语音：右下浮条 + 圆润玩具风播放器 ===== -->
+<button id="voiceFab" aria-label="打开后台语音">🎧</button>
+<div id="voicePlayer">
+  <button class="vp-close" aria-label="关闭">✕</button>
+  <div class="vp-head">🎧 后台语音 · 连续播放</div>
+  <div class="vp-title">—</div>
+  <div class="vp-controls">
+    <button class="vp-prev" aria-label="上一章">⏮</button>
+    <button class="vp-play" aria-label="播放/暂停">▶</button>
+    <button class="vp-next" aria-label="下一章">⏭</button>
+  </div>
+  <input class="vp-seek" type="range" min="0" max="1000" value="0" aria-label="进度">
+  <div class="vp-time"><span class="vp-cur">00:00</span><span class="vp-dur">00:00</span></div>
+</div>
+
+<!-- 固定语音引擎（原样粘贴） -->
+<script>
+(function(){
+  "use strict";
+  if(window.__voiceEngine) return;
+  window.__voiceEngine = true;
+
+  var listNode = document.getElementById('voicePlaylist');
+  if(!listNode){ return; }
+  var TRACKS = [];
+  try { TRACKS = JSON.parse(listNode.textContent.trim()); } catch(e){ return; }
+  if(!TRACKS.length) return;
+
+  var player = document.getElementById('voicePlayer');
+  var fab = document.getElementById('voiceFab');
+  var audio = new Audio(); audio.preload = 'metadata';
+  var cur = 0;
+  var ranges = [];
+  var total = 0;
+  var seeking = false;
+
+  function $(s){ return player ? player.querySelector(s) : null; }
+  function fmt(s){ s=Math.max(0,Math.floor(s||0)); var m=Math.floor(s/60), x=s%60;
+    return (m<10?'0':'')+m+':'+(x<10?'0':'')+x; }
+
+  var probe = TRACKS.map(function(){ return {dur:0}; });
+  function tryFinalize(){
+    if(probe.some(function(p){return !p.dur;})) return;
+    ranges = []; total = 0;
+    probe.forEach(function(p){ ranges.push({dur:p.dur, start:total}); total += p.dur; });
+    var d = $('.vp-dur'); if(d) d.textContent = fmt(total);
+    var sk = $('.vp-seek'); if(sk){ sk.max = Math.max(1000, Math.floor(total*10)); }
+  }
+  TRACKS.forEach(function(t, i){
+    var a = new Audio(); a.preload = 'metadata'; a.src = t.src;
+    a.addEventListener('loadedmetadata', function(){
+      probe[i].dur = a.duration || 0; tryFinalize();
+    });
+    a.addEventListener('error', function(){ probe[i].dur = 0; tryFinalize(); });
+  });
+
+  function load(i){
+    cur = i; audio.src = TRACKS[i].src;
+    var ti = $('.vp-title'); if(ti) ti.textContent = TRACKS[i].title || ('第 '+(i+1)+' 段');
+    markBtn(i);
+  }
+  function play(){ audio.play().then(function(){ show(); setPlayIcon(true); if(fab) fab.classList.add('beat'); }).catch(function(){}); }
+  function pause(){ audio.pause(); setPlayIcon(false); if(fab) fab.classList.remove('beat'); }
+  function toggle(){ audio.paused ? play() : pause(); }
+  function next(){ if(cur < TRACKS.length-1){ load(cur+1); play(); } else { pause(); } }
+  function prev(){
+    var abs = absTime();
+    if(cur > 0 && abs - ranges[cur].start < 3){ load(cur-1); play(); }
+    else { audio.currentTime = 0; }
+  }
+  function absTime(){ return ranges[cur] ? ranges[cur].start + (audio.currentTime||0) : (audio.currentTime||0); }
+  function setPlayIcon(on){ var b=$('.vp-play'); if(b) b.textContent = on ? '⏸' : '▶'; }
+  function show(){ if(player) player.classList.add('show'); }
+  function hide(){ if(player) player.classList.remove('show'); }
+  function markBtn(i){
+    document.querySelectorAll('.voice-btn[data-voice-id]').forEach(function(b){
+      b.classList.toggle('active', b.getAttribute('data-voice-id') === TRACKS[i].id);
+    });
+  }
+
+  audio.addEventListener('timeupdate', function(){
+    if(seeking) return;
+    if(!ranges[cur]) return;
+    var abs = absTime(); var sk = $('.vp-seek'); var c = $('.vp-cur');
+    if(sk && total) sk.value = Math.round(abs / total * (sk.max||1000));
+    if(c) c.textContent = fmt(abs);
+  });
+  audio.addEventListener('ended', function(){ if(cur < TRACKS.length-1){ load(cur+1); play(); }
+    else { setPlayIcon(false); if(fab) fab.classList.remove('beat'); } });
+
+  function seekToFraction(frac){
+    if(!total) return;
+    var target = Math.max(0, Math.min(total, frac * total));
+    var i = 0; while(i < ranges.length-1 && ranges[i].start + ranges[i].dur < target){ i++; }
+    if(i !== cur){ cur = i; audio.src = TRACKS[i].src;
+      var ti=$('.vp-title'); if(ti) ti.textContent = TRACKS[i].title||('第 '+(i+1)+' 段'); markBtn(i); }
+    audio.currentTime = target - ranges[i].start;
+    var c=$('.vp-cur'); if(c) c.textContent = fmt(target);
+  }
+
+  document.addEventListener('click', function(e){
+    var t = e.target;
+    var vb = t.closest ? t.closest('.voice-btn[data-voice-id]') : null;
+    if(vb){
+      var id = vb.getAttribute('data-voice-id'), idx = -1;
+      TRACKS.forEach(function(tr, k){ if(tr.id === id) idx = k; });
+      if(idx >= 0){ load(idx); play(); }
+      return;
+    }
+    if(t.id === 'voiceFab'){ show(); if(audio.paused && !audio.src){ load(0); } if(audio.paused){ play(); } return; }
+    if(!player || !player.contains(t)) return;
+    if(t.classList.contains('vp-play')){ toggle(); return; }
+    if(t.classList.contains('vp-prev')){ prev(); return; }
+    if(t.classList.contains('vp-next')){ next(); return; }
+    if(t.classList.contains('vp-close')){ pause(); hide(); return; }
+  });
+  var sk = $('.vp-seek');
+  if(sk){
+    sk.addEventListener('input', function(){ seeking = true;
+      if(total){ var c=$('.vp-cur'); if(c) c.textContent = fmt((sk.value/(sk.max||1000))*total); } });
+    sk.addEventListener('change', function(){ seekToFraction(sk.value/(sk.max||1000)); seeking = false; });
+  }
 })();
 </script>
 

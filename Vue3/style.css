@@ -208,3 +208,54 @@ footer a{color:#1d70b8;text-decoration:underline;font-weight:700;}
   .main{padding:20px 18px 50px;}
   .hero{flex-direction:column;text-align:center;}
 }
+
+/* ===== 后台语音播报（圆润玩具风） ===== */
+/* 章节标题旁的「听这章」小按钮 */
+.voice-btn{
+  display:inline-block; vertical-align:middle; margin-left:.6em;
+  padding:.25em .8em; border:1px solid var(--forest); border-radius:var(--radius-pill);
+  background:var(--cream); color:var(--forest); font:600 .8rem/1.2 var(--font-body);
+  cursor:pointer; transition:background .15s;
+}
+.voice-btn:hover{ background:var(--sage); }
+.voice-btn.active{ background:var(--forest); color:var(--cream); }
+
+/* 右下角常驻浮条入口 */
+#voiceFab{
+  position:fixed; right:1.1rem; bottom:1.1rem; z-index:9998;
+  width:3rem; height:3rem; border:none; border-radius:50%;
+  background:var(--forest); color:var(--cream); font-size:1.3rem; cursor:pointer;
+  box-shadow:0 4px 14px rgba(0,0,0,.18); transition:transform .15s;
+}
+#voiceFab:hover{ transform:scale(1.08); }
+#voiceFab.beat{ animation:voiceBeat 1s ease-in-out infinite; }
+@keyframes voiceBeat{ 0%,100%{transform:scale(1)} 50%{transform:scale(1.12)} }
+
+/* 圆润玩具风播放器 */
+#voicePlayer{
+  position:fixed; left:50%; bottom:1rem; transform:translateX(-50%) translateY(140%);
+  width:min(92vw,380px); padding:1rem 1.1rem 1.1rem; background:var(--cream);
+  border:2px solid var(--forest); border-radius:26px;
+  box-shadow:0 8px 28px rgba(0,0,0,.16); z-index:9999; transition:transform .28s ease;
+  text-align:center; font-family:var(--font-body);
+}
+#voicePlayer.show{ transform:translateX(-50%) translateY(0); }
+#voicePlayer .vp-head{ font-size:.75rem; color:var(--forest); opacity:.8; letter-spacing:.05em; }
+#voicePlayer .vp-title{ font:700 1rem/1.35 var(--font-body); color:var(--ink);
+  margin:.25rem 0 .7rem; padding:0 .2rem; word-break:break-word; }
+#voicePlayer .vp-play{
+  width:3.6rem; height:3.6rem; border:none; border-radius:50%;
+  background:var(--forest); color:var(--cream); font-size:1.3rem; cursor:pointer;
+  margin:0 auto .7rem; display:flex; align-items:center; justify-content:center;
+  box-shadow:0 3px 0 #142710; transition:transform .1s, box-shadow .1s;
+}
+#voicePlayer .vp-play:active{ transform:translateY(2px); box-shadow:0 1px 0 #142710; }
+#voicePlayer .vp-prev,#voicePlayer .vp-next{
+  width:2.3rem; height:2.3rem; border:1.5px solid var(--forest); border-radius:50%;
+  background:var(--cream); color:var(--forest); font-size:.9rem; cursor:pointer;
+}
+#voicePlayer .vp-controls{ display:flex; align-items:center; justify-content:center; gap:1.2rem; margin-bottom:.7rem; }
+#voicePlayer .vp-seek{ width:100%; margin:.2rem 0; cursor:pointer; accent-color:var(--forest); }
+#voicePlayer .vp-time{ display:flex; justify-content:space-between; font:600 .72rem/1 var(--font-mono); color:var(--ink); opacity:.75; }
+#voicePlayer .vp-close{ position:absolute; top:.5rem; right:.6rem; width:1.5rem; height:1.5rem;
+  border:none; background:transparent; color:var(--ink); font-size:1rem; cursor:pointer; opacity:.5; }

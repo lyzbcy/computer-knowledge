@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第二章 · 单文件组件与脚手架</title>
+<link rel="icon" href="img/sticker/mascot.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="layout">
+  <!-- ===== 侧边栏 ===== -->
+  <aside class="sidebar">
+    <a class="back-link" href="index.html">← 返回 Vue3 目录</a>
+    <h1>第二章<br>SFC 与脚手架</h1>
+    <div class="sub">单文件组件 · Vite · 选项式</div>
+    <div class="progress-wrap"><div id="barFill"></div></div>
+    <div id="barNum">0 / 0</div>
+    <ul class="nav">
+      <li><a href="#goal"><span class="no">01</span>学习目标</a></li>
+      <li><a href="#bg"><span class="no">02</span>零基础背景包</a></li>
+      <li><a href="#problem"><span class="no">03</span>这章回答什么</a></li>
+      <li><a href="#map"><span class="no">04</span>结构地图</a></li>
+      <li><a href="#core"><span class="no">05</span>核心判断</a></li>
+      <li><a href="#concept"><span class="no">06</span>关键概念</a></li>
+      <li><a href="#socratic"><span class="no">07</span>苏格拉底关卡</a></li>
+      <li><a href="#task"><span class="no">08</span>闯关任务</a></li>
+      <li><a href="#miss"><span class="no">09</span>误解与边界</a></li>
+      <li><a href="#gap"><span class="no">10</span>背景知识缺口</a></li>
+      <li><a href="#report-sec"><span class="no">11</span>学习报告</a></li>
+    </ul>
+  </aside>
+
+  <!-- ===== 主区 ===== -->
+  <main class="main">
+
+    <div class="hero">
+      <img class="mascot" src="img/sticker/mascot.png" alt="捞鱼">
+      <div>
+        <h2>第二章 · 单文件组件与脚手架</h2>
+        <p>.vue 三段式 ｜ Vite 脚手架 ｜ 本项目<strong style="color:#fff;">SFC 里仍写选项式</strong>｜含 <span class="stat" id="quizCount">…</span> 道互动关卡</p>
+      </div>
+    </div>
+
+    <!-- 01 目标 -->
+    <section id="goal">
+      <span class="sec-id" data-sec="学习目标">01 · 学习目标</span>
+      <h2>学完这一章你要能做到</h2>
+      <div class="card">
+        <ul class="bul">
+          <li><strong>默写一个 .vue 文件的三段式骨架</strong>：<code>&lt;template&gt;</code>、<code>&lt;script&gt;</code>、<code>&lt;style&gt;</code>，并说出每段放什么。</li>
+          <li><strong>用 <code>npm create vue@latest</code> 起一个项目</strong>，跑通 <code>npm run dev</code>，知道开发服务器和热更新是干嘛的。</li>
+          <li><strong>解释 SFC 与选项式 API 的关系</strong>：SFC 是「文件怎么组织」，选项式是「script 里怎么写逻辑」，二者正交。</li>
+          <li><strong>识别官网示例里的 &lt;script setup&gt;</strong>，并知道为什么本项目<strong>不写</strong>它。</li>
+          <li>能指出至少 2 个常见误解（如「以为 .vue 必须用 setup」「以为 scoped 是全局隔离」）。</li>
+        </ul>
+        <div class="note"><b>阅读路径</b>：背景包 → 结构地图 → 核心判断 → 关键概念 → 做关卡题 → 生成报告。</div>
+      </div>
+      <div class="card paper">
+        <span class="tag" style="background:var(--brick);color:#FFE9B0;">项目约束延续</span>
+        <p>第一章的红线在本章依然有效：<strong>本项目采用「选项式 API」，禁止使用「组合式 API」</strong>。这意味着，即使你打开 Vue3 官方 SFC 文档看到的示例是 <code>&lt;script setup&gt;</code>，本项目的 <code>.vue</code> 文件里的 <code>&lt;script&gt;</code> 段，依然要写 <code>export default { data() {...}, methods: {...} }</code>。</p>
+        <span class="src"><b>原文依据</b>：《初心与使命》——「我们采用的是"选项式"API，不是组合式，为保持风格统一，禁止使用"组合式"API」。</span>
+      </div>
+    </section>
+
+    <!-- 02 背景 -->
+    <section id="bg">
+      <span class="sec-id" data-sec="背景包">02 · 零基础背景包</span>
+      <h2>读这章前先知道的 4 件事</h2>
+
+      <div class="card">
+        <span class="tag bg">背景①</span><b>第一章学的是「无构建」写法，真实项目不是那样</b>
+        <p>第一章用 CDN（<code>&lt;script src="unpkg.com/vue@3..."&gt;</code>）直接在 HTML 里写 Vue。那是<strong>无构建步骤</strong>的试用方式。真实项目（包括本项目员工端 H5）会把 Vue 写进 <code>.vue</code> 文件，用脚手架编译。这章就是从「试用」跨到「真实项目」。</p>
+        <div class="note">读这章需要它：否则你不知道为什么要有 <code>.vue</code> 这种新文件类型。</div>
+      </div>
+
+      <div class="card">
+        <span class="tag bg">背景②</span><b>什么是「模块」（ES Module）</b>
+        <p>JS 原生支持把代码拆成一个个文件互相引用：<code>export default { ... }</code> 导出一个东西，<code>import X from './x'</code> 引入它。<strong>SFC 编译后的产物就是标准 ES 模块</strong>。所以选项式组件写 <code>export default { data, methods }</code>，本质就是导出一个对象。</p>
+        <div class="note">读这章需要它：不懂 <code>export default</code>，就看不懂 <code>.vue</code> 里的 <code>&lt;script&gt;</code> 段。</div>
+      </div>
+
+      <div class="card">
+        <span class="tag bg">背景③</span><b>什么是「构建工具」</b>
+        <p>浏览器原生不认识 <code>.vue</code> 文件。需要有个工具把 <code>.vue</code> <strong>编译</strong>成浏览器认识的 JS + CSS + HTML，这个过程叫「构建」。Vite 就是干这个的。开发时它还顺带起一个本地服务器，改代码自动刷新（热更新）。</p>
+        <div class="note">读这章需要它：否则你会困惑「.vue 文件浏览器怎么直接打开」——它打不开，必须先构建。</div>
+      </div>
+
+      <div class="card">
+        <span class="tag bg">背景④</span><b>package.json 与 npm 脚本</b>
+        <p>每个 Node 项目根目录有个 <code>package.json</code>，记录依赖和脚本。<code>npm run dev</code>、<code>npm run build</code> 这些命令，本质是跑 <code>package.json</code> 里 <code>scripts</code> 字段定义的命令。<code>npm install</code> 则是按依赖列表把第三方库下载到 <code>node_modules</code>。</p>
+        <div class="note">读这章需要它：脚手架创建项目后第一件事永远是 <code>npm install</code>。</div>
+      </div>
+    </section>
+
+    <!-- 03 问题定位 -->
+    <section id="problem">
+      <span class="sec-id" data-sec="问题定位">03 · 这章在回答什么</span>
+      <h2>表面 vs 深层问题</h2>
+      <div class="card paper">
+        <p><strong>表层</strong>：怎么用脚手架建 Vue 项目、.vue 文件怎么写。</p>
+        <p><strong>深层</strong>：从「HTML 里塞个 CDN」到「工程化项目」，中间多了什么？为什么官方要发明 <code>.vue</code> 这种格式？以及——为什么官网示例写的 <code>&lt;script setup&gt;</code>，到了本项目要换成 <code>export default {}</code>？</p>
+        <p><strong>只记一个问题</strong>：<span style="background:var(--marker);padding:2px 6px;border-radius:4px;">.vue 文件的三段式里，&lt;script&gt; 段凭什么能既写 &lt;script setup&gt; 又写 export default {}？本项目为什么选后者？</span></p>
+        <div class="note">带着这个问题读后面所有「核心判断」，尤其是判断⑥。</div>
+      </div>
+    </section>
+
+    <!-- 04 结构地图 -->
+    <section id="map">
+      <span class="sec-id" data-sec="结构地图">04 · 结构地图</span>
+      <h2>从 CDN 到工程化：一条递进线</h2>
+      <div class="card">
+        <p>第一章（CDN/无构建）和第二章（SFC/Vite）不是两个割裂的世界，而是 Vue 官方文档「快速上手」页明确给出的<strong>两种上手方式的递进</strong>。</p>
+      </div>
+      <div class="flow">
+        <div class="flow-step"><span class="num">1</span><b>方式一：无构建</b>｜CDN 引入，HTML 里写 Vue。适合试用，第一章已学。</div>
+        <div class="flow-step hot"><span class="num">2</span><b>方式二：SFC + 构建工具</b> ⭐<b>真实项目走这条</b>｜<code>.vue</code> 文件 + Vite 脚手架。</div>
+        <div class="flow-step"><span class="num">3</span><b>SFC = 三段式</b>｜<code>&lt;template&gt;</code>（视图）+ <code>&lt;script&gt;</code>（逻辑）+ <code>&lt;style&gt;</code>（样式）同处一文件。</div>
+        <div class="flow-step"><span class="num">4</span><b>Vite 脚手架</b>｜<code>npm create vue@latest</code> 起项目，<code>npm run dev</code> 开发，<code>npm run build</code> 打包。</div>
+        <div class="flow-step"><span class="num">5</span><b>关键交叉点</b>｜<code>&lt;script&gt;</code> 段可写「选项式」或「组合式」——本项目锁死选项式。</div>
+      </div>
+      <div class="note">节点关系：<strong>SFC（文件格式）与 API 风格（选项式/组合式）是两个正交维度</strong>。SFC 决定「文件怎么组织」，API 风格决定「script 里代码怎么写」。不要混为一谈。</div>
+    </section>
+
+    <!-- 05 核心判断 -->
+    <section id="core">
+      <span class="sec-id" data-sec="核心判断">05 · 核心判断</span>
+      <h2>6 条核心判断（每条都带原文依据）</h2>
+
+      <div class="card">
+        <span class="tag fact">事实</span><b>① 一个 .vue 文件由三种顶层语言块构成：&lt;template&gt;、&lt;script&gt;、&lt;style&gt;。</b>
+        <p>这是 SFC 的官方定义。三个块分别承载视图、逻辑、样式，封装在同一个文件里。还可选加自定义块（如 <code>&lt;i18n&gt;</code>）。</p>
+        <span class="src"><b>原文依据</b>：Vue 官网《SFC 语法定义》——「每一个 *.vue 文件都由三种顶层语言块构成：&lt;template&gt;、&lt;script&gt; 和 &lt;style&gt;。」</span>
+      </div>
+
+      <div class="card">
+        <span class="tag fact">事实</span><b>② SFC 在语法上兼容 HTML，编译后是标准 ES 模块。</b>
+        <p>这意味着浏览器不能直接打开 <code>.vue</code>，必须经 <code>@vue/compiler-sfc</code> 编译。编译产物是标准 JS（ESM）+ CSS，能被浏览器和打包工具识别。</p>
+        <span class="src"><b>原文依据</b>：Vue 官网《SFC 语法定义》——「一个 Vue 单文件组件在语法上是兼容 HTML 的」「编译后的 SFC 是一个标准的 JavaScript (ES) 模块。」</span>
+      </div>
+
+      <div class="card">
+        <span class="tag fact">事实</span><b>③ Vue 官方推荐的脚手架是 create-vue，底层用 Vite。</b>
+        <p>命令是 <code>npm create vue@latest</code>。它专为 Vue 项目优化，提供 TypeScript / Router / Pinia / ESLint 等配置选项。与通用的 <code>npm create vite@latest</code> 不同。</p>
+        <span class="src"><b>原文依据</b>：Vue 官网《快速上手》方式二 + Vite 官方文档——「<code>npm create vue@latest</code>」「Vite 是一种新型前端构建工具，能够显著提升前端开发体验。」</span>
+      </div>
+
+      <div class="card">
+        <span class="tag fact">事实</span><b>④ &lt;template&gt;、&lt;script&gt;、&lt;style&gt; 的顺序灵活，语义不可互换。</b>
+        <p>三个块写在上在下都行（习惯上 template/script/style 自上而下），但每段的职责固定：template 管结构、script 管逻辑、style 管样式。<code>&lt;style&gt;</code> 可有多个，<code>&lt;template&gt;</code> 和 <code>&lt;script&gt;</code> 各最多一个。</p>
+        <span class="src"><b>原文依据</b>：Vue 官网《SFC 语法定义》——三段顶级语言块的数量限制与语义说明。</span>
+      </div>
+
+      <div class="card">
+        <span class="tag fact">事实</span><b>⑤ &lt;style scoped&gt; 让样式只作用于当前组件，不是全局。</b>
+        <p>加上 <code>scoped</code> 属性，Vite 编译时会给本组件的元素加一个唯一 data 属性，CSS 选择器也附上对应属性，实现「作用域隔离」。不加 <code>scoped</code> 则样式是全局的，可能污染别的组件。</p>
+        <span class="src"><b>原文依据</b>：Vue 官网《SFC 语法定义》——<code>&lt;style&gt;</code> 支持 <code>scoped</code>（作用域隔离）。</span>
+      </div>
+
+      <div class="card">
+        <span class="tag judge">判断</span><b>⑥ SFC 里 &lt;script&gt; 段既能写 &lt;script setup&gt;（组合式），也能写 export default {}（选项式）——本项目锁死后者。</b>
+        <p>这是本章最重要的判断。官网大多数 SFC 示例用 <code>&lt;script setup&gt;</code>，因为 Vue3 官方在新文档里主推组合式。但 <strong>SFC 格式本身不绑定任何一种 API 风格</strong>——<code>&lt;script&gt;</code> 段写 <code>export default { data, methods }</code> 同样合法、同样能跑。老田的项目为了风格统一，强制选选项式。</p>
+        <span class="src"><b>原文依据</b>：Vue 官网《快速上手》方式二的 SFC 示例本身用的是 <code>&lt;script&gt;export default { data() {...} }&lt;/script&gt;</code>（选项式）+ 《初心与使命》项目约束。</span>
+      </div>
+    </section>
+
+    <!-- 06 关键概念 -->
+    <section id="concept">
+      <span class="sec-id" data-sec="关键概念">06 · 关键概念拆解</span>
+      <h2>6 个关键概念</h2>
+
+      <div class="card">
+        <h3>① 单文件组件（SFC，Single-File Component）</h3>
+        <p><b>定义</b>：Vue 专属的 <code>*.vue</code> 文件格式，把一个组件的视图、逻辑、样式封装在一个文件里。</p>
+        <p><b>长这样</b>（本项目选项式版本）：</p>
+        <div class="walkthrough">
+          <div class="wt-step">
+            <div class="step-no">选项式 SFC 骨架</div>
+<pre style="margin:0;font-family:var(--font-mono);font-size:.8rem;overflow-x:auto;background:#fff;">&lt;template&gt;
+  &lt;button @click="count++"&gt;count is {{ count }}&lt;/button&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+export default {
+  data() {
+    return { count: 0 }
+  }
+}
+&lt;/script&gt;
+
+&lt;style scoped&gt;
+button { font-weight: bold; }
+&lt;/style&gt;</pre>
+          </div>
+        </div>
+        <span class="src"><b>原文依据</b>：Vue 官网《快速上手》方式二示例。</span>
+        <div class="warn"><b>不要误解成</b>：SFC 必须 <code>&lt;script setup&gt;</code>。本项目用 <code>export default {}</code> 也是标准 SFC。</div>
+      </div>
+
+      <div class="card">
+        <h3>② &lt;template&gt; 段</h3>
+        <p><b>定义</b>：放组件的 HTML 结构，用第一章学的模板语法（<code>{{ }}</code>、<code>v-bind/:</code>、<code>v-on/@</code>、<code>v-model</code>）。</p>
+        <p>每个 <code>.vue</code> 最多一个顶层 <code>&lt;template&gt;</code>。里面写的就是你在 HTML 里见过的那套。</p>
+        <div class="note">和第一章唯一区别：第一章写在 HTML 文件里的 <code>&lt;div id="app"&gt;</code>，现在搬进了 <code>&lt;template&gt;</code>。</div>
+      </div>
+
+      <div class="card">
+        <h3>③ &lt;script&gt; 段（选项式写法）</h3>
+        <p><b>定义</b>：放组件的 JS 逻辑。本项目里<strong>永远</strong>是 <code>export default { data, methods, mounted ... }</code>。</p>
+        <p><b>关键</b>：用 <code>export default</code> 导出一个对象，这个对象的形状就是第一章学的「选项式三件套」。SFC 编译器会把它当作组件选项处理。</p>
+        <div class="warn"><b>不要误解成</b>：SFC 里的 <code>&lt;script&gt;</code> 和普通 <code>.js</code> 文件里的 JS 不一样。它们<strong>就是同一种 JS</strong>，只是被 SFC 编译器编排进了组件。ES 模块语法（<code>import/export</code>）照常用。</div>
+      </div>
+
+      <div class="card">
+        <h3>④ &lt;style scoped&gt; 段</h3>
+        <p><b>定义</b>：放组件的 CSS。<code>scoped</code> 让样式只作用于本组件，不泄漏到别的组件。</p>
+        <p>原理：编译时给本组件元素和 CSS 选择器都加上 <code>data-v-xxxxxx</code> 属性，精确匹配。</p>
+        <div class="note"><b>不要误解成</b>：<code>scoped</code> 是「完全隔离」。子组件的根元素仍会被父组件的 scoped 样式命中（这是官方设计的，便于布局）。<b>它帮助理解</b>：为什么 scoped 后改样式不污染别的页面。</div>
+      </div>
+
+      <div class="card">
+        <h3>⑤ Vite 与开发服务器</h3>
+        <p><b>定义</b>：Vite 是新型前端构建工具。<code>npm run dev</code> 启动后，它在本地起一个服务器（默认 <code>localhost:5173</code>），并提供<strong>热模块替换（HMR）</strong>——改了 <code>.vue</code>，浏览器只更新改动的部分，不用整页刷新。</p>
+        <p><b>对照</b>：以前用 Webpack，项目大了开发服务器启动要几十秒；Vite 用原生 ESM 按需编译，启动几乎瞬时。</p>
+        <span class="src"><b>原文依据</b>：Vite 官方文档——「Vite 是一种新型前端构建工具，能够显著提升前端开发体验。」</span>
+      </div>
+
+      <div class="card">
+        <h3>⑥ &lt;script setup&gt; vs export default {}（本项目选后者）</h3>
+        <p><b>定义</b>：两种「在 <code>&lt;script&gt;</code> 段里组织组件逻辑」的写法。</p>
+        <table class="t">
+          <tr><th>维度</th><th>&lt;script setup&gt;（组合式）</th><th>export default {}（选项式）</th></tr>
+          <tr><td>语法</td><td><code>import { ref } from 'vue'</code></td><td><code>export default { data(){...} }</code></td></tr>
+          <tr><td>this</td><td>不用 this</td><td>用 <code>this.xxx</code> 访问状态</td></tr>
+          <tr><td>官方主推</td><td>✅ Vue3 新文档默认</td><td>❌ 但完全支持</td></tr>
+          <tr><td><b>本项目</b></td><td><span style="color:var(--brick);font-weight:700;">禁止</span></td><td><span style="color:var(--correct);font-weight:700;">强制</span></td></tr>
+        </table>
+        <span class="src"><b>原文依据</b>：《初心与使命》——「禁止使用"组合式"API」+ Vue《快速上手》示例本身用的是 export default。</span>
+      </div>
+    </section>
+
+    <!-- 07 苏格拉底关卡 -->
+    <section id="socratic">
+      <span class="sec-id" data-sec="苏格拉底关卡">07 · 苏格拉底式阅读关卡</span>
+      <h2>先别急着写代码 —— 想清楚这几问</h2>
+      <div class="card paper">
+        <p>这一组考<strong>理解</strong>：SFC 格式和 API 风格是什么关系？scoped 真的完全隔离吗？官网示例为什么和本项目写法不一样？</p>
+      </div>
+
+      <div class="task" data-task="q1" data-answer="A"
+           data-ok="对！这是官方 SFC 规范的原话：template、script、style 三个顶层语言块。" data-no="回顾「05 核心判断①」。官方定义的就是这三段。"
+           data-src="原文依据：《SFC 语法定义》" data-review="回到「05 核心判断①」复习">
+        <div class="q"><span class="qno">Q1</span>一个 .vue 文件由哪几种「顶层语言块」构成？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. &lt;template&gt;、&lt;script&gt;、&lt;style&gt;</button>
+          <button class="opt" data-val="B">B. &lt;html&gt;、&lt;head&gt;、&lt;body&gt;</button>
+          <button class="opt" data-val="C">C. &lt;view&gt;、&lt;logic&gt;、&lt;css&gt;</button>
+          <button class="opt" data-val="D">D. &lt;setup&gt;、&lt;reactive&gt;、&lt;computed&gt;</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q2" data-answer="B"
+           data-ok="对！SFC 决定文件怎么组织，API 风格决定 script 里代码怎么写，两者正交、互不绑定。" data-no="这是本章最容易混的点。SFC ≠ 组合式。回顾「04 结构地图」节点关系。"
+           data-src="原文依据：04 结构地图 + 06 概念⑥" data-review="回到「04 结构地图」复习">
+        <div class="q"><span class="qno">Q2</span>「单文件组件（SFC）」和「组合式/选项式 API」的关系是？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. SFC 就等于组合式 API</button>
+          <button class="opt" data-val="B">B. 两个正交维度：SFC 管文件格式，API 风格管 script 写法</button>
+          <button class="opt" data-val="C">C. SFC 只能用选项式，组合式不能用 SFC</button>
+          <button class="opt" data-val="D">D. SFC 只能用组合式，选项式不能用 SFC</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q3" data-answer="C"
+           data-ok="正确！浏览器不认识 .vue，必须经 @vue/compiler-sfc 编译成标准 JS+CSS 才能跑。" data-no="浏览器原生只认 HTML/CSS/JS，.vue 是 Vue 专属格式，必须构建。回顾「05 核心判断②」。"
+           data-src="原文依据：《SFC 语法定义》编译产物" data-review="回到「05 核心判断②」复习">
+        <div class="q"><span class="qno">Q3</span>为什么 .vue 文件不能像 .html 那样双击直接在浏览器打开？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. 因为 .vue 文件有病毒</button>
+          <button class="opt" data-val="B">B. 因为浏览器不支持中文文件名</button>
+          <button class="opt" data-val="C">C. 因为 .vue 是 Vue 专属格式，必须先编译成标准 JS/CSS</button>
+          <button class="opt" data-val="D">D. 因为需要联网验证</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q4" data-answer="A"
+           data-ok="对！这是官方原话：npm create vue@latest 是 Vue 推荐的脚手架，底层 Vite。" data-no="Vue 官方推荐的是 npm create vue@latest（create-vue），不是 vite 或 cli。回顾「05 核心判断③」。"
+           data-src="原文依据：《快速上手》+ Vite 官方" data-review="回到「05 核心判断③」复习">
+        <div class="q"><span class="qno">Q4</span>Vue3 官方推荐的「新建项目」命令是？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. npm create vue@latest</button>
+          <button class="opt" data-val="B">B. npm install vue</button>
+          <button class="opt" data-val="C">C. npx webpack init</button>
+          <button class="opt" data-val="D">D. vue create my-app</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+    </section>
+
+    <!-- 08 闯关任务 -->
+    <section id="task">
+      <span class="sec-id" data-sec="闯关任务">08 · 闯关任务 · SFC 落到代码上</span>
+      <h2>把概念落到代码上</h2>
+      <div class="card paper">
+        <p>这一组考<strong>应用</strong>：给场景选写法、识别官网示例、判断 scoped 行为。做错一定回看「06 关键概念」。</p>
+      </div>
+
+      <div class="task" data-task="q5" data-answer="B"
+           data-ok="正确！本项目 .vue 的 script 段写 export default { data() {...} }，这是选项式，禁止 &lt;script setup&gt;。" data-no="记住：本项目锁死选项式 = export default {}，不用 &lt;script setup&gt;。回顾「06 概念⑥」。"
+           data-src="原文依据：《初心与使命》项目约束" data-review="回到「06 关键概念③⑥」复习">
+        <div class="q"><span class="qno">Q5</span>本项目 .vue 文件的 &lt;script&gt; 段应该怎么写？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. &lt;script setup&gt; import { ref } from 'vue' ... &lt;/script&gt;</button>
+          <button class="opt" data-val="B">B. &lt;script&gt; export default { data() {...}, methods: {...} } &lt;/script&gt;</button>
+          <button class="opt" data-val="C">C. &lt;script&gt; const app = { data: {...} } &lt;/script&gt;</button>
+          <button class="opt" data-val="D">D. &lt;script lang="ts"&gt; ... &lt;/script&gt;（仅 TS）</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q6" data-answer="C"
+           data-ok="对！npm run dev 启动 Vite 开发服务器（默认 localhost:5173），并提供热更新（HMR）。" data-no="npm run dev 是启动开发服务器+热更新；npm run build 是打包生产版本；npm install 是装依赖。回顾「06 概念⑤」。"
+           data-src="原文依据：Vite 官方文档 dev/build" data-review="回到「06 关键概念⑤」复习">
+        <div class="q"><span class="qno">Q6</span>脚手架创建项目后，<code>npm run dev</code> 的作用是？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. 安装项目依赖到 node_modules</button>
+          <button class="opt" data-val="B">B. 打包生产版本到 dist</button>
+          <button class="opt" data-val="C">C. 启动开发服务器（含热更新），访问 localhost:5173 调试</button>
+          <button class="opt" data-val="D">D. 运行单元测试</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q7" data-answer="A"
+           data-ok="完全正确！scoped 通过给元素和选择器加 data-v-xxxxxx 属性实现作用域隔离，不加 scoped 样式是全局的。" data-no="scoped = 当前组件作用域；不加 scoped = 全局。回顾「05 核心判断⑤ / 06 概念④」。"
+           data-src="原文依据：《SFC 语法定义》scoped" data-review="回到「05 核心判断⑤ / 06 概念④」复习">
+        <div class="q"><span class="qno">Q7</span><code>&lt;style scoped&gt;</code> 和 <code>&lt;style&gt;</code>（无 scoped）的区别是？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. scoped 只作用于当前组件；无 scoped 是全局样式，可能污染别的组件</button>
+          <button class="opt" data-val="B">B. scoped 是新语法，无 scoped 是老语法</button>
+          <button class="opt" data-val="C">C. scoped 只能在生产环境用</button>
+          <button class="opt" data-val="D">D. 两者完全等价，写不写都一样</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q8" data-answer="B"
+           data-ok="对！这是经典坑。官网 Vue3 文档主推 &lt;script setup&gt;，但那属于组合式；本项目禁组合式，SFC 里要写 export default {}（选项式）。官网示例≠项目写法。" data-no="官网示例大多用 &lt;script setup&gt;（组合式），但本项目强制选项式。看到 setup 要警惕：本项目不能用。回顾「06 概念⑥」。"
+           data-src="原文依据：官网 SFC 文档默认 &lt;script setup&gt; + 《初心与使命》禁组合式" data-review="回到「06 关键概念⑥」死磕">
+        <div class="q"><span class="qno">Q8</span>你打开 Vue3 官方 SFC 文档，看到示例全是 <code>&lt;script setup&gt;</code>。你的反应应该是？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. 官网这么写，本项目也照抄 &lt;script setup&gt;</button>
+          <button class="opt" data-val="B">B. 官网主推组合式，但本项目禁组合式，SFC 里要换成 export default {}</button>
+          <button class="opt" data-val="C">C. 官网写错了，举报它</button>
+          <button class="opt" data-val="D">D. &lt;script setup&gt; 是选项式的别名，能用</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+    </section>
+
+    <!-- 09 误解与边界 -->
+    <section id="miss">
+      <span class="sec-id" data-sec="误解与边界">09 · 误解与边界</span>
+      <h2>4 个最容易踩的坑</h2>
+
+      <div class="card">
+        <h3>误解①：.vue 文件必须用 &lt;script setup&gt;</h3>
+        <p><b>真相</b>：SFC 格式不绑定 API 风格。<code>&lt;script&gt;</code> 段写 <code>export default { data, methods }</code>（选项式）和写 <code>&lt;script setup&gt;</code>（组合式）都合法。官网默认展示 setup 是因为主推组合式，但<strong>本项目禁组合式</strong>。</p>
+        <span class="src"><b>原文依据</b>：Vue《快速上手》示例本身用的就是 export default + 《初心与使命》项目约束。</span>
+      </div>
+      <div class="card">
+        <h3>误解②：.vue 能直接在浏览器打开</h3>
+        <p><b>真相</b>：浏览器不认 <code>.vue</code>。必须经 <code>@vue/compiler-sfc</code> 编译成标准 JS（ESM）+ CSS。所以<strong>必须有构建步骤</strong>（Vite），不像第一章的 CDN 方式可以双击 HTML 打开。</p>
+        <span class="src"><b>原文依据</b>：《SFC 语法定义》——「编译后的 SFC 是一个标准的 JavaScript (ES) 模块。」</span>
+      </div>
+      <div class="card">
+        <h3>误解③：scoped = 完全样式隔离</h3>
+        <p><b>真相</b>：scoped 通过 <code>data-v-xxxxxx</code> 属性匹配实现隔离，但<strong>子组件的根元素仍会被父组件 scoped 样式命中</strong>（这是官方设计，方便布局）。不是 100% 隔离。</p>
+      </div>
+      <div class="card">
+        <h3>误解④：Vite = Webpack 的换皮</h3>
+        <p><b>真相</b>：Vite 和 Webpack 架构不同。Webpack 是「先全量打包再启动」，Vite 是「开发时用原生 ESM 按需编译、生产时再 Rollup 打包」。开发服务器启动速度差几个量级，不要用 Webpack 的心智模型套 Vite。</p>
+      </div>
+      <div class="warn"><b>边界</b>：本章只覆盖「SFC 三段式 + Vite 脚手架起项目 + 选项式 vs 组合式在 SFC 里的取舍」。<code>&lt;style&gt;</code> 的 CSS Modules、预处理器（Sass/Less）、Vite 高级配置（代理/别名/插件）、Vue Router/Pinia 都不在本章。本章目标是「能起项目、能读 .vue、不踩 API 风格坑」。</div>
+    </section>
+
+    <!-- 10 背景知识缺口 -->
+    <section id="gap">
+      <span class="sec-id" data-sec="背景缺口">10 · 背景知识缺口</span>
+      <h2>要完全吃透还差什么</h2>
+      <div class="card">
+        <p><b>现在就该补（阻碍你起项目）：</b></p>
+        <ul class="bul">
+          <li><b>Node.js 与 npm 基础</b>—— 装好 Node，会 <code>npm install</code> / <code>npm run dev</code>。起项目第一步。</li>
+          <li><b>ES6 模块</b>（<code>export default</code> / <code>import</code>）—— 选项式组件就是 <code>export default</code> 导出的对象。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <p><b>可以晚点补（不影响入门）：</b></p>
+        <ul class="bul">
+          <li><b>Vite 配置</b>（vite.config.js）—— 代理、别名、环境变量。本项目要请求后端接口时会用到代理。</li>
+          <li><b>预处理器</b>（Sass/Less）—— <code>&lt;style lang="scss"&gt;</code>。看员工端项目用不用再学。</li>
+          <li><b>Vue Router / Pinia</b>—— 路由和状态管理。脚手架可选装，第四章组件化之后再碰。</li>
+        </ul>
+      </div>
+      <div class="note"><b>下一步追问</b>：「员工端 H5 项目到底用的什么脚手架配置？启没启 TS、Router、Pinia？」—— 这要<strong>问土豆</strong>，参考员工端现有项目。本章给的是通用骨架，具体配置以员工端为准。</div>
+    </section>
+
+    <!-- 11 报告 -->
+    <section id="report-sec">
+      <span class="sec-id" data-sec="学习报告">11 · 学习报告</span>
+      <h2>生成你的第二章报告</h2>
+      <div class="report-box">
+        <div class="rep-btns">
+          <button id="genReport">生成学习报告</button>
+          <button id="copyReport" class="alt">复制报告</button>
+        </div>
+        <div id="report">（点击"生成学习报告"后显示完成情况与错题清单。）</div>
+      </div>
+      <div class="wrong-box" style="margin-top:14px;">
+        <h3>📋 错题回流区</h3>
+        <ul id="wrongBox"><li style="color:#888">还没有错题。答错的题会自动收集到这里。</li></ul>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  这个工具帮你建立 Vue3 单文件组件与脚手架的理解，但不能替代动手起项目和读官方文档。学习愉快 🐟<br>
+  由 <a href="https://lyzbcy.github.io/" target="_blank" rel="noopener">捞鱼</a> 制作
+</footer>
+
+<!-- promo -->
+<div class="float-btn" id="floatBtn">🐟 关于捞鱼</div>
+<div class="modal-mask" id="modalMask">
+  <div class="modal">
+    <button class="close" id="closeModal">×</button>
+    <div class="author">
+      <img src="https://s41.ax1x.com/2025/12/05/pZmPZPH.png" alt="捞鱼">
+      <div>
+        <div class="name">捞鱼</div>
+        <div class="sig">「一个弱小但有梦想的开发者」</div>
+        <span class="studio">捞鱼工作室</span><br>
+        <a class="goto" href="https://lyzbcy.github.io/about/" target="_blank" rel="noopener">了解更多 →</a>
+      </div>
+    </div>
+    <div class="qr-grid">
+      <div class="qr-cell"><div class="ttl">QQ 学习群</div><img src="img/sticker/qq-group.jpg" alt="QQ群二维码"><div class="desc">扫码进群一起学习</div></div>
+      <div class="qr-cell"><div class="ttl">赞赏支持</div><img src="img/sticker/reward-qr.jpg" alt="赞赏二维码"><div class="desc">请捞鱼喝杯奶茶</div></div>
+      <div class="qr-cell">
+        <div class="ttl">微信表情包</div>
+        <div class="sticker-row"><img src="img/sticker/ok.png" alt=""><img src="img/sticker/no.png" alt=""><img src="img/sticker/study.png" alt=""></div>
+        <img src="img/sticker/sticker-qr.png" alt="微信表情包二维码">
+        <div class="desc">📱 长按或扫码使用</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* promo 浮条 + 章节数据驱动 + sec-id 表情种草 IIFE 注入 */
+(function(){
+  var qc=document.getElementById('quizCount');
+  if(qc)qc.textContent=document.querySelectorAll('.task').length;
+
+  /* sec-id 表情种草：按语义映射，运行时注入，不手改 N 处 HTML */
+  var STAMP_MAP={
+    '学习目标':'study.png','背景包':'study.png','问题定位':'study.png',
+    '结构地图':'ok.png','核心判断':'ok.png','关键概念':'study.png',
+    '苏格拉底关卡':'no.png','闯关任务':'final.png',
+    '误解与边界':'no.png','背景缺口':'study.png','学习报告':'final.png'
+  };
+  document.querySelectorAll('.sec-id[data-sec]').forEach(function(el){
+    var key=el.getAttribute('data-sec'),img=STAMP_MAP[key];
+    if(img){var i=document.createElement('img');i.className='stamp';i.src='img/sticker/'+img;i.alt='';el.insertBefore(i,el.firstChild);}
+  });
+
+  var mask=document.getElementById('modalMask');
+  document.getElementById('floatBtn').addEventListener('click',function(){mask.classList.add('open');});
+  document.getElementById('closeModal').addEventListener('click',function(){mask.classList.remove('open');});
+  mask.addEventListener('click',function(e){if(e.target===mask)mask.classList.remove('open');});
+})();
+</script>
+
+<!-- 固定互动引擎（原样粘贴） -->
+<script>
+(function(){
+  "use strict";
+  function $all(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));}
+  function selectedVals(t){return $all('.opt.selected',t).map(function(o){return o.getAttribute('data-val');}).sort();}
+  function setFb(t,state,html){var fb=t.querySelector('.feedback');if(!fb)return;fb.className='feedback'+(state?(' '+state):'');fb.innerHTML=html;}
+  function updateBar(){
+    var all=$all('.task'),done=$all('.task[data-answered="1"]');
+    var fill=document.getElementById('barFill'),num=document.getElementById('barNum');
+    if(fill)fill.style.width=all.length?(done.length/all.length*100)+'%':'0%';
+    if(num)num.textContent=done.length+' / '+all.length;
+  }
+  function renderWrong(){
+    var box=document.getElementById('wrongBox');if(!box)return;
+    var wrong=$all('.task[data-answered="1"][data-correct="0"]');
+    if(!wrong.length){box.innerHTML='<li style="color:#888">还没有错题。答错的题会自动收集到这里。</li>';return;}
+    box.innerHTML='';
+    wrong.forEach(function(t){var li=document.createElement('li');li.textContent='【'+(t.getAttribute('data-task')||'')+'】'+(t.getAttribute('data-review')||'回到对应模块复习');box.appendChild(li);});
+  }
+  function check(t){
+    var type=t.getAttribute('data-type'),ok=false;
+    if(type==='selects'){
+      var sels=$all('select.match',t),allok=true,empty=false;
+      sels.forEach(function(s){if(!s.value)empty=true;if(s.value!==s.getAttribute('data-correct'))allok=false;});
+      if(empty){setFb(t,'no','请先把每一项都选好再检查。');return;}
+      ok=allok;
+    }else{
+      var sel=selectedVals(t);
+      if(!sel.length){setFb(t,'no','请先选择一个选项再检查。');return;}
+      var ans=(t.getAttribute('data-answer')||'').split(',').map(function(x){return x.trim();}).sort();
+      ok=(sel.join('|')===ans.join('|'));
+    }
+    var body=ok?(t.getAttribute('data-ok')||'回答正确。'):(t.getAttribute('data-no')||'再想想。');
+    var src=t.getAttribute('data-src');
+    setFb(t,ok?'ok':'no',(ok?'✅ ':'❌ ')+body+(src?('<span class="src">'+src+'</span>'):''));
+    t.setAttribute('data-answered','1');t.setAttribute('data-correct',ok?'1':'0');
+    updateBar();renderWrong();
+  }
+  function genReport(){
+    var box=document.getElementById('report');if(!box)return;
+    var all=$all('.task'),done=$all('.task[data-answered="1"]'),right=$all('.task[data-answered="1"][data-correct="1"]');
+    var lines=['=== 第二章 SFC与脚手架 学习报告 ===','完成题目：'+done.length+' / '+all.length,'答对：'+right.length+' 题',''];
+    var wrong=$all('.task[data-answered="1"][data-correct="0"]');
+    if(wrong.length){lines.push('我答错的题（建议复习）：');wrong.forEach(function(t){lines.push('- '+(t.getAttribute('data-task')||'')+'：'+(t.getAttribute('data-review')||''));});}
+    else{lines.push('暂无错题。');}
+    box.textContent=lines.join('\n');
+  }
+  document.addEventListener('click',function(e){
+    var c=e.target.closest?e.target:null;
+    var opt=c&&e.target.closest('.opt');
+    if(opt){var t=opt.closest('.task');if(!t)return;
+      if(t.getAttribute('data-multi')==='true'){opt.classList.toggle('selected');}
+      else{$all('.opt',t).forEach(function(o){o.classList.remove('selected');});opt.classList.add('selected');}
+      return;}
+    var btn=c&&e.target.closest('.check');
+    if(btn){var tk=btn.closest('.task');if(tk)check(tk);return;}
+    if(e.target&&e.target.id==='genReport'){genReport();return;}
+    if(e.target&&e.target.id==='copyReport'){var r=document.getElementById('report');if(r&&navigator.clipboard)navigator.clipboard.writeText(r.textContent);return;}
+  });
+  function init(){updateBar();renderWrong();}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+
+</body>
+</html>

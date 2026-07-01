@@ -693,82 +693,8 @@
 })();
 </script>
 
-<!-- 字幕同步引擎（独立 IIFE，不改固定语音引擎） -->
-<script>
-(function(){
-  "use strict";
-  if(window.__subEngine) return;
-  window.__subEngine = true;
-
-  var listNode = document.getElementById("voicePlaylist");
-  if(!listNode) return;
-
-  var subBox = document.querySelector("#voicePlayer .vp-sub");
-  if(!subBox) return;
-
-  var subs = [];
-  var curSrc = null;
-
-  function esc(s){ var d=document.createElement("div"); d.textContent=s; return d.innerHTML; }
-
-  function loadSubFor(src){
-    if(!src){ subs=[]; return; }
-    curSrc = src;
-    // audio/ch1.mp3 → audio/ch1.json
-    var jsonUrl = src.replace(/\.mp3$/i, ".json");
-    // 处理 blob: 或绝对 URL，取路径部分
-    jsonUrl = jsonUrl.replace(/^.*?([a-zA-Z0-9_\/-]+\.json)$/,"$1");
-    fetch(jsonUrl).then(function(r){
-      if(!r.ok) throw new Error(r.status);
-      return r.json();
-    }).then(function(arr){
-      subs = Array.isArray(arr) ? arr : [];
-    }).catch(function(){ subs = []; });
-  }
-
-  function renderSub(t){
-    if(!subs.length){ return; }
-    var hit=null, idx=-1;
-    for(var i=0;i<subs.length;i++){
-      if(t>=subs[i].start && t<subs[i].end){ hit=subs[i]; idx=i; break; }
-    }
-    if(!hit){
-      var prev=null;
-      for(var j=0;j<subs.length;j++){ if(subs[j].start<=t) prev=subs[j]; else break; }
-      subBox.classList.remove("active");
-      subBox.innerHTML = prev ? esc(prev.text) : "";
-      return;
-    }
-    subBox.classList.add("active");
-    var prevHtml = idx>0 ? '<span style="opacity:.45">'+esc(subs[idx-1].text)+'</span> ' : "";
-    subBox.innerHTML = prevHtml + '<span class="cur">' + esc(hit.text) + "</span>";
-  }
-
-  function findAudio(){
-    var els = document.querySelectorAll("audio");
-    for(var i=0;i<els.length;i++){ if(els[i].src) return els[i]; }
-    return null;
-  }
-
-  var audio = findAudio();
-  var tryCount = 0;
-  var findTimer = setInterval(function(){
-    audio = findAudio();
-    if(audio || tryCount++ > 60){ clearInterval(findTimer); bind(); }
-  }, 100);
-
-  function bind(){
-    if(!audio) return;
-    audio.addEventListener("timeupdate", function(){
-      if(audio.src !== curSrc){ loadSubFor(audio.src); }
-      renderSub(audio.currentTime || 0);
-    });
-    audio.addEventListener("play", function(){
-      if(audio.src !== curSrc){ loadSubFor(audio.src); }
-    });
-  }
-})();
-</script>
+<!-- 字幕同步引擎（独立文件，4 章共享） -->
+<script src="voice-sub.js"></script>
 
 </body>
 </html>

@@ -220,28 +220,36 @@ footer a{color:#1d70b8;text-decoration:underline;font-weight:700;}
 .voice-btn:hover{ background:var(--sage); }
 .voice-btn.active{ background:var(--forest); color:var(--cream); }
 
-/* 右侧书签脊（默认收起，悬停拉出） */
+/* 右侧书签脊（默认收起只露图标，悬停拉出展开文字） */
 #voiceFab{
   position:fixed; right:0; top:50%; transform:translateY(-50%); z-index:9998;
-  display:flex; align-items:center; gap:.5em;
+  display:flex; align-items:center; flex-direction:row;
   background:var(--forest); color:var(--cream); border:none; cursor:pointer;
-  padding:.9em .5em;                       /* 默认只露书签脊宽度 */
-  border-radius:14px 0 0 14px;             /* 左圆角，像书签贴在右边缘 */
-  box-shadow:-3px 0 12px rgba(0,0,0,.15);
-  writing-mode:vertical-rl; text-orientation:mixed;  /* 文字竖排 */
-  font-family:var(--font-head); font-size:.85rem; letter-spacing:.08em;
-  max-width:2.4em; overflow:hidden;
-  transition:max-width .3s ease, padding .3s ease;
+  height:5em; padding:0 .55em;                  /* 高度固定，宽度随内容变 */
+  border-radius:16px 0 0 16px;
+  box-shadow:-4px 0 14px rgba(0,0,0,.18);
+  font-family:var(--font-head); font-size:.85rem;
+  overflow:hidden;
+  transition:width .42s cubic-bezier(.4,0,.2,1), box-shadow .3s ease;
+  width:1.9em;                                   /* 收起态：只露图标宽度 */
 }
-#voiceFab .fab-icon{ font-size:1.2rem; }
-#voiceFab .fab-text{ opacity:0; max-width:0; transition:opacity .2s ease .05s; white-space:nowrap; }
+/* 图标常驻竖排（写作竖向书签脊），不参与动画 */
+#voiceFab .fab-icon{
+  font-size:1.15rem; writing-mode:vertical-rl; text-orientation:upright;
+  letter-spacing:.1em; white-space:nowrap; flex-shrink:0;
+}
+/* 文字横排，收起时被宽度裁掉、透明；展开时淡入 */
+#voiceFab .fab-text{
+  white-space:nowrap; opacity:0; margin-left:.6em;
+  transition:opacity .28s ease .12s;            /* 延迟一点淡入，等宽度撑开 */
+}
 #voiceFab:hover{
-  max-width:9em; padding:.9em 1.1em .9em .7em;
-  writing-mode:horizontal-tb;              /* 拉出后文字转横排 */
+  width:8.6em;                                   /* 拉开容下"🎧 后台语音" */
+  box-shadow:-6px 0 22px rgba(0,0,0,.25);
 }
-#voiceFab:hover .fab-text{ opacity:1; max-width:none; }
-#voiceFab.beat{ animation:voiceBeat 1.4s ease-in-out infinite; }
-@keyframes voiceBeat{ 0%,100%{box-shadow:-3px 0 12px rgba(0,0,0,.15)} 50%{box-shadow:-3px 0 16px rgba(181,72,42,.45)} }
+#voiceFab:hover .fab-text{ opacity:1; }
+#voiceFab.beat{ animation:voiceBeat 1.6s ease-in-out infinite; }
+@keyframes voiceBeat{ 0%,100%{box-shadow:-4px 0 14px rgba(0,0,0,.18)} 50%{box-shadow:-4px 0 20px rgba(181,72,42,.5)} }
 
 /* 圆润玩具风播放器 */
 #voicePlayer{

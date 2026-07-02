@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第六章 · 项目实战 · 文档检索需求你要掌握什么</title>
+<link rel="icon" href="img/sticker/mascot.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<script type="application/json" id="voicePlaylist">
+[
+  {"id":"ch6","title":"第六章 项目实战·文档检索需求全景","src":"audio/ch6.mp3"}
+]
+</script>
+
+<div class="layout">
+  <aside class="sidebar">
+    <a class="back-link" href="index.html">← 返回 Vue3 目录</a>
+    <h1>第六章<br>项目实战<br>文档检索需求</h1>
+    <div class="sub">ID1219183 · 前端落地全景</div>
+    <div class="progress-wrap"><div id="barFill"></div></div>
+    <div id="barNum">0 / 0</div>
+    <ul class="nav">
+      <li><a href="#goal"><span class="no">01</span>学习目标</a></li>
+      <li><a href="#bg"><span class="no">02</span>项目背景包</a></li>
+      <li><a href="#problem"><span class="no">03</span>这章回答什么</a></li>
+      <li><a href="#map"><span class="no">04</span>前端任务全景</a></li>
+      <li><a href="#core"><span class="no">05</span>核心判断</a></li>
+      <li><a href="#concept"><span class="no">06</span>关键概念</a></li>
+      <li><a href="#socratic"><span class="no">07</span>苏格拉底关卡</a></li>
+      <li><a href="#task"><span class="no">08</span>闯关任务</a></li>
+      <li><a href="#miss"><span class="no">09</span>误解与边界</a></li>
+      <li><a href="#gap"><span class="no">10</span>待确认缺口</a></li>
+      <li><a href="#report-sec"><span class="no">11</span>学习报告</a></li>
+    </ul>
+  </aside>
+
+  <main class="main">
+
+    <div class="hero">
+      <img class="mascot" src="img/sticker/mascot.png" alt="捞鱼">
+      <div>
+        <h2>第六章 · 项目实战 · 文档检索需求你要掌握什么</h2>
+        <p>ID1219183 ｜ 需求二（企微AI管家文档/微盘分析）｜ 7 项前端任务 ｜ 5 个接口 ｜含 <span class="stat" id="quizCount">…</span> 道互动关卡</p>
+      </div>
+      <button class="voice-btn" data-voice-id="ch6">🎧 听这章</button>
+    </div>
+
+    <!-- 01 目标 -->
+    <section id="goal">
+      <span class="sec-id" data-sec="学习目标">01 · 学习目标</span>
+      <h2>读完这章你要能做到</h2>
+      <div class="card">
+        <ul class="bul">
+          <li><strong>说清这个项目要你做什么</strong>：需求二的核心是给企微 AI 管家加「企微文档/微盘」分析入口，用户扫码选文档→拿内容→传智能体。</li>
+          <li><strong>列出你负责的 7 项前端任务</strong>（加入口/拼二维码/调JSAPI/轮询/回显/传参数/授权拦截），并知道每项用到前五章哪个知识。</li>
+          <li><strong>解释二维码的本质</strong>：前端拼的一个带 session_id 的链接，PC 端无法直调组件所以要扫码，手机企微扫码后唤起原生选择器。</li>
+          <li><strong>说清前端只做交互层</strong>：调专区通用模型（创建任务+获取结果）是后端的活，前端要的是后端封装好的 HTTP 接口。</li>
+          <li>能指出至少 2 个待和后端确认的接口问题（轮询形态、授权判断依据）。</li>
+        </ul>
+        <div class="note"><b>阅读路径</b>：项目背景 → 前端任务全景 → 核心判断 → 关键概念 → 做关卡题 → 待确认缺口。</div>
+      </div>
+      <div class="card paper">
+        <span class="tag" style="background:var(--brick);color:#FFE9B0;">本章定位</span>
+        <p>前五章是<strong>通用 Vue3 知识</strong>，这章是<strong>把这些知识落到 ID1219183 这个具体需求上</strong>。回答你的核心问题：「针对这个项目，我到底要掌握哪些？」答案就在「04 前端任务全景」。</p>
+        <span class="src"><b>原文依据</b>：本章内容全部基于项目真实材料——需求会议清洗稿（26.6.29）、前后端接口对齐清单、前端作战地图。非推测。</span>
+      </div>
+    </section>
+
+    <!-- 02 项目背景包 -->
+    <section id="bg">
+      <span class="sec-id" data-sec="背景包">02 · 项目背景包</span>
+      <h2>读这章前先知道的 4 件事</h2>
+
+      <div class="card">
+        <span class="tag bg">背景①</span><b>这个需求要做什么（一句话）</b>
+        <p>企微开放了「数据智能专区—文档存档能力」（本质是<strong>检索能力</strong>）。本项目要在「企微 AI 管家」（PC 管理后台的智能体）里，让用户能选择企微文档/微盘文件，把内容取出来传给智能体分析。</p>
+        <span class="src"><b>原文依据</b>：需求会议——「数据智能专区跟之前的专区会话类似……文档存档本质是检索能力……只有专区能通过关键词或指定id检索文档内容。」</span>
+      </div>
+
+      <div class="card">
+        <span class="tag bg">背景②</span><b>先做需求二，不是需求一</b>
+        <p>项目有两个需求点。芳芳明确：<strong>会先做需求二（企微AI管家文档/微盘分析增强），再做需求一（文档管家skill）</strong>。本章聚焦需求二，因为它先要上线（7月24号目标）。</p>
+        <span class="src"><b>原文依据</b>：需求会议——「会先做需求二，再做需求一（skill）。把两个需求拆开。先保第二个需求能上线。」</span>
+      </div>
+
+      <div class="card">
+        <span class="tag bg">背景③</span><b>为什么拿不到文档原文，只能拿"总结"</b>
+        <p>企微<strong>不开放原始文件内容</strong>（专区数据原则上我们拿不到完整原文）。必须走「通用模型」，模型返回的是<strong>总结的结果（文字片段）</strong>，不是原文。前端拿这个文字片段回显 + 传智能体。</p>
+        <span class="src"><b>原文依据</b>：需求会议——「企微不开放原始文件内容，必须走通用模型才能拿到结果……返回的是总结的结果（文字片段）。」</span>
+      </div>
+
+      <div class="card">
+        <span class="tag bg">背景④</span><b>前端只做交互层，重活在后端</b>
+        <p>调专区通用模型（创建任务+获取结果）是<strong>后端的活</strong>，前端不碰。前端要的是后端把这些能力<strong>封装成 HTTP 接口</strong>给你调。你的边界：拼二维码、调JSAPI拿id、轮询后端接口、回显、传参。</p>
+        <span class="src"><b>原文依据</b>：接口清单——「前端只做交互层。调专区通用模型是后端的活，前端要的是后端封装成HTTP接口。」随风：「前端给我doc_id → 我调通用模型 → 打包给智能体。」</span>
+      </div>
+    </section>
+
+    <!-- 03 问题定位 -->
+    <section id="problem">
+      <span class="sec-id" data-sec="问题定位">03 · 这章回答什么</span>
+      <h2>你真正想知道的问题</h2>
+      <div class="card paper">
+        <p><strong>这章直接回答你的问题</strong>：「针对这个项目，我需要掌握哪些？」</p>
+        <p><strong>答案分三层</strong>：</p>
+        <ul class="bul">
+          <li><strong>已掌握的</strong>（前五章学的 Vue3）—— 列出哪些能直接用，映射到具体任务。</li>
+          <li><strong>项目专属的</strong>（本需求独有的）—— 二维码拼链接、轮询、5个接口，这些是新东西。</li>
+          <li><strong>还缺的</strong>（待补/待确认）—— 老田要求的工程流程、和后端待对齐的接口问题。</li>
+        </ul>
+        <p><strong>只记一个问题</strong>：<span style="background:var(--marker);padding:2px 6px;border-radius:4px;">用户从点「企微文档」到看到分析结果，前端这 7 步每步我具体写什么代码？哪些已会、哪些要学？</span></p>
+      </div>
+    </section>
+
+    <!-- 04 前端任务全景 -->
+    <section id="map">
+      <span class="sec-id" data-sec="结构地图">04 · 前端任务全景</span>
+      <h2>你要做的 7 件事（按用户操作顺序）</h2>
+      <div class="card">
+        <p>这是本章核心。下面 7 个任务就是<strong>用户从看到入口到看到分析结果</strong>的全过程，每一步标注「用到前五章哪个知识」。</p>
+      </div>
+      <div class="flow">
+        <div class="flow-step"><span class="num">1</span><b>加输入框入口</b>｜AI管家输入框下加「企微文档/微盘」下拉。用 <code>v-if</code>+授权判断控制显隐。<span style="color:var(--brick);">→ 用第三章 v-if、第六章授权拦截</span></div>
+        <div class="flow-step hot"><span class="num">2</span><b>拼二维码 ⭐核心</b>｜用户选了文档类型，前端拼一个带 session_id 的链接，生成二维码展示。PC无法直调组件所以要扫码。<span style="color:var(--brick);">→ 项目专属，新学</span></div>
+        <div class="flow-step"><span class="num">3</span><b>调JSAPI拿id</b>｜手机企微扫码后唤起原生选择器，选完返回 doc_id/file_id+url+type。<span style="color:var(--brick);">→ 用第五章 ww.register+selectDatazoneDoc/File</span></div>
+        <div class="flow-step hot"><span class="num">4</span><b>轮询拿结果 ⭐</b>｜前端拿id传后端，轮询后端接口拿通用模型返回的"文档内容文字"。<span style="color:var(--brick);">→ 项目专属（轮询机制），新学</span></div>
+        <div class="flow-step"><span class="num">5</span><b>回显卡片</b>｜拿到结果后，用卡片形式回显（图标+标题）。标题靠前端展示组件用URL展示。<span style="color:var(--brick);">→ 用第四章组件化(props传卡片数据)</span></div>
+        <div class="flow-step"><span class="num">6</span><b>发送传智能体</b>｜点发送，把文档内容文字作为新参数传智能体（像现在传企业信息一样）。<span style="color:var(--brick);">→ 用第二章 SFC 组织这部分逻辑</span></div>
+        <div class="flow-step"><span class="num">7</span><b>授权拦截</b>｜页面加载查后端"是否专区存档授权"，没授权隐藏入口或引导。<span style="color:var(--brick);">→ 用第三章 computed+mounted</span></div>
+      </div>
+      <div class="note">节点关系：任务2（拼二维码）和任务4（轮询）是<strong>项目独有的新知识</strong>，前五章没覆盖，本章重点讲。其余5项都是前五章知识的项目化应用。</div>
+    </section>
+
+    <!-- 05 核心判断 -->
+    <section id="core">
+      <span class="sec-id" data-sec="核心判断">05 · 核心判断</span>
+      <h2>6 条核心判断（每条带项目原文依据）</h2>
+
+      <div class="card">
+        <span class="tag fact">事实</span><b>① 二维码本质是前端拼的一个链接，核心作用是打开企微"选择文档/微盘"入口。</b>
+        <p>不是后端生成、不是企微给的。前端用 JS 拼一个 URL（带 session_id 对应当前对话），转成二维码图片展示。链接页本身不做任何内容，只负责唤起企微原生选择器。</p>
+        <span class="src"><b>原文依据</b>：需求会议——「二维码本质是前端组装的一个链接……链接要带参session_id……前端做两个链接：一个跳文档、一个跳微盘。」</span>
+      </div>
+
+      <div class="card">
+        <span class="tag fact">事实</span><b>② PC 无法直调企微组件，所以要扫码；手机企微环境内可直接放链接。</b>
+        <p>这是为什么要扫码的根本原因。PC 管理后台跑在浏览器里，调不了企微客户端组件；用户得用手机企微扫二维码，跳进企微客户端才能唤起原生选择器。这是需求二（PC端）和需求一（skill，可能企微环境内）的区别。</p>
+        <span class="src"><b>原文依据</b>：需求会议——「PC无法直调组件→扫码」「企微环境内打开可直接放链接，无需扫码；非企微环境展示二维码。」</span>
+      </div>
+
+      <div class="card">
+        <span class="tag fact">事实</span><b>③ 通用模型是异步 job，前端要轮询拿结果。</b>
+        <p>拿文档内容不是同步返回的。后端调专区模型是"创建任务+获取结果"两步，异步。前端传id后，要<strong>轮询</strong>后端接口直到拿到结果。（待确认：前端轮询 vs 后端推送 SSE/WebSocket——见待确认缺口）</p>
+        <span class="src"><b>原文依据</b>：需求会议——「通用模型是异步的，是个job，必须拿到结果才算成功。」接口清单接口①待确认项。</span>
+      </div>
+
+      <div class="card">
+        <span class="tag judge">判断</span><b>④ 前端拿不到文档原文，只能拿到通用模型总结的"文字片段"。</b>
+        <p>企微不开放原始内容。回显卡片显示的是模型总结的文字，不是文档全文。这个文字片段也是传给智能体的内容（不是传链接，是传一堆文字）。</p>
+        <span class="src"><b>原文依据</b>：需求会议——「企微不开放原始文件内容……返回总结的结果（文字片段）……把它作为附件形式给智能体。」文浩：「跟本地文件有点像，只是这个传一堆文字。」</span>
+      </div>
+
+      <div class="card">
+        <span class="tag judge">判断</span><b>⑤ 授权判断依据是"应用权限集"，不是 user_doc_ticket。</b>
+        <p>前端页面加载时要查后端"是否已专区存档授权"，没授权隐藏入口。判断依据是应用权限集（会话/文档/知识库三个独立权限），不是看 ticket 拿不拿得到——这点还没完全确认（见缺口）。</p>
+        <span class="src"><b>原文依据</b>：需求会议——「是个应用权限。」随风：「ticket是否代表授权，还不太确认。」</span>
+      </div>
+
+      <div class="card">
+        <span class="tag fact">事实</span><b>⑥ 前端要和后端对齐 5 个接口。</b>
+        <p>不是 5 个前端自己写的接口，而是<strong>要和后端确认怎么调的 5 个能力</strong>：①拿文档内容（核心）②是否授权判断 ③智能体新参数 ④JSAPI选文件（联调）⑤标题展示组件。其中①②③是后端HTTP接口，④⑤是企微能力但要和后端对齐返回值怎么用。</p>
+        <span class="src"><b>原文依据</b>：前后端接口对齐清单——「接口全景·一共5个。」</span>
+      </div>
+    </section>
+
+    <!-- 06 关键概念 -->
+    <section id="concept">
+      <span class="sec-id" data-sec="关键概念">06 · 关键概念拆解</span>
+      <h2>6 个项目专属概念</h2>
+
+      <div class="card">
+        <h3>① 二维码链接（前端拼）</h3>
+        <p><b>定义</b>：前端用 JS 拼一个 URL，带 session_id 参数，转成二维码图片。用户手机企微扫码后，跳转到企微原生选择组件。</p>
+        <div class="walkthrough">
+          <div class="wt-step">
+            <div class="step-no">拼链接 + 生成二维码（选项式伪代码）</div>
+<pre style="margin:0;font-family:var(--font-mono);font-size:.78rem;overflow-x:auto;background:#fff;">// 选项式：methods 里拼链接
+methods: {
+  genQrLink(type) {                 // type: 'doc' 或 'file'
+    const sid = this.sessionId       // 当前对话id（已有）
+    const base = 'https://域名/redirect'
+    return `${base}?session_id=${sid}&type=${type}`
+  }
+},
+mounted() {
+  this.docQrUrl = this.genQrLink('doc')
+  this.fileQrUrl = this.genQrLink('file')
+  // 然后用二维码库（如 qrcode.js）把 url 转成图片
+}</pre>
+          </div>
+        </div>
+        <div class="warn"><b>不要误解成</b>：二维码是后端生成的。会议反复确认——<strong>前端拼，客户端行为，不需要服务端</strong>。</div>
+      </div>
+
+      <div class="card">
+        <h3>② 轮询拿结果</h3>
+        <p><b>定义</b>：前端传 doc_id 给后端后，因为通用模型异步，前端要反复调一个查询接口，直到拿到结果。</p>
+        <div class="walkthrough">
+          <div class="wt-step">
+            <div class="step-no">轮询的选项式骨架（待和后端确认形态）</div>
+<pre style="margin:0;font-family:var(--font-mono);font-size:.78rem;overflow-x:auto;background:#fff;">methods: {
+  async pollDocContent(docId) {
+    const taskId = await this.createTask(docId)  // 调"创建"接口
+    const timer = setInterval(async () => {       // 反复查
+      const res = await this.queryTask(taskId)    // 调"查询"接口
+      if (res.status === 'done') {
+        clearInterval(timer)
+        this.docContent = res.content             // 拿到文字片段
+        this.showCard = true                       // 回显卡片
+      }
+    }, 2000)                                       // 每2秒查一次
+    // ⚠️ 待确认：轮询key用task_id还是session_id？超时多久？
+  }
+}</pre>
+          </div>
+        </div>
+        <div class="note"><b>用到的Vue知识</b>：setInterval（JS基础）、async/await（异步）、data 存状态、v-if 控制卡片显隐。<strong>待确认</strong>：是前端轮询两段式（创建+查询），还是后端封装成一接口内部轮询。</div>
+      </div>
+
+      <div class="card">
+        <h3>③ 文档标题展示组件</h3>
+        <p><b>定义</b>：JSAPI 选完返回的有 URL 但<strong>没有标题</strong>。要拿到标题，得用企微的"前端展示组件"（用 URL 渲染出标题）。</p>
+        <p>回显卡片需要：图标（用 type 对应）+ 标题（用展示组件拿）+ 可能的状态。这部分要确认展示组件具体怎么调（找居易/土豆）。</p>
+        <span class="src"><b>原文依据</b>：需求会议——「返回doc_list（含doc_id）、还有URL和type，但没有标题，标题要再通过前端展示组件（用URL展示）。」</span>
+      </div>
+
+      <div class="card">
+        <h3>④ session_id（对话标识）</h3>
+        <p><b>定义</b>：当前对话的 id。拼二维码链接时要带上，作用是——手机端选完文档后，结果能回传到对应的 PC 端对话。</p>
+        <p>这是跨设备关联的关键：PC 生成带 sid 的二维码 → 手机扫码选文档 → 结果带着 sid 回来 → PC 端这个对话收到结果。</p>
+      </div>
+
+      <div class="card">
+        <h3>⑤ 智能体新参数（传文档内容）</h3>
+        <p><b>定义</b>：发送提问时，把拿到的文档内容文字，作为<strong>新增的一个参数</strong>传给智能体，跟现在传"企业信息/页面数据"一样。</p>
+        <p><b>和本地文件的区别</b>：本地文件传的是链接；企微文档/微盘传的是<strong>一堆文字</strong>（模型总结的内容）。参数名、结构要和后端统一（待确认：叫 doc_content？结构是字符串还是 {title,content,type}？）。</p>
+        <span class="src"><b>原文依据</b>：需求会议——「我们会加一个参数告诉他是客户选择的企微文档对应的内容。」接口清单接口③。</span>
+      </div>
+
+      <div class="card">
+        <h3>⑥ 前端任务 ↔ 前五章知识映射</h3>
+        <table class="t">
+          <tr><th>前端任务</th><th>用到的章节知识</th></tr>
+          <tr><td>加入口/显隐控制</td><td>第三章 v-if + computed（授权状态）</td></tr>
+          <tr><td>组织页面逻辑</td><td>第二章 SFC（.vue 三段式，选项式）</td></tr>
+          <tr><td>回显卡片</td><td>第四章 组件化（DocCard 组件 + props 传数据）</td></tr>
+          <tr><td>调JSAPI拿id</td><td>第五章 ww.register + selectDatazoneDoc/File</td></tr>
+          <tr><td>渲染分析结果</td><td>第五章 v-html + DOMPurify</td></tr>
+          <tr><td>列表渲染多个文档</td><td>第三章 v-for + key</td></tr>
+        </table>
+        <div class="note">结论：<strong>前五章没有白学</strong>，每一章都在这个项目里有具体落点。新增要学的只有"拼二维码"和"轮询机制"两个项目专属技能。</div>
+      </div>
+    </section>
+
+    <!-- 07 苏格拉底关卡 -->
+    <section id="socratic">
+      <span class="sec-id" data-sec="苏格拉底关卡">07 · 苏格拉底式阅读关卡</span>
+      <h2>确认你搞懂项目了</h2>
+      <div class="card paper">
+        <p>这一组考<strong>项目理解</strong>：为什么要扫码？前端边界在哪？拿到的不是原文是什么？</p>
+      </div>
+
+      <div class="task" data-task="q1" data-answer="A"
+           data-ok="对！PC浏览器调不了企微客户端组件，必须用户手机企微扫码跳进客户端才能唤起原生选择器。" data-no="扫码的根本原因是PC无法直调组件。回顾「05 核心判断②」。"
+           data-src="原文依据：需求会议·二维码原理" data-review="回到「05 核心判断②」复习">
+        <div class="q"><span class="qno">Q1</span>需求二（PC端企微AI管家）为什么要用扫码的方式选文档？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. PC浏览器无法直调企微客户端组件，需手机企微扫码跳进客户端唤起选择器</button>
+          <button class="opt" data-val="B">B. 扫码更安全</button>
+          <button class="opt" data-val="C">C. 企微规定必须扫码</button>
+          <button class="opt" data-val="D">D. 后端要求扫码</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q2" data-answer="C"
+           data-ok="正确！二维码本质是前端拼的一个带session_id的链接，转成二维码图片。不需要后端生成。" data-no="二维码是前端拼的链接。回顾「05 核心判断① / 06 概念①」。"
+           data-src="原文依据：需求会议·前端拼链接" data-review="回到「06 关键概念①」复习">
+        <div class="q"><span class="qno">Q2</span>二维码是怎么来的？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. 后端生成返回给前端</button>
+          <button class="opt" data-val="B">B. 企微官方提供的接口生成</button>
+          <button class="opt" data-val="C">C. 前端拼一个带session_id的链接，转成二维码图片</button>
+          <button class="opt" data-val="D">D. 用第三方付费服务生成</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q3" data-answer="B"
+           data-ok="对！企微不开放原始内容，前端只能拿到通用模型总结的"文字片段"，这个片段也是传给智能体的内容。" data-no="拿到的不是原文，是模型总结的文字片段。回顾「05 核心判断④」。"
+           data-src="原文依据：需求会议·不开放原文" data-review="回到「05 核心判断④」复习">
+        <div class="q"><span class="qno">Q3</span>前端从后端拿到的"文档内容"是什么？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. 文档的完整原始内容</button>
+          <button class="opt" data-val="B">B. 通用模型总结的文字片段（非原文）</button>
+          <button class="opt" data-val="C">C. 一个文件下载链接</button>
+          <button class="opt" data-val="D">D. 文档的HTML源码</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q4" data-answer="A"
+           data-ok="正确！调专区通用模型（创建任务+获取结果）是后端的活，前端要的是后端封装好的HTTP接口。" data-no="前端只做交互层，重活在后端。回顾「02 背景④」。"
+           data-src="原文依据：接口清单·前端只做交互层" data-review="回到「02 项目背景包」复习">
+        <div class="q"><span class="qno">Q4</span>下面哪个是前端的活，不是后端的？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. 拼二维码链接 + 调JSAPI拿id + 轮询后端接口拿结果</button>
+          <button class="opt" data-val="B">B. 调专区通用模型创建任务</button>
+          <button class="opt" data-val="C">C. 调专区通用模型获取结果</button>
+          <button class="opt" data-val="D">D. 把文档内容打包给智能体</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+    </section>
+
+    <!-- 08 闯关任务 -->
+    <section id="task">
+      <span class="sec-id" data-sec="闯关任务">08 · 闯关任务 · 落到任务上</span>
+      <h2>把项目理解落到具体任务</h2>
+      <div class="card paper">
+        <p>这一组考<strong>应用</strong>：给任务选知识、识别链路、判断边界。</p>
+      </div>
+
+      <div class="task" data-task="q5" data-answer="C"
+           data-ok="对！拼二维码链接要用session_id，作用是手机端选完文档后结果能回传到对应的PC端对话。" data-no="session_id是跨设备关联的关键。回顾「06 概念④」。"
+           data-src="原文依据：需求会议·session_id" data-review="回到「06 关键概念④」复习">
+        <div class="q"><span class="qno">Q5</span>拼二维码链接时必须带的参数是？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. doc_id</button>
+          <button class="opt" data-val="B">B. user_doc_ticket</button>
+          <button class="opt" data-val="C">C. session_id（当前对话id）</button>
+          <button class="opt" data-val="D">D. agent_id</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q6" data-answer="B"
+           data-ok="正确！回显卡片需要图标(type对应)+标题(展示组件用URL拿)，JSAPI返回的有URL但没标题。" data-no="JSAPI返回没标题，要用展示组件拿。回顾「06 概念③」。"
+           data-src="原文依据：需求会议·标题展示组件" data-review="回到「06 关键概念③」复习">
+        <div class="q"><span class="qno">Q6</span>JSAPI选完文档返回的有 doc_id + url + type，但回显卡片还需要标题，标题从哪来？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. JSAPI 直接返回了标题</button>
+          <button class="opt" data-val="B">B. 用企微"前端展示组件"拿 URL 渲染出标题</button>
+          <button class="opt" data-val="C">C. 前端自己写死</button>
+          <button class="opt" data-val="D">D. 后端从数据库查</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q7" data-answer="A"
+           data-ok="对！本地文件传链接，企微文档/微盘专区传一堆文字（模型总结的内容），这是关键区别。" data-no="传智能体的方式不同：本地文件传链接，专区文档传文字。回顾「05 核心判断④ / 06 概念⑤」。"
+           data-src="原文依据：需求会议·传文字vs传链接" data-review="回到「06 关键概念⑤」复习">
+        <div class="q"><span class="qno">Q7</span>发送提问时，企微文档内容和原来的"本地文件"传给智能体的方式有什么区别？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. 本地文件传链接；企微文档/微盘传一堆文字（模型总结内容）</button>
+          <button class="opt" data-val="B">B. 都传链接</button>
+          <button class="opt" data-val="C">C. 都传文字</button>
+          <button class="opt" data-val="D">D. 企微文档传doc_id就行</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q8" data-answer="C"
+           data-ok="完全正确！通用模型是异步job，前端传id后要轮询后端接口直到拿到结果。这是项目独有的新技能。" data-no="异步job要轮询。回顾「05 核心判断③ / 06 概念②」。"
+           data-src="原文依据：需求会议·异步job+轮询" data-review="回到「06 关键概念②」死磕">
+        <div class="q"><span class="qno">Q8</span>前端传 doc_id 给后端后，因为通用模型是异步的，前端要怎么拿结果？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. 同步等后端一次性返回</button>
+          <button class="opt" data-val="B">B. 让用户手动刷新</button>
+          <button class="opt" data-val="C">C. 轮询后端查询接口，直到拿到结果（待确认轮询形态）</button>
+          <button class="opt" data-val="D">D. 后端会自动推送到前端（已确定）</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+    </section>
+
+    <!-- 09 误解与边界 -->
+    <section id="miss">
+      <span class="sec-id" data-sec="误解与边界">09 · 误解与边界</span>
+      <h2>4 个最容易踩的坑</h2>
+
+      <div class="card">
+        <h3>误解①：前端要调专区通用模型</h3>
+        <p><b>真相</b>：调专区模型（创建任务+获取结果）是<strong>后端的活</strong>。前端只调后端封装好的 HTTP 接口。你的边界：拼二维码、调JSAPI、轮询、回显、传参。</p>
+        <span class="src"><b>原文依据</b>：接口清单——「前端只做交互层。调专区通用模型是后端的活。」</span>
+      </div>
+      <div class="card">
+        <h3>误解②：二维码是后端生成的</h3>
+        <p><b>真相</b>：二维码是<strong>前端拼的链接</strong>转成的。前端用 JS 拼 URL（带 session_id），用二维码库转图片。不需要后端参与。</p>
+      </div>
+      <div class="card">
+        <h3>误解③：选完文档能拿到原文</h3>
+        <p><b>真相</b>：企微不开放原始内容。只能拿到通用模型<strong>总结的文字片段</strong>。回显和传智能体用的都是这个总结，不是原文。</p>
+      </div>
+      <div class="card">
+        <h3>误解④：JSAPI 返回的有标题</h3>
+        <p><b>真相</b>：selectDatazoneDoc/File 返回的有 doc_id/file_id + url + type，<strong>没有标题</strong>。标题要另外用企微"前端展示组件"拿 URL 渲染。</p>
+      </div>
+      <div class="warn"><b>边界</b>：本章只覆盖<strong>需求二（PC端企微AI管家）的前端部分</strong>。需求一（文档管家skill）后做，且 skill 本质是后端封装的开放接口，前端相关只有"环境判断→链接or二维码"一小块，不在本章重点。客户画像页交互调整（输入框引导文案、提示条、手动触发分析）属于细节交互，按设计稿做。</div>
+    </section>
+
+    <!-- 10 待确认缺口 -->
+    <section id="gap">
+      <span class="sec-id" data-sec="背景缺口">10 · 待确认缺口（开工前必须对齐）</span>
+      <h2>这些没定死，开不了工</h2>
+      <div class="card">
+        <p><b>和后端（随风）对齐的 5 个接口问题：</b></p>
+        <ul class="bul">
+          <li><b>接口①轮询形态</b>：前端两段式（创建+查询）还是后端封装成一接口内部轮询？轮询 key 用 task_id 还是 session_id？超时多久？<strong>P0 必须定</strong></li>
+          <li><b>接口②授权判断依据</b>：用应用权限集还是 user_doc_ticket？给字段还是给接口？挂哪个现有接口？<strong>P0</strong></li>
+          <li><b>接口③参数命名</b>：文档内容参数叫什么？结构是字符串还是对象？<strong>P1</strong></li>
+          <li><b>接口①入参结构</b>：doc_id 数组怎么传？要不要带 type 区分文档/微盘？<strong>P1</strong></li>
+          <li><b>接口①出参结构</b>：返回纯文本还是结构化（标题/正文/摘要）？回显卡片用什么字段？<strong>P1</strong></li>
+        </ul>
+      </div>
+      <div class="card">
+        <p><b>找同事确认的：</b></p>
+        <ul class="bul">
+          <li><b>标题展示组件怎么调</b>——用URL渲染标题的企微组件，找<strong>居易/土豆</strong></li>
+          <li><b>二维码这套流程有没有现成参考</b>——会议提到"之前测过这套流程"，找<strong>诺诺/娟娟</strong></li>
+          <li><b>员工端项目请求封装/目录结构</b>——看员工端现有代码（老田："参考员工端其它页面"）</li>
+          <li><b>分支管理/提测/发布流程</b>——团队工程规范，老田要求的"全流程"</li>
+        </ul>
+      </div>
+      <div class="note"><b>建议下一步</b>：拿着「前后端接口对齐清单.html」和随风过一遍 5 个接口（尤其接口①②），确认后本章的伪代码就能落地成真代码。在那之前，先在前端把<strong>不依赖后端的部分</strong>做出来：拼二维码、调JSAPI的骨架、回显卡片组件。</div>
+    </section>
+
+    <!-- 11 报告 -->
+    <section id="report-sec">
+      <span class="sec-id" data-sec="学习报告">11 · 学习报告</span>
+      <h2>生成你的第六章报告</h2>
+      <div class="report-box">
+        <div class="rep-btns">
+          <button id="genReport">生成学习报告</button>
+          <button id="copyReport" class="alt">复制报告</button>
+        </div>
+        <div id="report">（点击"生成学习报告"后显示完成情况与错题清单。）</div>
+      </div>
+      <div class="wrong-box" style="margin-top:14px;">
+        <h3>📋 错题回流区</h3>
+        <ul id="wrongBox"><li style="color:#888">还没有错题。答错的题会自动收集到这里。</li></ul>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  这套地图帮你建立这个项目的前端全景，但不能替代和后端对接口、看员工端代码、动手实操。学习愉快 🐟<br>
+  由 <a href="https://lyzbcy.github.io/" target="_blank" rel="noopener">捞鱼</a> 制作
+</footer>
+
+<!-- promo -->
+<div class="float-btn" id="floatBtn">🐟 关于捞鱼</div>
+<div class="modal-mask" id="modalMask">
+  <div class="modal">
+    <button class="close" id="closeModal">×</button>
+    <div class="author">
+      <img src="https://s41.ax1x.com/2025/12/05/pZmPZPH.png" alt="捞鱼">
+      <div>
+        <div class="name">捞鱼</div>
+        <div class="sig">「一个弱小但有梦想的开发者」</div>
+        <span class="studio">捞鱼工作室</span><br>
+        <a class="goto" href="https://lyzbcy.github.io/about/" target="_blank" rel="noopener">了解更多 →</a>
+      </div>
+    </div>
+    <div class="qr-grid">
+      <div class="qr-cell"><div class="ttl">QQ 学习群</div><img src="img/sticker/qq-group.jpg" alt="QQ群二维码"><div class="desc">扫码进群一起学习</div></div>
+      <div class="qr-cell"><div class="ttl">赞赏支持</div><img src="img/sticker/reward-qr.jpg" alt="赞赏二维码"><div class="desc">请捞鱼喝杯奶茶</div></div>
+      <div class="qr-cell">
+        <div class="ttl">微信表情包</div>
+        <div class="sticker-row"><img src="img/sticker/ok.png" alt=""><img src="img/sticker/no.png" alt=""><img src="img/sticker/study.png" alt=""></div>
+        <img src="img/sticker/sticker-qr.png" alt="微信表情包二维码">
+        <div class="desc">📱 长按或扫码使用</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var qc=document.getElementById('quizCount');
+  if(qc)qc.textContent=document.querySelectorAll('.task').length;
+  var STAMP_MAP={
+    '学习目标':'study.png','背景包':'study.png','问题定位':'study.png',
+    '结构地图':'ok.png','核心判断':'ok.png','关键概念':'study.png',
+    '苏格拉底关卡':'no.png','闯关任务':'final.png',
+    '误解与边界':'no.png','背景缺口':'study.png','学习报告':'final.png'
+  };
+  document.querySelectorAll('.sec-id[data-sec]').forEach(function(el){
+    var key=el.getAttribute('data-sec'),img=STAMP_MAP[key];
+    if(img){var i=document.createElement('img');i.className='stamp';i.src='img/sticker/'+img;i.alt='';el.insertBefore(i,el.firstChild);}
+  });
+  var mask=document.getElementById('modalMask');
+  document.getElementById('floatBtn').addEventListener('click',function(){mask.classList.add('open');});
+  document.getElementById('closeModal').addEventListener('click',function(){mask.classList.remove('open');});
+  mask.addEventListener('click',function(e){if(e.target===mask)mask.classList.remove('open');});
+})();
+</script>
+
+<script>
+(function(){
+  "use strict";
+  function $all(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));}
+  function selectedVals(t){return $all('.opt.selected',t).map(function(o){return o.getAttribute('data-val');}).sort();}
+  function setFb(t,state,html){var fb=t.querySelector('.feedback');if(!fb)return;fb.className='feedback'+(state?(' '+state):'');fb.innerHTML=html;}
+  function updateBar(){
+    var all=$all('.task'),done=$all('.task[data-answered="1"]');
+    var fill=document.getElementById('barFill'),num=document.getElementById('barNum');
+    if(fill)fill.style.width=all.length?(done.length/all.length*100)+'%':'0%';
+    if(num)num.textContent=done.length+' / '+all.length;
+  }
+  function renderWrong(){
+    var box=document.getElementById('wrongBox');if(!box)return;
+    var wrong=$all('.task[data-answered="1"][data-correct="0"]');
+    if(!wrong.length){box.innerHTML='<li style="color:#888">还没有错题。答错的题会自动收集到这里。</li>';return;}
+    box.innerHTML='';
+    wrong.forEach(function(t){var li=document.createElement('li');li.textContent='【'+(t.getAttribute('data-task')||'')+'】'+(t.getAttribute('data-review')||'回到对应模块复习');box.appendChild(li);});
+  }
+  function check(t){
+    var type=t.getAttribute('data-type'),ok=false;
+    if(type==='selects'){
+      var sels=$all('select.match',t),allok=true,empty=false;
+      sels.forEach(function(s){if(!s.value)empty=true;if(s.value!==s.getAttribute('data-correct'))allok=false;});
+      if(empty){setFb(t,'no','请先把每一项都选好再检查。');return;}
+      ok=allok;
+    }else{
+      var sel=selectedVals(t);
+      if(!sel.length){setFb(t,'no','请先选择一个选项再检查。');return;}
+      var ans=(t.getAttribute('data-answer')||'').split(',').map(function(x){return x.trim();}).sort();
+      ok=(sel.join('|')===ans.join('|'));
+    }
+    var body=ok?(t.getAttribute('data-ok')||'回答正确。'):(t.getAttribute('data-no')||'再想想。');
+    var src=t.getAttribute('data-src');
+    setFb(t,ok?'ok':'no',(ok?'✅ ':'❌ ')+body+(src?('<span class="src">'+src+'</span>'):''));
+    t.setAttribute('data-answered','1');t.setAttribute('data-correct',ok?'1':'0');
+    updateBar();renderWrong();
+  }
+  function genReport(){
+    var box=document.getElementById('report');if(!box)return;
+    var all=$all('.task'),done=$all('.task[data-answered="1"]'),right=$all('.task[data-answered="1"][data-correct="1"]');
+    var lines=['=== 第六章 项目实战 学习报告 ===','完成题目：'+done.length+' / '+all.length,'答对：'+right.length+' 题',''];
+    var wrong=$all('.task[data-answered="1"][data-correct="0"]');
+    if(wrong.length){lines.push('我答错的题（建议复习）：');wrong.forEach(function(t){lines.push('- '+(t.getAttribute('data-task')||'')+'：'+(t.getAttribute('data-review')||''));});}
+    else{lines.push('暂无错题。');}
+    box.textContent=lines.join('\n');
+  }
+  document.addEventListener('click',function(e){
+    var c=e.target.closest?e.target:null;
+    var opt=c&&e.target.closest('.opt');
+    if(opt){var t=opt.closest('.task');if(!t)return;
+      if(t.getAttribute('data-multi')==='true'){opt.classList.toggle('selected');}
+      else{$all('.opt',t).forEach(function(o){o.classList.remove('selected');});opt.classList.add('selected');}
+      return;}
+    var btn=c&&e.target.closest('.check');
+    if(btn){var tk=btn.closest('.task');if(tk)check(tk);return;}
+    if(e.target&&e.target.id==='genReport'){genReport();return;}
+    if(e.target&&e.target.id==='copyReport'){var r=document.getElementById('report');if(r&&navigator.clipboard)navigator.clipboard.writeText(r.textContent);return;}
+  });
+  function init(){updateBar();renderWrong();}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+
+<!-- ===== 后台语音：右侧书签脊 + 圆润玩具风播放器（带字幕） ===== -->
+<button id="voiceFab" aria-label="打开后台语音"><span class="fab-icon">🎧</span><span class="fab-text">后台语音</span></button>
+<div id="voicePlayer">
+  <button class="vp-close" aria-label="关闭">✕</button>
+  <div class="vp-head">🎧 后台语音 · 连续播放</div>
+  <div class="vp-title">—</div>
+  <div class="vp-controls">
+    <button class="vp-prev" aria-label="上一章">⏮</button>
+    <button class="vp-play" aria-label="播放/暂停">▶</button>
+    <button class="vp-next" aria-label="下一章">⏭</button>
+  </div>
+  <input class="vp-seek" type="range" min="0" max="1000" value="0" aria-label="进度">
+  <div class="vp-time"><span class="vp-cur">00:00</span><span class="vp-dur">00:00</span></div>
+  <div class="vp-sub">点开播放后，这里会同步显示字幕</div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  if(window.__voiceEngine) return;
+  window.__voiceEngine = true;
+  var listNode = document.getElementById('voicePlaylist');
+  if(!listNode){ return; }
+  var TRACKS = [];
+  try { TRACKS = JSON.parse(listNode.textContent.trim()); } catch(e){ return; }
+  if(!TRACKS.length) return;
+  var player = document.getElementById('voicePlayer');
+  var fab = document.getElementById('voiceFab');
+  var audio = new Audio(); audio.preload = 'metadata';
+  var cur = 0, ranges = [], total = 0, seeking = false;
+  function $(s){ return player ? player.querySelector(s) : null; }
+  function fmt(s){ s=Math.max(0,Math.floor(s||0)); var m=Math.floor(s/60), x=s%60;
+    return (m<10?'0':'')+m+':'+(x<10?'0':'')+x; }
+  var probe = TRACKS.map(function(){ return {dur:0}; });
+  function tryFinalize(){
+    if(probe.some(function(p){return !p.dur;})) return;
+    ranges = []; total = 0;
+    probe.forEach(function(p){ ranges.push({dur:p.dur, start:total}); total += p.dur; });
+    var d = $('.vp-dur'); if(d) d.textContent = fmt(total);
+    var sk = $('.vp-seek'); if(sk){ sk.max = Math.max(1000, Math.floor(total*10)); }
+  }
+  TRACKS.forEach(function(t, i){
+    var a = new Audio(); a.preload = 'metadata'; a.src = t.src;
+    a.addEventListener('loadedmetadata', function(){ probe[i].dur = a.duration || 0; tryFinalize(); });
+    a.addEventListener('error', function(){ probe[i].dur = 0; tryFinalize(); });
+  });
+  function load(i){ cur = i; audio.src = TRACKS[i].src; var ti = $('.vp-title'); if(ti) ti.textContent = TRACKS[i].title || ('第 '+(i+1)+' 段'); markBtn(i); }
+  function play(){ audio.play().then(function(){ show(); setPlayIcon(true); if(fab) fab.classList.add('beat'); }).catch(function(){}); }
+  function pause(){ audio.pause(); setPlayIcon(false); if(fab) fab.classList.remove('beat'); }
+  function toggle(){ audio.paused ? play() : pause(); }
+  function next(){ if(cur < TRACKS.length-1){ load(cur+1); play(); } else { pause(); } }
+  function prev(){ var abs = absTime(); if(cur > 0 && abs - ranges[cur].start < 3){ load(cur-1); play(); } else { audio.currentTime = 0; } }
+  function absTime(){ return ranges[cur] ? ranges[cur].start + (audio.currentTime||0) : (audio.currentTime||0); }
+  function setPlayIcon(on){ var b=$('.vp-play'); if(b) b.textContent = on ? '⏸' : '▶'; }
+  function show(){ if(player) player.classList.add('show'); }
+  function hide(){ if(player) player.classList.remove('show'); }
+  function markBtn(i){ document.querySelectorAll('.voice-btn[data-voice-id]').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-voice-id') === TRACKS[i].id); }); }
+  audio.addEventListener('timeupdate', function(){ if(seeking) return; if(!ranges[cur]) return; var abs = absTime(); var sk = $('.vp-seek'); var c = $('.vp-cur'); if(sk && total) sk.value = Math.round(abs / total * (sk.max||1000)); if(c) c.textContent = fmt(abs); });
+  audio.addEventListener('ended', function(){ if(cur < TRACKS.length-1){ load(cur+1); play(); } else { setPlayIcon(false); if(fab) fab.classList.remove('beat'); } });
+  function seekToFraction(frac){ if(!total) return; var target = Math.max(0, Math.min(total, frac * total)); var i = 0; while(i < ranges.length-1 && ranges[i].start + ranges[i].dur < target){ i++; } if(i !== cur){ cur = i; audio.src = TRACKS[i].src; var ti=$('.vp-title'); if(ti) ti.textContent = TRACKS[i].title||('第 '+(i+1)+' 段'); markBtn(i); } audio.currentTime = target - ranges[i].start; var c=$('.vp-cur'); if(c) c.textContent = fmt(target); }
+  document.addEventListener('click', function(e){ var t = e.target; var vb = t.closest ? t.closest('.voice-btn[data-voice-id]') : null; if(vb){ var id = vb.getAttribute('data-voice-id'), idx = -1; TRACKS.forEach(function(tr, k){ if(tr.id === id) idx = k; }); if(idx >= 0){ load(idx); play(); } return; } if(t.id === 'voiceFab'){ show(); if(audio.paused && !audio.src){ load(0); } if(audio.paused){ play(); } return; } if(!player || !player.contains(t)) return; if(t.classList.contains('vp-play')){ toggle(); return; } if(t.classList.contains('vp-prev')){ prev(); return; } if(t.classList.contains('vp-next')){ next(); return; } if(t.classList.contains('vp-close')){ pause(); hide(); return; } });
+  var sk = $('.vp-seek');
+  if(sk){ sk.addEventListener('input', function(){ seeking = true; if(total){ var c=$('.vp-cur'); if(c) c.textContent = fmt((sk.value/(sk.max||1000))*total); } }); sk.addEventListener('change', function(){ seekToFraction(sk.value/(sk.max||1000)); seeking = false; }); }
+})();
+</script>
+
+<!-- 字幕同步引擎（独立文件，6 章共享） -->
+<script src="voice-sub.js"></script>
+
+</body>
+</html>

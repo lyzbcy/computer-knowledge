@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第二章 · 控制流与函数 · Python 3.12 学习地图</title>
+<link rel="icon" href="img/sticker/mascot.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<script type="application/json" id="voicePlaylist">
+[
+  {"id":"ch2","title":"第二章 控制流与函数","src":"audio/ch2.mp3"}
+]
+</script>
+
+<div class="layout">
+  <aside class="sidebar">
+    <a class="back-link" href="index.html">← 返回 Python 目录</a>
+    <h1>第二章<br>控制流与函数</h1>
+    <div class="sub">3.12 官方教程 · 更多控制流工具</div>
+    <div class="progress-wrap"><div id="barFill"></div></div>
+    <div id="barNum">0 / 0</div>
+    <ul class="nav">
+      <li><a href="#goal"><span class="no">01</span>学习目标</a></li>
+      <li><a href="#bg"><span class="no">02</span>零基础背景包</a></li>
+      <li><a href="#problem"><span class="no">03</span>这章回答什么</a></li>
+      <li><a href="#map"><span class="no">04</span>结构地图</a></li>
+      <li><a href="#core"><span class="no">05</span>核心判断</a></li>
+      <li><a href="#concept"><span class="no">06</span>关键概念</a></li>
+      <li><a href="#socratic"><span class="no">07</span>苏格拉底关卡</a></li>
+      <li><a href="#task"><span class="no">08</span>闯关任务</a></li>
+      <li><a href="#miss"><span class="no">09</span>误解与边界</a></li>
+      <li><a href="#gap"><span class="no">10</span>背景知识缺口</a></li>
+      <li><a href="#report-sec"><span class="no">11</span>学习报告</a></li>
+    </ul>
+  </aside>
+
+  <main class="main">
+
+    <div class="hero">
+      <img class="mascot" src="img/sticker/mascot.png" alt="捞鱼">
+      <div>
+        <h2>第二章 · 控制流与函数 —— 让程序能判断、能循环、能复用</h2>
+        <p>if/elif/else ｜ for 遍历 ｜ while ｜ def 函数 ｜ 默认/关键字参数 ｜ lambda ｜ 含 <span class="stat" id="quizCount">…</span> 道互动关卡</p>
+      </div>
+      <button class="voice-btn" data-voice-id="ch2">🎧 听这章</button>
+    </div>
+
+    <!-- 01 目标 -->
+    <section id="goal">
+      <span class="sec-id" data-sec="学习目标">01 · 学习目标</span>
+      <h2>学完这一章你要能做到</h2>
+      <div class="card">
+        <ul class="bul">
+          <li><strong>写出条件分支</strong>：用 <code>if / elif / else</code> 处理多种情况，知道 <code>elif</code> 是 <code>else if</code> 的缩写。</li>
+          <li><strong>分清 Python 的 for</strong>：Python 的 <code>for</code> 是<strong>遍历序列的项</strong>，不是 C 式的计数循环（不需要 init/step/condition）。</li>
+          <li><strong>会用 range()</strong>：知道 <code>range(5)</code> 生成 0~4，<strong>不含右端值</strong>。</li>
+          <li><strong>定义并调用函数</strong>：用 <code>def</code> 定义函数，会写默认参数、关键字参数，知道可变默认参数的陷阱。</li>
+          <li><strong>用 lambda 写小函数</strong>：知道 <code>lambda</code> 只能写单个表达式，不能写语句。</li>
+        </ul>
+        <div class="note"><b>阅读路径</b>：背景包 → 结构地图 → 核心判断 → 关键概念 → 做关卡题 → 生成报告。</div>
+      </div>
+      <div class="card paper">
+        <span class="tag" style="background:var(--brick);color:#FFE9B0;">本章定位</span>
+        <p>这是 Python 学习地图的第二章。第一章你学会了打开解释器、用数字/字符串/列表做基本操作。本章让程序"活"起来——能根据条件判断走哪条路、能重复执行、能把一段逻辑封装成函数反复调用。内容全部基于 Python 3.12 官方教程第 4 章《更多控制流工具》。</p>
+        <span class="src"><b>原文依据</b>：Python 3.12 官方教程第 4 章《更多控制流工具》——涵盖 if 语句、for 语句、range()、break/continue、def 定义函数、默认参数、关键字参数、lambda 表达式。</span>
+      </div>
+    </section>
+
+    <!-- 02 背景 -->
+    <section id="bg">
+      <span class="sec-id" data-sec="背景包">02 · 零基础背景包</span>
+      <h2>读这章前先知道的 4 件事</h2>
+
+      <div class="card">
+        <span class="tag bg">背景①</span><b>什么是"控制流"</b>
+        <p>控制流就是<strong>程序执行的顺序</strong>。默认是一行接一行往下走。但真实程序需要"判断走哪条路"（if）、"重复做某件事"（for/while）、"把一段逻辑封装起来反复用"（函数）。控制流工具就是控制这些走向的语句。</p>
+        <div class="note">读这章需要它：否则你不知道 if/for/def 在"干什么"。</div>
+      </div>
+
+      <div class="card">
+        <span class="tag bg">背景②</span><b>C 的 for 和 Python 的 for 不一样</b>
+        <p>C 的 <code>for(i=0; i&lt;10; i++)</code> 是<strong>计数循环</strong>：你定义起点、终点、步长。Python 的 <code>for</code> 是<strong>遍历循环</strong>：它直接从序列（列表/字符串）里一个个取出元素。要计数得借助 <code>range()</code>。这是从 C 转 Python 最容易困惑的点。</p>
+        <div class="note">读这章需要它：理解为什么 Python 的 for 长得和你想的不一样。</div>
+      </div>
+
+      <div class="card">
+        <span class="tag bg">背景③</span><b>函数 = 把逻辑打包复用</b>
+        <p>写代码时经常重复同一段逻辑。函数（function）就是把这段逻辑<strong>命名、参数化、封装</strong>起来。之后用名字一调用就行，不用复制粘贴。Python 用 <code>def</code> 关键字定义函数。</p>
+        <div class="note">读这章需要它：理解 def 在"打包"什么。</div>
+      </div>
+
+      <div class="card">
+        <span class="tag bg">背景④</span><b>缩进再次强调：它是语法</b>
+        <p>第一章说过，Python 用缩进表示代码块。本章所有 <code>if/for/while/def</code> 的<strong>主体都靠缩进界定</strong>。冒号 <code>:</code> 之后换行并缩进的那一段，就属于这个语句。缩进错了程序直接报错。</p>
+        <div class="note">读这章需要它：本章大量多行代码，缩进一错就全错。</div>
+      </div>
+    </section>
+
+    <!-- 03 问题定位 -->
+    <section id="problem">
+      <span class="sec-id" data-sec="问题定位">03 · 这章在回答什么</span>
+      <h2>表面 vs 深层问题</h2>
+      <div class="card paper">
+        <p><strong>表层</strong>：if、for、while、def、lambda 怎么写。</p>
+        <p><strong>深层</strong>：Python 的控制流设计有什么特点？为什么 for 是遍历而不是计数？函数的参数系统（默认参数/关键字参数）为什么这么灵活？lambda 为什么只能写一个表达式？</p>
+        <p><strong>只记一个问题</strong>：<span style="background:var(--marker);padding:2px 6px;border-radius:4px;">怎样让 Python 程序能判断、能循环、能把逻辑封装成函数复用？各自的语法和规则是什么？</span></p>
+        <div class="note">带着这个问题读「05 核心判断」和「06 关键概念」，它们都在回答它。</div>
+      </div>
+    </section>
+
+    <!-- 04 结构地图 -->
+    <section id="map">
+      <span class="sec-id" data-sec="结构地图">04 · 结构地图</span>
+      <h2>控制流与函数三层递进</h2>
+      <div class="card">
+        <p>官方教程第 4 章是一条<strong>从"分支"到"循环"到"函数"的递进线</strong>：先学条件判断（走哪条路），再学循环（重复执行），最后学把逻辑封装成函数（复用）。</p>
+      </div>
+      <div class="flow">
+        <div class="flow-step"><span class="num">1</span><b>条件分支</b>｜<code>if / elif / else</code>——根据条件决定执行哪段代码。</div>
+        <div class="flow-step hot"><span class="num">2</span><b>循环 ⭐</b>｜<code>for</code>（遍历序列）+ <code>range()</code>（生成数列）+ <code>while</code>（条件循环）+ <code>break/continue</code>。</div>
+        <div class="flow-step"><span class="num">3</span><b>函数</b>｜<code>def</code> 定义函数、默认参数/关键字参数、<code>lambda</code> 匿名函数——把逻辑封装复用。</div>
+      </div>
+      <div class="note">节点关系：分支决定"走哪条路"，循环决定"做几次"，函数决定"打包复用"。三者共同构成程序的控制能力，其中<strong>函数是复用的核心</strong>。</div>
+    </section>
+
+    <!-- 05 核心判断 -->
+    <section id="core">
+      <span class="sec-id" data-sec="核心判断">05 · 核心判断</span>
+      <h2>6 条核心判断（每条带官方原文依据）</h2>
+
+      <div class="card">
+        <span class="tag fact">事实</span><b>① if 语句支持 elif（else if 的缩写）和可选的 else，可有零个或多个 elif。</b>
+        <p><code>elif</code> 用于避免过多的缩进（否则要层层嵌套 else if）。<code>if ... elif ... elif ...</code> 序列可当作其它语言中 <code>switch/case</code> 的替代品。</p>
+        <span class="src"><b>原文依据</b>：Python 3.12 官方教程第 4 章《if 语句》——「可有零个或多个 elif 部分，else 部分也是可选的。关键字 elif 是 else if 的缩写，用于避免过多的缩进。」</span>
+      </div>
+
+      <div class="card">
+        <span class="tag fact">事实</span><b>② Python 的 for 不是 C 式计数循环，而是按顺序遍历序列（列表/字符串）中的项。</b>
+        <p>C/Pascal 的 for 在数值等差数列中迭代或由用户定义迭代步骤和终止条件；Python 的 for 直接<strong>遍历序列里的每个元素</strong>。要计数得用 <code>range()</code> 配合。</p>
+        <span class="src"><b>原文依据</b>：Python 3.12 官方教程第 4 章《for 语句》——「Python 的 for 语句……不是让用户能够定义迭代步骤和终止条件（像 C），Python 的 for 语句按顺序在任意序列（列表或字符串）中迭代其项。」</span>
+      </div>
+
+      <div class="card">
+        <span class="tag fact">事实</span><b>③ range() 生成的数字序列不包括右端值（左闭右开）。</b>
+        <p><code>range(5)</code> 生成 0、1、2、3、4，<strong>不含 5</strong>。<code>range(5, 10)</code> 给出 5~9。这和切片的左闭右开规则一致。</p>
+        <span class="src"><b>原文依据</b>：Python 3.12 官方教程第 4 章《range() 函数》——「内置函数 range() 用于遍历数字序列，生成的序列不包括右端值。」</span>
+      </div>
+
+      <div class="card">
+        <span class="tag fact">事实</span><b>④ break 跳出最近循环；循环的 else 子句在循环正常结束（非 break）时才执行。</b>
+        <p>循环可以带 <code>else</code>——它在循环遍历完列表（for）或条件变为假（while）时执行，但<strong>不会在循环被 break 终止时执行</strong>。注意这个 else 属于循环，不属于 if。</p>
+        <span class="src"><b>原文依据</b>：Python 3.12 官方教程第 4 章《循环中的 break、continue 及 else 子句》——「循环语句可以带一个 else 子句；它在循环遍历完列表或条件变为假时执行，但不会在循环被 break 终止时执行。」</span>
+      </div>
+
+      <div class="card">
+        <span class="tag fact">事实</span><b>⑤ def 定义函数，可指定默认参数值，调用时可用比定义更少的参数；但默认值只计算一次。</b>
+        <p>给参数指定默认值后，调用时可省略它。但<strong>默认值只在函数定义时计算一次</strong>——当默认值是可变对象（如列表）时，会在后续调用中共享累积。</p>
+        <span class="src"><b>原文依据</b>：Python 3.12 官方教程第 4 章《默认参数值》——「重要的警告：默认值只计算一次。当默认值是可变对象（列表、字典或大多数类的实例）时，会有所不同。」</span>
+      </div>
+
+      <div class="card">
+        <span class="tag judge">判断</span><b>⑥ lambda 创建小巧的匿名函数，在语法上限于单个表达式（不能写语句）。</b>
+        <p><code>lambda a, b: a+b</code> 返回两数之和。lambda 没有函数名、不能写多行语句，<strong>只能是一个表达式</strong>。它适合需要一个临时小函数的场景（如排序的 key）。</p>
+        <span class="src"><b>原文依据</b>：Python 3.12 官方教程第 4 章《Lambda 表达式》——「lambda 关键字用于创建小巧的匿名函数……它们在语法上限于单个表达式。」</span>
+      </div>
+    </section>
+
+    <!-- 06 关键概念 -->
+    <section id="concept">
+      <span class="sec-id" data-sec="关键概念">06 · 关键概念拆解</span>
+      <h2>6 个关键概念</h2>
+
+      <div class="card">
+        <h3>① if / elif / else 条件分支</h3>
+        <p><b>定义</b>：根据条件决定执行哪段代码。<code>elif</code> 是 <code>else if</code> 缩写，避免嵌套缩进。</p>
+<pre style="margin:6px 0;font-family:var(--font-mono);font-size:.82rem;overflow-x:auto;background:#fff;">x = int(input("请输入整数: "))
+if x < 0:
+    x = 0
+    print('负数改为零')
+elif x == 0:
+    print('零')
+elif x == 1:
+    print('一')
+else:
+    print('更多')</pre>
+        <div class="note"><code>else</code> 和 <code>elif</code> 都是可选的；可以有任意多个 <code>elif</code>。</div>
+      </div>
+
+      <div class="card">
+        <h3>② for 遍历循环</h3>
+        <p><b>定义</b>：Python 的 for <strong>遍历序列里的每个元素</strong>，不是 C 式计数。直接取出元素本身。</p>
+        <div class="walkthrough">
+          <div class="wt-step">
+            <div class="step-no">遍历列表元素</div>
+<pre style="margin:0;font-family:var(--font-mono);font-size:.8rem;overflow-x:auto;background:#fff;">words = ['cat', 'window', 'defenestrate']
+for w in words:
+    print(w, len(w))
+# cat 3
+# window 6
+# defenestrate 12</pre>
+          </div>
+        </div>
+        <div class="warn"><b>不要误解成</b>：Python 的 for 要写 <code>i=0;i&lt;n;i++</code>。它直接遍历元素；要按下标遍历才用 <code>for i in range(len(a))</code>。</div>
+      </div>
+
+      <div class="card">
+        <h3>③ range() 生成数列</h3>
+        <p><b>定义</b>：<code>range()</code> 生成一段整数序列，<strong>不含右端值</strong>。配合 for 可实现计数循环。</p>
+<pre style="margin:6px 0;font-family:var(--font-mono);font-size:.8rem;overflow-x:auto;background:#fff;">for i in range(5):
+    print(i)
+# 0 1 2 3 4   （不含 5）
+# range(5,10) -> 5,6,7,8,9
+# range(0,10,3) -> 0,3,6,9</pre>
+        <div class="note">按索引遍历：<code>for i in range(len(a))</code> 可同时拿到下标。</div>
+      </div>
+
+      <div class="card">
+        <h3>④ def 定义函数</h3>
+        <p><b>定义</b>：<code>def</code> + 函数名 + 圆括号参数 + 冒号。函数体第一行可写文档字符串（docstring）。</p>
+<pre style="margin:6px 0;font-family:var(--font-mono);font-size:.8rem;overflow-x:auto;background:#fff;">def fib(n):          # 打印斐波那契数列到 n
+    """打印斐波那契数列到 n"""
+    a, b = 0, 1
+    while a < n:
+        print(a, end=' ')
+        a, b = b, a+b
+    print()
+
+fib(2000)
+# 0 1 1 2 3 5 8 13 21 34 55 89 144 ...</pre>
+        <div class="note">函数体的第一行字符串是<strong>文档字符串</strong>，可用 <code>func.__doc__</code> 读取。</div>
+      </div>
+
+      <div class="card">
+        <h3>⑤ 参数：默认参数 / 关键字参数</h3>
+        <p><b>定义</b>：默认参数让调用时可省略；关键字参数用 <code>名字=值</code> 传参，顺序灵活。</p>
+        <table class="t">
+          <tr><th>调用方式</th><th>说明</th></tr>
+          <tr><td><code>ask_ok('quit?')</code></td><td>只给必选参数，其余用默认</td></tr>
+          <tr><td><code>ask_ok('OK?', 2)</code></td><td>给一个可选参数</td></tr>
+          <tr><td><code>ask_ok('OK?', reminder='再来')</code></td><td>用关键字按名传参</td></tr>
+        </table>
+        <div class="warn"><b>陷阱</b>：默认值只算一次。<code>def f(a, L=[])</code> 会让 L 在多次调用间共享累积。</div>
+      </div>
+
+      <div class="card">
+        <h3>⑥ lambda 匿名函数</h3>
+        <p><b>定义</b>：<code>lambda 参数: 表达式</code>，返回一个函数对象。<strong>只能写一个表达式，不能写语句</strong>。常用于临时小函数。</p>
+<pre style="margin:6px 0;font-family:var(--font-mono);font-size:.8rem;overflow-x:auto;background:#fff;">def make_incrementor(n):
+    return lambda x: x + n
+
+f = make_incrementor(42)
+f(0)   # 42
+f(1)   # 43
+
+# 排序时当 key 用
+pairs = [(1,'one'),(2,'two'),(3,'three'),(4,'four')]
+pairs.sort(key=lambda p: p[1])
+# [(4,'four'),(1,'one'),(3,'three'),(2,'two')]</pre>
+        <div class="warn"><b>不要误解成</b>：lambda 能写 <code>if 语句/for/赋值</code>。它<strong>只能是一个表达式</strong>，复杂逻辑请用 def。</div>
+      </div>
+    </section>
+
+    <!-- 07 苏格拉底关卡 -->
+    <section id="socratic">
+      <span class="sec-id" data-sec="苏格拉底关卡">07 · 苏格拉底式阅读关卡</span>
+      <h2>先想清楚这几问</h2>
+      <div class="card paper">
+        <p>这一组考<strong>理解</strong>：Python 的 for 凭什么不是计数循环？range 为什么不含右端值？lambda 为什么只能写表达式？</p>
+      </div>
+
+      <div class="task" data-task="q1" data-answer="B"
+           data-ok="对！Python 的 for 直接遍历序列里的每个元素，不像 C 那样定义迭代步骤和终止条件。" data-no="Python 的 for 是遍历，不是 C 式计数。回顾「05 核心判断②」。"
+           data-src="原文依据：第4章《for 语句》" data-review="回到「05 核心判断② / 06 概念②」复习">
+        <div class="q"><span class="qno">Q1</span>Python 的 for 语句和 C 的 for 最大区别是？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. 完全没区别</button>
+          <button class="opt" data-val="B">B. C 由用户定义迭代步骤和终止条件，Python 是遍历序列里的每个项</button>
+          <button class="opt" data-val="C">C. Python 的 for 只能遍历数字</button>
+          <button class="opt" data-val="D">D. C 不能用 for 循环</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q2" data-answer="B"
+           data-ok="正确！range(5) 生成 0、1、2、3、4，不含右端值 5（左闭右开）。" data-no="range 生成的序列不含右端值。回顾「05 核心判断③ / 06 概念③」。"
+           data-src="原文依据：第4章《range() 函数》" data-review="回到「06 关键概念③」复习">
+        <div class="q"><span class="qno">Q2</span><code>range(5)</code> 生成哪些数字？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. 1, 2, 3, 4, 5</button>
+          <button class="opt" data-val="B">B. 0, 1, 2, 3, 4（不含 5）</button>
+          <button class="opt" data-val="C">C. 0, 1, 2, 3, 4, 5</button>
+          <button class="opt" data-val="D">D. 只生成 5</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q3" data-answer="A"
+           data-ok="对！elif 是 else if 的缩写，用来避免层层嵌套的缩进。" data-no="elif = else if 的缩写。回顾「05 核心判断① / 06 概念①」。"
+           data-src="原文依据：第4章《if 语句》" data-review="回到「06 关键概念①」复习">
+        <div class="q"><span class="qno">Q3</span>关键字 <code>elif</code> 是什么的缩写？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. else if</button>
+          <button class="opt" data-val="B">B. else in if</button>
+          <button class="opt" data-val="C">C. else loop</button>
+          <button class="opt" data-val="D">D. 它不是缩写，是独立关键字</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q4" data-answer="B"
+           data-ok="正确！lambda 在语法上限于单个表达式，不能写语句（赋值/if语句/for 都不行）。" data-no="lambda 只能写一个表达式。回顾「05 核心判断⑥ / 06 概念⑥」。"
+           data-src="原文依据：第4章《Lambda 表达式》" data-review="回到「06 关键概念⑥」复习">
+        <div class="q"><span class="qno">Q4</span>lambda 表达式能包含什么内容？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. 任意语句（赋值、if、for 都行）</button>
+          <button class="opt" data-val="B">B. 只能是一个表达式（不能写语句）</button>
+          <button class="opt" data-val="C">C. 多行代码块</button>
+          <button class="opt" data-val="D">D. 只能写 return 语句</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+    </section>
+
+    <!-- 08 闯关任务 -->
+    <section id="task">
+      <span class="sec-id" data-sec="闯关任务">08 · 闯关任务 · 读代码判结果</span>
+      <h2>把概念落到代码上</h2>
+      <div class="card paper">
+        <p>这一组考<strong>应用</strong>：默认参数陷阱、lambda 返回值、遍历输出、默认参数调用。</p>
+      </div>
+
+      <div class="task" data-task="q5" data-answer="B"
+           data-ok="对！默认值只计算一次，可变列表 L 在多次调用间共享累积：f(1)=[1]，f(2)=[1,2]，f(3)=[1,2,3]。" data-no="可变默认参数会被共享累积。回顾「05 核心判断⑤ / 06 概念⑤」。"
+           data-src="原文依据：第4章《默认参数值》默认值只计算一次" data-review="回到「06 关键概念⑤」死磕">
+        <div class="q"><span class="qno">Q5</span><code>def f(a, L=[]): L.append(a); return L</code>，依次调用 <code>f(1)、f(2)、f(3)</code> 的结果是？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. [1] [2] [3]（每次都新建空列表）</button>
+          <button class="opt" data-val="B">B. [1] [1,2] [1,2,3]（默认值只算一次，L 被共享累积）</button>
+          <button class="opt" data-val="C">C. [3]（只保留最后一次）</button>
+          <button class="opt" data-val="D">D. 报错</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q6" data-answer="C"
+           data-ok="正确！make_incrementor(42) 返回 lambda x: x+42，f(1)=1+42=43。" data-no="lambda 捕获了 n=42，f(1)=1+42。回顾「06 概念⑥」。"
+           data-src="原文依据：第4章《Lambda 表达式》示例" data-review="回到「06 关键概念⑥」复习">
+        <div class="q"><span class="qno">Q6</span><code>def make_incrementor(n): return lambda x: x + n</code>，<code>f = make_incrementor(42)</code>，<code>f(1)</code> = ？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. 1</button>
+          <button class="opt" data-val="B">B. 42</button>
+          <button class="opt" data-val="C">C. 43</button>
+          <button class="opt" data-val="D">D. 报错</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q7" data-answer="A"
+           data-ok="对！for w in words 遍历每个元素，第一项 'cat' 长度 3，输出 'cat 3'。" data-no="for 遍历的是元素本身。回顾「06 概念②」。"
+           data-src="原文依据：第4章《for 语句》示例" data-review="回到「06 关键概念②」复习">
+        <div class="q"><span class="qno">Q7</span><code>words = ['cat','window','defenestrate']</code>，<code>for w in words: print(w, len(w))</code> 输出的第一行是？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. cat 3</button>
+          <button class="opt" data-val="B">B. 3 cat</button>
+          <button class="opt" data-val="C">C. cat</button>
+          <button class="opt" data-val="D">D. window 6</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q8" data-answer="B"
+           data-ok="完全正确！retries 有默认值 4，只给 prompt 时 retries 取默认值 4，不报错。" data-no="默认参数调用时可省略，取默认值。回顾「05 核心判断⑤ / 06 概念⑤」。"
+           data-src="原文依据：第4章《默认参数值》" data-review="回到「06 关键概念⑤」复习">
+        <div class="q"><span class="qno">Q8</span><code>def ask_ok(prompt, retries=4, reminder='再试'):</code>，调用 <code>ask_ok('quit?')</code> 时 <code>retries</code> 的值是？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. 报错（必须给全部参数）</button>
+          <button class="opt" data-val="B">B. 4（用默认值）</button>
+          <button class="opt" data-val="C">C. 0</button>
+          <button class="opt" data-val="D">D. None</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+    </section>
+
+    <!-- 09 误解与边界 -->
+    <section id="miss">
+      <span class="sec-id" data-sec="误解与边界">09 · 误解与边界</span>
+      <h2>4 个最容易踩的坑</h2>
+
+      <div class="card">
+        <h3>误解①：Python 的 for 像 C 一样要写 i=0;i&lt;n;i++</h3>
+        <p><b>真相</b>：Python 的 for 是<strong>遍历序列的项</strong>，直接 <code>for w in words</code> 取元素。要计数才用 <code>for i in range(n)</code>。</p>
+        <span class="src"><b>原文依据</b>：第4章《for 语句》——「Python 的 for 语句按顺序在任意序列中迭代其项。」</span>
+      </div>
+      <div class="card">
+        <h3>误解②：range(5) 包含 5</h3>
+        <p><b>真相</b>：<strong>不含右端值</strong>。<code>range(5)</code> 是 0~4。规则和切片一致（左闭右开）。</p>
+      </div>
+      <div class="card">
+        <h3>误解③：lambda 能写 if 语句、赋值、for</h3>
+        <p><b>真相</b>：lambda 在语法上<strong>限于单个表达式</strong>，不能写语句。复杂逻辑必须用 <code>def</code> 定义函数。</p>
+      </div>
+      <div class="card">
+        <h3>误解④：默认参数每次调用都重新创建</h3>
+        <p><b>真相</b>：默认值<strong>只计算一次</strong>（定义时）。可变默认对象（列表）会在多次调用间共享累积。要避免用 <code>L=None</code> 再在函数内新建。</p>
+        <span class="src"><b>原文依据</b>：第4章《默认参数值》——「默认值只计算一次。当默认值是可变对象时，会有所不同。」</span>
+      </div>
+      <div class="warn"><b>边界</b>：本章覆盖 if/for/while/def/lambda。未深入：<code>match</code> 模式匹配、特殊参数（<code>/</code> 和 <code>*</code> 限定位置/关键字）、函数注解、解包实参——这些在官方教程同章但属进阶，可后续补。</div>
+    </section>
+
+    <!-- 10 背景知识缺口 -->
+    <section id="gap">
+      <span class="sec-id" data-sec="背景缺口">10 · 背景知识缺口</span>
+      <h2>要继续学还差什么</h2>
+      <div class="card">
+        <p><b>现在就该练（阻碍写代码）：</b></p>
+        <ul class="bul">
+          <li><b>亲手敲 if/for/while</b>—— 在解释器里写带缩进的多行结构，体会冒号+缩进的语法。</li>
+          <li><b>写 3 个函数</b>—— 一个带默认参数、一个用关键字参数调用、一个返回 lambda。亲手跑默认参数陷阱的例子。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <p><b>可以晚点补：</b></p>
+        <ul class="bul">
+          <li><b>match 模式匹配</b>—— 类似 switch，处理多分支更优雅。</li>
+          <li><b>特殊参数 / 和 *</b>—— 限定参数只能按位置或只能按关键字传。</li>
+          <li><b>函数注解（类型提示）</b>—— 写大项目、配合类型检查器时用。</li>
+          <li><b>数据结构（第三章）</b>—— dict/set/tuple、推导式，是函数处理数据的搭档。</li>
+        </ul>
+      </div>
+      <div class="note"><b>下一步</b>：把本章函数和循环练熟后，进第三章学数据结构——列表的高级用法、字典、集合、推导式，它们能让你的函数处理真正有用的数据。</div>
+    </section>
+
+    <!-- 11 报告 -->
+    <section id="report-sec">
+      <span class="sec-id" data-sec="学习报告">11 · 学习报告</span>
+      <h2>生成你的第二章报告</h2>
+      <div class="report-box">
+        <div class="rep-btns">
+          <button id="genReport">生成学习报告</button>
+          <button id="copyReport" class="alt">复制报告</button>
+        </div>
+        <div id="report">（点击"生成学习报告"后显示完成情况与错题清单。）</div>
+      </div>
+      <div class="wrong-box" style="margin-top:14px;">
+        <h3>📋 错题回流区</h3>
+        <ul id="wrongBox"><li style="color:#888">还没有错题。答错的题会自动收集到这里。</li></ul>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  本章帮你掌握 Python 的控制流与函数，但不能替代在解释器里动手敲代码。学习愉快 🐟<br>
+  由 <a href="https://lyzbcy.github.io/" target="_blank" rel="noopener">捞鱼</a> 制作
+</footer>
+
+<div class="float-btn" id="floatBtn">🐟 关于捞鱼</div>
+<div class="modal-mask" id="modalMask">
+  <div class="modal">
+    <button class="close" id="closeModal">×</button>
+    <div class="author">
+      <img src="https://s41.ax1x.com/2025/12/05/pZmPZPH.png" alt="捞鱼">
+      <div>
+        <div class="name">捞鱼</div>
+        <div class="sig">「一个弱小但有梦想的开发者」</div>
+        <span class="studio">捞鱼工作室</span><br>
+        <a class="goto" href="https://lyzbcy.github.io/about/" target="_blank" rel="noopener">了解更多 →</a>
+      </div>
+    </div>
+    <div class="qr-grid">
+      <div class="qr-cell"><div class="ttl">QQ 学习群</div><img src="img/sticker/qq-group.jpg" alt="QQ群二维码"><div class="desc">扫码进群一起学习</div></div>
+      <div class="qr-cell"><div class="ttl">赞赏支持</div><img src="img/sticker/reward-qr.jpg" alt="赞赏二维码"><div class="desc">请捞鱼喝杯奶茶</div></div>
+      <div class="qr-cell">
+        <div class="ttl">微信表情包</div>
+        <div class="sticker-row"><img src="img/sticker/ok.png" alt=""><img src="img/sticker/no.png" alt=""><img src="img/sticker/study.png" alt=""></div>
+        <img src="img/sticker/sticker-qr.png" alt="微信表情包二维码">
+        <div class="desc">📱 长按或扫码使用</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var qc=document.getElementById('quizCount');
+  if(qc)qc.textContent=document.querySelectorAll('.task').length;
+  var STAMP_MAP={'学习目标':'study.png','背景包':'study.png','问题定位':'study.png','结构地图':'ok.png','核心判断':'ok.png','关键概念':'study.png','苏格拉底关卡':'no.png','闯关任务':'final.png','误解与边界':'no.png','背景缺口':'study.png','学习报告':'final.png'};
+  document.querySelectorAll('.sec-id[data-sec]').forEach(function(el){var key=el.getAttribute('data-sec'),img=STAMP_MAP[key];if(img){var i=document.createElement('img');i.className='stamp';i.src='img/sticker/'+img;i.alt='';el.insertBefore(i,el.firstChild);}});
+  var mask=document.getElementById('modalMask');
+  document.getElementById('floatBtn').addEventListener('click',function(){mask.classList.add('open');});
+  document.getElementById('closeModal').addEventListener('click',function(){mask.classList.remove('open');});
+  mask.addEventListener('click',function(e){if(e.target===mask)mask.classList.remove('open');});
+})();
+</script>
+
+<script>
+(function(){
+  "use strict";
+  function $all(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));}
+  function selectedVals(t){return $all('.opt.selected',t).map(function(o){return o.getAttribute('data-val');}).sort();}
+  function setFb(t,state,html){var fb=t.querySelector('.feedback');if(!fb)return;fb.className='feedback'+(state?(' '+state):'');fb.innerHTML=html;}
+  function updateBar(){var all=$all('.task'),done=$all('.task[data-answered="1"]');var fill=document.getElementById('barFill'),num=document.getElementById('barNum');if(fill)fill.style.width=all.length?(done.length/all.length*100)+'%':'0%';if(num)num.textContent=done.length+' / '+all.length;}
+  function renderWrong(){var box=document.getElementById('wrongBox');if(!box)return;var wrong=$all('.task[data-answered="1"][data-correct="0"]');if(!wrong.length){box.innerHTML='<li style="color:#888">还没有错题。答错的题会自动收集到这里。</li>';return;}box.innerHTML='';wrong.forEach(function(t){var li=document.createElement('li');li.textContent='【'+(t.getAttribute('data-task')||'')+'】'+(t.getAttribute('data-review')||'回到对应模块复习');box.appendChild(li);});}
+  function check(t){var type=t.getAttribute('data-type'),ok=false;if(type==='selects'){var sels=$all('select.match',t),allok=true,empty=false;sels.forEach(function(s){if(!s.value)empty=true;if(s.value!==s.getAttribute('data-correct'))allok=false;});if(empty){setFb(t,'no','请先把每一项都选好再检查。');return;}ok=allok;}else{var sel=selectedVals(t);if(!sel.length){setFb(t,'no','请先选择一个选项再检查。');return;}var ans=(t.getAttribute('data-answer')||'').split(',').map(function(x){return x.trim();}).sort();ok=(sel.join('|')===ans.join('|'));}var body=ok?(t.getAttribute('data-ok')||'回答正确。'):(t.getAttribute('data-no')||'再想想。');var src=t.getAttribute('data-src');setFb(t,ok?'ok':'no',(ok?'✅ ':'❌ ')+body+(src?('<span class="src">'+src+'</span>'):''));t.setAttribute('data-answered','1');t.setAttribute('data-correct',ok?'1':'0');updateBar();renderWrong();}
+  function genReport(){var box=document.getElementById('report');if(!box)return;var all=$all('.task'),done=$all('.task[data-answered="1"]'),right=$all('.task[data-answered="1"][data-correct="1"]');var lines=['=== 第二章 控制流与函数 学习报告 ===','完成题目：'+done.length+' / '+all.length,'答对：'+right.length+' 题',''];var wrong=$all('.task[data-answered="1"][data-correct="0"]');if(wrong.length){lines.push('我答错的题（建议复习）：');wrong.forEach(function(t){lines.push('- '+(t.getAttribute('data-task')||'')+'：'+(t.getAttribute('data-review')||''));});}else{lines.push('暂无错题。');}box.textContent=lines.join('\n');}
+  document.addEventListener('click',function(e){var c=e.target.closest?e.target:null;var opt=c&&e.target.closest('.opt');if(opt){var t=opt.closest('.task');if(!t)return;if(t.getAttribute('data-multi')==='true'){opt.classList.toggle('selected');}else{$all('.opt',t).forEach(function(o){o.classList.remove('selected');});opt.classList.add('selected');}return;}var btn=c&&e.target.closest('.check');if(btn){var tk=btn.closest('.task');if(tk)check(tk);return;}if(e.target&&e.target.id==='genReport'){genReport();return;}if(e.target&&e.target.id==='copyReport'){var r=document.getElementById('report');if(r&&navigator.clipboard)navigator.clipboard.writeText(r.textContent);return;}});
+  function init(){updateBar();renderWrong();}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+
+<button id="voiceFab" aria-label="打开后台语音"><span class="fab-icon">🎧</span><span class="fab-text">后台语音</span></button>
+<div id="voicePlayer">
+  <button class="vp-close" aria-label="关闭">✕</button>
+  <div class="vp-head">🎧 后台语音 · 连续播放</div>
+  <div class="vp-title">—</div>
+  <div class="vp-controls"><button class="vp-prev" aria-label="上一章">⏮</button><button class="vp-play" aria-label="播放/暂停">▶</button><button class="vp-next" aria-label="下一章">⏭</button></div>
+  <input class="vp-seek" type="range" min="0" max="1000" value="0" aria-label="进度">
+  <div class="vp-time"><span class="vp-cur">00:00</span><span class="vp-dur">00:00</span></div>
+  <div class="vp-sub">点开播放后，这里会同步显示字幕</div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  if(window.__voiceEngine) return;
+  window.__voiceEngine = true;
+  var listNode = document.getElementById('voicePlaylist');
+  if(!listNode){ return; }
+  var TRACKS = [];
+  try { TRACKS = JSON.parse(listNode.textContent.trim()); } catch(e){ return; }
+  if(!TRACKS.length) return;
+  var player = document.getElementById('voicePlayer');
+  var fab = document.getElementById('voiceFab');
+  var audio = new Audio(); audio.preload = 'metadata';
+  var cur = 0, ranges = [], total = 0, seeking = false;
+  function $(s){ return player ? player.querySelector(s) : null; }
+  function fmt(s){ s=Math.max(0,Math.floor(s||0)); var m=Math.floor(s/60), x=s%60; return (m<10?'0':'')+m+':'+(x<10?'0':'')+x; }
+  var probe = TRACKS.map(function(){ return {dur:0}; });
+  function tryFinalize(){ if(probe.some(function(p){return !p.dur;})) return; ranges = []; total = 0; probe.forEach(function(p){ ranges.push({dur:p.dur, start:total}); total += p.dur; }); var d = $('.vp-dur'); if(d) d.textContent = fmt(total); var sk = $('.vp-seek'); if(sk){ sk.max = Math.max(1000, Math.floor(total*10)); } }
+  TRACKS.forEach(function(t, i){ var a = new Audio(); a.preload = 'metadata'; a.src = t.src; a.addEventListener('loadedmetadata', function(){ probe[i].dur = a.duration || 0; tryFinalize(); }); a.addEventListener('error', function(){ probe[i].dur = 0; tryFinalize(); }); });
+  function load(i){ cur = i; audio.src = TRACKS[i].src; var ti = $('.vp-title'); if(ti) ti.textContent = TRACKS[i].title || ('第 '+(i+1)+' 段'); markBtn(i); }
+  function play(){ audio.play().then(function(){ show(); setPlayIcon(true); if(fab) fab.classList.add('beat'); }).catch(function(){}); }
+  function pause(){ audio.pause(); setPlayIcon(false); if(fab) fab.classList.remove('beat'); }
+  function toggle(){ audio.paused ? play() : pause(); }
+  function next(){ if(cur < TRACKS.length-1){ load(cur+1); play(); } else { pause(); } }
+  function prev(){ var abs = absTime(); if(cur > 0 && abs - ranges[cur].start < 3){ load(cur-1); play(); } else { audio.currentTime = 0; } }
+  function absTime(){ return ranges[cur] ? ranges[cur].start + (audio.currentTime||0) : (audio.currentTime||0); }
+  function setPlayIcon(on){ var b=$('.vp-play'); if(b) b.textContent = on ? '⏸' : '▶'; }
+  function show(){ if(player) player.classList.add('show'); }
+  function hide(){ if(player) player.classList.remove('show'); }
+  function markBtn(i){ document.querySelectorAll('.voice-btn[data-voice-id]').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-voice-id') === TRACKS[i].id); }); }
+  audio.addEventListener('timeupdate', function(){ if(seeking) return; if(!ranges[cur]) return; var abs = absTime(); var sk = $('.vp-seek'); var c = $('.vp-cur'); if(sk && total) sk.value = Math.round(abs / total * (sk.max||1000)); if(c) c.textContent = fmt(abs); });
+  audio.addEventListener('ended', function(){ if(cur < TRACKS.length-1){ load(cur+1); play(); } else { setPlayIcon(false); if(fab) fab.classList.remove('beat'); } });
+  function seekToFraction(frac){ if(!total) return; var target = Math.max(0, Math.min(total, frac * total)); var i = 0; while(i < ranges.length-1 && ranges[i].start + ranges[i].dur < target){ i++; } if(i !== cur){ cur = i; audio.src = TRACKS[i].src; var ti=$('.vp-title'); if(ti) ti.textContent = TRACKS[i].title||('第 '+(i+1)+' 段'); markBtn(i); } audio.currentTime = target - ranges[i].start; var c=$('.vp-cur'); if(c) c.textContent = fmt(target); }
+  document.addEventListener('click', function(e){ var t = e.target; var vb = t.closest ? t.closest('.voice-btn[data-voice-id]') : null; if(vb){ var id = vb.getAttribute('data-voice-id'), idx = -1; TRACKS.forEach(function(tr, k){ if(tr.id === id) idx = k; }); if(idx >= 0){ load(idx); play(); } return; } if(t.id === 'voiceFab'){ show(); if(audio.paused && !audio.src){ load(0); } if(audio.paused){ play(); } return; } if(!player || !player.contains(t)) return; if(t.classList.contains('vp-play')){ toggle(); return; } if(t.classList.contains('vp-prev')){ prev(); return; } if(t.classList.contains('vp-next')){ next(); return; } if(t.classList.contains('vp-close')){ pause(); hide(); return; } });
+  var sk = $('.vp-seek');
+  if(sk){ sk.addEventListener('input', function(){ seeking = true; if(total){ var c=$('.vp-cur'); if(c) c.textContent = fmt((sk.value/(sk.max||1000))*total); } }); sk.addEventListener('change', function(){ seekToFraction(sk.value/(sk.max||1000)); seeking = false; }); }
+})();
+</script>
+
+<script src="voice-sub.js"></script>
+
+</body>
+</html>

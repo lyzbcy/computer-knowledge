@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第三章 · 数据结构 list/tuple/set/dict · Python 3.12 学习地图</title>
+<link rel="icon" href="img/sticker/mascot.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<script type="application/json" id="voicePlaylist">
+[
+  {"id":"ch3","title":"第三章 数据结构 list/tuple/set/dict","src":"audio/ch3.mp3"}
+]
+</script>
+
+<div class="layout">
+  <aside class="sidebar">
+    <a class="back-link" href="index.html">← 返回 Python 目录</a>
+    <h1>第三章<br>数据结构</h1>
+    <div class="sub">3.12 官方教程 · list/tuple/set/dict</div>
+    <div class="progress-wrap"><div id="barFill"></div></div>
+    <div id="barNum">0 / 0</div>
+    <ul class="nav">
+      <li><a href="#goal"><span class="no">01</span>学习目标</a></li>
+      <li><a href="#bg"><span class="no">02</span>零基础背景包</a></li>
+      <li><a href="#problem"><span class="no">03</span>这章回答什么</a></li>
+      <li><a href="#map"><span class="no">04</span>结构地图</a></li>
+      <li><a href="#core"><span class="no">05</span>核心判断</a></li>
+      <li><a href="#concept"><span class="no">06</span>关键概念</a></li>
+      <li><a href="#socratic"><span class="no">07</span>苏格拉底关卡</a></li>
+      <li><a href="#task"><span class="no">08</span>闯关任务</a></li>
+      <li><a href="#miss"><span class="no">09</span>误解与边界</a></li>
+      <li><a href="#gap"><span class="no">10</span>背景知识缺口</a></li>
+      <li><a href="#report-sec"><span class="no">11</span>学习报告</a></li>
+    </ul>
+  </aside>
+
+  <main class="main">
+
+    <div class="hero">
+      <img class="mascot" src="img/sticker/mascot.png" alt="捞鱼">
+      <div>
+        <h2>第三章 · 数据结构（list/tuple/set/dict）—— 四种容器与推导式</h2>
+        <p>list 可变 ｜ tuple 不可变 ｜ set 去重无序 ｜ dict 键值对 ｜ del 删除 ｜ 列表推导式 ｜ 含 <span class="stat" id="quizCount">…</span> 道互动关卡</p>
+      </div>
+      <button class="voice-btn" data-voice-id="ch3">🎧 听这章</button>
+    </div>
+
+    <!-- 01 目标 -->
+    <section id="goal">
+      <span class="sec-id" data-sec="学习目标">01 · 学习目标</span>
+      <h2>学完这一章你要能做到</h2>
+      <div class="card">
+        <ul class="bul">
+          <li><strong>分清四种容器</strong>：list（可变有序）、tuple（不可变）、set（去重无序）、dict（键值对），各自用什么符号、可不可变。</li>
+          <li><strong>操作 list</strong>：会 <code>append</code>（追加）、<code>insert</code>（插入）、<code>pop</code>（弹出）、<code>sort</code>（排序），知道这些方法原地修改返回 None。</li>
+          <li><strong>知道 tuple 不可变</strong>：括号创建，单元素要加逗号 <code>('hi',)</code>，支持解包 <code>x,y = t</code>。</li>
+          <li><strong>用 set 去重</strong>：花括号或 <code>set()</code> 创建，自动去重，支持集合运算（并 <code>|</code> 交 <code>&amp;</code>）。</li>
+          <li><strong>用 dict 存键值对</strong>：键唯一不可变，用 <code>del</code> 删键，<code>in</code> 查键，<code>items()</code> 遍历。</li>
+          <li><strong>写列表推导式</strong>：<code>[x for x in ...]</code>，能用任何可迭代对象，不只是列表。</li>
+        </ul>
+        <div class="note"><b>阅读路径</b>：背景包 → 结构地图 → 核心判断 → 关键概念 → 做关卡题 → 生成报告。</div>
+      </div>
+      <div class="card paper">
+        <span class="tag" style="background:var(--brick);color:#FFE9B0;">本章定位</span>
+        <p>这是 Python 学习地图的第三章。第一章你学了列表初步，第二章你学了控制流和函数。本章把"数据容器"讲透——四种核心数据结构 + 推导式，它们是 Python 处理数据的利器。内容全部基于 Python 3.12 官方教程第 5 章《数据结构》。</p>
+        <span class="src"><b>原文依据</b>：Python 3.12 官方教程第 5 章《数据结构》——涵盖列表详解（方法）、del 语句、元组、集合、字典、列表推导式。</span>
+      </div>
+    </section>
+
+    <!-- 02 背景 -->
+    <section id="bg">
+      <span class="sec-id" data-sec="背景包">02 · 零基础背景包</span>
+      <h2>读这章前先知道的 4 件事</h2>
+
+      <div class="card">
+        <span class="tag bg">背景①</span><b>什么是"数据结构"</b>
+        <p>数据结构就是<strong>装数据的容器</strong>。不同的容器有不同的特性：有的可改、有的不能改、有的自动去重、有的用名字查值。选对容器，代码就简洁高效。Python 内置了四种最常用的：list、tuple、set、dict。</p>
+        <div class="note">读这章需要它：理解为什么要有四种而不是一种。</div>
+      </div>
+
+      <div class="card">
+        <span class="tag bg">背景②</span><b>可变 vs 不可变</b>
+        <p>"可变"指<strong>创建后还能改内容</strong>（list、dict、set）；"不可变"指<strong>创建后不能改</strong>（tuple、字符串）。可变性决定了能不能用 <code>append</code>、能不能当字典的键、能不能当 set 的元素。</p>
+        <div class="note">读这章需要它：这是区分四种容器的核心维度之一。</div>
+      </div>
+
+      <div class="card">
+        <span class="tag bg">背景③</span><b>有序 vs 无序</b>
+        <p>list、tuple 是<strong>有序</strong>的：元素按放入顺序排列，能用下标访问。set 是<strong>无序</strong>的：元素没有固定顺序、不能按下标取。dict 在 3.7+ 保持插入顺序，但本质是用键查值。</p>
+        <div class="note">读这章需要它：理解为什么 set 不能 <code>s[0]</code> 取值。</div>
+      </div>
+
+      <div class="card">
+        <span class="tag bg">背景④</span><b>键值对的概念</b>
+        <p>dict 不用连续整数当下标，而用<strong>"键（key）"查"值（value）"</strong>。键可以是字符串、数字等不可变类型。这就像查字典——给词（键）找释义（值），比按下标翻页快得多。</p>
+        <div class="note">读这章需要它：理解 dict 为什么比 list 更适合"按名查值"。</div>
+      </div>
+    </section>
+
+    <!-- 03 问题定位 -->
+    <section id="problem">
+      <span class="sec-id" data-sec="问题定位">03 · 这章在回答什么</span>
+      <h2>表面 vs 深层问题</h2>
+      <div class="card paper">
+        <p><strong>表层</strong>：list/tuple/set/dict 怎么创建、怎么增删改查。</p>
+        <p><strong>深层</strong>：Python 为什么要提供四种容器而不是一种？它们各自解决了什么问题？为什么 tuple 不可变而 list 可变？推导式凭什么比 for 循环更简洁？</p>
+        <p><strong>只记一个问题</strong>：<span style="background:var(--marker);padding:2px 6px;border-radius:4px;">面对一份数据，我该用 list、tuple、set 还是 dict？它们各自的创建方式、可变性、增删改查规则是什么？</span></p>
+        <div class="note">带着这个问题读「05 核心判断」和「06 关键概念」，它们都在回答它。</div>
+      </div>
+    </section>
+
+    <!-- 04 结构地图 -->
+    <section id="map">
+      <span class="sec-id" data-sec="结构地图">04 · 结构地图</span>
+      <h2>四种容器 + 推导式</h2>
+      <div class="card">
+        <p>官方教程第 5 章按<strong>"最常用 → 最灵活"的顺序</strong>展开：先深入 list（最常用），再讲 del（删除），然后是 tuple（不可变）、set（去重）、dict（键值对），最后是推导式（高效生成）。</p>
+      </div>
+      <div class="flow">
+        <div class="flow-step"><span class="num">1</span><b>list 列表 ⭐</b>｜可变有序，<code>[]</code> 创建，<code>append/insert/pop/sort</code> 操作。</div>
+        <div class="flow-step"><span class="num">2</span><b>tuple 元组</b>｜不可变，<code>()</code> 创建，用于固定不变的序列、函数多返回值。</div>
+        <div class="flow-step"><span class="num">3</span><b>set 集合</b>｜去重无序，<code>{}</code> 或 <code>set()</code>，支持并交差运算。</div>
+        <div class="flow-step hot"><span class="num">4</span><b>dict 字典 + 推导式 ⭐</b>｜dict 用键查值；推导式 <code>[x for x in ...]</code> 一行生成新列表。</div>
+      </div>
+      <div class="note">节点关系：四种容器按"是否可变""是否有序""是否键值对"区分。其中 <strong>list 和 dict 是日常用得最多的</strong>，tuple 用于不可变场景，set 用于去重。</div>
+    </section>
+
+    <!-- 05 核心判断 -->
+    <section id="core">
+      <span class="sec-id" data-sec="核心判断">05 · 核心判断</span>
+      <h2>6 条核心判断（每条带官方原文依据）</h2>
+
+      <div class="card">
+        <span class="tag fact">事实</span><b>① list 是可变有序的列表：append 追加、insert 插入、pop 弹出末尾元素。</b>
+        <p><code>append(x)</code> 在末尾加元素；<code>insert(i,x)</code> 在位置 i 插入；<code>pop()</code> 弹出末尾元素（可用于栈）。这些都是<strong>原地修改</strong>。</p>
+        <span class="src"><b>原文依据</b>：Python 3.12 官方教程第 5 章《列表详解》——「<code>list.append(x)</code>：在列表的末尾添加一个元素……<code>list.insert(i, x)</code>：在给定的位置插入一个元素。」</span>
+      </div>
+
+      <div class="card">
+        <span class="tag fact">事实</span><b>② tuple（元组）是不可变的，由若干逗号分隔的值组成，常用括号创建。</b>
+        <p>tuple 一旦创建<strong>不能修改</strong>。空元组 <code>()</code>；单元素元组要加逗号 <code>('hello',)</code>（否则只是括号里的值）。支持解包 <code>x, y, z = t</code>。</p>
+        <span class="src"><b>原文依据</b>：Python 3.12 官方教程第 5 章《元组和序列》——「元组由若干逗号分隔的值组成……元组是不可变的，但元组可以包含可变对象。」</span>
+      </div>
+
+      <div class="card">
+        <span class="tag fact">事实</span><b>③ set 是由不重复元素组成的无序容器，用花括号或 set() 创建，自动去重。</b>
+        <p>set 用于<strong>去重和成员检测</strong>。<code>{'apple','orange','apple'}</code> 自动变成不重复的集合。注意：空集合必须用 <code>set()</code>，<code>{}</code> 是空字典！</p>
+        <span class="src"><b>原文依据</b>：Python 3.12 官方教程第 5 章《集合》——「集合是由不重复元素组成的无序容器。基本用法包括成员检测和消除重复元素。注意：想要创建空集合，你必须使用 set()，而不是 {}。」</span>
+      </div>
+
+      <div class="card">
+        <span class="tag fact">事实</span><b>④ dict（字典）是键值对的集合，键唯一且必须是不可变类型；用 del 删键、in 查键。</b>
+        <p>dict 以<strong>键</strong>（不是连续整数）为索引。键必须是不可变类型（字符串/数字/只含不可变项的 tuple），<strong>不能用列表做键</strong>（列表可变）。键唯一。</p>
+        <span class="src"><b>原文依据</b>：Python 3.12 官方教程第 5 章《字典》——「字典以关键字为索引……不能用列表做关键字，因为列表可以用索引、切片或 append() 和 extend() 等方法改变。」</span>
+      </div>
+
+      <div class="card">
+        <span class="tag fact">事实</span><b>⑤ del 语句按索引/键删除元素，也可删除切片或整个变量；不同于有返回值的 pop()。</b>
+        <p><code>del a[0]</code> 删列表第 0 项；<code>del tel['sape']</code> 删字典键；<code>del a[:]</code> 清空列表；<code>del a</code> 删整个变量（之后引用 a 报错）。<strong>del 没有返回值</strong>，和 pop() 不同。</p>
+        <span class="src"><b>原文依据</b>：Python 3.12 官方教程第 5 章《del 语句》——「del 语句可以从列表中按索引而不是值来删除一个项……这不同于有返回值的 pop() 方法。」</span>
+      </div>
+
+      <div class="card">
+        <span class="tag judge">判断</span><b>⑥ 列表推导式 [x for x in ...] 从序列简便地创建列表，可遍历任何可迭代对象（不只是列表）。</b>
+        <p>推导式在 <code>for</code> 后跟一个表达式，再有零或多个 <code>for</code>/<code>if</code>。<code>[x**2 for x in range(5)]</code> 一行生成 <code>[0,1,4,9,16]</code>。它能遍历<strong>任何可迭代对象</strong>（range、字符串、tuple 等）。</p>
+        <span class="src"><b>原文依据</b>：Python 3.12 官方教程第 5 章《列表推导式》——「列表推导式提供了从序列创建列表的简便途径。每个列表推导式都在 for 之后跟一个表达式，然后有零或多个 for 或 if 子句。」</span>
+      </div>
+    </section>
+
+    <!-- 06 关键概念 -->
+    <section id="concept">
+      <span class="sec-id" data-sec="关键概念">06 · 关键概念拆解</span>
+      <h2>6 个关键概念</h2>
+
+      <div class="card">
+        <h3>① list 列表（可变有序）</h3>
+        <p><b>定义</b>：方括号 <code>[]</code> 创建的有序元素集合，可变。常用方法：append/insert/pop/sort。</p>
+<pre style="margin:6px 0;font-family:var(--font-mono);font-size:.82rem;overflow-x:auto;background:#fff;">fruits = ['orange', 'apple', 'pear', 'banana']
+fruits.append('grape')     # 末尾追加
+fruits.insert(0, 'kiwi')   # 在位置0插入
+fruits.sort()              # 排序（原地，返回 None）
+fruits.pop()               # 弹出末尾元素
+fruits.count('apple')      # 计数</pre>
+        <div class="warn"><b>注意</b>：<code>insert/remove/sort</code> 等<strong>仅修改列表的方法都返回 None</strong>（这是 Python 可变数据结构的设计原则），不要写 <code>lst = lst.sort()</code>。</div>
+      </div>
+
+      <div class="card">
+        <h3>② tuple 元组（不可变）</h3>
+        <p><b>定义</b>：逗号分隔的值，常加括号。不可变——创建后不能增删改元素。</p>
+<pre style="margin:6px 0;font-family:var(--font-mono);font-size:.8rem;overflow-x:auto;background:#fff;">t = 12345, 54321, 'hello!'   # 元组打包
+t[0]                         # 12345
+x, y, z = t                  # 序列解包
+
+empty = ()                   # 空元组
+singleton = 'hello',         # 单元素必须带逗号！
+len(singleton)               # 1</pre>
+        <div class="warn"><b>不要误解成</b>：单元素写 <code>('hello')</code> 是字符串不是元组，必须 <code>('hello',)</code> 带逗号。</div>
+      </div>
+
+      <div class="card">
+        <h3>③ set 集合（去重无序）</h3>
+        <p><b>定义</b>：花括号或 <code>set()</code> 创建，元素不重复、无序。支持集合运算。</p>
+<pre style="margin:6px 0;font-family:var(--font-mono);font-size:.8rem;overflow-x:auto;background:#fff;">basket = {'apple', 'orange', 'apple', 'pear'}
+print(basket)        # 去重：{'apple','orange','pear'}
+'orange' in basket   # True（快速成员检测）
+
+a = set('abracadabra')
+b = set('alacazam')
+a - b    # 差：在a不在b
+a | b    # 并：在a或b
+a &amp; b    # 交：既在a也在b
+a ^ b    # 对称差：不同时存在</pre>
+        <div class="note">空集合用 <code>set()</code>，<code>{}</code> 是空字典！集合推导式：<code>{x for x in 'abracadabra' if x not in 'abc'}</code>。</div>
+      </div>
+
+      <div class="card">
+        <h3>④ dict 字典（键值对）</h3>
+        <p><b>定义</b>：<code>{键: 值}</code>，键唯一且不可变。用键存取值，<code>del</code> 删键，<code>in</code> 查键。</p>
+<pre style="margin:6px 0;font-family:var(--font-mono);font-size:.8rem;overflow-x:auto;background:#fff;">tel = {'jack': 4098, 'sape': 4139}
+tel['guido'] = 4127     # 添加/修改
+tel['jack']             # 4098（按键取值）
+del tel['sape']         # 删除键
+'guido' in tel          # True（查键是否存在）
+
+# 遍历键值对
+for k, v in tel.items():
+    print(k, v)</pre>
+        <div class="note">字典推导式：<code>{x: x**2 for x in (2,4,6)}</code> 得 <code>{2:4, 4:16, 6:36}</code>。</div>
+      </div>
+
+      <div class="card">
+        <h3>⑤ del 语句</h3>
+        <p><b>定义</b>：按索引/键/切片删除，或删整个变量。<strong>无返回值</strong>（区别于 pop）。</p>
+<pre style="margin:6px 0;font-family:var(--font-mono);font-size:.8rem;overflow-x:auto;background:#fff;">a = [-1, 1, 66.25, 333, 333, 1234.5]
+del a[0]        # [1, 66.25, 333, 333, 1234.5]
+del a[2:4]      # [1, 66.25, 1234.5]
+del a[:]        # []  （清空列表）
+del a           # 删除变量，再引用 a 会报错</pre>
+        <div class="warn"><b>区别 pop</b>：<code>pop()</code> 删除并返回被删元素；<code>del</code> 只删除、不返回值。</div>
+      </div>
+
+      <div class="card">
+        <h3>⑥ 列表推导式</h3>
+        <p><b>定义</b>：<code>[表达式 for 变量 in 可迭代对象 if 条件]</code>，一行生成新列表。能遍历<strong>任何可迭代对象</strong>。</p>
+<pre style="margin:6px 0;font-family:var(--font-mono);font-size:.8rem;overflow-x:auto;background:#fff;"># 组合两个列表中不相等的元素
+[(x, y) for x in [1,2,3] for y in [3,1,4] if x != y]
+# [(1,3),(1,4),(2,3),(2,1),(2,4),(3,1),(3,4)]
+
+# 遍历字符串（可迭代对象不只是列表）
+from math import pi
+[str(round(pi, i)) for i in range(1, 6)]
+# ['3.1', '3.14', '3.142', '3.1416', '3.14159']</pre>
+        <div class="warn"><b>不要误解成</b>：推导式只能遍历列表。错！它能遍历任何可迭代对象（range/字符串/tuple/dict 都行）。</div>
+      </div>
+    </section>
+
+    <!-- 07 苏格拉底关卡 -->
+    <section id="socratic">
+      <span class="sec-id" data-sec="苏格拉底关卡">07 · 苏格拉底式阅读关卡</span>
+      <h2>先想清楚这几问</h2>
+      <div class="card paper">
+        <p>这一组考<strong>理解</strong>：tuple 凭什么不可变？set 凭什么无序？为什么 <code>{}</code> 不是空集合？推导式能遍历什么？</p>
+      </div>
+
+      <div class="task" data-task="q1" data-answer="B"
+           data-ok="对！tuple 不可变，创建后不能修改元素。要改用 list。" data-no="tuple 不可变。回顾「05 核心判断② / 06 概念②」。"
+           data-src="原文依据：第5章《元组和序列》" data-review="回到「05 核心判断② / 06 概念②」复习">
+        <div class="q"><span class="qno">Q1</span>关于 tuple（元组），下面哪个说法正确？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. tuple 创建后可以随意增删改元素</button>
+          <button class="opt" data-val="B">B. tuple 是不可变的，创建后不能修改</button>
+          <button class="opt" data-val="C">C. tuple 和 list 完全一样</button>
+          <button class="opt" data-val="D">D. tuple 没有长度限制但 list 有</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q2" data-answer="B"
+           data-ok="正确！{} 创建的是空字典，不是空集合。空集合必须用 set()。" data-no="{} 是空字典！空集合要用 set()。回顾「05 核心判断③ / 06 概念③」。"
+           data-src="原文依据：第5章《集合》" data-review="回到「06 关键概念③」复习">
+        <div class="q"><span class="qno">Q2</span>创建一个<strong>空集合</strong>，正确写法是？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. <code>{}</code></button>
+          <button class="opt" data-val="B">B. <code>set()</code></button>
+          <button class="opt" data-val="C">C. <code>[]</code></button>
+          <button class="opt" data-val="D">D. <code>()</code></button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q3" data-answer="A"
+           data-ok="对！set 是无序容器，自动去掉重复元素 'apple'。" data-no="set 无序且去重。回顾「05 核心判断③ / 06 概念③」。"
+           data-src="原文依据：第5章《集合》不重复无序" data-review="回到「06 关键概念③」复习">
+        <div class="q"><span class="qno">Q3</span><code>{'apple','orange','apple','pear'}</code> 这个集合里有几个元素？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. 3 个（apple 重复，自动去重）</button>
+          <button class="opt" data-val="B">B. 4 个（不去重）</button>
+          <button class="opt" data-val="C">C. 2 个</button>
+          <button class="opt" data-val="D">D. 报错（不允许重复）</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q4" data-answer="B"
+           data-ok="正确！字典的键必须不可变，列表可变所以不能做键。可用字符串、数字、只含不可变项的 tuple。" data-no="列表可变，不能做字典的键。回顾「05 核心判断④ / 06 概念④」。"
+           data-src="原文依据：第5章《字典》键必须不可变" data-review="回到「06 关键概念④」复习">
+        <div class="q"><span class="qno">Q4</span>字典的键（key）可以用下面哪种类型？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. 列表</button>
+          <button class="opt" data-val="B">B. 字符串（不可变类型）</button>
+          <button class="opt" data-val="C">C. 字典</button>
+          <button class="opt" data-val="D">D. 集合</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+    </section>
+
+    <!-- 08 闯关任务 -->
+    <section id="task">
+      <span class="sec-id" data-sec="闯关任务">08 · 闯关任务 · 读代码判结果</span>
+      <h2>把概念落到代码上</h2>
+      <div class="card paper">
+        <p>这一组考<strong>应用</strong>：推导式结果、单元素元组、sort 返回值、del vs pop。</p>
+      </div>
+
+      <div class="task" data-task="q5" data-answer="C"
+           data-ok="对！列表推导式 [x**2 for x in range(5)] 生成 0,1,4,9,16。" data-no="推导式遍历 range(5) 即 0~4，求平方。回顾「05 核心判断⑥ / 06 概念⑥」。"
+           data-src="原文依据：第5章《列表推导式》" data-review="回到「06 关键概念⑥」死磕">
+        <div class="q"><span class="qno">Q5</span><code>[x**2 for x in range(5)]</code> 的结果是？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. [1, 4, 9, 16, 25]</button>
+          <button class="opt" data-val="B">B. [0, 1, 2, 3, 4]</button>
+          <button class="opt" data-val="C">C. [0, 1, 4, 9, 16]</button>
+          <button class="opt" data-val="D">D. [1, 4, 9, 16]</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q6" data-answer="B"
+           data-ok="正确！('hello',) 带逗号才是单元素元组，('hello') 只是字符串。" data-no="单元素元组必须带逗号。回顾「06 概念②」。"
+           data-src="原文依据：第5章《元组》单元素带逗号" data-review="回到「06 关键概念②」复习">
+        <div class="q"><span class="qno">Q6</span><code>s = ('hello',)</code>，<code>type(s)</code> 是？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. str（字符串，因为括号被当成普通括号）</button>
+          <button class="opt" data-val="B">B. tuple（带逗号，是单元素元组）</button>
+          <button class="opt" data-val="C">C. list</button>
+          <button class="opt" data-val="D">D. 报错</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q7" data-answer="A"
+           data-ok="对！sort() 原地排序返回 None。lst 本身已被排序为 [1,2,3]，但 res 是 None。" data-no="list 的 sort/insert/remove 都返回 None（原地修改）。回顾「06 概念①」。"
+           data-src="原文依据：第5章《列表》修改方法返回 None" data-review="回到「06 关键概念①」复习">
+        <div class="q"><span class="qno">Q7</span><code>lst = [3,1,2]; res = lst.sort()</code>，<code>res</code> 的值是？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. None（sort 原地修改，返回 None）</button>
+          <button class="opt" data-val="B">B. [1, 2, 3]</button>
+          <button class="opt" data-val="C">C. [3, 1, 2]</button>
+          <button class="opt" data-val="D">D. 报错</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q8" data-answer="B"
+           data-ok="完全正确！pop() 弹出并返回被删元素 'pear'；del 只删除不返回值。" data-no="pop 返回被删元素，del 无返回值。回顾「05 核心判断⑤ / 06 概念⑤」。"
+           data-src="原文依据：第5章《del 语句》不同于 pop" data-review="回到「06 关键概念⑤」复习">
+        <div class="q"><span class="qno">Q8</span><code>del</code> 和 <code>pop()</code> 的关键区别是？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. 完全一样</button>
+          <button class="opt" data-val="B">B. pop() 返回被删元素，del 只删除不返回值</button>
+          <button class="opt" data-val="C">C. del 返回被删元素，pop 不返回</button>
+          <button class="opt" data-val="D">D. del 只能删字典，pop 只能删列表</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+    </section>
+
+    <!-- 09 误解与边界 -->
+    <section id="miss">
+      <span class="sec-id" data-sec="误解与边界">09 · 误解与边界</span>
+      <h2>4 个最容易踩的坑</h2>
+
+      <div class="card">
+        <h3>误解①：tuple 创建后能改元素</h3>
+        <p><b>真相</b>：tuple <strong>不可变</strong>，不能增删改元素。要可变得用 list。但 tuple 可以"包含"可变对象（如内含 list）。</p>
+        <span class="src"><b>原文依据</b>：第5章《元组》——「元组是不可变的，但元组可以包含可变对象。」</span>
+      </div>
+      <div class="card">
+        <h3>误解②：set 是有序的，能 s[0] 取值</h3>
+        <p><b>真相</b>：set 是<strong>无序</strong>的，元素没有固定顺序，<strong>不能按下标访问</strong> <code>s[0]</code> 会报错。它的价值是去重和成员检测。</p>
+      </div>
+      <div class="card">
+        <h3>误解③：{} 创建的是空集合</h3>
+        <p><b>真相</b>：<code>{}</code> 创建的是<strong>空字典</strong>！空集合必须用 <code>set()</code>。这是高频踩坑点。</p>
+        <span class="src"><b>原文依据</b>：第5章《集合》——「想要创建空集合，你必须使用 set()，而不是 {}。」</span>
+      </div>
+      <div class="card">
+        <h3>误解④：列表推导式只能遍历列表</h3>
+        <p><b>真相</b>：推导式能遍历<strong>任何可迭代对象</strong>——range、字符串、tuple、dict、文件等都可以。</p>
+      </div>
+      <div class="warn"><b>边界</b>：本章覆盖 list/tuple/set/dict/del/推导式。未深入：列表当队列效率低（用 collections.deque）、嵌套推导式、zip/enumerate 循环技巧、序列的字典序比较——这些在官方教程同章但属进阶。</div>
+    </section>
+
+    <!-- 10 背景知识缺口 -->
+    <section id="gap">
+      <span class="sec-id" data-sec="背景缺口">10 · 背景知识缺口</span>
+      <h2>要继续学还差什么</h2>
+      <div class="card">
+        <p><b>现在就该练（阻碍写代码）：</b></p>
+        <ul class="bul">
+          <li><b>四种容器各敲一遍</b>—— 创建 list/tuple/set/dict，试增删改，体会可变与不可变。</li>
+          <li><b>写 5 个推导式</b>—— 含条件过滤、嵌套 for、遍历字符串/range/tuple。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <p><b>可以晚点补：</b></p>
+        <ul class="bul">
+          <li><b>collections 模块</b>—— deque（高效队列）、Counter（计数）、defaultdict。</li>
+          <li><b>循环技巧</b>—— enumerate（取下标和值）、zip（并行遍历）、sorted+set（去重排序）。</li>
+          <li><b>嵌套推导式与 zip</b>—— 矩阵转置等进阶用法。</li>
+          <li><b>错误与异常（第四章）</b>—— try/except，让数据处理的代码更健壮。</li>
+        </ul>
+      </div>
+      <div class="note"><b>下一步</b>：把四种容器练熟后，进第四章学错误与异常——try/except 能让你的数据处理代码在遇到脏数据时不崩溃。</div>
+    </section>
+
+    <!-- 11 报告 -->
+    <section id="report-sec">
+      <span class="sec-id" data-sec="学习报告">11 · 学习报告</span>
+      <h2>生成你的第三章报告</h2>
+      <div class="report-box">
+        <div class="rep-btns">
+          <button id="genReport">生成学习报告</button>
+          <button id="copyReport" class="alt">复制报告</button>
+        </div>
+        <div id="report">（点击"生成学习报告"后显示完成情况与错题清单。）</div>
+      </div>
+      <div class="wrong-box" style="margin-top:14px;">
+        <h3>📋 错题回流区</h3>
+        <ul id="wrongBox"><li style="color:#888">还没有错题。答错的题会自动收集到这里。</li></ul>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  本章帮你掌握 Python 的四种核心数据结构与推导式，但不能替代在解释器里动手敲代码。学习愉快 🐟<br>
+  由 <a href="https://lyzbcy.github.io/" target="_blank" rel="noopener">捞鱼</a> 制作
+</footer>
+
+<div class="float-btn" id="floatBtn">🐟 关于捞鱼</div>
+<div class="modal-mask" id="modalMask">
+  <div class="modal">
+    <button class="close" id="closeModal">×</button>
+    <div class="author">
+      <img src="https://s41.ax1x.com/2025/12/05/pZmPZPH.png" alt="捞鱼">
+      <div>
+        <div class="name">捞鱼</div>
+        <div class="sig">「一个弱小但有梦想的开发者」</div>
+        <span class="studio">捞鱼工作室</span><br>
+        <a class="goto" href="https://lyzbcy.github.io/about/" target="_blank" rel="noopener">了解更多 →</a>
+      </div>
+    </div>
+    <div class="qr-grid">
+      <div class="qr-cell"><div class="ttl">QQ 学习群</div><img src="img/sticker/qq-group.jpg" alt="QQ群二维码"><div class="desc">扫码进群一起学习</div></div>
+      <div class="qr-cell"><div class="ttl">赞赏支持</div><img src="img/sticker/reward-qr.jpg" alt="赞赏二维码"><div class="desc">请捞鱼喝杯奶茶</div></div>
+      <div class="qr-cell">
+        <div class="ttl">微信表情包</div>
+        <div class="sticker-row"><img src="img/sticker/ok.png" alt=""><img src="img/sticker/no.png" alt=""><img src="img/sticker/study.png" alt=""></div>
+        <img src="img/sticker/sticker-qr.png" alt="微信表情包二维码">
+        <div class="desc">📱 长按或扫码使用</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var qc=document.getElementById('quizCount');
+  if(qc)qc.textContent=document.querySelectorAll('.task').length;
+  var STAMP_MAP={'学习目标':'study.png','背景包':'study.png','问题定位':'study.png','结构地图':'ok.png','核心判断':'ok.png','关键概念':'study.png','苏格拉底关卡':'no.png','闯关任务':'final.png','误解与边界':'no.png','背景缺口':'study.png','学习报告':'final.png'};
+  document.querySelectorAll('.sec-id[data-sec]').forEach(function(el){var key=el.getAttribute('data-sec'),img=STAMP_MAP[key];if(img){var i=document.createElement('img');i.className='stamp';i.src='img/sticker/'+img;i.alt='';el.insertBefore(i,el.firstChild);}});
+  var mask=document.getElementById('modalMask');
+  document.getElementById('floatBtn').addEventListener('click',function(){mask.classList.add('open');});
+  document.getElementById('closeModal').addEventListener('click',function(){mask.classList.remove('open');});
+  mask.addEventListener('click',function(e){if(e.target===mask)mask.classList.remove('open');});
+})();
+</script>
+
+<script>
+(function(){
+  "use strict";
+  function $all(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));}
+  function selectedVals(t){return $all('.opt.selected',t).map(function(o){return o.getAttribute('data-val');}).sort();}
+  function setFb(t,state,html){var fb=t.querySelector('.feedback');if(!fb)return;fb.className='feedback'+(state?(' '+state):'');fb.innerHTML=html;}
+  function updateBar(){var all=$all('.task'),done=$all('.task[data-answered="1"]');var fill=document.getElementById('barFill'),num=document.getElementById('barNum');if(fill)fill.style.width=all.length?(done.length/all.length*100)+'%':'0%';if(num)num.textContent=done.length+' / '+all.length;}
+  function renderWrong(){var box=document.getElementById('wrongBox');if(!box)return;var wrong=$all('.task[data-answered="1"][data-correct="0"]');if(!wrong.length){box.innerHTML='<li style="color:#888">还没有错题。答错的题会自动收集到这里。</li>';return;}box.innerHTML='';wrong.forEach(function(t){var li=document.createElement('li');li.textContent='【'+(t.getAttribute('data-task')||'')+'】'+(t.getAttribute('data-review')||'回到对应模块复习');box.appendChild(li);});}
+  function check(t){var type=t.getAttribute('data-type'),ok=false;if(type==='selects'){var sels=$all('select.match',t),allok=true,empty=false;sels.forEach(function(s){if(!s.value)empty=true;if(s.value!==s.getAttribute('data-correct'))allok=false;});if(empty){setFb(t,'no','请先把每一项都选好再检查。');return;}ok=allok;}else{var sel=selectedVals(t);if(!sel.length){setFb(t,'no','请先选择一个选项再检查。');return;}var ans=(t.getAttribute('data-answer')||'').split(',').map(function(x){return x.trim();}).sort();ok=(sel.join('|')===ans.join('|'));}var body=ok?(t.getAttribute('data-ok')||'回答正确。'):(t.getAttribute('data-no')||'再想想。');var src=t.getAttribute('data-src');setFb(t,ok?'ok':'no',(ok?'✅ ':'❌ ')+body+(src?('<span class="src">'+src+'</span>'):''));t.setAttribute('data-answered','1');t.setAttribute('data-correct',ok?'1':'0');updateBar();renderWrong();}
+  function genReport(){var box=document.getElementById('report');if(!box)return;var all=$all('.task'),done=$all('.task[data-answered="1"]'),right=$all('.task[data-answered="1"][data-correct="1"]');var lines=['=== 第三章 数据结构 学习报告 ===','完成题目：'+done.length+' / '+all.length,'答对：'+right.length+' 题',''];var wrong=$all('.task[data-answered="1"][data-correct="0"]');if(wrong.length){lines.push('我答错的题（建议复习）：');wrong.forEach(function(t){lines.push('- '+(t.getAttribute('data-task')||'')+'：'+(t.getAttribute('data-review')||''));});}else{lines.push('暂无错题。');}box.textContent=lines.join('\n');}
+  document.addEventListener('click',function(e){var c=e.target.closest?e.target:null;var opt=c&&e.target.closest('.opt');if(opt){var t=opt.closest('.task');if(!t)return;if(t.getAttribute('data-multi')==='true'){opt.classList.toggle('selected');}else{$all('.opt',t).forEach(function(o){o.classList.remove('selected');});opt.classList.add('selected');}return;}var btn=c&&e.target.closest('.check');if(btn){var tk=btn.closest('.task');if(tk)check(tk);return;}if(e.target&&e.target.id==='genReport'){genReport();return;}if(e.target&&e.target.id==='copyReport'){var r=document.getElementById('report');if(r&&navigator.clipboard)navigator.clipboard.writeText(r.textContent);return;}});
+  function init(){updateBar();renderWrong();}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+
+<button id="voiceFab" aria-label="打开后台语音"><span class="fab-icon">🎧</span><span class="fab-text">后台语音</span></button>
+<div id="voicePlayer">
+  <button class="vp-close" aria-label="关闭">✕</button>
+  <div class="vp-head">🎧 后台语音 · 连续播放</div>
+  <div class="vp-title">—</div>
+  <div class="vp-controls"><button class="vp-prev" aria-label="上一章">⏮</button><button class="vp-play" aria-label="播放/暂停">▶</button><button class="vp-next" aria-label="下一章">⏭</button></div>
+  <input class="vp-seek" type="range" min="0" max="1000" value="0" aria-label="进度">
+  <div class="vp-time"><span class="vp-cur">00:00</span><span class="vp-dur">00:00</span></div>
+  <div class="vp-sub">点开播放后，这里会同步显示字幕</div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  if(window.__voiceEngine) return;
+  window.__voiceEngine = true;
+  var listNode = document.getElementById('voicePlaylist');
+  if(!listNode){ return; }
+  var TRACKS = [];
+  try { TRACKS = JSON.parse(listNode.textContent.trim()); } catch(e){ return; }
+  if(!TRACKS.length) return;
+  var player = document.getElementById('voicePlayer');
+  var fab = document.getElementById('voiceFab');
+  var audio = new Audio(); audio.preload = 'metadata';
+  var cur = 0, ranges = [], total = 0, seeking = false;
+  function $(s){ return player ? player.querySelector(s) : null; }
+  function fmt(s){ s=Math.max(0,Math.floor(s||0)); var m=Math.floor(s/60), x=s%60; return (m<10?'0':'')+m+':'+(x<10?'0':'')+x; }
+  var probe = TRACKS.map(function(){ return {dur:0}; });
+  function tryFinalize(){ if(probe.some(function(p){return !p.dur;})) return; ranges = []; total = 0; probe.forEach(function(p){ ranges.push({dur:p.dur, start:total}); total += p.dur; }); var d = $('.vp-dur'); if(d) d.textContent = fmt(total); var sk = $('.vp-seek'); if(sk){ sk.max = Math.max(1000, Math.floor(total*10)); } }
+  TRACKS.forEach(function(t, i){ var a = new Audio(); a.preload = 'metadata'; a.src = t.src; a.addEventListener('loadedmetadata', function(){ probe[i].dur = a.duration || 0; tryFinalize(); }); a.addEventListener('error', function(){ probe[i].dur = 0; tryFinalize(); }); });
+  function load(i){ cur = i; audio.src = TRACKS[i].src; var ti = $('.vp-title'); if(ti) ti.textContent = TRACKS[i].title || ('第 '+(i+1)+' 段'); markBtn(i); }
+  function play(){ audio.play().then(function(){ show(); setPlayIcon(true); if(fab) fab.classList.add('beat'); }).catch(function(){}); }
+  function pause(){ audio.pause(); setPlayIcon(false); if(fab) fab.classList.remove('beat'); }
+  function toggle(){ audio.paused ? play() : pause(); }
+  function next(){ if(cur < TRACKS.length-1){ load(cur+1); play(); } else { pause(); } }
+  function prev(){ var abs = absTime(); if(cur > 0 && abs - ranges[cur].start < 3){ load(cur-1); play(); } else { audio.currentTime = 0; } }
+  function absTime(){ return ranges[cur] ? ranges[cur].start + (audio.currentTime||0) : (audio.currentTime||0); }
+  function setPlayIcon(on){ var b=$('.vp-play'); if(b) b.textContent = on ? '⏸' : '▶'; }
+  function show(){ if(player) player.classList.add('show'); }
+  function hide(){ if(player) player.classList.remove('show'); }
+  function markBtn(i){ document.querySelectorAll('.voice-btn[data-voice-id]').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-voice-id') === TRACKS[i].id); }); }
+  audio.addEventListener('timeupdate', function(){ if(seeking) return; if(!ranges[cur]) return; var abs = absTime(); var sk = $('.vp-seek'); var c = $('.vp-cur'); if(sk && total) sk.value = Math.round(abs / total * (sk.max||1000)); if(c) c.textContent = fmt(abs); });
+  audio.addEventListener('ended', function(){ if(cur < TRACKS.length-1){ load(cur+1); play(); } else { setPlayIcon(false); if(fab) fab.classList.remove('beat'); } });
+  function seekToFraction(frac){ if(!total) return; var target = Math.max(0, Math.min(total, frac * total)); var i = 0; while(i < ranges.length-1 && ranges[i].start + ranges[i].dur < target){ i++; } if(i !== cur){ cur = i; audio.src = TRACKS[i].src; var ti=$('.vp-title'); if(ti) ti.textContent = TRACKS[i].title||('第 '+(i+1)+' 段'); markBtn(i); } audio.currentTime = target - ranges[i].start; var c=$('.vp-cur'); if(c) c.textContent = fmt(target); }
+  document.addEventListener('click', function(e){ var t = e.target; var vb = t.closest ? t.closest('.voice-btn[data-voice-id]') : null; if(vb){ var id = vb.getAttribute('data-voice-id'), idx = -1; TRACKS.forEach(function(tr, k){ if(tr.id === id) idx = k; }); if(idx >= 0){ load(idx); play(); } return; } if(t.id === 'voiceFab'){ show(); if(audio.paused && !audio.src){ load(0); } if(audio.paused){ play(); } return; } if(!player || !player.contains(t)) return; if(t.classList.contains('vp-play')){ toggle(); return; } if(t.classList.contains('vp-prev')){ prev(); return; } if(t.classList.contains('vp-next')){ next(); return; } if(t.classList.contains('vp-close')){ pause(); hide(); return; } });
+  var sk = $('.vp-seek');
+  if(sk){ sk.addEventListener('input', function(){ seeking = true; if(total){ var c=$('.vp-cur'); if(c) c.textContent = fmt((sk.value/(sk.max||1000))*total); } }); sk.addEventListener('change', function(){ seekToFraction(sk.value/(sk.max||1000)); seeking = false; }); }
+})();
+</script>
+
+<script src="voice-sub.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>企微前端能力 · JSAPI 学习地图</title>
+<link rel="icon" href="img/sticker/mascot.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="layout">
+  <aside class="sidebar">
+    <a class="back-link" href="../index.html">← 返回计算机知识</a>
+    <h1>企微前端能力<br>JSAPI 地图</h1>
+    <div class="sub">通用接口 · 选人/转发/定位/扫码</div>
+    <ul class="nav">
+      <li><a href="#intro"><span class="no">序</span>导读</a></li>
+      <li><a href="#chapters"><span class="no">章</span>章节目录</a></li>
+      <li><a href="#rule"><span class="no">约</span>前置约定</a></li>
+    </ul>
+  </aside>
+
+  <main class="main">
+
+    <div class="hero">
+      <img class="mascot" src="img/sticker/mascot.png" alt="捞鱼">
+      <div>
+        <h2>企微前端能力 · JSAPI 学习地图</h2>
+        <p>通用前端接口 ｜ 与 Vue3 第五章互补 ｜ 已上线 <span class="stat" id="cnt">…</span> 章</p>
+      </div>
+    </div>
+
+    <section id="intro">
+      <span class="sec-id" data-sec="导读">序 · 这套地图怎么用</span>
+      <h2>前端能力 JSAPI 是什么</h2>
+      <div class="card">
+        <p>Vue3 学习地图的第五章讲了企微 JSAPI 的<strong>鉴权</strong>（ww.register）和<strong>专区接口</strong>（selectDatazoneDoc/File）。但企微 H5 应用还有一大类<strong>通用前端能力</strong>：选人、转发、分享、定位、扫码、设置导航栏……这套地图专门讲这些。</p>
+        <span class="src"><b>原文依据</b>：《初心与使命》——「JSAPI: 初始化时机如果不清楚，询问居易」。</span>
+        <div class="note">所有前端能力接口的<strong>调用前提</strong>都是 ww.register 注册身份成功（呼应 Vue3 第五章）。这套地图是第五章的<strong>能力扩展</strong>，建议学完第五章再看。</div>
+      </div>
+    </section>
+
+    <section id="chapters">
+      <span class="sec-id" data-sec="章节目录">章 · 章节目录</span>
+      <h2>选择你要学习的章节</h2>
+      <div class="flow">
+        <a href="chapter-1.html" style="text-decoration:none;color:inherit;">
+          <div class="flow-step hot">
+            <span class="num">1</span><b>第一章 · 企微前端能力 JSAPI 通用接口</b>　🟢
+            <p style="margin:8px 0 0 36px;font-size:.9rem;color:#5A5040;">选人/转发/定位/扫码/界面能力五大类，含新旧两套调用方式。含 8 道互动关卡。</p>
+            <p style="margin:0 0 0 36px;color:var(--brick);font-weight:600;">进入第一章 →</p>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <section id="rule">
+      <span class="sec-id" data-sec="前置约定">约 · 前置约定</span>
+      <h2>学这章前要知道</h2>
+      <div class="card paper">
+        <ul class="bul">
+          <li><b>① 必须先学 Vue3 第五章</b>：本章所有接口调用前提都是 ww.register 成功，那是第五章的内容。</li>
+          <li><b>② 初始化时机问居易</b>：ww.register 在哪个生命周期调、签名怎么拿，不清楚问居易。</li>
+          <li><b>③ 中转页/Vue 风格问土豆</b>：H5 页面怎么组织、中转页怎么跳，问土豆。</li>
+        </ul>
+        <span class="src"><b>原文依据</b>：《初心与使命》——「JSAPI: 初始化时机如果不清楚，询问居易」「如需支持，找土豆」。</span>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  这套地图帮你建立企微前端能力的理解，但不能替代读官方文档和动手联调。学习愉快 🐟<br>
+  由 <a href="https://lyzbcy.github.io/" target="_blank" rel="noopener">捞鱼</a> 制作
+</footer>
+
+<div class="float-btn" id="floatBtn">🐟 关于捞鱼</div>
+<div class="modal-mask" id="modalMask">
+  <div class="modal">
+    <button class="close" id="closeModal">×</button>
+    <div class="author">
+      <img src="https://s41.ax1x.com/2025/12/05/pZmPZPH.png" alt="捞鱼">
+      <div>
+        <div class="name">捞鱼</div>
+        <div class="sig">「一个弱小但有梦想的开发者」</div>
+        <span class="studio">捞鱼工作室</span><br>
+        <a class="goto" href="https://lyzbcy.github.io/about/" target="_blank" rel="noopener">了解更多 →</a>
+      </div>
+    </div>
+    <div class="qr-grid">
+      <div class="qr-cell"><div class="ttl">QQ 学习群</div><img src="img/sticker/qq-group.jpg" alt="QQ群二维码"><div class="desc">扫码进群一起学习</div></div>
+      <div class="qr-cell"><div class="ttl">赞赏支持</div><img src="img/sticker/reward-qr.jpg" alt="赞赏二维码"><div class="desc">请捞鱼喝杯奶茶</div></div>
+      <div class="qr-cell">
+        <div class="ttl">微信表情包</div>
+        <div class="sticker-row"><img src="img/sticker/ok.png" alt=""><img src="img/sticker/no.png" alt=""><img src="img/sticker/study.png" alt=""></div>
+        <img src="img/sticker/sticker-qr.png" alt="微信表情包二维码">
+        <div class="desc">📱 长按或扫码使用</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var cnt=document.getElementById('cnt');
+  if(cnt)cnt.textContent=document.querySelectorAll('a[href^="chapter-"]').length;
+  var STAMP_MAP={'导读':'study.png','章节目录':'ok.png','前置约定':'no.png'};
+  document.querySelectorAll('.sec-id[data-sec]').forEach(function(el){var key=el.getAttribute('data-sec'),img=STAMP_MAP[key];if(img){var i=document.createElement('img');i.className='stamp';i.src='img/sticker/'+img;i.alt='';el.insertBefore(i,el.firstChild);}});
+  var mask=document.getElementById('modalMask');
+  document.getElementById('floatBtn').addEventListener('click',function(){mask.classList.add('open');});
+  document.getElementById('closeModal').addEventListener('click',function(){mask.classList.remove('open');});
+  mask.addEventListener('click',function(e){if(e.target===mask)mask.classList.remove('open');});
+})();
+</script>
+
+</body>
+</html>

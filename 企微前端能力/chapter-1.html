@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第一章 · 企微前端能力 JSAPI 通用接口</title>
+<link rel="icon" href="img/sticker/mascot.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<script type="application/json" id="voicePlaylist">
+[
+  {"id":"ch1","title":"企微前端能力 JSAPI通用接口","src":"audio/ch1.mp3"}
+]
+</script>
+
+<div class="layout">
+  <aside class="sidebar">
+    <a class="back-link" href="index.html">← 返回企微前端能力目录</a>
+    <h1>第一章<br>企微前端能力<br>JSAPI 通用接口</h1>
+    <div class="sub">选人 · 转发 · 定位 · 扫码 · 界面</div>
+    <div class="progress-wrap"><div id="barFill"></div></div>
+    <div id="barNum">0 / 0</div>
+    <ul class="nav">
+      <li><a href="#goal"><span class="no">01</span>学习目标</a></li>
+      <li><a href="#bg"><span class="no">02</span>零基础背景包</a></li>
+      <li><a href="#problem"><span class="no">03</span>这章回答什么</a></li>
+      <li><a href="#map"><span class="no">04</span>结构地图</a></li>
+      <li><a href="#core"><span class="no">05</span>核心判断</a></li>
+      <li><a href="#concept"><span class="no">06</span>关键概念</a></li>
+      <li><a href="#socratic"><span class="no">07</span>苏格拉底关卡</a></li>
+      <li><a href="#task"><span class="no">08</span>闯关任务</a></li>
+      <li><a href="#miss"><span class="no">09</span>误解与边界</a></li>
+      <li><a href="#gap"><span class="no">10</span>背景知识缺口</a></li>
+      <li><a href="#report-sec"><span class="no">11</span>学习报告</a></li>
+    </ul>
+  </aside>
+
+  <main class="main">
+
+    <div class="hero">
+      <img class="mascot" src="img/sticker/mascot.png" alt="捞鱼">
+      <div>
+        <h2>第一章 · 企微前端能力 JSAPI 通用接口</h2>
+        <p>selectEnterpriseContact ｜ shareAppMessage ｜ getLocation ｜ scanQRCode ｜ 界面能力 ｜ 含 <span class="stat" id="quizCount">…</span> 道互动关卡</p>
+      </div>
+      <button class="voice-btn" data-voice-id="ch1">🎧 听这章</button>
+    </div>
+
+    <!-- 01 目标 -->
+    <section id="goal">
+      <span class="sec-id" data-sec="学习目标">01 · 学习目标</span>
+      <h2>学完这一章你要能做到</h2>
+      <div class="card">
+        <ul class="bul">
+          <li><strong>说清前端能力 JSAPI 的范畴</strong>：这是企微「网页开发工具包」提供的通用前端能力（选人/转发/定位/扫码/界面），区别于第五章讲的鉴权链路与数据专区接口。</li>
+          <li><strong>会用 selectEnterpriseContact 选人</strong>：能写 from/mode/type 参数，知道返回的 arrayOfSelector 含 member/department/tag。</li>
+          <li><strong>会用 shareAppMessage 转发</strong>：能传 title/desc/link/imgUrl，知道它转发到企微会话（区别于 sendChatMessage）。</li>
+          <li><strong>知道 getLocation / scanQRCode 的用法</strong>：type 决定坐标系，needResult 决定扫码结果给谁。</li>
+          <li><strong>记住一个铁律</strong>：所有这些能力调用前提都是 <code>ww.register</code> 成功（呼应第五章），否则报 invalid signature / permission denied。</li>
+        </ul>
+        <div class="note"><b>阅读路径</b>：背景包 → 结构地图 → 核心判断 → 关键概念 → 做关卡题 → 生成报告。</div>
+      </div>
+      <div class="card paper">
+        <span class="tag" style="background:var(--brick);color:#FFE9B0;">本章定位</span>
+        <p>这是企微前端能力系列的<strong>通用能力章</strong>。第五章你已经学了鉴权（ww.register）和数据专区接口（selectDatazoneDoc/File）；本章回答：「除了选文档选文件，企微 H5 还能用哪些原生能力，让应用像微信 JS-SDK 一样 native 化」。</p>
+        <span class="src"><b>原文依据</b>：企微 JS-SDK 概述——「借助企业微信高效地使用拍照、选图、语音、位置等手机系统的能力，同时可以直接使用企业微信分享、扫一扫等企业微信特有的能力」。</span>
+      </div>
+    </section>
+
+    <!-- 02 背景 -->
+    <section id="bg">
+      <span class="sec-id" data-sec="背景包">02 · 零基础背景包</span>
+      <h2>读这章前先知道的 4 件事</h2>
+
+      <div class="card">
+        <span class="tag bg">背景①</span><b>第五章学了鉴权和专区接口，但企微前端能力还有一大类通用接口</b>
+        <p>第五章的 <code>ww.register</code>（鉴权）+ <code>selectDatazoneDoc/File</code>（专区接口）只是企微 JS-SDK 的一部分。还有一大类<strong>通用前端能力接口</strong>：选人（selectEnterpriseContact）、转发（shareAppMessage）、定位（getLocation）、扫码（scanQRCode）、界面（closeWindow 等）。本章就是讲这一类。</p>
+        <div class="note">读这章需要它：知道企微前端能力不止专区接口，还有一套像微信 JS-SDK 的通用能力。</div>
+      </div>
+
+      <div class="card">
+        <span class="tag bg">背景②</span><b>这些能力和第五章的专区接口共享同一个调用前提：ww.register</b>
+        <p>不管是 selectEnterpriseContact、shareAppMessage 还是 getLocation，<strong>调用前提都一样</strong>——必须先 <code>ww.register</code> 注册身份成功（拿到合法签名）。这就是第五章那个铁律在本章的延续：register 失败，所有 <code>ww.*</code> 都调不了。</p>
+        <div class="note">读这章需要它：本章不再重复讲鉴权细节，但每个能力的前提都是"register 成功"。</div>
+      </div>
+
+      <div class="card">
+        <span class="tag bg">背景③</span><b>旧版用 wx.invoke('xxx')，新版用 ww.xxx()，建议用新版</b>
+        <p>企微 JS-SDK 有两套写法：旧版 jweixin 是 <code>wx.invoke('接口名', 参数, 回调)</code>，靠 <code>res.err_msg === 'xxx:ok'</code> 判断；新版 wecom-jssdk 是 <code>ww.接口名(参数)</code>，直接用 success 回调或 Promise。官方推荐新版，本章以新版为主。</p>
+        <div class="note">读这章需要它：看到代码里 ww.xxx() 是新版，看到 wx.invoke(...) 是旧版，别搞混。</div>
+      </div>
+
+      <div class="card">
+        <span class="tag bg">背景④</span><b>这些能力让 H5 应用能调用企微客户端的原生功能</b>
+        <p>企业微信 JS-SDK 是企微<strong>面向网页开发者提供的开发工具包</strong>。用了它，你的 H5 网页就能用手机系统的能力（定位、扫一扫），还能用企微特有的能力（选企业通讯录成员、转发到企微会话）——就像微信网页用的微信 JS-SDK 一样，让你的网页在企微里"native 化"。</p>
+        <div class="note">读这章需要它：理解为什么要在 H5 里调一套"企微专属 API"——为了用上客户端原生能力。</div>
+      </div>
+    </section>
+
+    <!-- 03 问题定位 -->
+    <section id="problem">
+      <span class="sec-id" data-sec="问题定位">03 · 这章在回答什么</span>
+      <h2>表层 vs 深层问题</h2>
+      <div class="card paper">
+        <p><strong>表层</strong>：企微 H5 还有哪些前端能力可用？选人、转发、定位、扫码、界面分别怎么调？</p>
+        <p><strong>深层</strong>：这些能力怎么和第五章的鉴权链路配合，让 H5 应用真正"native 化"——从一个只能显示内容的网页，变成能选人、能转发、能定位、能扫码的"准原生应用"？</p>
+        <p><strong>只记一个问题</strong>：<span style="background:var(--marker);padding:2px 6px;border-radius:4px;">在企微 H5 里，调一个通用前端能力（比如扫码），从注册身份到拿到结果，骨架是什么？每个能力的"关键参数 + 返回"长什么样？</span></p>
+        <div class="note">带着这个问题读「04 结构地图」，那个"通用调用骨架"就是答案。</div>
+      </div>
+    </section>
+
+    <!-- 04 结构地图 -->
+    <section id="map">
+      <span class="sec-id" data-sec="结构地图">04 · 结构地图</span>
+      <h2>五大前端能力，都建立在 ww.register 之上</h2>
+      <div class="card">
+        <p>企微前端能力分<strong>五大类</strong>，全部建立在第五章学的 <code>ww.register</code> 之上。下面这张地图把五类能力和它们的代表接口列清楚，每类都是"register 成功 → 调 ww.xxx() → 回调拿结果"。</p>
+      </div>
+      <div class="flow">
+        <div class="flow-step hot"><span class="num">0</span><b>身份注册 ⭐</b>｜<code>ww.register</code> 成功（corpId + agentId + 签名回调）—— 这是下面五类能力的<strong>共同前提</strong>。</div>
+        <div class="flow-step"><span class="num">1</span><b>通讯录 · 选人</b>｜<code>ww.selectEnterpriseContact</code>——选企业成员/部门/标签，企微特有（微信没有）。</div>
+        <div class="flow-step"><span class="num">2</span><b>分享 · 转发</b>｜<code>ww.shareAppMessage</code>——自定义转发到企微会话，支持 text/news/textcard 等消息。</div>
+        <div class="flow-step"><span class="num">3</span><b>位置 · 定位</b>｜<code>ww.getLocation</code>——获取经纬度，type 参数决定坐标系（wgs84/gcj02）。</div>
+        <div class="flow-step"><span class="num">4</span><b>系统界面 · 扫码</b>｜<code>ww.scanQRCode</code>——调起扫一扫，needResult 决定结果给企微还是返回页面。</div>
+        <div class="flow-step"><span class="num">5</span><b>界面控制</b>｜<code>ww.closeWindow / hideOptionMenu / hideMenuItems</code> 等——控制窗口、菜单、返回。</div>
+      </div>
+      <div class="note">节点关系：<strong>步骤 0（ww.register）是五类能力的共同根节点</strong>——不 register 直接调任何能力都会报无权限。这条因果线和第五章完全一致，本章是它的延伸。</div>
+    </section>
+
+    <!-- 05 核心判断 -->
+    <section id="core">
+      <span class="sec-id" data-sec="核心判断">05 · 核心判断</span>
+      <h2>6 条核心判断（每条都带原文依据）</h2>
+
+      <div class="card">
+        <span class="tag fact">事实</span><b>① 所有前端能力 JSAPI 调用前提都是 ww.register 成功（呼应第五章）。</b>
+        <p>这是贯穿全章的铁律。不管选人、转发、定位还是扫码，每个接口的文档都写了"调用前提：ww.register 成功"。register 失败就报 <code>invalid signature</code> / <code>permission denied</code>。这和第五章的专区接口一模一样。</p>
+        <span class="src"><b>原文依据</b>：企微 JS-SDK 概述（90513）——「以下每个接口调用前，必须先 ww.register 注册成功，否则报 invalid signature / permission denied」。</span>
+      </div>
+
+      <div class="card">
+        <span class="tag fact">事实</span><b>② selectEnterpriseContact 可选成员/部门/标签，是企微特有能力（微信没有）。</b>
+        <p>这个接口选的是<strong>企业通讯录</strong>里的成员、部门、标签，由 type 参数控制可选范围。微信生态里没有"选企业部门/标签"这种概念，所以它是企微独有的能力，适合做"指派给某人/某部门"这类企业场景。</p>
+        <span class="src"><b>原文依据</b>：企微《选择通讯录成员》（91821）——「选择企业通讯录中的成员/部门/标签」，type 可选 member/department/tag。</span>
+      </div>
+
+      <div class="card">
+        <span class="tag fact">事实</span><b>③ shareAppMessage 转发到企微会话，支持 text/news/textcard 等消息类型。</b>
+        <p>shareAppMessage 用于<strong>自定义转发到企微会话</strong>：用户点右上角"转发"时，用你指定的 title/desc/link/imgUrl，而不是默认抓取页面。它和企业微信 2.4.5 起支持。注意它和侧边栏"发到当前会话"的 <code>ww.sendChatMessage</code> 是两个不同场景。</p>
+        <span class="src"><b>原文依据</b>：企微《自定义转发到会话》（100505）——「兼容性：企业微信 2.4.5 起支持」，参数 title/desc/link/imgUrl。</span>
+      </div>
+
+      <div class="card">
+        <span class="tag fact">事实</span><b>④ getLocation 获取经纬度，type 参数决定坐标系（wgs84/gcj02）。</b>
+        <p>getLocation 返回 latitude/longitude/speed/accuracy。关键是 <code>type</code>：<code>'wgs84'</code> 是 GPS 坐标（默认），<code>'gcj02'</code> 是火星坐标（国内地图常用）。选错坐标系会让定位偏几十到几百米。还要注意企微是 <code>ww.getLocation</code>，别和公众号/小程序的 <code>wx.getLocation</code> 混淆。</p>
+        <span class="src"><b>原文依据</b>：企微《获取地理位置》（100578）——「type：'wgs84'（默认 GPS 坐标）/ 'gcj02'（火星坐标）」，返回 latitude/longitude/accuracy。</span>
+      </div>
+
+      <div class="card">
+        <span class="tag fact">事实</span><b>⑤ scanQRCode 扫一扫，needResult 决定结果由企微处理还是返回给页面。</b>
+        <p>scanQRCode 的 <code>needResult</code>：0（默认）扫描结果由企业微信处理（比如扫到网址直接打开），1 则把扫描结果字符串 <code>res.resultStr</code> 直接返回给你的页面。scanType 还能指定 <code>['qrCode','barCode']</code>（二维码/一维码）。</p>
+        <span class="src"><b>原文依据</b>：企微《调起扫一扫》（90492）——「needResult：0 扫描结果由企业微信处理；1 直接返回扫描结果」。</span>
+      </div>
+
+      <div class="card">
+        <span class="tag judge">判断</span><b>⑥ 旧版 wx.invoke 和新版 ww.xxx 都能用，官方推荐新版。</b>
+        <p>同一个能力有两套写法：旧版 <code>wx.invoke('selectEnterpriseContact', 参数, 回调)</code> 靠 <code>res.err_msg==='xxx:ok'</code> 判断；新版 <code>ww.selectEnterpriseContact({ ...success(res){} })</code> 直接用 success 回调。两者都能跑，但官方主推新版 wecom-jssdk，新项目建议直接用 <code>ww.*</code>。</p>
+        <span class="src"><b>原文依据</b>：企微各接口文档均给出"新版示例 + 旧版 jweixin 调用"两段对照；概述（90513）主推 <code>@wecom/jssdk</code>。</span>
+      </div>
+    </section>
+
+    <!-- 06 关键概念 -->
+    <section id="concept">
+      <span class="sec-id" data-sec="关键概念">06 · 关键概念拆解</span>
+      <h2>6 个关键概念</h2>
+
+      <div class="card">
+        <h3>① selectEnterpriseContact（选人）</h3>
+        <p><b>定义</b>：选择企业通讯录中的成员/部门/标签，企微特有能力。返回 <code>res.result.arrayOfSelector</code>，每项含 type（member/department/tag）和 id。</p>
+        <table class="t">
+          <tr><th>关键参数</th><th>说明</th></tr>
+          <tr><td>from</td><td>选人来源，'single' 选单人、'multiple' 选多人</td></tr>
+          <tr><td>mode</td><td>'single'（单选）/ 'multi'（多选）</td></tr>
+          <tr><td>type</td><td>可选项数组，如 ['member','department','tag']</td></tr>
+          <tr><td>selectedUserIds / selectedDepartmentIds</td><td>默认选中项</td></tr>
+        </table>
+<pre style="margin:6px 0;font-family:var(--font-mono);font-size:.8rem;overflow-x:auto;background:#fff;">ww.selectEnterpriseContact({
+  from: 'multiple',
+  mode: 'multi',
+  type: ['member', 'department'],
+  selectedUserIds: ['zhangsan'],
+  success(res) {
+    console.log(res.result.arrayOfSelector);
+  },
+});</pre>
+        <span class="src"><b>原文依据</b>：《选择通讯录成员》（91821）。</span>
+        <div class="warn"><b>不要误解成</b>：它能选微信好友。它选的是<strong>企业通讯录</strong>，范围由 type 限定。</div>
+      </div>
+
+      <div class="card">
+        <h3>② shareAppMessage（转发）</h3>
+        <p><b>定义</b>：自定义转发到企微会话。用户点右上角"转发"时，用你指定的内容（而不是企微默认抓的）。</p>
+        <table class="t">
+          <tr><th>属性</th><th>必填</th><th>说明</th></tr>
+          <tr><td>title</td><td>是</td><td>分享标题</td></tr>
+          <tr><td>desc</td><td>是</td><td>分享描述</td></tr>
+          <tr><td>link</td><td>是</td><td>分享链接</td></tr>
+          <tr><td>imgUrl</td><td>是</td><td>分享图标</td></tr>
+          <tr><td>enableIdTrans</td><td>否</td><td>4.0.20 起，1 开启 id 转译，仅供第三方应用</td></tr>
+        </table>
+<pre style="margin:6px 0;font-family:var(--font-mono);font-size:.8rem;overflow-x:auto;background:#fff;">ww.shareAppMessage({
+  title: '企业微信',
+  desc: '让每个企业都有自己的微信',
+  link: 'https://work.weixin.qq.com/',
+  imgUrl: 'https://res.mail.qq.com/.../index_share_logo.png',
+});</pre>
+        <div class="warn"><b>不要误解成</b>：shareAppMessage 就是"发到当前会话"。"发到当前会话"要用侧边栏的 <code>ww.sendChatMessage</code>，shareAppMessage 是"转发到任意企微会话"。</div>
+      </div>
+
+      <div class="card">
+        <h3>③ getLocation（定位）</h3>
+        <p><b>定义</b>：获取当前地理位置（经纬度）。调用前提除了 register 成功，应用还要有定位权限，否则报 <code>getLocation:nopermission</code>。</p>
+        <table class="t">
+          <tr><th>参数/返回</th><th>说明</th></tr>
+          <tr><td>type</td><td>'wgs84'（默认 GPS 坐标）/ 'gcj02'（火星坐标）</td></tr>
+          <tr><td>latitude / longitude</td><td>经纬度</td></tr>
+          <tr><td>accuracy</td><td>精度</td></tr>
+          <tr><td>speed</td><td>速度</td></tr>
+        </table>
+<pre style="margin:6px 0;font-family:var(--font-mono);font-size:.8rem;overflow-x:auto;background:#fff;">ww.getLocation({
+  type: 'wgs84',
+  success(res) {
+    console.log(res.latitude, res.longitude, res.accuracy);
+  },
+});</pre>
+        <div class="note"><b>不要混淆</b>：企微 JS-SDK 是 <code>ww.getLocation</code>，不是公众号的 <code>wx.getLocation</code>。</div>
+      </div>
+
+      <div class="card">
+        <h3>④ scanQRCode（扫码）</h3>
+        <p><b>定义</b>：调起企微扫一扫。needResult 决定结果给谁，scanType 决定扫什么码。</p>
+        <table class="t">
+          <tr><th>参数</th><th>说明</th></tr>
+          <tr><td>needResult</td><td>0（默认，结果由企微处理）/ 1（结果返回给页面 res.resultStr）</td></tr>
+          <tr><td>scanType</td><td>['qrCode','barCode']，二维码 / 一维码</td></tr>
+        </table>
+<pre style="margin:6px 0;font-family:var(--font-mono);font-size:.8rem;overflow-x:auto;background:#fff;">wx.scanQRCode({
+  needResult: 0,                    // 0 结果由企微处理；1 直接返回结果
+  scanType: ['qrCode', 'barCode'],  // 二维码 / 一维码
+  success: function (res) {
+    var result = res.resultStr;     // needResult=1 时的扫码结果
+  },
+});</pre>
+        <span class="src"><b>原文依据</b>：《调起扫一扫》（90492）官方原示例。</span>
+      </div>
+
+      <div class="card">
+        <h3>⑤ 界面能力（setTitleBarColor / closeWindow 等）</h3>
+        <p><b>定义</b>：JS-SDK「界面」分类下的一组前端界面控制能力，均需 register 成功后调用。用来控制窗口、菜单、返回行为。</p>
+        <table class="t">
+          <tr><th>接口</th><th>作用</th></tr>
+          <tr><td>ww.closeWindow()</td><td>关闭当前窗口</td></tr>
+          <tr><td>ww.hideOptionMenu() / showOptionMenu()</td><td>隐藏 / 显示右上角菜单</td></tr>
+          <tr><td>ww.hideMenuItems({menuList}) / showMenuItems()</td><td>批量隐藏 / 显示功能按钮</td></tr>
+          <tr><td>ww.hideAllNonBaseMenuItem() / showAllNonBaseMenuItem()</td><td>隐藏 / 显示非基础按钮</td></tr>
+          <tr><td>监听页面返回 / 打开默认浏览器 / 监听截屏</td><td>其它界面类能力</td></tr>
+        </table>
+        <span class="src"><b>原文依据</b>：企微 JS-SDK「界面」分类（90513 目录）——关闭窗口/隐藏菜单/监听返回/打开默认浏览器/监听截屏等。</span>
+      </div>
+
+      <div class="card">
+        <h3>⑥ 通用调用骨架：register 成功 → 调 ww.xxx() → 回调拿结果</h3>
+        <p><b>定义</b>：所有前端能力共用同一条调用链。第一步 register（服务端给签名），第二步在 <code>.then()</code> 里调任意 <code>ww.*</code> 能力，第三步在 success 回调拿结果。这是本章和第五章共通的"骨架"。</p>
+        <div class="walkthrough">
+          <div class="wt-step">
+            <div class="step-no">register 成功后调任意能力</div>
+<pre style="margin:0;font-family:var(--font-mono);font-size:.78rem;overflow-x:auto;background:#fff;">import ww from '@wecom/jssdk';
+
+// 1. 服务端用 access_token + jsapi_ticket 生成签名，前端拿到后注册
+ww.register({
+  corpId: 'wwxxxxxxxxxxxxxxx',
+  agentId: 1000002,
+  jsApiList: ['selectEnterpriseContact', 'shareAppMessage',
+              'getLocation', 'scanQRCode', 'closeWindow'],
+  getConfigSignature() {
+    return fetch('/api/wecom/jssign?url=' +
+      encodeURIComponent(location.href.split('#')[0]))
+      .then(r => r.json()); // { timestamp, noncestr, signature }
+  },
+}).then(() => {
+  // 2. 注册成功后才能调用任意 ww.* 接口
+  ww.scanQRCode({ needResult: 1, scanType: ['qrCode'] });
+}).catch(err => console.error('register fail', err));</pre>
+          </div>
+        </div>
+        <div class="warn"><b>不要误解成</b>：能不 register 直接调 ww.scanQRCode。<strong>必须在 register 的 .then() 里、或确认 register 成功后再调</strong>，否则报无权限。</div>
+      </div>
+    </section>
+
+    <!-- 07 苏格拉底关卡 -->
+    <section id="socratic">
+      <span class="sec-id" data-sec="苏格拉底关卡">07 · 苏格拉底式阅读关卡</span>
+      <h2>先想清楚这几问</h2>
+      <div class="card paper">
+        <p>这一组考<strong>理解</strong>：前端能力 JSAPI 的范畴、调用前提、和第五章的关系、坐标系与扫码结果的归属。</p>
+      </div>
+
+      <div class="task" data-task="q1" data-answer="A"
+           data-ok="对！前端能力 JSAPI 是企微网页开发工具包提供的通用能力（选人/转发/定位/扫码/界面），区别于第五章的鉴权链路与数据专区接口。" data-no="前端能力 JSAPI 是通用前端能力，不是鉴权或专区接口。回顾「01 学习目标 / 05 核心判断①」。"
+           data-src="原文依据：企微 JS-SDK 概述（90513）" data-review="回到「01 学习目标 / 05 核心判断①」复习">
+        <div class="q"><span class="qno">Q1</span>本章讲的"前端能力 JSAPI"和第五章的内容，主要区别是？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. 本章讲通用前端能力（选人/转发/定位/扫码/界面），第五章讲鉴权链路与数据专区接口</button>
+          <button class="opt" data-val="B">B. 本章讲后端 API，第五章讲前端</button>
+          <button class="opt" data-val="C">C. 没区别，是重复内容</button>
+          <button class="opt" data-val="D">D. 本章讲微信小程序，第五章讲企微</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q2" data-answer="B"
+           data-ok="正确！所有前端能力 JSAPI 调用前提都是 ww.register 成功（呼应第五章），否则报 invalid signature / permission denied。" data-no="调用前提是 ww.register 成功，和第五章一致。回顾「02 背景② / 05 核心判断①」。"
+           data-src="原文依据：企微 JS-SDK 概述（90513）" data-review="回到「05 核心判断①」复习">
+        <div class="q"><span class="qno">Q2</span>调 selectEnterpriseContact / getLocation 这类能力前，前端必须先做什么？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. 什么都不用，直接调</button>
+          <button class="opt" data-val="B">B. 调 ww.register 注册身份成功（拿到合法签名）</button>
+          <button class="opt" data-val="C">C. 关闭浏览器再打开</button>
+          <button class="opt" data-val="D">D. 用 wx.invoke 就能跳过鉴权</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q3" data-answer="C"
+           data-ok="对！selectEnterpriseContact 选的是企业通讯录成员/部门/标签，是微信生态没有的企微特有能力，由 type 参数限定范围。" data-no="selectEnterpriseContact 选的是企业通讯录，企微特有。回顾「05 核心判断② / 06 概念①」。"
+           data-src="原文依据：《选择通讯录成员》（91821）" data-review="回到「06 关键概念①」复习">
+        <div class="q"><span class="qno">Q3</span>selectEnterpriseContact 能选的对象是？为什么说它是"企微特有"？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. 微信好友，因为企微和微信打通了</button>
+          <button class="opt" data-val="B">B. 手机通讯录联系人</button>
+          <button class="opt" data-val="C">C. 企业通讯录的成员/部门/标签，微信没有"企业部门/标签"概念，所以企微特有</button>
+          <button class="opt" data-val="D">D. 只能选标签，不能选成员</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q4" data-answer="C"
+           data-ok="正确！needResult=0 结果由企微处理，=1 把扫描结果字符串 res.resultStr 返回给你的页面。" data-no="needResult 决定结果归属。回顾「05 核心判断⑤ / 06 概念④」。"
+           data-src="原文依据：《调起扫一扫》（90492）" data-review="回到「06 关键概念④」复习">
+        <div class="q"><span class="qno">Q4</span>scanQRCode 里 needResult=1 和 needResult=0 的区别是？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. 1 是扫一次，0 是扫多次</button>
+          <button class="opt" data-val="B">B. 1 是扫码，0 是拍照</button>
+          <button class="opt" data-val="C">C. 0 扫描结果由企微处理；1 把结果字符串 res.resultStr 返回给页面</button>
+          <button class="opt" data-val="D">D. 两者完全一样</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+    </section>
+
+    <!-- 08 闯关任务 -->
+    <section id="task">
+      <span class="sec-id" data-sec="闯关任务">08 · 闯关任务 · 落到代码上</span>
+      <h2>把概念落到代码上</h2>
+      <div class="card paper">
+        <p>这一组考<strong>应用</strong>：给场景选接口、识参数、判坐标系、选转发方式。</p>
+      </div>
+
+      <div class="task" data-task="q5" data-answer="A"
+           data-ok="对！自定义转发到企微会话用 ww.shareAppMessage（传 title/desc/link/imgUrl）；侧边栏"发到当前会话"才用 sendChatMessage。" data-no="shareAppMessage 是转发到企微会话。回顾「05 核心判断③ / 06 概念②」。"
+           data-src="原文依据：《自定义转发到会话》（100505）" data-review="回到「06 关键概念②」复习">
+        <div class="q"><span class="qno">Q5</span>需求：用户点"转发"时，用我自定义的标题/描述/链接转发到企微会话，用哪个接口？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. ww.shareAppMessage（传 title/desc/link/imgUrl）</button>
+          <button class="opt" data-val="B">B. ww.sendChatMessage</button>
+          <button class="opt" data-val="C">C. ww.selectEnterpriseContact</button>
+          <button class="opt" data-val="D">D. ww.closeWindow</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q6" data-answer="C"
+           data-ok="正确！type='wgs84' 是 GPS 坐标（默认），'gcj02' 是火星坐标（国内地图常用）。选错会让定位偏几十到几百米。" data-no="type 决定坐标系。回顾「05 核心判断④ / 06 概念③」。"
+           data-src="原文依据：《获取地理位置》（100578）" data-review="回到「06 关键概念③」复习">
+        <div class="q"><span class="qno">Q6</span>用 ww.getLocation 定位，type 参数的作用是？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. 决定返回经度还是纬度</button>
+          <button class="opt" data-val="B">B. 决定定位几次</button>
+          <button class="opt" data-val="C">C. 决定坐标系：wgs84（GPS 坐标）/ gcj02（火星坐标）</button>
+          <button class="opt" data-val="D">D. 决定用 GPS 还是 WiFi</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q7" data-answer="D"
+           data-ok="对！新版用 ww.selectEnterpriseContact({...success})，直接用 success 回调；wx.invoke('selectEnterpriseContact',...) 是旧版 jweixin 写法。" data-no="新版 ww.* 用 success 回调，wx.invoke 是旧版。回顾「05 核心判断⑥」。"
+           data-src="原文依据：《选择通讯录成员》（91821）新旧版对照" data-review="回到「05 核心判断⑥」复习">
+        <div class="q"><span class="qno">Q7</span>下面哪段是企微新版 wecom-jssdk 调选人的正确写法？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. wx.invoke('selectEnterpriseContact', {...}, cb)</button>
+          <button class="opt" data-val="B">B. wx.config({ selectEnterpriseContact })</button>
+          <button class="opt" data-val="C">C. fetch('/api/selectContact')</button>
+          <button class="opt" data-val="D">D. ww.selectEnterpriseContact({ from, mode, type, success(res){} })</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q8" data-answer="B"
+           data-ok="正确！这是通用骨架：register 成功（服务端给签名）→ 在 .then() 里调 ww.scanQRCode → success 回调拿 res.resultStr。" data-no="回顾「06 概念⑥ 通用调用骨架」。"
+           data-src="原文依据：06 通用调用骨架 + 各接口原文" data-review="回到「06 关键概念⑥」死磕">
+        <div class="q"><span class="qno">Q8</span>调 ww.scanQRCode 拿到扫码结果的正确顺序是？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. scanQRCode → ww.register → 拿 resultStr</button>
+          <button class="opt" data-val="B">B. ww.register(后端拿签名) → 在 .then() 里调 ww.scanQRCode → success 拿 res.resultStr</button>
+          <button class="opt" data-val="C">C. 直接 ww.scanQRCode 不用 register</button>
+          <button class="opt" data-val="D">D. register → shareAppMessage → scanQRCode</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+    </section>
+
+    <!-- 09 误解与边界 -->
+    <section id="miss">
+      <span class="sec-id" data-sec="误解与边界">09 · 误解与边界</span>
+      <h2>4 个最容易踩的坑</h2>
+
+      <div class="card">
+        <h3>误解①：不 register 也能调前端能力</h3>
+        <p><b>真相</b>：所有前端能力 JSAPI（选人/转发/定位/扫码/界面）的调用前提都是 <code>ww.register</code> 成功。这是和第五章完全一致的铁律。不 register 直接调，报 <code>invalid signature</code> / <code>permission denied</code>。</p>
+        <span class="src"><b>原文依据</b>：概述（90513）——「每个接口调用前，必须先 ww.register 注册成功」。</span>
+      </div>
+      <div class="card">
+        <h3>误解②：shareAppMessage 就是"发到当前会话"</h3>
+        <p><b>真相</b>：shareAppMessage 是<strong>自定义转发到企微会话</strong>（用户点右上角"转发"）。而聊天工具栏侧边栏场景下"发到当前会话"要用 <code>ww.sendChatMessage(msgType)</code>。两者场景和接口都不同，别混用。</p>
+        <span class="src"><b>原文依据</b>：《自定义转发到会话》（100505）末尾区分说明。</span>
+      </div>
+      <div class="card">
+        <h3>误解③：ww.getLocation 和 wx.getLocation 一样</h3>
+        <p><b>真相</b>：企微 JS-SDK 是 <code>ww.getLocation</code>，微信公众号/小程序是 <code>wx.getLocation</code>。两者 SDK 不同、注册方式不同。企微项目里要用 <code>ww.*</code> 系列，别照搬公众号代码。另外 type 选错坐标系会让定位偏几十到几百米。</p>
+        <span class="src"><b>原文依据</b>：《获取地理位置》（100578）——「勿与微信公众号/小程序的 wx.getLocation 混淆」。</span>
+      </div>
+      <div class="card">
+        <h3>误解④：界面能力（closeWindow 等）随便调</h3>
+        <p><b>真相</b>：界面能力（closeWindow/hideOptionMenu/hideMenuItems 等）虽然简单，但同样<strong>需要 register 成功后才能调用</strong>。另外导航栏标题颜色等在新版 SDK 中随主题统一管控，旧版 wx.setNavigationBarTitle 类接口以官方"界面"目录为准。</p>
+        <span class="src"><b>原文依据</b>：企微 JS-SDK「界面」分类——「均需 ww.register 成功后调用」。</span>
+      </div>
+      <div class="warn"><b>边界</b>：本章覆盖「选人 + 转发 + 定位 + 扫码 + 界面」五大通用前端能力及通用调用骨架。后端签名算法细节、可信域名备案流程、各能力在企业内的具体权限开通、图像/音频/网络/剪贴板等其它分类接口，属于延伸内容，需查官方文档或问同事。</div>
+    </section>
+
+    <!-- 10 背景知识缺口 -->
+    <section id="gap">
+      <span class="sec-id" data-sec="背景缺口">10 · 背景知识缺口</span>
+      <h2>要完全落地还差什么</h2>
+      <div class="card">
+        <p><b>必须补（查官方文档 / 找同事确认）：</b></p>
+        <ul class="bul">
+          <li><b>各能力的 jsApiList 注册</b>—— register 时 jsApiList 要把用到的接口名都列上（selectEnterpriseContact/shareAppMessage/getLocation/scanQRCode/closeWindow 等），<strong>对照官方文档逐个核对接口名拼写</strong>。</li>
+          <li><b>可信域名与权限开通</b>—— 调用前提除了 register，部分能力（如 getLocation）要求应用已开通对应权限，否则报 nopermission。<strong>找居易/老田</strong>确认应用权限。</li>
+          <li><b>定位坐标系选择</b>—— wgs84 还是 gcj02 取决于你下游用什么地图（高德/腾讯用 gcj02，GPS 原始用 wgs84）。<strong>看业务对接的地图 SDK</strong>。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <p><b>可以晚点补：</b></p>
+        <ul class="bul">
+          <li><b>图像/音频/网络/剪贴板等其它分类</b>—— 本章只讲五大类，JS-SDK 还有选图、录音、网络状态、剪贴板等，需要时查概述（90513）目录。</li>
+          <li><b>旧版 wx.invoke 全套迁移</b>—— 若维护老项目遇到 wx.invoke 写法，对照各接口文档的"旧版 jweixin 调用"段落即可，新项目直接用 ww.*。</li>
+        </ul>
+      </div>
+      <div class="note"><b>下一步</b>：本章和 Vue3 第五章是<strong>互补关系</strong>——第五章讲鉴权链路 + 数据专区接口，本章讲通用前端能力。两者拼起来，企微 H5 的前端能力地图就完整了。接下来该<strong>动手实操</strong>：在员工端项目里，把 register 成功后调一个 ww.selectEnterpriseContact 或 ww.scanQRCode 的最小版本跑通。</div>
+    </section>
+
+    <!-- 11 报告 -->
+    <section id="report-sec">
+      <span class="sec-id" data-sec="学习报告">11 · 学习报告</span>
+      <h2>生成你的第一章报告</h2>
+      <div class="report-box">
+        <div class="rep-btns">
+          <button id="genReport">生成学习报告</button>
+          <button id="copyReport" class="alt">复制报告</button>
+        </div>
+        <div id="report">（点击"生成学习报告"后显示完成情况与错题清单。）</div>
+      </div>
+      <div class="wrong-box" style="margin-top:14px;">
+        <h3>📋 错题回流区</h3>
+        <ul id="wrongBox"><li style="color:#888">还没有错题。答错的题会自动收集到这里。</li></ul>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  这个工具帮你建立企微前端能力 JSAPI 的理解，但不能替代在员工端项目实操和读官方文档。学习愉快 🐟<br>
+  由 <a href="https://lyzbcy.github.io/" target="_blank" rel="noopener">捞鱼</a> 制作
+</footer>
+
+<!-- promo -->
+<div class="float-btn" id="floatBtn">🐟 关于捞鱼</div>
+<div class="modal-mask" id="modalMask">
+  <div class="modal">
+    <button class="close" id="closeModal">×</button>
+    <div class="author">
+      <img src="https://s41.ax1x.com/2025/12/05/pZmPZPH.png" alt="捞鱼">
+      <div>
+        <div class="name">捞鱼</div>
+        <div class="sig">「一个弱小但有梦想的开发者」</div>
+        <span class="studio">捞鱼工作室</span><br>
+        <a class="goto" href="https://lyzbcy.github.io/about/" target="_blank" rel="noopener">了解更多 →</a>
+      </div>
+    </div>
+    <div class="qr-grid">
+      <div class="qr-cell"><div class="ttl">QQ 学习群</div><img src="img/sticker/qq-group.jpg" alt="QQ群二维码"><div class="desc">扫码进群一起学习</div></div>
+      <div class="qr-cell"><div class="ttl">赞赏支持</div><img src="img/sticker/reward-qr.jpg" alt="赞赏二维码"><div class="desc">请捞鱼喝杯奶茶</div></div>
+      <div class="qr-cell">
+        <div class="ttl">微信表情包</div>
+        <div class="sticker-row"><img src="img/sticker/ok.png" alt=""><img src="img/sticker/no.png" alt=""><img src="img/sticker/study.png" alt=""></div>
+        <img src="img/sticker/sticker-qr.png" alt="微信表情包二维码">
+        <div class="desc">📱 长按或扫码使用</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var qc=document.getElementById('quizCount');
+  if(qc)qc.textContent=document.querySelectorAll('.task').length;
+  var STAMP_MAP={
+    '学习目标':'study.png','背景包':'study.png','问题定位':'study.png',
+    '结构地图':'ok.png','核心判断':'ok.png','关键概念':'study.png',
+    '苏格拉底关卡':'no.png','闯关任务':'final.png',
+    '误解与边界':'no.png','背景缺口':'study.png','学习报告':'final.png'
+  };
+  document.querySelectorAll('.sec-id[data-sec]').forEach(function(el){
+    var key=el.getAttribute('data-sec'),img=STAMP_MAP[key];
+    if(img){var i=document.createElement('img');i.className='stamp';i.src='img/sticker/'+img;i.alt='';el.insertBefore(i,el.firstChild);}
+  });
+  var mask=document.getElementById('modalMask');
+  document.getElementById('floatBtn').addEventListener('click',function(){mask.classList.add('open');});
+  document.getElementById('closeModal').addEventListener('click',function(){mask.classList.remove('open');});
+  mask.addEventListener('click',function(e){if(e.target===mask)mask.classList.remove('open');});
+})();
+</script>
+
+<script>
+(function(){
+  "use strict";
+  function $all(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));}
+  function selectedVals(t){return $all('.opt.selected',t).map(function(o){return o.getAttribute('data-val');}).sort();}
+  function setFb(t,state,html){var fb=t.querySelector('.feedback');if(!fb)return;fb.className='feedback'+(state?(' '+state):'');fb.innerHTML=html;}
+  function updateBar(){
+    var all=$all('.task'),done=$all('.task[data-answered="1"]');
+    var fill=document.getElementById('barFill'),num=document.getElementById('barNum');
+    if(fill)fill.style.width=all.length?(done.length/all.length*100)+'%':'0%';
+    if(num)num.textContent=done.length+' / '+all.length;
+  }
+  function renderWrong(){
+    var box=document.getElementById('wrongBox');if(!box)return;
+    var wrong=$all('.task[data-answered="1"][data-correct="0"]');
+    if(!wrong.length){box.innerHTML='<li style="color:#888">还没有错题。答错的题会自动收集到这里。</li>';return;}
+    box.innerHTML='';
+    wrong.forEach(function(t){var li=document.createElement('li');li.textContent='【'+(t.getAttribute('data-task')||'')+'】'+(t.getAttribute('data-review')||'回到对应模块复习');box.appendChild(li);});
+  }
+  function check(t){
+    var type=t.getAttribute('data-type'),ok=false;
+    if(type==='selects'){
+      var sels=$all('select.match',t),allok=true,empty=false;
+      sels.forEach(function(s){if(!s.value)empty=true;if(s.value!==s.getAttribute('data-correct'))allok=false;});
+      if(empty){setFb(t,'no','请先把每一项都选好再检查。');return;}
+      ok=allok;
+    }else{
+      var sel=selectedVals(t);
+      if(!sel.length){setFb(t,'no','请先选择一个选项再检查。');return;}
+      var ans=(t.getAttribute('data-answer')||'').split(',').map(function(x){return x.trim();}).sort();
+      ok=(sel.join('|')===ans.join('|'));
+    }
+    var body=ok?(t.getAttribute('data-ok')||'回答正确。'):(t.getAttribute('data-no')||'再想想。');
+    var src=t.getAttribute('data-src');
+    setFb(t,ok?'ok':'no',(ok?'✅ ':'❌ ')+body+(src?('<span class="src">'+src+'</span>'):''));
+    t.setAttribute('data-answered','1');t.setAttribute('data-correct',ok?'1':'0');
+    updateBar();renderWrong();
+  }
+  function genReport(){
+    var box=document.getElementById('report');if(!box)return;
+    var all=$all('.task'),done=$all('.task[data-answered="1"]'),right=$all('.task[data-answered="1"][data-correct="1"]');
+    var lines=['=== 第一章 企微前端能力JSAPI通用接口 学习报告 ===','完成题目：'+done.length+' / '+all.length,'答对：'+right.length+' 题',''];
+    var wrong=$all('.task[data-answered="1"][data-correct="0"]');
+    if(wrong.length){lines.push('我答错的题（建议复习）：');wrong.forEach(function(t){lines.push('- '+(t.getAttribute('data-task')||'')+'：'+(t.getAttribute('data-review')||''));});}
+    else{lines.push('暂无错题。');}
+    box.textContent=lines.join('\n');
+  }
+  document.addEventListener('click',function(e){
+    var c=e.target.closest?e.target:null;
+    var opt=c&&e.target.closest('.opt');
+    if(opt){var t=opt.closest('.task');if(!t)return;
+      if(t.getAttribute('data-multi')==='true'){opt.classList.toggle('selected');}
+      else{$all('.opt',t).forEach(function(o){o.classList.remove('selected');});opt.classList.add('selected');}
+      return;}
+    var btn=c&&e.target.closest('.check');
+    if(btn){var tk=btn.closest('.task');if(tk)check(tk);return;}
+    if(e.target&&e.target.id==='genReport'){genReport();return;}
+    if(e.target&&e.target.id==='copyReport'){var r=document.getElementById('report');if(r&&navigator.clipboard)navigator.clipboard.writeText(r.textContent);return;}
+  });
+  function init(){updateBar();renderWrong();}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+
+<!-- ===== 后台语音：右侧书签脊 + 圆润玩具风播放器（带字幕） ===== -->
+<button id="voiceFab" aria-label="打开后台语音"><span class="fab-icon">🎧</span><span class="fab-text">后台语音</span></button>
+<div id="voicePlayer">
+  <button class="vp-close" aria-label="关闭">✕</button>
+  <div class="vp-head">🎧 后台语音 · 连续播放</div>
+  <div class="vp-title">—</div>
+  <div class="vp-controls">
+    <button class="vp-prev" aria-label="上一章">⏮</button>
+    <button class="vp-play" aria-label="播放/暂停">▶</button>
+    <button class="vp-next" aria-label="下一章">⏭</button>
+  </div>
+  <input class="vp-seek" type="range" min="0" max="1000" value="0" aria-label="进度">
+  <div class="vp-time"><span class="vp-cur">00:00</span><span class="vp-dur">00:00</span></div>
+  <div class="vp-sub">点开播放后，这里会同步显示字幕</div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  if(window.__voiceEngine) return;
+  window.__voiceEngine = true;
+  var listNode = document.getElementById('voicePlaylist');
+  if(!listNode){ return; }
+  var TRACKS = [];
+  try { TRACKS = JSON.parse(listNode.textContent.trim()); } catch(e){ return; }
+  if(!TRACKS.length) return;
+  var player = document.getElementById('voicePlayer');
+  var fab = document.getElementById('voiceFab');
+  var audio = new Audio(); audio.preload = 'metadata';
+  var cur = 0, ranges = [], total = 0, seeking = false;
+  function $(s){ return player ? player.querySelector(s) : null; }
+  function fmt(s){ s=Math.max(0,Math.floor(s||0)); var m=Math.floor(s/60), x=s%60;
+    return (m<10?'0':'')+m+':'+(x<10?'0':'')+x; }
+  var probe = TRACKS.map(function(){ return {dur:0}; });
+  function tryFinalize(){
+    if(probe.some(function(p){return !p.dur;})) return;
+    ranges = []; total = 0;
+    probe.forEach(function(p){ ranges.push({dur:p.dur, start:total}); total += p.dur; });
+    var d = $('.vp-dur'); if(d) d.textContent = fmt(total);
+    var sk = $('.vp-seek'); if(sk){ sk.max = Math.max(1000, Math.floor(total*10)); }
+  }
+  TRACKS.forEach(function(t, i){
+    var a = new Audio(); a.preload = 'metadata'; a.src = t.src;
+    a.addEventListener('loadedmetadata', function(){ probe[i].dur = a.duration || 0; tryFinalize(); });
+    a.addEventListener('error', function(){ probe[i].dur = 0; tryFinalize(); });
+  });
+  function load(i){ cur = i; audio.src = TRACKS[i].src; var ti = $('.vp-title'); if(ti) ti.textContent = TRACKS[i].title || ('第 '+(i+1)+' 段'); markBtn(i); }
+  function play(){ audio.play().then(function(){ show(); setPlayIcon(true); if(fab) fab.classList.add('beat'); }).catch(function(){}); }
+  function pause(){ audio.pause(); setPlayIcon(false); if(fab) fab.classList.remove('beat'); }
+  function toggle(){ audio.paused ? play() : pause(); }
+  function next(){ if(cur < TRACKS.length-1){ load(cur+1); play(); } else { pause(); } }
+  function prev(){ var abs = absTime(); if(cur > 0 && abs - ranges[cur].start < 3){ load(cur-1); play(); } else { audio.currentTime = 0; } }
+  function absTime(){ return ranges[cur] ? ranges[cur].start + (audio.currentTime||0) : (audio.currentTime||0); }
+  function setPlayIcon(on){ var b=$('.vp-play'); if(b) b.textContent = on ? '⏸' : '▶'; }
+  function show(){ if(player) player.classList.add('show'); }
+  function hide(){ if(player) player.classList.remove('show'); }
+  function markBtn(i){ document.querySelectorAll('.voice-btn[data-voice-id]').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-voice-id') === TRACKS[i].id); }); }
+  audio.addEventListener('timeupdate', function(){ if(seeking) return; if(!ranges[cur]) return; var abs = absTime(); var sk = $('.vp-seek'); var c = $('.vp-cur'); if(sk && total) sk.value = Math.round(abs / total * (sk.max||1000)); if(c) c.textContent = fmt(abs); });
+  audio.addEventListener('ended', function(){ if(cur < TRACKS.length-1){ load(cur+1); play(); } else { setPlayIcon(false); if(fab) fab.classList.remove('beat'); } });
+  function seekToFraction(frac){ if(!total) return; var target = Math.max(0, Math.min(total, frac * total)); var i = 0; while(i < ranges.length-1 && ranges[i].start + ranges[i].dur < target){ i++; } if(i !== cur){ cur = i; audio.src = TRACKS[i].src; var ti=$('.vp-title'); if(ti) ti.textContent = TRACKS[i].title||('第 '+(i+1)+' 段'); markBtn(i); } audio.currentTime = target - ranges[i].start; var c=$('.vp-cur'); if(c) c.textContent = fmt(target); }
+  document.addEventListener('click', function(e){ var t = e.target; var vb = t.closest ? t.closest('.voice-btn[data-voice-id]') : null; if(vb){ var id = vb.getAttribute('data-voice-id'), idx = -1; TRACKS.forEach(function(tr, k){ if(tr.id === id) idx = k; }); if(idx >= 0){ load(idx); play(); } return; } if(t.id === 'voiceFab'){ show(); if(audio.paused && !audio.src){ load(0); } if(audio.paused){ play(); } return; } if(!player || !player.contains(t)) return; if(t.classList.contains('vp-play')){ toggle(); return; } if(t.classList.contains('vp-prev')){ prev(); return; } if(t.classList.contains('vp-next')){ next(); return; } if(t.classList.contains('vp-close')){ pause(); hide(); return; } });
+  var sk = $('.vp-seek');
+  if(sk){ sk.addEventListener('input', function(){ seeking = true; if(total){ var c=$('.vp-cur'); if(c) c.textContent = fmt((sk.value/(sk.max||1000))*total); } }); sk.addEventListener('change', function(){ seekToFraction(sk.value/(sk.max||1000)); seeking = false; }); }
+})();
+</script>
+
+<!-- 字幕同步引擎（独立文件，共享） -->
+<script src="voice-sub.js"></script>
+
+</body>
+</html>

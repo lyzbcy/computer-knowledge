@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第一章 · Python 入门 · 开胃菜与基础语法</title>
+<link rel="icon" href="img/sticker/mascot.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<script type="application/json" id="voicePlaylist">
+[
+  {"id":"ch1","title":"第一章 Python入门·开胃菜与基础语法","src":"audio/ch1.mp3"}
+]
+</script>
+
+<div class="layout">
+  <aside class="sidebar">
+    <a class="back-link" href="index.html">← 返回 Python 目录</a>
+    <h1>第一章<br>Python 入门</h1>
+    <div class="sub">3.12 官方教程 · 开胃菜</div>
+    <div class="progress-wrap"><div id="barFill"></div></div>
+    <div id="barNum">0 / 0</div>
+    <ul class="nav">
+      <li><a href="#goal"><span class="no">01</span>学习目标</a></li>
+      <li><a href="#bg"><span class="no">02</span>零基础背景包</a></li>
+      <li><a href="#problem"><span class="no">03</span>这章回答什么</a></li>
+      <li><a href="#map"><span class="no">04</span>结构地图</a></li>
+      <li><a href="#core"><span class="no">05</span>核心判断</a></li>
+      <li><a href="#concept"><span class="no">06</span>关键概念</a></li>
+      <li><a href="#socratic"><span class="no">07</span>苏格拉底关卡</a></li>
+      <li><a href="#task"><span class="no">08</span>闯关任务</a></li>
+      <li><a href="#miss"><span class="no">09</span>误解与边界</a></li>
+      <li><a href="#gap"><span class="no">10</span>背景知识缺口</a></li>
+      <li><a href="#report-sec"><span class="no">11</span>学习报告</a></li>
+    </ul>
+  </aside>
+
+  <main class="main">
+
+    <div class="hero">
+      <img class="mascot" src="img/sticker/mascot.png" alt="捞鱼">
+      <div>
+        <h2>第一章 · Python 入门 —— 开胃菜与基础语法</h2>
+        <p>解释器两种模式 ｜ 数字/字符串/列表 ｜ 缩进是语法 ｜ 老田负责答疑｜含 <span class="stat" id="quizCount">…</span> 道互动关卡</p>
+      </div>
+      <button class="voice-btn" data-voice-id="ch1">🎧 听这章</button>
+    </div>
+
+    <!-- 01 目标 -->
+    <section id="goal">
+      <span class="sec-id" data-sec="学习目标">01 · 学习目标</span>
+      <h2>学完这一章你要能做到</h2>
+      <div class="card">
+        <ul class="bul">
+          <li><strong>说清 Python 是什么</strong>：一门解释型、简单易用、但功能强大的编程语言，老田说"如需支持找他"。</li>
+          <li><strong>区分解释器的两种模式</strong>：交互模式（<code>&gt;&gt;&gt;</code>，边敲边看结果）和脚本模式（写进 .py 文件运行）。</li>
+          <li><strong>用 Python 当计算器</strong>：知道 <code>//</code>（取整）、<code>%</code>（取余）、<code>**</code>（乘方）的区别。</li>
+          <li><strong>操作字符串和列表</strong>：索引（含负数）、切片（左闭右开）、知道字符串不可变而列表可变。</li>
+          <li>能指出至少 2 个 Python 特点（如"缩进是语法不是装饰""不用分号结尾"）。</li>
+        </ul>
+        <div class="note"><b>阅读路径</b>：背景包 → 结构地图 → 核心判断 → 关键概念 → 做关卡题 → 生成报告。</div>
+      </div>
+      <div class="card paper">
+        <span class="tag" style="background:var(--brick);color:#FFE9B0;">本章定位</span>
+        <p>这是 Python 学习地图的第一章。老田把 Python 列进学习资料，虽然本项目（文档检索需求）是纯前端，但 Python 是你长期该掌握的——可能用于后端联调脚本、数据处理、或后续智能化方向。</p>
+        <span class="src"><b>原文依据</b>：《初心与使命》——「Python 3.12：如需支持，找我（老田）」。本章内容全部基于 Python 3.12 官方教程第 1-3 章。</span>
+      </div>
+    </section>
+
+    <!-- 02 背景 -->
+    <section id="bg">
+      <span class="sec-id" data-sec="背景包">02 · 零基础背景包</span>
+      <h2>读这章前先知道的 4 件事</h2>
+
+      <div class="card">
+        <span class="tag bg">背景①</span><b>什么是编程语言</b>
+        <p>编程语言是你跟电脑沟通的"指令集"。你用它能听懂的语法写下步骤，电脑按步骤执行。Python 是众多编程语言中<strong>语法最接近自然语言</strong>的一种，所以入门容易。</p>
+        <div class="note">读这章需要它：否则你不知道 Python 在"干什么"。</div>
+      </div>
+
+      <div class="card">
+        <span class="tag bg">背景②</span><b>解释型 vs 编译型</b>
+        <p>C/Java 是<strong>编译型</strong>：代码要先整个编译成机器码才能跑，改一行得重新编译。Python 是<strong>解释型</strong>：代码逐行解释执行，可以<strong>边写边测</strong>，省去编译链接的时间。这是 Python 适合快速开发的原因。</p>
+        <div class="note">读这章需要它：理解为什么 Python 有"交互模式"（边敲边出结果）。</div>
+      </div>
+
+      <div class="card">
+        <span class="tag bg">背景③</span><b>Python 的定位：胶水语言 + 易学</b>
+        <p>Python 被称为"胶水语言"——能轻松把不同模块（甚至 C 写的）粘在一起用。它语法简单、内置高级数据类型（列表、字典），<strong>能用比 C 更短的语句实现同样目标</strong>。适合脚本、数据处理、AI、后端。</p>
+        <div class="note">读这章需要它：知道老田为什么让你学它——适用面广。</div>
+      </div>
+
+      <div class="card">
+        <span class="tag bg">背景④</span><b>缩进在 Python 里是语法</b>
+        <p>大多数语言用 <code>{ }</code> 表示代码块。Python 用<strong>缩进</strong>（行首空格）。缩进错了，程序直接报错——它不是风格选择，是语法规则。这是 Python 最显眼的特征。</p>
+        <div class="note">读这章需要它：否则你写的第一段多行代码就会因缩进报错。</div>
+      </div>
+    </section>
+
+    <!-- 03 问题定位 -->
+    <section id="problem">
+      <span class="sec-id" data-sec="问题定位">03 · 这章在回答什么</span>
+      <h2>表面 vs 深层问题</h2>
+      <div class="card paper">
+        <p><strong>表层</strong>：Python 怎么入门、基础语法怎么写。</p>
+        <p><strong>深层</strong>：Python 凭什么被称为"易学又强大"？它的交互模式、数据类型设计、缩进语法，分别解决了什么问题？</p>
+        <p><strong>只记一个问题</strong>：<span style="background:var(--marker);padding:2px 6px;border-radius:4px;">打开 Python 解释器后，我能用数字、字符串、列表做哪些基本操作？这些操作的规则是什么？</span></p>
+        <div class="note">带着这个问题读「05 核心判断」和「06 关键概念」，它们都在回答它。</div>
+      </div>
+    </section>
+
+    <!-- 04 结构地图 -->
+    <section id="map">
+      <span class="sec-id" data-sec="结构地图">04 · 结构地图</span>
+      <h2>Python 入门三层递进</h2>
+      <div class="card">
+        <p>官方教程的入门部分是一条<strong>从"能干什么"到"怎么用"的递进线</strong>：先给动机（开胃菜），再讲工具（解释器），最后练手感（数字/字符串/列表）。</p>
+      </div>
+      <div class="flow">
+        <div class="flow-step"><span class="num">1</span><b>开胃菜</b>｜Python 能干什么、为什么用它——建立动机。</div>
+        <div class="flow-step hot"><span class="num">2</span><b>解释器 ⭐</b>｜两种模式：交互（<code>&gt;&gt;&gt;</code>）和脚本（.py 文件）。这是你和 Python 对话的入口。</div>
+        <div class="flow-step"><span class="num">3</span><b>数据类型初体验</b>｜数字（int/float）、字符串（不可变）、列表（可变）—— 三种最基础的数据容器。</div>
+      </div>
+      <div class="note">节点关系：开胃菜给动机 → 解释器给工具 → 数据类型练手感。三者缺一不可，但<strong>解释器是入口</strong>，没有它你跑不了任何代码。</div>
+    </section>
+
+    <!-- 05 核心判断 -->
+    <section id="core">
+      <span class="sec-id" data-sec="核心判断">05 · 核心判断</span>
+      <h2>6 条核心判断（每条带官方原文依据）</h2>
+
+      <div class="card">
+        <span class="tag fact">事实</span><b>① Python 是一门解释型语言，可以省去编译和链接的时间，可作为交互式语言边写边测。</b>
+        <p>这是 Python 适合快速开发的根本原因。你打开解释器就能敲一行看一行结果，不用先编译。</p>
+        <span class="src"><b>原文依据</b>：Python 3.12 官方教程《开胃菜》——「Python 是一门解释型语言，可以省去编译和链接的时间。因此，它可以作为交互式语言使用，写程序时边写边测试，非常方便。」</span>
+      </div>
+
+      <div class="card">
+        <span class="tag fact">事实</span><b>② 解释器有主提示符 &gt;&gt;&gt; 和从属提示符 ...，分别表示单行输入和多行构造的续行。</b>
+        <p>交互模式下，<code>&gt;&gt;&gt;</code> 是你输入命令的地方；当你写多行结构（如 if/while），换行后会出现 <code>...</code> 提示你继续输入属于这个结构的行。</p>
+        <span class="src"><b>原文依据</b>：Python 3.12 官方教程《解释器》——「主提示符：<code>&gt;&gt;&gt;</code>；从属提示符：<code>...</code>。输入多行构造时需要从属提示符。」</span>
+      </div>
+
+      <div class="card">
+        <span class="tag fact">事实</span><b>③ 整数除法 / 总是返回浮点数；要取整用 //，取余用 %。</b>
+        <p>这是 Python 和一些语言不同的地方。<code>8 / 5</code> 得 <code>1.6</code>（不是 1）。要丢弃小数部分用 <code>//</code>（<code>17 // 3</code> 得 5），要余数用 <code>%</code>（<code>17 % 3</code> 得 2）。</p>
+        <span class="src"><b>原文依据</b>：Python 3.12 官方教程《非正式介绍》——「注意整数的除法（/）总是返回一个浮点数。如要只取整数结果……可以使用 // 运算符；要计算余数，可以使用 %。」</span>
+      </div>
+
+      <div class="card">
+        <span class="tag fact">事实</span><b>④ 字符串是不可变的，不能通过索引修改某个字符；列表是可变的。</b>
+        <p><code>word[0] = 'J'</code>（word 是字符串）会报 TypeError。但 <code>cubes[3] = 64</code>（cubes 是列表）可以。这是两种核心数据类型的关键区别。</p>
+        <span class="src"><b>原文依据</b>：Python 3.12 官方教程《非正式介绍》——「字符串不能被修改——字符串是不可变的」「与不可变的字符串不同，列表是可变类型，其内容可以被改变」。</span>
+      </div>
+
+      <div class="card">
+        <span class="tag fact">事实</span><b>⑤ 切片 [开始:结束] 是左闭右开：包含开始位置，不包含结束位置。</b>
+        <p><code>word[0:2]</code> 取位置 0 和 1 的字符，不取位置 2。这个规则使得 <code>s[:i] + s[i:]</code> 总是等于 <code>s</code>，非常优雅。</p>
+        <span class="src"><b>原文依据</b>：Python 3.12 官方教程《非正式介绍》——「切片的开始总是被包括在结果中，而结束不被包括。」</span>
+      </div>
+
+      <div class="card">
+        <span class="tag judge">判断</span><b>⑥ Python 用缩进表示语句分组，缩进是语法不是装饰。</b>
+        <p>while/if 的循环体或条件体，靠<strong>行首缩进</strong>界定，不是靠 <code>{ }</code>。缩进错了程序直接报错。这是 Python 最具辨识度的设计。</p>
+        <span class="src"><b>原文依据</b>：Python 3.12 官方教程《非正式介绍》——「循环的主体是有缩进的。Python 用缩进而不是括号来表示语句的分组。」</span>
+      </div>
+    </section>
+
+    <!-- 06 关键概念 -->
+    <section id="concept">
+      <span class="sec-id" data-sec="关键概念">06 · 关键概念拆解</span>
+      <h2>6 个关键概念</h2>
+
+      <div class="card">
+        <h3>① 解释器与交互模式（REPL）</h3>
+        <p><b>定义</b>：Python 解释器是你和 Python 对话的程序。交互模式下，你敲一行它执行一行并立即显示结果，提示符是 <code>&gt;&gt;&gt;</code>。</p>
+<pre style="margin:6px 0;font-family:var(--font-mono);font-size:.82rem;overflow-x:auto;background:#fff;">$ python3.12
+&gt;&gt;&gt; 2 + 2
+4
+&gt;&gt;&gt; print("hello")
+hello</pre>
+        <div class="note">退出用 <code>quit()</code> 或 Ctrl-D（Unix）/ Ctrl-Z 回车（Windows）。</div>
+      </div>
+
+      <div class="card">
+        <h3>② 数字类型 int / float</h3>
+        <p><b>定义</b>：整数（int）和浮点数（float）。Python 解释器可当计算器用。</p>
+        <div class="walkthrough">
+          <div class="wt-step">
+            <div class="step-no">四种除法相关运算符</div>
+<pre style="margin:0;font-family:var(--font-mono);font-size:.8rem;overflow-x:auto;background:#fff;">&gt;&gt;&gt; 17 / 3    # 经典除法，返回浮点数
+5.666666666666667
+&gt;&gt;&gt; 17 // 3   # 取整除法，丢弃小数
+5
+&gt;&gt;&gt; 17 % 3    # 取余
+2
+&gt;&gt;&gt; 5 ** 2   # 乘方（5的平方）
+25</pre>
+          </div>
+        </div>
+        <div class="warn"><b>不要误解成</b>：<code>/</code> 和 <code>//</code> 一样。<code>/</code> <strong>总是返回浮点数</strong>，<code>//</code> 才取整。</div>
+      </div>
+
+      <div class="card">
+        <h3>③ 字符串（不可变）</h3>
+        <p><b>定义</b>：用单引号 <code>'...'</code> 或双引号 <code>"..."</code> 包裹的文本，两者完全等价。字符串不可变（不能改某个字符）。</p>
+<pre style="margin:6px 0;font-family:var(--font-mono);font-size:.8rem;overflow-x:auto;background:#fff;">&gt;&gt;&gt; 3 * 'un' + 'ium'    # 重复 + 拼接
+'unununium'
+&gt;&gt;&gt; word = 'Python'
+&gt;&gt;&gt; word[0]    # 索引
+'P'
+&gt;&gt;&gt; word[-1]   # 负数索引从右数
+'n'</pre>
+        <div class="note"><b>转义</b>：字符串里要放引号，用 <code>\'</code> 转义，或换另一种引号包裹（<code>"doesn't"</code>）。</div>
+      </div>
+
+      <div class="card">
+        <h3>④ 列表（可变）</h3>
+        <p><b>定义</b>：方括号 <code>[]</code> 包裹的有序元素集合，元素类型可不同。列表可变——能增删改。支持索引、切片、拼接。</p>
+<pre style="margin:6px 0;font-family:var(--font-mono);font-size:.8rem;overflow-x:auto;background:#fff;">&gt;&gt;&gt; squares = [1, 4, 9, 16, 25]
+&gt;&gt;&gt; squares[0] = 0       # 可变：改值
+&gt;&gt;&gt; squares.append(36)   # 追加
+&gt;&gt;&gt; len(squares)         # 长度
+7</pre>
+        <div class="warn"><b>对比字符串</b>：字符串不可变（<code>word[0]='J'</code> 报错），列表可变（<code>lst[0]=9</code> 正常）。这是两者最关键的区别。</div>
+      </div>
+
+      <div class="card">
+        <h3>⑤ 切片 [start:end]</h3>
+        <p><b>定义</b>：从序列（字符串/列表）取一段子集。<strong>左闭右开</strong>：含 start 不含 end。</p>
+        <table class="t">
+          <tr><th>写法</th><th>含义</th><th>示例（word='Python'）</th></tr>
+          <tr><td><code>word[0:2]</code></td><td>位置0到2（不含2）</td><td>'Py'</td></tr>
+          <tr><td><code>word[2:5]</code></td><td>位置2到5（不含5）</td><td>'tho'</td></tr>
+          <tr><td><code>word[-2:]</code></td><td>倒数2个到末尾</td><td>'on'</td></tr>
+          <tr><td><code>word[:]</code></td><td>从头到尾（浅拷贝）</td><td>'Python'</td></tr>
+        </table>
+        <span class="src"><b>原文依据</b>：《非正式介绍》——「切片的开始总是被包括在结果中，而结束不被包括。」</span>
+      </div>
+
+      <div class="card">
+        <h3>⑥ 缩进 = 语句分组</h3>
+        <p><b>定义</b>：Python 用行首缩进（通常是 4 个空格）表示一个代码块（循环体/条件体/函数体），不用 <code>{ }</code>。</p>
+<pre style="margin:6px 0;font-family:var(--font-mono);font-size:.8rem;overflow-x:auto;background:#fff;">&gt;&gt;&gt; a, b = 0, 1
+&gt;&gt;&gt; while a &lt; 10:
+...     print(a)      # 这4个空格缩进 = 属于while
+...     a, b = b, a+b # 同样缩进 = 同属while体
+...
+0
+1
+1
+2
+3
+5
+8</pre>
+        <div class="warn"><b>不要误解成</b>：缩进只是为了好看。缩进<strong>错了程序就报错</strong>，它是语法。</div>
+      </div>
+    </section>
+
+    <!-- 07 苏格拉底关卡 -->
+    <section id="socratic">
+      <span class="sec-id" data-sec="苏格拉底关卡">07 · 苏格拉底式阅读关卡</span>
+      <h2>先想清楚这几问</h2>
+      <div class="card paper">
+        <p>这一组考<strong>理解</strong>：为什么 / 返回浮点数？字符串和列表的可变性？切片的左闭右开？</p>
+      </div>
+
+      <div class="task" data-task="q1" data-answer="B"
+           data-ok="对！Python 是解释型语言，能交互式边写边测，省去编译时间。" data-no="解释型才能边写边测。回顾「05 核心判断①」。"
+           data-src="原文依据：《开胃菜》解释型语言" data-review="回到「05 核心判断①」复习">
+        <div class="q"><span class="qno">Q1</span>Python 能"边写边测试"的根本原因是？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. 它运行速度快</button>
+          <button class="opt" data-val="B">B. 它是解释型语言，逐行解释执行，省去编译</button>
+          <button class="opt" data-val="C">C. 它有图形界面</button>
+          <button class="opt" data-val="D">D. 它不需要安装</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q2" data-answer="C"
+           data-ok="正确！/ 总是返回浮点数（8/5=1.6），// 才是取整（17//3=5）。这是 Python 的特点。" data-no="/ 返回浮点数，// 才取整。回顾「05 核心判断③ / 06 概念②」。"
+           data-src="原文依据：《非正式介绍》除法运算符" data-review="回到「06 关键概念②」复习">
+        <div class="q"><span class="qno">Q2</span>在 Python 里，<code>8 / 5</code> 的结果是？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. 1（整数）</button>
+          <button class="opt" data-val="B">B. 2（四舍五入）</button>
+          <button class="opt" data-val="C">C. 1.6（浮点数，/ 总是返回浮点数）</button>
+          <button class="opt" data-val="D">D. 报错</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q3" data-answer="A"
+           data-ok="对！字符串不可变，word[0]='J' 会报 TypeError。列表才能这样改。" data-no="字符串不可变！回顾「05 核心判断④」。"
+           data-src="原文依据：《非正式介绍》字符串不可变" data-review="回到「05 核心判断④」复习">
+        <div class="q"><span class="qno">Q3</span><code>word = 'Python'</code>，执行 <code>word[0] = 'J'</code> 会怎样？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. 报错 TypeError，字符串不可变</button>
+          <button class="opt" data-val="B">B. 正常改成 'Jython'</button>
+          <button class="opt" data-val="C">C. 没反应</button>
+          <button class="opt" data-val="D">D. 报语法错误</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q4" data-answer="B"
+           data-ok="正确！切片左闭右开：word[0:2] 取位置0和1（'Py'），不含位置2。" data-no="切片是左闭右开。回顾「05 核心判断⑤ / 06 概念⑤」。"
+           data-src="原文依据：《非正式介绍》切片规则" data-review="回到「06 关键概念⑤」复习">
+        <div class="q"><span class="qno">Q4</span><code>word = 'Python'</code>，<code>word[0:2]</code> 的结果是？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. 'Pyt'（含位置2）</button>
+          <button class="opt" data-val="B">B. 'Py'（左闭右开，不含位置2）</button>
+          <button class="opt" data-val="C">C. 'yt'</button>
+          <button class="opt" data-val="D">D. 报错</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+    </section>
+
+    <!-- 08 闯关任务 -->
+    <section id="task">
+      <span class="sec-id" data-sec="闯关任务">08 · 闯关任务 · 读代码判结果</span>
+      <h2>把概念落到代码上</h2>
+      <div class="card paper">
+        <p>这一组考<strong>应用</strong>：读代码判结果、选正确运算符、识别可变性。</p>
+      </div>
+
+      <div class="task" data-task="q5" data-answer="C"
+           data-ok="对！17 // 3 = 5（取整），17 % 3 = 2（取余），5*3+2=17 验证正确。" data-no="// 取整，% 取余。回顾「06 概念②」。"
+           data-src="原文依据：《非正式介绍》取整与取余" data-review="回到「06 关键概念②」复习">
+        <div class="q"><span class="qno">Q5</span><code>17 // 3</code> 和 <code>17 % 3</code> 分别是？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. 5.67 和 5</button>
+          <button class="opt" data-val="B">B. 5 和 5</button>
+          <button class="opt" data-val="C">C. 5（取整）和 2（取余）</button>
+          <button class="opt" data-val="D">D. 2 和 5</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q6" data-answer="A"
+           data-ok="正确！5 ** 2 是乘方（5的平方）= 25。" data-no="** 是乘方。回顾「06 概念②」。"
+           data-src="原文依据：《非正式介绍》乘方" data-review="回到「06 关键概念②」复习">
+        <div class="q"><span class="qno">Q6</span><code>5 ** 2</code> 的结果是？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. 25（5的平方，** 是乘方）</button>
+          <button class="opt" data-val="B">B. 10（5乘2）</button>
+          <button class="opt" data-val="C">C. 7（5加2）</button>
+          <button class="opt" data-val="D">D. 报错</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q7" data-answer="B"
+           data-ok="对！3 * 'un' 是重复3次 = 'ununun'，再拼 'ium' = 'unununium'。" data-no="字符串 * 是重复，+ 是拼接。回顾「06 概念③」。"
+           data-src="原文依据：《非正式介绍》字符串运算" data-review="回到「06 关键概念③」复习">
+        <div class="q"><span class="qno">Q7</span><code>3 * 'un' + 'ium'</code> 的结果是？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. 'uniumuniumunium'</button>
+          <button class="opt" data-val="B">B. 'unununium'（重复+拼接）</button>
+          <button class="opt" data-val="C">C. 报错</button>
+          <button class="opt" data-val="D">D. 'un3ium'</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q8" data-answer="C"
+           data-ok="完全正确！列表可变，squares[0]=0 能正常修改。如果 squares 是字符串就会报错。" data-no="列表可变可改值。回顾「05 核心判断④ / 06 概念④」。"
+           data-src="原文依据：《非正式介绍》列表可变" data-review="回到「06 关键概念④」死磕">
+        <div class="q"><span class="qno">Q8</span><code>squares = [1, 4, 9, 16]</code>，执行 <code>squares[0] = 0</code> 后，<code>squares</code> 是？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. 报错（和字符串一样不可变）</button>
+          <button class="opt" data-val="B">B. [1, 4, 9, 16]（没变化）</button>
+          <button class="opt" data-val="C">C. [0, 4, 9, 16]（列表可变，成功修改）</button>
+          <button class="opt" data-val="D">D. [0] 只剩改的那个</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+    </section>
+
+    <!-- 09 误解与边界 -->
+    <section id="miss">
+      <span class="sec-id" data-sec="误解与边界">09 · 误解与边界</span>
+      <h2>4 个最容易踩的坑</h2>
+
+      <div class="card">
+        <h3>误解①：/ 和 // 一样，都是除法</h3>
+        <p><b>真相</b>：<code>/</code> <strong>总是返回浮点数</strong>（<code>8/5=1.6</code>）；<code>//</code> 才是取整（<code>17//3=5</code>）。要取整必须用 <code>//</code>。</p>
+        <span class="src"><b>原文依据</b>：《非正式介绍》——「整数除法（/）总是返回一个浮点数。」</span>
+      </div>
+      <div class="card">
+        <h3>误解②：字符串和列表一样能改</h3>
+        <p><b>真相</b>：字符串<strong>不可变</strong>，<code>word[0]='J'</code> 报错。列表<strong>可变</strong>，<code>lst[0]=9</code> 正常。要"改"字符串只能新建一个。</p>
+      </div>
+      <div class="card">
+        <h3>误解③：切片 [0:2] 包含位置 2</h3>
+        <p><b>真相</b>：左闭右开——<strong>含 0 不含 2</strong>。<code>word[0:2]</code> 取位置 0、1。规则：<code>s[:i]+s[i:]=s</code>。</p>
+      </div>
+      <div class="card">
+        <h3>误解④：缩进只是代码风格，多少空格都行</h3>
+        <p><b>真相</b>：缩进是<strong>语法</strong>，不是风格。同一代码块必须缩进一致，错了直接报错。Python 用缩进而非 <code>{ }</code> 表示分组。</p>
+      </div>
+      <div class="warn"><b>边界</b>：本章只覆盖 Python 入门最基础的部分（解释器 + 数字/字符串/列表）。控制流（if/for/while）、函数定义、字典/集合/元组、异常处理都不在本章——它们在后续章节。</div>
+    </section>
+
+    <!-- 10 背景知识缺口 -->
+    <section id="gap">
+      <span class="sec-id" data-sec="背景缺口">10 · 背景知识缺口</span>
+      <h2>要继续学还差什么</h2>
+      <div class="card">
+        <p><b>现在就该补（阻碍写代码）：</b></p>
+        <ul class="bul">
+          <li><b>安装 Python 3.12</b>—— 从 python.org 下载，或用 conda。装完终端敲 <code>python3.12</code> 能进交互模式即成功。</li>
+          <li><b>选一个编辑器/IDE</b>—— VS Code（轻量+插件全）或 PyCharm（专业 Python IDE）。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <p><b>可以晚点补：</b></p>
+        <ul class="bul">
+          <li><b>控制流与函数</b>（第二章）—— if/for/while、def 函数、参数。</li>
+          <li><b>数据结构</b>（第三章）—— dict/set/tuple、推导式。</li>
+          <li><b>错误与异常</b>（第四章）—— try/except。</li>
+          <li><b>面向对象（类）</b>—— 进阶，写大项目时再学。</li>
+        </ul>
+      </div>
+      <div class="note"><b>下一步</b>：在本章基础上，打开解释器把所有代码示例亲手敲一遍。然后进第二章学控制流和函数——那是让 Python 真正"能干活"的关键。</div>
+    </section>
+
+    <!-- 11 报告 -->
+    <section id="report-sec">
+      <span class="sec-id" data-sec="学习报告">11 · 学习报告</span>
+      <h2>生成你的第一章报告</h2>
+      <div class="report-box">
+        <div class="rep-btns">
+          <button id="genReport">生成学习报告</button>
+          <button id="copyReport" class="alt">复制报告</button>
+        </div>
+        <div id="report">（点击"生成学习报告"后显示完成情况与错题清单。）</div>
+      </div>
+      <div class="wrong-box" style="margin-top:14px;">
+        <h3>📋 错题回流区</h3>
+        <ul id="wrongBox"><li style="color:#888">还没有错题。答错的题会自动收集到这里。</li></ul>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  这个工具帮你建立 Python 入门理解，但不能替代在解释器里动手敲代码。学习愉快 🐟<br>
+  由 <a href="https://lyzbcy.github.io/" target="_blank" rel="noopener">捞鱼</a> 制作
+</footer>
+
+<div class="float-btn" id="floatBtn">🐟 关于捞鱼</div>
+<div class="modal-mask" id="modalMask">
+  <div class="modal">
+    <button class="close" id="closeModal">×</button>
+    <div class="author">
+      <img src="https://s41.ax1x.com/2025/12/05/pZmPZPH.png" alt="捞鱼">
+      <div>
+        <div class="name">捞鱼</div>
+        <div class="sig">「一个弱小但有梦想的开发者」</div>
+        <span class="studio">捞鱼工作室</span><br>
+        <a class="goto" href="https://lyzbcy.github.io/about/" target="_blank" rel="noopener">了解更多 →</a>
+      </div>
+    </div>
+    <div class="qr-grid">
+      <div class="qr-cell"><div class="ttl">QQ 学习群</div><img src="img/sticker/qq-group.jpg" alt="QQ群二维码"><div class="desc">扫码进群一起学习</div></div>
+      <div class="qr-cell"><div class="ttl">赞赏支持</div><img src="img/sticker/reward-qr.jpg" alt="赞赏二维码"><div class="desc">请捞鱼喝杯奶茶</div></div>
+      <div class="qr-cell">
+        <div class="ttl">微信表情包</div>
+        <div class="sticker-row"><img src="img/sticker/ok.png" alt=""><img src="img/sticker/no.png" alt=""><img src="img/sticker/study.png" alt=""></div>
+        <img src="img/sticker/sticker-qr.png" alt="微信表情包二维码">
+        <div class="desc">📱 长按或扫码使用</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var qc=document.getElementById('quizCount');
+  if(qc)qc.textContent=document.querySelectorAll('.task').length;
+  var STAMP_MAP={'学习目标':'study.png','背景包':'study.png','问题定位':'study.png','结构地图':'ok.png','核心判断':'ok.png','关键概念':'study.png','苏格拉底关卡':'no.png','闯关任务':'final.png','误解与边界':'no.png','背景缺口':'study.png','学习报告':'final.png'};
+  document.querySelectorAll('.sec-id[data-sec]').forEach(function(el){var key=el.getAttribute('data-sec'),img=STAMP_MAP[key];if(img){var i=document.createElement('img');i.className='stamp';i.src='img/sticker/'+img;i.alt='';el.insertBefore(i,el.firstChild);}});
+  var mask=document.getElementById('modalMask');
+  document.getElementById('floatBtn').addEventListener('click',function(){mask.classList.add('open');});
+  document.getElementById('closeModal').addEventListener('click',function(){mask.classList.remove('open');});
+  mask.addEventListener('click',function(e){if(e.target===mask)mask.classList.remove('open');});
+})();
+</script>
+
+<script>
+(function(){
+  "use strict";
+  function $all(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));}
+  function selectedVals(t){return $all('.opt.selected',t).map(function(o){return o.getAttribute('data-val');}).sort();}
+  function setFb(t,state,html){var fb=t.querySelector('.feedback');if(!fb)return;fb.className='feedback'+(state?(' '+state):'');fb.innerHTML=html;}
+  function updateBar(){var all=$all('.task'),done=$all('.task[data-answered="1"]');var fill=document.getElementById('barFill'),num=document.getElementById('barNum');if(fill)fill.style.width=all.length?(done.length/all.length*100)+'%':'0%';if(num)num.textContent=done.length+' / '+all.length;}
+  function renderWrong(){var box=document.getElementById('wrongBox');if(!box)return;var wrong=$all('.task[data-answered="1"][data-correct="0"]');if(!wrong.length){box.innerHTML='<li style="color:#888">还没有错题。答错的题会自动收集到这里。</li>';return;}box.innerHTML='';wrong.forEach(function(t){var li=document.createElement('li');li.textContent='【'+(t.getAttribute('data-task')||'')+'】'+(t.getAttribute('data-review')||'回到对应模块复习');box.appendChild(li);});}
+  function check(t){var type=t.getAttribute('data-type'),ok=false;if(type==='selects'){var sels=$all('select.match',t),allok=true,empty=false;sels.forEach(function(s){if(!s.value)empty=true;if(s.value!==s.getAttribute('data-correct'))allok=false;});if(empty){setFb(t,'no','请先把每一项都选好再检查。');return;}ok=allok;}else{var sel=selectedVals(t);if(!sel.length){setFb(t,'no','请先选择一个选项再检查。');return;}var ans=(t.getAttribute('data-answer')||'').split(',').map(function(x){return x.trim();}).sort();ok=(sel.join('|')===ans.join('|'));}var body=ok?(t.getAttribute('data-ok')||'回答正确。'):(t.getAttribute('data-no')||'再想想。');var src=t.getAttribute('data-src');setFb(t,ok?'ok':'no',(ok?'✅ ':'❌ ')+body+(src?('<span class="src">'+src+'</span>'):''));t.setAttribute('data-answered','1');t.setAttribute('data-correct',ok?'1':'0');updateBar();renderWrong();}
+  function genReport(){var box=document.getElementById('report');if(!box)return;var all=$all('.task'),done=$all('.task[data-answered="1"]'),right=$all('.task[data-answered="1"][data-correct="1"]');var lines=['=== 第一章 Python入门 学习报告 ===','完成题目：'+done.length+' / '+all.length,'答对：'+right.length+' 题',''];var wrong=$all('.task[data-answered="1"][data-correct="0"]');if(wrong.length){lines.push('我答错的题（建议复习）：');wrong.forEach(function(t){lines.push('- '+(t.getAttribute('data-task')||'')+'：'+(t.getAttribute('data-review')||''));});}else{lines.push('暂无错题。');}box.textContent=lines.join('\n');}
+  document.addEventListener('click',function(e){var c=e.target.closest?e.target:null;var opt=c&&e.target.closest('.opt');if(opt){var t=opt.closest('.task');if(!t)return;if(t.getAttribute('data-multi')==='true'){opt.classList.toggle('selected');}else{$all('.opt',t).forEach(function(o){o.classList.remove('selected');});opt.classList.add('selected');}return;}var btn=c&&e.target.closest('.check');if(btn){var tk=btn.closest('.task');if(tk)check(tk);return;}if(e.target&&e.target.id==='genReport'){genReport();return;}if(e.target&&e.target.id==='copyReport'){var r=document.getElementById('report');if(r&&navigator.clipboard)navigator.clipboard.writeText(r.textContent);return;}});
+  function init(){updateBar();renderWrong();}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+
+<button id="voiceFab" aria-label="打开后台语音"><span class="fab-icon">🎧</span><span class="fab-text">后台语音</span></button>
+<div id="voicePlayer">
+  <button class="vp-close" aria-label="关闭">✕</button>
+  <div class="vp-head">🎧 后台语音 · 连续播放</div>
+  <div class="vp-title">—</div>
+  <div class="vp-controls"><button class="vp-prev" aria-label="上一章">⏮</button><button class="vp-play" aria-label="播放/暂停">▶</button><button class="vp-next" aria-label="下一章">⏭</button></div>
+  <input class="vp-seek" type="range" min="0" max="1000" value="0" aria-label="进度">
+  <div class="vp-time"><span class="vp-cur">00:00</span><span class="vp-dur">00:00</span></div>
+  <div class="vp-sub">点开播放后，这里会同步显示字幕</div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  if(window.__voiceEngine) return;
+  window.__voiceEngine = true;
+  var listNode = document.getElementById('voicePlaylist');
+  if(!listNode){ return; }
+  var TRACKS = [];
+  try { TRACKS = JSON.parse(listNode.textContent.trim()); } catch(e){ return; }
+  if(!TRACKS.length) return;
+  var player = document.getElementById('voicePlayer');
+  var fab = document.getElementById('voiceFab');
+  var audio = new Audio(); audio.preload = 'metadata';
+  var cur = 0, ranges = [], total = 0, seeking = false;
+  function $(s){ return player ? player.querySelector(s) : null; }
+  function fmt(s){ s=Math.max(0,Math.floor(s||0)); var m=Math.floor(s/60), x=s%60; return (m<10?'0':'')+m+':'+(x<10?'0':'')+x; }
+  var probe = TRACKS.map(function(){ return {dur:0}; });
+  function tryFinalize(){ if(probe.some(function(p){return !p.dur;})) return; ranges = []; total = 0; probe.forEach(function(p){ ranges.push({dur:p.dur, start:total}); total += p.dur; }); var d = $('.vp-dur'); if(d) d.textContent = fmt(total); var sk = $('.vp-seek'); if(sk){ sk.max = Math.max(1000, Math.floor(total*10)); } }
+  TRACKS.forEach(function(t, i){ var a = new Audio(); a.preload = 'metadata'; a.src = t.src; a.addEventListener('loadedmetadata', function(){ probe[i].dur = a.duration || 0; tryFinalize(); }); a.addEventListener('error', function(){ probe[i].dur = 0; tryFinalize(); }); });
+  function load(i){ cur = i; audio.src = TRACKS[i].src; var ti = $('.vp-title'); if(ti) ti.textContent = TRACKS[i].title || ('第 '+(i+1)+' 段'); markBtn(i); }
+  function play(){ audio.play().then(function(){ show(); setPlayIcon(true); if(fab) fab.classList.add('beat'); }).catch(function(){}); }
+  function pause(){ audio.pause(); setPlayIcon(false); if(fab) fab.classList.remove('beat'); }
+  function toggle(){ audio.paused ? play() : pause(); }
+  function next(){ if(cur < TRACKS.length-1){ load(cur+1); play(); } else { pause(); } }
+  function prev(){ var abs = absTime(); if(cur > 0 && abs - ranges[cur].start < 3){ load(cur-1); play(); } else { audio.currentTime = 0; } }
+  function absTime(){ return ranges[cur] ? ranges[cur].start + (audio.currentTime||0) : (audio.currentTime||0); }
+  function setPlayIcon(on){ var b=$('.vp-play'); if(b) b.textContent = on ? '⏸' : '▶'; }
+  function show(){ if(player) player.classList.add('show'); }
+  function hide(){ if(player) player.classList.remove('show'); }
+  function markBtn(i){ document.querySelectorAll('.voice-btn[data-voice-id]').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-voice-id') === TRACKS[i].id); }); }
+  audio.addEventListener('timeupdate', function(){ if(seeking) return; if(!ranges[cur]) return; var abs = absTime(); var sk = $('.vp-seek'); var c = $('.vp-cur'); if(sk && total) sk.value = Math.round(abs / total * (sk.max||1000)); if(c) c.textContent = fmt(abs); });
+  audio.addEventListener('ended', function(){ if(cur < TRACKS.length-1){ load(cur+1); play(); } else { setPlayIcon(false); if(fab) fab.classList.remove('beat'); } });
+  function seekToFraction(frac){ if(!total) return; var target = Math.max(0, Math.min(total, frac * total)); var i = 0; while(i < ranges.length-1 && ranges[i].start + ranges[i].dur < target){ i++; } if(i !== cur){ cur = i; audio.src = TRACKS[i].src; var ti=$('.vp-title'); if(ti) ti.textContent = TRACKS[i].title||('第 '+(i+1)+' 段'); markBtn(i); } audio.currentTime = target - ranges[i].start; var c=$('.vp-cur'); if(c) c.textContent = fmt(target); }
+  document.addEventListener('click', function(e){ var t = e.target; var vb = t.closest ? t.closest('.voice-btn[data-voice-id]') : null; if(vb){ var id = vb.getAttribute('data-voice-id'), idx = -1; TRACKS.forEach(function(tr, k){ if(tr.id === id) idx = k; }); if(idx >= 0){ load(idx); play(); } return; } if(t.id === 'voiceFab'){ show(); if(audio.paused && !audio.src){ load(0); } if(audio.paused){ play(); } return; } if(!player || !player.contains(t)) return; if(t.classList.contains('vp-play')){ toggle(); return; } if(t.classList.contains('vp-prev')){ prev(); return; } if(t.classList.contains('vp-next')){ next(); return; } if(t.classList.contains('vp-close')){ pause(); hide(); return; } });
+  var sk = $('.vp-seek');
+  if(sk){ sk.addEventListener('input', function(){ seeking = true; if(total){ var c=$('.vp-cur'); if(c) c.textContent = fmt((sk.value/(sk.max||1000))*total); } }); sk.addEventListener('change', function(){ seekToFraction(sk.value/(sk.max||1000)); seeking = false; }); }
+})();
+</script>
+
+<script src="voice-sub.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第五章 · 企微 JSAPI 与消息渲染组件</title>
+<link rel="icon" href="img/sticker/mascot.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<script type="application/json" id="voicePlaylist">
+[
+  {"id":"ch5","title":"第五章 企微JSAPI与消息渲染","src":"audio/ch5.mp3"}
+]
+</script>
+
+<div class="layout">
+  <aside class="sidebar">
+    <a class="back-link" href="index.html">← 返回 Vue3 目录</a>
+    <h1>第五章<br>企微 JSAPI<br>消息渲染</h1>
+    <div class="sub">ww.register · 专区接口 · 业务落地</div>
+    <div class="progress-wrap"><div id="barFill"></div></div>
+    <div id="barNum">0 / 0</div>
+    <ul class="nav">
+      <li><a href="#goal"><span class="no">01</span>学习目标</a></li>
+      <li><a href="#bg"><span class="no">02</span>零基础背景包</a></li>
+      <li><a href="#problem"><span class="no">03</span>这章回答什么</a></li>
+      <li><a href="#map"><span class="no">04</span>结构地图</a></li>
+      <li><a href="#core"><span class="no">05</span>核心判断</a></li>
+      <li><a href="#concept"><span class="no">06</span>关键概念</a></li>
+      <li><a href="#socratic"><span class="no">07</span>苏格拉底关卡</a></li>
+      <li><a href="#task"><span class="no">08</span>闯关任务</a></li>
+      <li><a href="#miss"><span class="no">09</span>误解与边界</a></li>
+      <li><a href="#gap"><span class="no">10</span>背景知识缺口</a></li>
+      <li><a href="#report-sec"><span class="no">11</span>学习报告</a></li>
+    </ul>
+  </aside>
+
+  <main class="main">
+
+    <div class="hero">
+      <img class="mascot" src="img/sticker/mascot.png" alt="捞鱼">
+      <div>
+        <h2>第五章 · 企微 JSAPI 与消息渲染组件</h2>
+        <p>ww.register 鉴权 ｜ selectDatazoneDoc/File ｜ v-html 渲染 ｜ 全链路落地｜含 <span class="stat" id="quizCount">…</span> 道互动关卡</p>
+      </div>
+      <button class="voice-btn" data-voice-id="ch5">🎧 听这章</button>
+    </div>
+
+    <!-- 01 目标 -->
+    <section id="goal">
+      <span class="sec-id" data-sec="学习目标">01 · 学习目标</span>
+      <h2>学完这一章你要能做到</h2>
+      <div class="card">
+        <ul class="bul">
+          <li><strong>说清 ww.register 的作用</strong>：统一完成企业身份 + 应用身份注册，取代旧版 config/agentConfig 两段式。</li>
+          <li><strong>默写 ww.register 的关键参数</strong>：corpId、agentId、jsApiList、getConfigSignature、getAgentConfigSignature。</li>
+          <li><strong>解释 selectDatazoneDoc 与 selectDatazoneFile 的区别</strong>：前者选文档（返回 docid/url/type），后者选微盘文件（返回 fileId/url）。</li>
+          <li><strong>说清鉴权 → 调接口的完整链路</strong>：注册身份 → 拿签名 → 调专区接口 → 后端用返回值做分析。</li>
+          <li>能指出至少 2 个常见误解（如"ww.register 和 wx.config 一样""selectDatazoneDoc 不需要鉴权"）。</li>
+        </ul>
+        <div class="note"><b>阅读路径</b>：背景包 → 全链路地图 → 核心判断 → 关键概念 → 做关卡题 → 生成报告。</div>
+      </div>
+      <div class="card paper">
+        <span class="tag" style="background:var(--brick);color:#FFE9B0;">本章定位</span>
+        <p>这是<strong>把前四章串起来的落地章</strong>。前四章你学了 Vue3 选项式、SFC、computed、组件化；这一章回答：「在企微 H5 项目里，这些 Vue 知识怎么和企微 JSAPI 结合，把『文档检索能力需求』真正做出来」。</p>
+        <span class="src"><b>原文依据</b>：《初心与使命》——「Vue3基础、企微消息前端渲染组件、JSAPI、前端项目分支管理/提测/发布全流程」。</span>
+      </div>
+    </section>
+
+    <!-- 02 背景 -->
+    <section id="bg">
+      <span class="sec-id" data-sec="背景包">02 · 零基础背景包</span>
+      <h2>读这章前先知道的 4 件事</h2>
+
+      <div class="card">
+        <span class="tag bg">背景①</span><b>企微 H5 不是普通网页，它跑在企微客户端里</b>
+        <p>本项目员工端 H5 是在<strong>企业微信 App 里</strong>打开的（通过企微管家员工端入口）。这意味着它能调用企微独有的能力（选文档、选文件、转发等），这些能力普通浏览器没有，要通过 <strong>JSAPI</strong> 才能用。</p>
+        <div class="note">读这章需要它：否则你不知道为什么要学一套"企微专属 API"。</div>
+      </div>
+
+      <div class="card">
+        <span class="tag bg">背景②</span><b>"调企微接口"不是直接调，要先证明身份</b>
+        <p>企微不让随便一个网页就调它的接口。你的 H5 必须先通过 <strong>身份注册（ww.register）</strong>，证明「我属于这个企业、有权用这个应用」。注册成功后才能调 JSAPI。这就像进机房要先刷工牌。</p>
+        <div class="note">读这章需要它：所有 JSAPI 调用的前提都是"先 register 成功"。</div>
+      </div>
+
+      <div class="card">
+        <span class="tag bg">背景③</span><b>签名是后端给的，前端不自己算</b>
+        <p>身份注册要一份"签名"，但这个签名<strong>必须由后端算</strong>——因为算签名要用到 jsapi_ticket，而 ticket 是用企业的 access_token 换的，access_token 绝不能暴露到前端。前端的活是：请求后端拿签名 → 喂给 ww.register。</p>
+        <div class="note">读这章需要它：理解为什么 ww.register 的签名是回调函数（异步拿后端的）。</div>
+      </div>
+
+      <div class="card">
+        <span class="tag bg">背景④</span><b>"文档检索"要用户先选文档，再让后端分析</b>
+        <p>本需求「数据与智能专区—文档检索能力」的核心流程：用户在专区里<strong>选</strong>文档/文件 → 前端拿到 docid/fileId → 传给后端 → 后端调通用模型分析 → 返回结果给前端渲染。选文档用的就是 selectDatazoneDoc/File 两个接口。</p>
+        <div class="note">读这章需要它：这是整个需求的业务主线，本章所有内容都围绕它。</div>
+      </div>
+    </section>
+
+    <!-- 03 问题定位 -->
+    <section id="problem">
+      <span class="sec-id" data-sec="问题定位">03 · 这章在回答什么</span>
+      <h2>表面 vs 深层问题</h2>
+      <div class="card paper">
+        <p><strong>表层</strong>：怎么调企微 JSAPI、怎么选文档、怎么渲染消息。</p>
+        <p><strong>深层</strong>：从「用户点开应用」到「看到分析结果」，前端要和企微客户端、自家后端三方怎么协作？身份怎么证明？数据怎么流动？</p>
+        <p><strong>只记一个问题</strong>：<span style="background:var(--marker);padding:2px 6px;border-radius:4px;">在企微 H5 里，前端调一个 JSAPI（比如选文档），从注册身份到拿到结果，完整经过哪几步？每步谁负责？</span></p>
+        <div class="note">带着这个问题读「04 结构地图」，那条全链路就是答案。</div>
+      </div>
+    </section>
+
+    <!-- 04 结构地图 -->
+    <section id="map">
+      <span class="sec-id" data-sec="结构地图">04 · 结构地图</span>
+      <h2>一条全链路：从打开应用到看到结果</h2>
+      <div class="card">
+        <p>本章不是零散知识点的堆砌，而是<strong>一条完整的业务链路</strong>。下面 6 步就是用户从点开应用到看到分析结果的全过程，每一步对应一个角色（前端/后端/企微客户端）。</p>
+      </div>
+      <div class="flow">
+        <div class="flow-step"><span class="num">1</span><b>进入应用</b>｜用户从企微工作台点开应用 → 经中转页 <code>?type=xxxx</code> 重定向到目标 H5 页面。</div>
+        <div class="flow-step"><span class="num">2</span><b>前端启动</b>｜Vue 应用挂载（<code>mounted</code>），引入企微 jssdk（npm <code>@wecom/jssdk</code> 或 CDN）。</div>
+        <div class="flow-step hot"><span class="num">3</span><b>身份注册 ⭐</b>｜调 <code>ww.register</code>，传 corpId/agentId/jsApiList + 两个签名回调。签名回调里去请求自家后端拿签名。</div>
+        <div class="flow-step"><span class="num">4</span><b>调用接口</b>｜register 成功后，调 <code>ww.selectDatazoneDoc</code> 或 <code>ww.selectDatazoneFile</code>，弹出选择器。</div>
+        <div class="flow-step"><span class="num">5</span><b>拿到结果</b>｜用户选完，回调返回 docid/fileId+url → 前端把这些传给自家后端。</div>
+        <div class="flow-step"><span class="num">6</span><b>渲染结果</b>｜后端调通用模型分析完，返回内容 → 前端用 Vue（<code>v-html</code> + DOMPurify）渲染富文本。</div>
+      </div>
+      <div class="note">节点关系：<strong>步骤 3（身份注册）是步骤 4（调接口）的硬前提</strong>——不 register 直接调 JSAPI 会报无权限。这是贯穿全章的因果主线。</div>
+    </section>
+
+    <!-- 05 核心判断 -->
+    <section id="core">
+      <span class="sec-id" data-sec="核心判断">05 · 核心判断</span>
+      <h2>6 条核心判断（每条都带原文依据）</h2>
+
+      <div class="card">
+        <span class="tag fact">事实</span><b>① ww.register 统一完成企业身份 + 应用身份注册，是新版主推方式。</b>
+        <p>在新版 wecom-jssdk 中，统一使用 ww.register 进行身份注册，取代旧版 wx.config + wx.agentConfig 两段式。一个 ww.register 调用同时搞定企业签名和应用签名。</p>
+        <span class="src"><b>原文依据</b>：企微《ww.register》(94313)——「在新版的 wecom-jssdk.js 中，统一使用 ww.register 进行身份注册」+《开始使用》(90514)。</span>
+      </div>
+
+      <div class="card">
+        <span class="tag fact">事实</span><b>② 所有 JS 接口只能在企微应用的可信域名下调用，且可信域名必须 ICP 备案。</b>
+        <p>这是硬性约束。本地开发常用 localhost，但 localhost 不在可信域名里，签名会失败。必须配测试域名（在企微后台备案）或用企微内部环境。</p>
+        <span class="src"><b>原文依据</b>：企微《开始使用》(90514)——「所有的JS接口只能在企业微信应用的可信域名下调用，且可信域名必须有ICP备案」。</span>
+      </div>
+
+      <div class="card">
+        <span class="tag fact">事实</span><b>③ ww.register 的签名通过 getConfigSignature/getAgentConfigSignature 回调异步获取，由后端算。</b>
+        <p>签名不是前端写死的，也不是前端算的。ww.register 接收两个回调函数，回调被调用时带着 url 参数，前端用这个 url 去请求自家后端，后端算好签名返回，前端再传给 sdk。所以是"异步拿签名"。</p>
+        <span class="src"><b>原文依据</b>：企微《ww.register》(94313)——getConfigSignature / getAgentConfigSignature 回调参数说明。</span>
+      </div>
+
+      <div class="card">
+        <span class="tag fact">事实</span><b>④ selectDatazoneDoc 选「文档」，返回 docid+url+type；selectDatazoneFile 选「微盘文件」，返回 fileId+url。</b>
+        <p>这是本需求的两个核心入口接口。两者是兄弟关系，调用前提都是"必须先 ww.register + 在应用文档/文件存档范围内"。type 字段标识文档类型（3=文档/4=表格/5=收集表/6=幻灯片等）。</p>
+        <span class="src"><b>原文依据</b>：企微《数据与智能专区文档选择》(101499) + 《文件选择》(101544)——调用前提节均明确"必须先 ww.register"。</span>
+      </div>
+
+      <div class="card">
+        <span class="tag judge">判断</span><b>⑤ 应用身份权限 > 企业身份权限：应用身份能调所有企业接口 + 应用专属接口。</b>
+        <p>ww.register 如果只传 corpId（不传 agentId），只注册企业身份，能调的接口有限。传了 agentId 才注册应用身份，能调 selectDatazoneDoc/File 这种应用专属接口。本需求必须注册应用身份。</p>
+        <span class="src"><b>原文依据</b>：企微《开始使用》(90514)——应用身份权限与企业身份权限的层级关系。</span>
+      </div>
+
+      <div class="card">
+        <span class="tag judge">判断</span><b>⑥ 企微应用消息不支持直接下发 HTML，复杂富文本靠"消息卡片 + H5 落地页"组合。</b>
+        <p>企微消息类型是 textcard/template_card/markdown 等，<strong>不支持 HTML 富文本</strong>。要让用户看到富排版，常规做法是：消息卡片只放摘要+跳转链接，用户点进去到 H5 页面，前端用 v-html（配合 DOMPurify 防 XSS）渲染真正的富文本。</p>
+        <span class="src"><b>原文依据</b>：企微《发送应用消息》(90236) 消息类型不支持 HTML；Vue《模板语法》v-html 的 XSS 风险。⚠️ 老田原话称"渲染组件"，但未给专门文档，此处为社区通行做法，具体以员工端项目为准。</span>
+      </div>
+    </section>
+
+    <!-- 06 关键概念 -->
+    <section id="concept">
+      <span class="sec-id" data-sec="关键概念">06 · 关键概念拆解</span>
+      <h2>6 个关键概念</h2>
+
+      <div class="card">
+        <h3>① ww.register（身份注册）</h3>
+        <p><b>定义</b>：企微新版 jssdk 的统一身份注册接口，一次调用完成企业签名 + 应用签名。</p>
+        <div class="walkthrough">
+          <div class="wt-step">
+            <div class="step-no">ww.register 关键参数</div>
+<pre style="margin:0;font-family:var(--font-mono);font-size:.78rem;overflow-x:auto;background:#fff;">ww.register({
+  corpId: 'ww1234567890abcdef',        // 必填，企业ID
+  agentId: '1000001',                   // 应用ID（传了才注册应用身份）
+  jsApiList: ['selectDatazoneDoc'],     // 要用的接口名
+  getConfigSignature(params) {          // 企业签名回调（异步找后端拿）
+    return fetch('/api/js-signature', {
+      method:'POST', body: JSON.stringify(params)
+    }).then(r => r.json())
+    // 返回 { signature, nonceStr, timestamp }
+  },
+  getAgentConfigSignature(params) {     // 应用签名回调
+    return fetch('/api/agent-signature', {
+      method:'POST', body: JSON.stringify(params)
+    }).then(r => r.json())
+  }
+})</pre>
+          </div>
+        </div>
+        <div class="warn"><b>不要误解成</b>：签名是前端算的。签名<strong>必须后端算</strong>（要用到不能暴露的 access_token/ticket），前端只负责"请求后端拿回来喂给 sdk"。</div>
+      </div>
+
+      <div class="card">
+        <h3>② getConfigSignature / getAgentConfigSignature（签名回调）</h3>
+        <p><b>定义</b>：ww.register 的两个回调函数，sdk 需要签名时会调用它们，传入当前页 url，期望返回签名对象。</p>
+        <p><b>工作流</b>：sdk 调回调(url) → 前端拿 url 请求后端 → 后端用 jsapi_ticket + url + nonce + timestamp 算 SHA1 → 返回 {signature, nonceStr, timestamp} → 前端 resolve 给 sdk。</p>
+        <span class="src"><b>原文依据</b>：《ww.register》——两回调的参数与返回结构。</span>
+      </div>
+
+      <div class="card">
+        <h3>③ ww.checkJsApi（探测接口可用性）</h3>
+        <p><b>定义</b>：检测当前客户端是否支持某些 JS 接口。注意它是"探测"，不是鉴权——鉴权是 ww.register 的活。</p>
+<pre style="margin:6px 0;font-family:var(--font-mono);font-size:.8rem;overflow-x:auto;background:#fff;">ww.checkJsApi({
+  jsApiList: ['selectDatazoneDoc', 'selectDatazoneFile'],
+  success(res) { console.log(res.checkResult) }
+  // { selectDatazoneDoc: 'ok', selectDatazoneFile: 'ok' }
+})</pre>
+        <div class="note"><b>不要误解成</b>：checkJsApi 通过了就能调。它只测"客户端支不支持"，调之前还得 register 过身份。</div>
+      </div>
+
+      <div class="card">
+        <h3>④ ww.selectDatazoneDoc（选文档）</h3>
+        <p><b>定义</b>：弹出文档选择器，用户选完返回 docList（每项含 docid + url + type）。</p>
+        <table class="t">
+          <tr><th>返回字段</th><th>说明</th></tr>
+          <tr><td>docid</td><td>文档 ID，传给后端做分析</td></tr>
+          <tr><td>url</td><td>文档访问 URL</td></tr>
+          <tr><td>type</td><td>3=文档/4=表格/5=收集表/6=幻灯片/7=思维导图/8=流程图/10=智能表格/11=智能文档</td></tr>
+        </table>
+        <span class="src"><b>原文依据</b>：《数据与智能专区文档选择》(101499)。</span>
+        <div class="warn"><b>调用前提</b>：必须先 ww.register + 在应用文档存档范围内 + 有专区文档存档权限，否则报 <code>83000 no permission</code>。</div>
+      </div>
+
+      <div class="card">
+        <h3>⑤ ww.selectDatazoneFile（选微盘文件）</h3>
+        <p><b>定义</b>：弹出微盘文件选择器，用户选完返回 fileList（每项含 fileId + url）。与 selectDatazoneDoc 是兄弟接口。</p>
+        <table class="t">
+          <tr><th>对比</th><th>selectDatazoneDoc</th><th>selectDatazoneFile</th></tr>
+          <tr><td>选什么</td><td>文档（doc）</td><td>微盘文件</td></tr>
+          <tr><td>返回</td><td>docid + url + type</td><td>fileId + url</td></tr>
+          <tr><td>权限</td><td>文档存档权限</td><td>文件存档权限</td></tr>
+        </table>
+        <span class="src"><b>原文依据</b>：《数据与智能专区文件选择》(101544)。</span>
+      </div>
+
+      <div class="card">
+        <h3>⑥ v-html + DOMPurify（富文本渲染）</h3>
+        <p><b>定义</b>：后端返回的富文本（HTML 字符串）要在 Vue 里渲染，用 <code>v-html</code>。但 v-html 直接渲染有 XSS 风险，必须先用 DOMPurify 净化。</p>
+        <div class="walkthrough">
+          <div class="wt-step">
+            <div class="step-no">选项式：渲染后端返回的富文本</div>
+<pre style="margin:0;font-family:var(--font-mono);font-size:.8rem;overflow-x:auto;background:#fff;">&lt;!-- template --&gt;
+&lt;div v-html="safeContent"&gt;&lt;/div&gt;
+
+&lt;!-- script（选项式）--&gt;
+import DOMPurify from 'dompurify'
+export default {
+  data() { return { rawContent: '' } },
+  computed: {
+    safeContent() {                    // 用 computed 净化
+      return DOMPurify.sanitize(this.rawContent)
+    }
+  },
+  methods: {
+    async loadResult(docid) {
+      const res = await fetch('/api/analyze', {
+        method:'POST', body: JSON.stringify({ docid })
+      })
+      const data = await res.json()
+      this.rawContent = data.content   // 原始HTML存进 data
+    }
+  }
+}</pre>
+          </div>
+        </div>
+        <div class="warn"><b>不要误解成</b>：v-html 直接渲染就行。后端内容也可能被注入恶意脚本，<strong>无论来源都要净化</strong>。配合 computed 净化（带缓存，第四章学的）正合适。</div>
+      </div>
+    </section>
+
+    <!-- 07 苏格拉底关卡 -->
+    <section id="socratic">
+      <span class="sec-id" data-sec="苏格拉底关卡">07 · 苏格拉底式阅读关卡</span>
+      <h2>先想清楚这几问</h2>
+      <div class="card paper">
+        <p>这一组考<strong>理解</strong>：ww.register 为什么取代 config+agentConfig？签名为什么是回调？selectDatazoneDoc 的前提条件？</p>
+      </div>
+
+      <div class="task" data-task="q1" data-answer="A"
+           data-ok="对！ww.register 一次调用统一完成企业身份+应用身份注册，取代旧版两段式。" data-no="ww.register 是新版统一接口。回顾「05 核心判断①」。"
+           data-src="原文依据：《ww.register》(94313)" data-review="回到「05 核心判断①」复习">
+        <div class="q"><span class="qno">Q1</span>ww.register 相比旧版 wx.config + wx.agentConfig，最大的改进是？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. 一次调用统一完成企业签名+应用签名，取代两段式</button>
+          <button class="opt" data-val="B">B. 不再需要签名</button>
+          <button class="opt" data-val="C">C. 速度更快</button>
+          <button class="opt" data-val="D">D. 可以在普通浏览器用了</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q2" data-answer="C"
+           data-ok="正确！jsapi_ticket 用 access_token 换，而 access_token 不能暴露到前端，所以签名必须后端算，前端通过回调异步拿。" data-no="签名必须后端算，前端通过回调拿。回顾「02 背景③ / 05 核心判断③」。"
+           data-src="原文依据：《ww.register》签名回调 + 鉴权原理" data-review="回到「05 核心判断③」复习">
+        <div class="q"><span class="qno">Q2</span>ww.register 的签名为什么用回调函数（getConfigSignature）异步获取，而不是前端直接算？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. 前端算太慢</button>
+          <button class="opt" data-val="B">B. 回调是 Vue 要求的</button>
+          <button class="opt" data-val="C">C. 算签名要用不能暴露给前端的 ticket，必须后端算，前端异步拿</button>
+          <button class="opt" data-val="D">D. 没有为什么，随便设计的</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q3" data-answer="A"
+           data-ok="对！两个专区接口的调用前提都明确写了"必须先 ww.register"。不 register 直接调会报无权限。" data-no="所有专区接口前提都是 register 成功。回顾「05 核心判断④」。"
+           data-src="原文依据：《文档选择》(101499)/《文件选择》(101544) 调用前提" data-review="回到「05 核心判断④」复习">
+        <div class="q"><span class="qno">Q3</span>调用 selectDatazoneDoc 之前，前端必须先做什么？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. 调 ww.register 完成身份注册（企业+应用身份）</button>
+          <button class="opt" data-val="B">B. 什么都不用，直接调</button>
+          <button class="opt" data-val="C">C. 用 v-html 渲染一个列表</button>
+          <button class="opt" data-val="D">D. 调 checkJsApi 就够了</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q4" data-answer="B"
+           data-ok="正确！这是硬约束。localhost 不在可信域名里，本地开发要配测试域名（已备案）或用企微内部环境。" data-no="可信域名+ICP备案是硬要求。回顾「05 核心判断②」。"
+           data-src="原文依据：《开始使用》(90514)" data-review="回到「05 核心判断②」复习">
+        <div class="q"><span class="qno">Q4</span>本地用 localhost 调试企微 JSAPI，签名总失败，最可能的原因是？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. 网络太慢</button>
+          <button class="opt" data-val="B">B. localhost 不在可信域名里（可信域名还必须 ICP 备案）</button>
+          <button class="opt" data-val="C">C. Vue 版本不对</button>
+          <button class="opt" data-val="D">D. 没装 DOMPurify</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+    </section>
+
+    <!-- 08 闯关任务 -->
+    <section id="task">
+      <span class="sec-id" data-sec="闯关任务">08 · 闯关任务 · 落到代码上</span>
+      <h2>把概念落到代码上</h2>
+      <div class="card paper">
+        <p>这一组考<strong>应用</strong>：给场景选接口、读代码找问题、识别渲染方案。</p>
+      </div>
+
+      <div class="task" data-task="q5" data-answer="C"
+           data-ok="对！selectDatazoneDoc 选文档返回 docid+url+type；selectDatazoneFile 选微盘文件返回 fileId+url。" data-no="两个接口选的对象不同，返回字段也不同。回顾「06 概念④⑤」。"
+           data-src="原文依据：《文档选择》(101499)/《文件选择》(101544)" data-review="回到「06 关键概念④⑤」复习">
+        <div class="q"><span class="qno">Q5</span>本需求要让用户选「文档」做分析，应该用哪个接口？返回什么？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. selectDatazoneFile，返回 fileId</button>
+          <button class="opt" data-val="B">B. checkJsApi，返回 checkResult</button>
+          <button class="opt" data-val="C">C. selectDatazoneDoc，返回 docid + url + type</button>
+          <button class="opt" data-val="D">D. ww.register，返回签名</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q6" data-answer="A"
+           data-ok="完全正确！只传 corpId 是企业身份，能调的接口有限；传 agentId 才注册应用身份，才能调 selectDatazoneDoc/File 等应用专属接口。" data-no="应用身份需要 agentId。回顾「05 核心判断⑤」。"
+           data-src="原文依据：《开始使用》(90514) 应用身份权限" data-review="回到「05 核心判断⑤」复习">
+        <div class="q"><span class="qno">Q6</span>本需求要调 selectDatazoneDoc，ww.register 时必须传哪个参数才能获得应用身份权限？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. agentId（应用ID）</button>
+          <button class="opt" data-val="B">B. 只传 corpId 就够</button>
+          <button class="opt" data-val="C">C. jsApiList</button>
+          <button class="opt" data-val="D">D. 不用传任何参数</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q7" data-answer="C"
+           data-ok="对！v-html 直接渲染后端 HTML 有 XSS 风险，必须先用 DOMPurify.sanitize 净化（配合 computed 带缓存）。" data-no="v-html 必须配 DOMPurify。回顾「06 概念⑥」。"
+           data-src="原文依据：Vue《模板语法》v-html XSS 风险" data-review="回到「06 关键概念⑥」复习">
+        <div class="q"><span class="qno">Q7</span>后端返回一段 HTML 富文本要渲染，下面哪个做法安全？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. 直接 v-html="content"，后端内容可信</button>
+          <button class="opt" data-val="B">B. 用 {{ content }} 插值（但会显示标签源码）</button>
+          <button class="opt" data-val="C">C. v-html="DOMPurify.sanitize(content)"，无论来源都净化</button>
+          <button class="opt" data-val="D">D. 用 v-text 渲染</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+
+      <div class="task" data-task="q8" data-answer="B"
+           data-ok="正确！这是完整链路：进入应用→Vue挂载→ww.register(后端拿签名)→selectDatazoneDoc→拿docid传后端→v-html渲染分析结果。" data-no="回顾「04 全链路地图」的 6 步。"
+           data-src="原文依据：04 全链路地图 + 各接口原文" data-review="回到「04 结构地图」死磕">
+        <div class="q"><span class="qno">Q8</span>用户从点开应用到看到文档分析结果，前端这边的正确顺序是？</div>
+        <div class="opts">
+          <button class="opt" data-val="A">A. selectDatazoneDoc → ww.register → 渲染结果 → 拿 docid</button>
+          <button class="opt" data-val="B">B. Vue 挂载 → ww.register(后端拿签名) → selectDatazoneDoc → 拿 docid 传后端 → 渲染结果</button>
+          <button class="opt" data-val="C">C. 渲染结果 → ww.register → selectDatazoneDoc</button>
+          <button class="opt" data-val="D">D. ww.register → 渲染结果 → selectDatazoneDoc</button>
+        </div>
+        <button class="check">检查</button>
+        <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+      </div>
+    </section>
+
+    <!-- 09 误解与边界 -->
+    <section id="miss">
+      <span class="sec-id" data-sec="误解与边界">09 · 误解与边界</span>
+      <h2>4 个最容易踩的坑</h2>
+
+      <div class="card">
+        <h3>误解①：ww.register 和旧版 wx.config 一样，随便用哪个</h3>
+        <p><b>真相</b>：新版 wecom-jssdk 统一用 ww.register，旧版 config+agentConfig 是迁移对象。本项目用新版 sdk（<code>@wecom/jssdk</code>），就走 ww.register。别在新 sdk 里还写 wx.config。</p>
+        <span class="src"><b>原文依据</b>：《ww.register》——「统一使用 ww.register 进行身份注册」。</span>
+      </div>
+      <div class="card">
+        <h3>误解②：签名前端自己算就行</h3>
+        <p><b>真相</b>：算签名要用 jsapi_ticket，ticket 用 access_token 换，access_token <strong>绝不能暴露到前端</strong>。签名必须后端算，前端通过 getConfigSignature 回调异步拿。</p>
+      </div>
+      <div class="card">
+        <h3>误解③：selectDatazoneDoc 注册完就能调</h3>
+        <p><b>真相</b>：register 只是第一步。还要满足：当前用户在应用可见范围内 + 在文档存档范围内 + 应用有专区文档存档权限（灰度内测）。任一不满足都报 <code>83000 no permission</code>。</p>
+        <span class="src"><b>原文依据</b>：《文档选择》(101499) 调用前提 + 错误码 83000。</span>
+      </div>
+      <div class="card">
+        <h3>误解④：v-html 渲染后端内容很安全</h3>
+        <p><b>真相</b>：v-html 直接渲染任何来源的 HTML 都有 XSS 风险，后端内容也可能被注入。必须用 DOMPurify 净化后再 v-html。配合 computed 净化（带缓存）最合适。</p>
+      </div>
+      <div class="warn"><b>边界</b>：本章覆盖「ww.register 鉴权 + 专区两接口 + v-html 渲染 + 全链路」。后端签名算法细节（SHA1 拼接）、专区存档权限开通流程、中转页 <code>?type=xxxx</code> 具体映射规则、员工端项目实际请求封装，属于项目内部实现，需问居易/土豆或在员工端代码里看，本章只给通用框架。</div>
+    </section>
+
+    <!-- 10 背景知识缺口 -->
+    <section id="gap">
+      <span class="sec-id" data-sec="背景缺口">10 · 背景知识缺口</span>
+      <h2>要完全落地还差什么</h2>
+      <div class="card">
+        <p><b>必须补（找同事确认）：</b></p>
+        <ul class="bul">
+          <li><b>中转页 <code>?type=xxxx</code> 映射规则</b>—— 这是你们产品的私有实现，<strong>找土豆</strong>。已知示例：<code>https://platform-test.wshoto.com/workbench?cid=xxx&type=customerTodo</code>。</li>
+          <li><b>员工端项目的请求封装</b>—— 用没用 axios？鉴权 header 怎么加？目录结构？<strong>看员工端现有代码</strong>（老田："参考员工端其它页面"）。</li>
+          <li><b>专区存档权限开通</b>—— 101499/101544 都要灰度内测的存档权限，<strong>找居易或老田</strong>确认应用是否已开通。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <p><b>可以晚点补：</b></p>
+        <ul class="bul">
+          <li><b>分支管理 / 提测 / 发布全流程</b>—— 老田要求的"前端全流程"，git 分支规范、提测 checklist、发布步骤。这是工程规范，找团队文档。</li>
+          <li><b>后端签名算法实现</b>—— 前端不用写，但要能看懂后端给的签名接口文档。</li>
+        </ul>
+      </div>
+      <div class="note"><b>下一步</b>：本章是 Vue3 学习地图的最后一章理论。接下来该<strong>动手在员工端项目里实操</strong>——把这条链路跑通。手写一遍 ww.register + selectDatazoneDoc 的最小可用版本，是检验前五章学习成果的最好方式。</div>
+    </section>
+
+    <!-- 11 报告 -->
+    <section id="report-sec">
+      <span class="sec-id" data-sec="学习报告">11 · 学习报告</span>
+      <h2>生成你的第五章报告</h2>
+      <div class="report-box">
+        <div class="rep-btns">
+          <button id="genReport">生成学习报告</button>
+          <button id="copyReport" class="alt">复制报告</button>
+        </div>
+        <div id="report">（点击"生成学习报告"后显示完成情况与错题清单。）</div>
+      </div>
+      <div class="wrong-box" style="margin-top:14px;">
+        <h3>📋 错题回流区</h3>
+        <ul id="wrongBox"><li style="color:#888">还没有错题。答错的题会自动收集到这里。</li></ul>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  这个工具帮你建立企微 JSAPI 与消息渲染的理解，但不能替代在员工端项目实操和读官方文档。学习愉快 🐟<br>
+  由 <a href="https://lyzbcy.github.io/" target="_blank" rel="noopener">捞鱼</a> 制作
+</footer>
+
+<!-- promo -->
+<div class="float-btn" id="floatBtn">🐟 关于捞鱼</div>
+<div class="modal-mask" id="modalMask">
+  <div class="modal">
+    <button class="close" id="closeModal">×</button>
+    <div class="author">
+      <img src="https://s41.ax1x.com/2025/12/05/pZmPZPH.png" alt="捞鱼">
+      <div>
+        <div class="name">捞鱼</div>
+        <div class="sig">「一个弱小但有梦想的开发者」</div>
+        <span class="studio">捞鱼工作室</span><br>
+        <a class="goto" href="https://lyzbcy.github.io/about/" target="_blank" rel="noopener">了解更多 →</a>
+      </div>
+    </div>
+    <div class="qr-grid">
+      <div class="qr-cell"><div class="ttl">QQ 学习群</div><img src="img/sticker/qq-group.jpg" alt="QQ群二维码"><div class="desc">扫码进群一起学习</div></div>
+      <div class="qr-cell"><div class="ttl">赞赏支持</div><img src="img/sticker/reward-qr.jpg" alt="赞赏二维码"><div class="desc">请捞鱼喝杯奶茶</div></div>
+      <div class="qr-cell">
+        <div class="ttl">微信表情包</div>
+        <div class="sticker-row"><img src="img/sticker/ok.png" alt=""><img src="img/sticker/no.png" alt=""><img src="img/sticker/study.png" alt=""></div>
+        <img src="img/sticker/sticker-qr.png" alt="微信表情包二维码">
+        <div class="desc">📱 长按或扫码使用</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var qc=document.getElementById('quizCount');
+  if(qc)qc.textContent=document.querySelectorAll('.task').length;
+  var STAMP_MAP={
+    '学习目标':'study.png','背景包':'study.png','问题定位':'study.png',
+    '结构地图':'ok.png','核心判断':'ok.png','关键概念':'study.png',
+    '苏格拉底关卡':'no.png','闯关任务':'final.png',
+    '误解与边界':'no.png','背景缺口':'study.png','学习报告':'final.png'
+  };
+  document.querySelectorAll('.sec-id[data-sec]').forEach(function(el){
+    var key=el.getAttribute('data-sec'),img=STAMP_MAP[key];
+    if(img){var i=document.createElement('img');i.className='stamp';i.src='img/sticker/'+img;i.alt='';el.insertBefore(i,el.firstChild);}
+  });
+  var mask=document.getElementById('modalMask');
+  document.getElementById('floatBtn').addEventListener('click',function(){mask.classList.add('open');});
+  document.getElementById('closeModal').addEventListener('click',function(){mask.classList.remove('open');});
+  mask.addEventListener('click',function(e){if(e.target===mask)mask.classList.remove('open');});
+})();
+</script>
+
+<script>
+(function(){
+  "use strict";
+  function $all(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));}
+  function selectedVals(t){return $all('.opt.selected',t).map(function(o){return o.getAttribute('data-val');}).sort();}
+  function setFb(t,state,html){var fb=t.querySelector('.feedback');if(!fb)return;fb.className='feedback'+(state?(' '+state):'');fb.innerHTML=html;}
+  function updateBar(){
+    var all=$all('.task'),done=$all('.task[data-answered="1"]');
+    var fill=document.getElementById('barFill'),num=document.getElementById('barNum');
+    if(fill)fill.style.width=all.length?(done.length/all.length*100)+'%':'0%';
+    if(num)num.textContent=done.length+' / '+all.length;
+  }
+  function renderWrong(){
+    var box=document.getElementById('wrongBox');if(!box)return;
+    var wrong=$all('.task[data-answered="1"][data-correct="0"]');
+    if(!wrong.length){box.innerHTML='<li style="color:#888">还没有错题。答错的题会自动收集到这里。</li>';return;}
+    box.innerHTML='';
+    wrong.forEach(function(t){var li=document.createElement('li');li.textContent='【'+(t.getAttribute('data-task')||'')+'】'+(t.getAttribute('data-review')||'回到对应模块复习');box.appendChild(li);});
+  }
+  function check(t){
+    var type=t.getAttribute('data-type'),ok=false;
+    if(type==='selects'){
+      var sels=$all('select.match',t),allok=true,empty=false;
+      sels.forEach(function(s){if(!s.value)empty=true;if(s.value!==s.getAttribute('data-correct'))allok=false;});
+      if(empty){setFb(t,'no','请先把每一项都选好再检查。');return;}
+      ok=allok;
+    }else{
+      var sel=selectedVals(t);
+      if(!sel.length){setFb(t,'no','请先选择一个选项再检查。');return;}
+      var ans=(t.getAttribute('data-answer')||'').split(',').map(function(x){return x.trim();}).sort();
+      ok=(sel.join('|')===ans.join('|'));
+    }
+    var body=ok?(t.getAttribute('data-ok')||'回答正确。'):(t.getAttribute('data-no')||'再想想。');
+    var src=t.getAttribute('data-src');
+    setFb(t,ok?'ok':'no',(ok?'✅ ':'❌ ')+body+(src?('<span class="src">'+src+'</span>'):''));
+    t.setAttribute('data-answered','1');t.setAttribute('data-correct',ok?'1':'0');
+    updateBar();renderWrong();
+  }
+  function genReport(){
+    var box=document.getElementById('report');if(!box)return;
+    var all=$all('.task'),done=$all('.task[data-answered="1"]'),right=$all('.task[data-answered="1"][data-correct="1"]');
+    var lines=['=== 第五章 企微JSAPI与消息渲染 学习报告 ===','完成题目：'+done.length+' / '+all.length,'答对：'+right.length+' 题',''];
+    var wrong=$all('.task[data-answered="1"][data-correct="0"]');
+    if(wrong.length){lines.push('我答错的题（建议复习）：');wrong.forEach(function(t){lines.push('- '+(t.getAttribute('data-task')||'')+'：'+(t.getAttribute('data-review')||''));});}
+    else{lines.push('暂无错题。');}
+    box.textContent=lines.join('\n');
+  }
+  document.addEventListener('click',function(e){
+    var c=e.target.closest?e.target:null;
+    var opt=c&&e.target.closest('.opt');
+    if(opt){var t=opt.closest('.task');if(!t)return;
+      if(t.getAttribute('data-multi')==='true'){opt.classList.toggle('selected');}
+      else{$all('.opt',t).forEach(function(o){o.classList.remove('selected');});opt.classList.add('selected');}
+      return;}
+    var btn=c&&e.target.closest('.check');
+    if(btn){var tk=btn.closest('.task');if(tk)check(tk);return;}
+    if(e.target&&e.target.id==='genReport'){genReport();return;}
+    if(e.target&&e.target.id==='copyReport'){var r=document.getElementById('report');if(r&&navigator.clipboard)navigator.clipboard.writeText(r.textContent);return;}
+  });
+  function init(){updateBar();renderWrong();}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+
+<!-- ===== 后台语音：右侧书签脊 + 圆润玩具风播放器（带字幕） ===== -->
+<button id="voiceFab" aria-label="打开后台语音"><span class="fab-icon">🎧</span><span class="fab-text">后台语音</span></button>
+<div id="voicePlayer">
+  <button class="vp-close" aria-label="关闭">✕</button>
+  <div class="vp-head">🎧 后台语音 · 连续播放</div>
+  <div class="vp-title">—</div>
+  <div class="vp-controls">
+    <button class="vp-prev" aria-label="上一章">⏮</button>
+    <button class="vp-play" aria-label="播放/暂停">▶</button>
+    <button class="vp-next" aria-label="下一章">⏭</button>
+  </div>
+  <input class="vp-seek" type="range" min="0" max="1000" value="0" aria-label="进度">
+  <div class="vp-time"><span class="vp-cur">00:00</span><span class="vp-dur">00:00</span></div>
+  <div class="vp-sub">点开播放后，这里会同步显示字幕</div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  if(window.__voiceEngine) return;
+  window.__voiceEngine = true;
+  var listNode = document.getElementById('voicePlaylist');
+  if(!listNode){ return; }
+  var TRACKS = [];
+  try { TRACKS = JSON.parse(listNode.textContent.trim()); } catch(e){ return; }
+  if(!TRACKS.length) return;
+  var player = document.getElementById('voicePlayer');
+  var fab = document.getElementById('voiceFab');
+  var audio = new Audio(); audio.preload = 'metadata';
+  var cur = 0, ranges = [], total = 0, seeking = false;
+  function $(s){ return player ? player.querySelector(s) : null; }
+  function fmt(s){ s=Math.max(0,Math.floor(s||0)); var m=Math.floor(s/60), x=s%60;
+    return (m<10?'0':'')+m+':'+(x<10?'0':'')+x; }
+  var probe = TRACKS.map(function(){ return {dur:0}; });
+  function tryFinalize(){
+    if(probe.some(function(p){return !p.dur;})) return;
+    ranges = []; total = 0;
+    probe.forEach(function(p){ ranges.push({dur:p.dur, start:total}); total += p.dur; });
+    var d = $('.vp-dur'); if(d) d.textContent = fmt(total);
+    var sk = $('.vp-seek'); if(sk){ sk.max = Math.max(1000, Math.floor(total*10)); }
+  }
+  TRACKS.forEach(function(t, i){
+    var a = new Audio(); a.preload = 'metadata'; a.src = t.src;
+    a.addEventListener('loadedmetadata', function(){ probe[i].dur = a.duration || 0; tryFinalize(); });
+    a.addEventListener('error', function(){ probe[i].dur = 0; tryFinalize(); });
+  });
+  function load(i){ cur = i; audio.src = TRACKS[i].src; var ti = $('.vp-title'); if(ti) ti.textContent = TRACKS[i].title || ('第 '+(i+1)+' 段'); markBtn(i); }
+  function play(){ audio.play().then(function(){ show(); setPlayIcon(true); if(fab) fab.classList.add('beat'); }).catch(function(){}); }
+  function pause(){ audio.pause(); setPlayIcon(false); if(fab) fab.classList.remove('beat'); }
+  function toggle(){ audio.paused ? play() : pause(); }
+  function next(){ if(cur < TRACKS.length-1){ load(cur+1); play(); } else { pause(); } }
+  function prev(){ var abs = absTime(); if(cur > 0 && abs - ranges[cur].start < 3){ load(cur-1); play(); } else { audio.currentTime = 0; } }
+  function absTime(){ return ranges[cur] ? ranges[cur].start + (audio.currentTime||0) : (audio.currentTime||0); }
+  function setPlayIcon(on){ var b=$('.vp-play'); if(b) b.textContent = on ? '⏸' : '▶'; }
+  function show(){ if(player) player.classList.add('show'); }
+  function hide(){ if(player) player.classList.remove('show'); }
+  function markBtn(i){ document.querySelectorAll('.voice-btn[data-voice-id]').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-voice-id') === TRACKS[i].id); }); }
+  audio.addEventListener('timeupdate', function(){ if(seeking) return; if(!ranges[cur]) return; var abs = absTime(); var sk = $('.vp-seek'); var c = $('.vp-cur'); if(sk && total) sk.value = Math.round(abs / total * (sk.max||1000)); if(c) c.textContent = fmt(abs); });
+  audio.addEventListener('ended', function(){ if(cur < TRACKS.length-1){ load(cur+1); play(); } else { setPlayIcon(false); if(fab) fab.classList.remove('beat'); } });
+  function seekToFraction(frac){ if(!total) return; var target = Math.max(0, Math.min(total, frac * total)); var i = 0; while(i < ranges.length-1 && ranges[i].start + ranges[i].dur < target){ i++; } if(i !== cur){ cur = i; audio.src = TRACKS[i].src; var ti=$('.vp-title'); if(ti) ti.textContent = TRACKS[i].title||('第 '+(i+1)+' 段'); markBtn(i); } audio.currentTime = target - ranges[i].start; var c=$('.vp-cur'); if(c) c.textContent = fmt(target); }
+  document.addEventListener('click', function(e){ var t = e.target; var vb = t.closest ? t.closest('.voice-btn[data-voice-id]') : null; if(vb){ var id = vb.getAttribute('data-voice-id'), idx = -1; TRACKS.forEach(function(tr, k){ if(tr.id === id) idx = k; }); if(idx >= 0){ load(idx); play(); } return; } if(t.id === 'voiceFab'){ show(); if(audio.paused && !audio.src){ load(0); } if(audio.paused){ play(); } return; } if(!player || !player.contains(t)) return; if(t.classList.contains('vp-play')){ toggle(); return; } if(t.classList.contains('vp-prev')){ prev(); return; } if(t.classList.contains('vp-next')){ next(); return; } if(t.classList.contains('vp-close')){ pause(); hide(); return; } });
+  var sk = $('.vp-seek');
+  if(sk){ sk.addEventListener('input', function(){ seeking = true; if(total){ var c=$('.vp-cur'); if(c) c.textContent = fmt((sk.value/(sk.max||1000))*total); } }); sk.addEventListener('change', function(){ seekToFraction(sk.value/(sk.max||1000)); seeking = false; }); }
+})();
+</script>
+
+<!-- 字幕同步引擎（独立文件，5 章共享） -->
+<script src="voice-sub.js"></script>
+
+</body>
+</html>

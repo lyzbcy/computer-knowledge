@@ -39,7 +39,8 @@ body{
   padding:13px;border:none;border-radius:10px;cursor:pointer;
   background:var(--forest);color:#fff;transition:background .2s;
 }
-.gate button:hover{background:#16301D;}
+.gate button:hover:not(:disabled){background:#16301D;}
+.gate button:disabled{opacity:.6;cursor:wait;}
 .gate .err{color:var(--brick);font-size:.85rem;margin-top:12px;min-height:20px;}
 .gate .foot{margin-top:22px;font-size:.78rem;color:#9A8E70;}
 </style>
@@ -52,42 +53,92 @@ body{
   <p class="hint">这个站点需要验证身份。<br>请输入<b>开发者花名</b>继续。</p>
   <form id="form" autocomplete="off">
     <input id="pwd" type="text" placeholder="请输入开发者花名" autofocus>
-    <button type="submit">进入</button>
+    <button type="submit" id="unlockBtn">进入</button>
     <div class="err" id="err"></div>
   </form>
   <div class="foot">🐟 捞鱼工作室 · 计算机知识学习地图</div>
 </div>
 
+<!-- ============ 密码门：WebCrypto AES-GCM 解密 ============ -->
+<!-- 密码不明文存储；这里只有 salt / 密文 / 迭代次数。密码正确才能解密成功。 -->
 <script>
 (function(){
-  // 已通过验证则直接放行
+"use strict";
+
+// 加密参数（口令经 PBKDF2/SHA-256 派生后用 AES-256-GCM 加密验证串生成；口令不明文存储）
+window.__SALT  = "+kEuYzd3lvUmp3wYEnm0gw==";
+window.__CIPHER= "b70B84deJiX1BMhO9WziZh5VqpdnkrXcDHT1mTnAwLEoBZgrzuQeDlg/M0sfT9Z73s4=";
+window.__ITERS = 150000;
+
+// 已通过验证则直接放行
+try{
+  if(sessionStorage.getItem('ck_authed')==='1'){
+    var d=location.hash.replace('#dest=','');
+    location.replace(d?decodeURIComponent(d):'index.html');
+    return;
+  }
+}catch(e){}
+
+function b64ToBuf(b64){
+  var bin=atob(b64),len=bin.length,bytes=new Uint8Array(len);
+  for(var i=0;i<len;i++) bytes[i]=bin.charCodeAt(i);
+  return bytes.buffer;
+}
+
+async function deriveKey(password,salt,iters){
+  var enc=new TextEncoder();
+  var keyMaterial=await crypto.subtle.importKey('raw',enc.encode(password),{name:'PBKDF2'},false,['deriveKey']);
+  return crypto.subtle.deriveKey(
+    {name:'PBKDF2',salt:salt,iterations:iters,hash:'SHA-256'},
+    keyMaterial,
+    {name:'AES-GCM',length:256},
+    false,
+    ['decrypt']
+  );
+}
+
+var form=document.getElementById('form');
+var input=document.getElementById('pwd');
+var err=document.getElementById('err');
+var btn=document.getElementById('unlockBtn');
+
+async function tryUnlock(password){
+  btn.disabled=true; err.textContent='正在验证…';
   try{
-    if(sessionStorage.getItem('ck_authed')==='1'){
-      location.replace('index.html');
-      return;
-    }
-  }catch(e){}
+    var pw=(password||'').trim();
+    var salt=b64ToBuf(window.__SALT);
+    var cipherBuf=b64ToBuf(window.__CIPHER);
+    var key=await deriveKey(pw,salt,window.__ITERS);
+    // nonce(12) 前置，与加密时一致
+    var nonce=cipherBuf.slice(0,12);
+    var data=cipherBuf.slice(12);
+    await crypto.subtle.decrypt({name:'AES-GCM',iv:nonce},key,data);
+    // 解密成功 = 密码正确
+    try{sessionStorage.setItem('ck_authed','1');}catch(e){}
+    var dest=location.hash.replace('#dest=','')||'index.html';
+    location.replace(decodeURIComponent(dest));
+  }catch(e){
+    err.textContent='花名不对，再想想？';
+    input.focus(); input.select();
+  }finally{
+    btn.disabled=false;
+  }
+}
 
-  var form=document.getElementById('form');
-  var input=document.getElementById('pwd');
-  var err=document.getElementById('err');
-  // 答案：开发者花名
-  var ANSWER='泽恩';
-
-  form.addEventListener('submit',function(e){
+form.addEventListener('submit',function(e){
+  e.preventDefault();
+  tryUnlock(input.value);
+});
+// Enter 兼容中文输入法
+input.addEventListener('keydown',function(e){
+  if(e.key==='Enter' && !e.isComposing && e.keyCode!==229){
     e.preventDefault();
-    var val=input.value.trim();
-    if(val===ANSWER){
-      try{sessionStorage.setItem('ck_authed','1');}catch(e){}
-      // 验证通过，跳到首页（或来源页）
-      var dest=location.hash.replace('#dest=','')||'index.html';
-      location.replace(decodeURIComponent(dest));
-    }else{
-      err.textContent='花名不对，再想想？';
-      input.select();
-    }
-  });
-  input.addEventListener('input',function(){err.textContent='';});
+    tryUnlock(input.value);
+  }
+});
+input.addEventListener('input',function(){err.textContent='';});
+setTimeout(function(){input&&input.focus();},300);
+
 })();
 </script>
 

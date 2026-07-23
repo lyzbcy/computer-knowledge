@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>测试人员如何进行质量评估 · 一人开发</title>
+<link rel="icon" href="../Vue3/img/sticker/mascot.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <a class="back" href="index.html">← 一人开发</a>
+  <span class="crumb">测试人员如何进行质量评估</span>
+  <span class="tag-pill">一人开发</span>
+</div>
+
+<div class="doc">
+  <div class="doc-hero">
+    <h1>测试人员如何进行质量评估</h1>
+    <div class="meta">证据 → 风险 → 决策的发布质量评估方法 · <b>一人开发</b> 学习资料</div>
+  </div>
+
+<h1>测试人员如何进行质量评估</h1>
+<blockquote><strong>证据 → 风险 → 决策</strong>：用可信证据判断残余风险，支持发布决策。</blockquote>
+<h2>学完后，你应能回答四个发布问题</h2>
+<table><thead><tr><th>问题</th><th>关键点</th></tr></thead><tbody><tr><td>测得够不够？</td><td>范围、需求、风险和关键路径是否被覆盖？</td></tr><tr><td>结果可信吗？</td><td>环境、数据、口径和执行过程是否可靠？</td></tr><tr><td>还剩什么风险？</td><td>缺失、未测项和非功能问题会造成什么影响？</td></tr><tr><td>能不能发布？</td><td>给出有条件、有边界、有责任人的发布建议</td></tr></tbody></table>
+<h2>质量评估的产物不是分数，而是决策依据</h2>
+<p><strong>质量评估 = 目标基线 + 多源证据 + 残余风险判断 + 明确建议</strong></p>
+<p>四个环节：</p>
+<ol><li><strong>基线</strong> —— 这次变更要照顾什么？覆盖用户、关键业务和质量门槛是什么？</li><li><strong>证据</strong> —— 用多源证据支持判断。</li><li><strong>判断</strong> —— 评估残余风险。</li><li><strong>落地</strong> —— 给出明确的发布建议。</li></ol>
+<h2>从六个维度观察质量，避免只看功能通过率</h2>
+<ol><li>功能正确性</li><li>可靠性</li><li>性能效率</li><li>安全性</li><li>易用与兼容</li><li>可运维性</li></ol>
+<h2>先收集证据，再解释指标</h2>
+<table><thead><tr><th>证据类型</th><th>内容</th></tr></thead><tbody><tr><td><strong>决策证据</strong></td><td>发布门槛、风险控制、回滚与监控方案</td></tr><tr><td><strong>结果证据</strong></td><td>测试结果、缺陷状态、性能与安全报告</td></tr><tr><td><strong>过程证据</strong></td><td>评审记录、覆盖映射、执行日志、数据准备</td></tr><tr><td><strong>输入证据</strong></td><td>需求、架构、变更清单、用户与线上数据</td></tr></tbody></table>
+<blockquote>单一指标只能描述现象，多源证据才能支持判断。</blockquote>
+<h2>质量评估贯穿测试全过程，不是结束时补报告</h2>
+<p>五个步骤：</p>
+<ol><li>建立基线</li><li>规划证据</li><li>持续采集</li><li>分析风险</li><li>形成建议</li></ol>
+<blockquote>每次范围、需求或环境发生变化，都要重新校准基线与风险。</blockquote>
+<h2>评估起点：先明确&quot;这次变化可能伤害谁&quot;</h2>
+<table><thead><tr><th>基线类型</th><th>要点</th></tr></thead><tbody><tr><td><strong>范围基线</strong></td><td>· 版本目标与变更清单&lt;br&gt;· 影响模块、上下游与数据迁移&lt;br&gt;· 支持的终端、渠道、地区和配置&lt;br&gt;· 明确不测项、延期项与已知限制</td></tr><tr><td><strong>风险基线</strong></td><td>· 用户影响：人数、关键旅程与可恢复性&lt;br&gt;· 业务影响：收入、合规、品牌与运营成本&lt;br&gt;· 技术概率：复杂度、改动面、历史缺陷&lt;br&gt;· 风险等级：概率 × 影响，并指定负责人</td></tr></tbody></table>
+<h2>覆盖率要回答&quot;覆盖了什么&quot;，不能只给百分比</h2>
+<table><thead><tr><th>覆盖维度</th><th>分子 / 分母</th><th>关注点</th></tr></thead><tbody><tr><td><strong>需求覆盖</strong></td><td>已验证需求 / 总需求</td><td>阳性作者会有证 [?]</td></tr><tr><td><strong>风险覆盖</strong></td><td>已验证风险 / 已识别风险</td><td>高风险是否采用足够深度</td></tr><tr><td><strong>结构覆盖</strong></td><td>系统行结构 / 稳结 [?]</td><td>——</td></tr><tr><td><strong>组合 / 环境</strong></td><td>已测组合 / 支持组合</td><td>终端、浏览器、配置、地区是否代表真实用户</td></tr><tr><td><strong>业务场景</strong></td><td>成功、失败、异常和边界是否闭环</td><td>——</td></tr></tbody></table>
+<blockquote>例：总体 95%，但支付主路径可靠仍未验证。</blockquote>
+<h2>通过率只是执行结果，必须结合样本质量解读</h2>
+<p>关键指标：</p>
+<ul><li>计划执行率</li><li>自动化稳定率</li></ul>
+<p><strong>需要追问的问题：</strong></p>
+<ul><li>未执行的是低风险还是核心路径？失败集中在哪些模块？</li><li>按风险、模块、平台、测试层级和轮次查看趋势。</li></ul>
+<p><strong>四类需要处理的情况：</strong></p>
+<ul><li><strong>需要追问</strong> —— 通过用例的数据与环境是否真实，预期是否有效？</li><li><strong>需要拆分</strong> —— 按风险、模块分层解读。</li><li><strong>需要验证</strong> —— 环境问题导致失败的要验证。</li><li><strong>需要去噪</strong> —— 环境失败、脚本失败与产品失败必须分开归因。</li></ul>
+<h2>缺陷评估看严重度、趋势和遗留风险</h2>
+<table><thead><tr><th>指标</th><th>示例</th><th>正确解读</th></tr></thead><tbody><tr><td><strong>缺陷发现趋势</strong></td><td>近 3 轮：21 → 13 → 1</td><td>下降变慢，可能尚未稳定</td></tr><tr><td><strong>缺陷密度</strong></td><td>核心模块 4.2 / 千行</td><td>仅适合同类模块或历史趋势比较</td></tr><tr><td><strong>遗留与设计对立</strong> [?]</td><td>——</td><td>质量也可衡量</td></tr></tbody></table>
+<h2>残余风险 = 尚未消除且发布后可能发生的损失</h2>
+<p>风险四象限：</p>
+<table><thead><tr><th></th><th>低影响</th><th>高影响</th></tr></thead><tbody><tr><td><strong>低概率</strong></td><td>接受或常规监控</td><td>重点验证并准备回滚</td></tr><tr><td><strong>高概率</strong></td><td>优化后发布，准备处置</td><td>阻断发布或获得风险接受</td></tr></tbody></table>
+<blockquote>记录每项具体事项：风险触发条件、影响与责任人。</blockquote>
+<h2>非功能质量要用场景化门槛评估</h2>
+<table><thead><tr><th>维度</th><th>门槛示例</th><th>证据来源</th></tr></thead><tbody><tr><td><strong>稳定性</strong></td><td>72 小时无内存持续增长</td><td>长稳结果、错误率、恢复时间</td></tr><tr><td><strong>兼容</strong></td><td>Top 95% 用户环境可用</td><td>真实用户分布与覆盖组合</td></tr></tbody></table>
+<blockquote>门槛应来自用户体验与业务容量，而不是&quot;工具默认值&quot;。</blockquote>
+<h2>数据不可信，再漂亮的质量结论也不可信</h2>
+<table><thead><tr><th>维度</th><th>追问</th></tr></thead><tbody><tr><td><strong>口径一致</strong></td><td>指标定义、时间窗、去重规则和状态含义是否统一？</td></tr><tr><td><strong>来源可追溯</strong></td><td>数据能否回到用例、日志、缺陷、报告或监控原始记录？</td></tr><tr><td><strong>样本有代表性</strong></td><td>环境、账号、数据量和用户组合是否接近生产真实分布？</td></tr><tr><td><strong>异常已解释</strong></td><td>跳变、缺失、重复、环境波动和工具误报是否完成归因？</td></tr></tbody></table>
+<h2>发布门槛需要可验证、可例外、可追溯</h2>
+<table><thead><tr><th>门槛类型</th><th>要求</th></tr></thead><tbody><tr><td><strong>条件门槛</strong></td><td>业务负责人书面接受；P1 &lt; 2 且存在可验证绕过方案</td></tr><tr><td><strong>非功能门槛</strong></td><td>性能、安全、稳定性达到约定阈值；明确灰度、限流或容量约束</td></tr></tbody></table>
+<blockquote>门槛不是为了&quot;卡发布&quot;，而是提前对齐不可逆的损失。</blockquote>
+<h2>模拟案例：指标看似健康，但核心风险仍未关闭</h2>
+<table><thead><tr><th>指标</th><th>结果</th></tr></thead><tbody><tr><td>用例通过率</td><td>达标</td></tr><tr><td>性能结果</td><td>达标</td></tr><tr><td>需求覆盖</td><td>P0/P1: 100%</td></tr><tr><td>未关闭缺陷</td><td>P1 × 2，均在支付模块</td></tr></tbody></table>
+<p><strong>关键证据：</strong></p>
+<ul><li>支付失败后偶发重复扣减，复现率约 2%</li><li>P1 缺陷影响资金正确性，且未测项属于关键恢复路径</li><li>H5 渠道退款补偿链路尚未执行</li><li>回滚脚本已验证；灰度与监控方案已准备</li></ul>
+<p><strong>建议：No-Go</strong> —— 修复并完成后重新评估。</p>
+<h2>质量评估报告要把事实、判断和建议分开</h2>
+<p>报告六个部分：</p>
+<ol><li><strong>结论摘要</strong> —— 版本是否建议发布，最重要的依据是什么</li><li><strong>范围与限制</strong> —— 已测、未测、环境、数据和截止时间</li><li><strong>证据看板</strong> —— 覆盖、执行、缺陷、非功能与趋势</li><li><strong>残余风险</strong> —— 灰度 [?] 等</li><li><strong>发布条件</strong></li><li><strong>决策记录</strong> —— 谁接受风险，何时复评，如何关闭</li></ol>
+<h2>高质量沟通：用证据表达不确定性</h2>
+<table><thead><tr><th>避免这样说</th><th>建议这样说</th></tr></thead><tbody><tr><td>&quot;测试都通过了，应该没问题&quot;</td><td>&quot;已验证全部 P0/P1 需求，但退款恢复路径未覆盖&quot;</td></tr><tr><td>&quot;还有两个缺陷，但不严重&quot;</td><td>&quot;两个 P1 均影响支付，触发频率与绕过方案如下&quot;</td></tr><tr><td>&quot;时间不够，所以没测&quot;</td><td>&quot;未测项造成的残余风险为高，建议补测或书面接受&quot;</td></tr><tr><td>&quot;质量分 92，可以发布&quot;</td><td>&quot;满足阻断门槛；建议 10% 灰度并监控三项指标&quot;</td></tr></tbody></table>
+<h2>实战题：为&quot;会员续费 2.0&quot;做发布质量评估</h2>
+<p><strong>小组任务：</strong></p>
+<ul><li>判断数据是否足以评估</li><li>列出至少 5 个残余风险</li><li>指出需要补充的证据</li><li>给出 Go / Conditional / No-Go</li><li>写出发布条件与责任人</li><li>用 3 分钟向&quot;发布委员会&quot;汇报</li></ul>
+<p><strong>版本证据：</strong></p>
+<ul><li>P0/P1 需求覆盖 100%，P2 覆盖 84%</li><li>计划 520 条，执行 500 条，通过 [?]%；20 条未执行均为 iOS 旧版本</li><li>未关闭：P1 × 1（重复扣费，复现率 1%）、P2 × 9</li><li>性能达标；安全扫描发现 1 个中危依赖漏洞</li><li>退款主流程已测，支付超时后的自动补偿未测</li><li>灰度、监控、回滚方案已准备</li></ul>
+<h2>作业评分：结论必须能被证据复核</h2>
+<table><thead><tr><th>评分维度</th><th>权重</th><th>要求</th></tr></thead><tbody><tr><td>目标与质量底线 [?]</td><td>——</td><td>——</td></tr><tr><td>证据分析</td><td>30%</td><td>正确解读覆盖、执行、缺陷和非功能数据</td></tr><tr><td>发布建议</td><td>15%</td><td>结论明确，条件、灰度、监控与回滚可执行</td></tr><tr><td>表达质量</td><td>——</td><td>——</td></tr></tbody></table>
+<blockquote><strong>验收底线</strong>：不以单一通过率下结论；不遗漏未测项。</blockquote>
+</div>
+
+<footer>
+  由 <a href="https://lyzbcy.github.io/" target="_blank" rel="noopener">捞鱼</a> 整理
+</footer>
+
+<script>
+// 密码保护检查
+(function(){
+  try{
+    if(sessionStorage.getItem('ck_authed')!=='1'){
+      location.replace('gate.html');
+    }
+  }catch(e){}
+})();
+</script>
+
+</body>
+</html>

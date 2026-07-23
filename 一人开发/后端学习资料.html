@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>后端学习资料 · 一人开发</title>
+<link rel="icon" href="../Vue3/img/sticker/mascot.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <a class="back" href="index.html">← 一人开发</a>
+  <span class="crumb">后端学习资料</span>
+  <span class="tag-pill">一人开发</span>
+</div>
+
+<div class="doc">
+  <div class="doc-hero">
+    <h1>后端学习资料</h1>
+    <div class="meta">Java 17 + Spring Boot 后端三阶段入门到进阶 · <b>一人开发</b> 学习资料</div>
+  </div>
+
+<h1>后端学习资料</h1>
+<p>适用对象：新入职的应届毕业生，以及需要补齐 Java 后端基础的同学</p>
+<h2>技术基线</h2>
+<p>Java 17、Maven、Spring Boot、Spring Cloud、Nacos、OpenFeign、MyBatis/MyBatis-Plus、PostgreSQL、Redis、RocketMQ/Spring Cloud Stream</p>
+<h2>1. 学习阶段</h2>
+<p>学习分为三个阶段。完成每个阶段的验收作品和检查项后，再进入下一阶段。</p>
+<table><thead><tr><th>阶段</th><th>能力目标</th><th>能完成的典型工作</th><th>暂不要求独立完成</th></tr></thead><tbody><tr><td>第一阶段：开发入门</td><td>从零基础到能读懂项目主链路，并完成简单单服务功能</td><td>简单 CRUD、详情、列表、分页、校验、Mapper/XML SQL、日志、基础测试</td><td>复杂跨服务编排、缓存一致性、MQ 可靠性、分片设计</td></tr><tr><td>第二阶段：独立开发</td><td>能独立交付项目中大多数常见业务功能</td><td>复杂查询、本地事务、Feign/Nacos、Redis、MQ 收发与消费、定时任务、集成测试、常见问题排查</td><td>跨资源最终一致性、复杂并发、平台级治理和疑难线上问题</td></tr><tr><td>第三阶段：工程进阶</td><td>能负责复杂分布式功能及生产质量闭环</td><td>事务消息、重试/死信与补偿、分库分表、多租户机制、并发、网关安全、可观测性、性能和容量治理</td><td>新业务领域和服务独有第三方 SDK 仍需按需学习</td></tr></tbody></table>
+<h2>2. 项目技术版本</h2>
+<p>学习和练习使用以下版本。进入具体服务后，以该服务的 effective POM 为准。</p>
+<table><thead><tr><th>组件</th><th>项目版本</th><th>学习资料选择</th></tr></thead><tbody><tr><td>Java</td><td>17</td><td>固定阅读 Java 17 文档，不把 Java 21/25 特性写进业务代码</td></tr><tr><td>Spring Boot</td><td>BOM 3.4.0</td><td>使用 Spring Boot 3.4 文档；以 effective POM 和实际运行时依赖为准</td></tr><tr><td>Spring Cloud</td><td>2024.0.0</td><td>使用对应 Release Train 文档，注意与 Boot 的兼容关系</td></tr><tr><td>Spring Cloud Alibaba</td><td>2023.0.3.2</td><td>使用 2023.0.x Nacos 集成文档</td></tr><tr><td>MyBatis-Plus</td><td>3.5.12</td><td>阅读 3.5.x 文档，留意分页插件在 3.5.9 后的依赖拆分</td></tr><tr><td>RocketMQ</td><td>5.3.1</td><td>先掌握消息通用语义，再学习项目 Stream/RocketMQ 封装</td></tr><tr><td>PostgreSQL JDBC</td><td>42.7.4</td><td>SQL 行为以实际 PostgreSQL 服务端版本为准</td></tr><tr><td>TestNG</td><td>7.10.2</td><td>项目测试优先学习 TestNG 与内部 BaseTest/测试 Starter</td></tr></tbody></table>
+<p>进入具体服务后先执行： 不要根据某个子模块的显式依赖或官网“Latest”页面猜测实际版本。</p>
+<h2>3. 第一阶段：开发入门</h2>
+<h3>阶段目标</h3>
+<p>完成本阶段后，学习者应该能够：</p>
+<ul><li>看懂 Controller -&gt; Service -&gt; Mapper -&gt; PostgreSQL 主链路。</li><li>在已有服务中完成低风险的简单 CRUD、详情和分页需求。</li><li>写出带租户条件、参数绑定和明确字段的安全 SQL。</li><li>正确使用项目统一结果、校验、异常和日志组件。</li><li>为正常与异常路径编写基础测试。</li></ul>
+<h3>I1. 开发环境、Git、HTTP 与 JSON</h3>
+<p>学习内容：</p>
+<ul><li>终端、目录、进程、端口、环境变量和日志文件。</li><li>Git 的 clone、branch、commit、diff、merge/rebase 基本概念。</li><li>HTTP 请求/响应、方法、状态码、Header、JSON、Cookie、Bearer Token。</li><li>DNS、IP、端口、客户端/服务端、连接超时和读取超时。</li></ul>
+<p>验收：</p>
+<ul><li>能创建分支、提交修改、查看 diff 并处理简单冲突。</li><li>能用 curl 发送 GET/POST JSON 请求，解释 400、401、403、404、409、500。</li><li>能区分“端口未监听、连接超时、HTTP 500”分别发生在哪一层。</li></ul>
+<h3>I2. Java 17 基础</h3>
+<p>必须掌握：</p>
+<ul><li>变量、类型、分支、循环、方法、包和访问控制。</li><li>类、接口、继承、组合、多态和不可变对象。</li><li>String、包装类型、BigDecimal、枚举、日期时间 API。</li><li>数组、List、Set、Map，泛型，equals/hashCode。</li><li>异常分类、抛出/捕获、保留 cause、try-with-resources。</li><li>Lambda、方法引用、Stream 的 map/filter/collect/groupingBy/toMap。</li><li>空集合、null 和 Optional 的使用边界。</li><li>Java 9～17 常用特性：局部变量 var、switch 表达式、文本块、record、instanceof 模式匹配。</li></ul>
+<p>暂缓：GUI、JNI、模块系统深入、虚拟线程、复杂 JVM 调优和响应式编程。 练习：写一个“客户跟进记录”命令行程序，支持新增、修改、查询、按员工分组统计，并用测试覆盖空值、重复 ID、非法状态和金额比较。</p>
+<h3>I3. Maven 与多模块基础</h3>
+<p>学习内容：</p>
+<ul><li>POM 坐标、依赖、scope、传递依赖、排除和插件。</li><li>compile / test / package / install / deploy 生命周期。</li><li>parent、dependencyManagement、BOM、properties、profile。</li><li>多模块 reactor、-pl、-am、Maven Wrapper、私服和 settings.xml。</li><li>使用 dependency:tree 与 help:effective-pom 排查版本。</li></ul>
+<p>验收：能把 Java 练习拆成多个 Maven 模块，并解释“依赖声明了但类找不到”和“版本未生效”的常见原因。</p>
+<h3>I4. SQL 与 PostgreSQL 基础</h3>
+<p>这一节必须在 MyBatis 之前完成。 学习内容：</p>
+<ul><li>表、行、列、主键、唯一约束、非空约束和默认值。</li><li>SELECT / INSERT / UPDATE / DELETE，WHERE、ORDER BY、LIMIT。</li><li>INNER/LEFT JOIN、聚合、GROUP BY、HAVING、子查询和简单 CTE。</li><li>事务和 ACID 的直观含义。</li><li>PostgreSQL 常用类型：bigint、numeric、text/varchar、boolean、timestamp、jsonb。</li><li>B-tree 索引、组合索引和唯一索引的基础场景。</li></ul>
+<p>项目规则：</p>
+<ul><li>SELECT 和 INSERT 明确列名，不使用 SELECT *。</li><li>UPDATE/DELETE 必须有安全条件和租户条件。</li><li>值使用参数绑定；动态字段、表名和排序字段只能来自服务端白名单。</li><li>新租户表包含项目要求的主键、时间、逻辑删除、版本和 ws_tenant_id。</li></ul>
+<p>验收：为客户、员工和跟进记录设计表、唯一约束和索引，写出 CRUD、分页和统计 SQL。</p>
+<h3>I5. Spring 核心与 Spring Boot</h3>
+<p>学习内容：</p>
+<ul><li>IoC/DI、Bean、组件扫描、配置类和构造器注入。</li><li>AOP/代理的直观概念，知道事务、异步和校验为何可能受自调用影响。</li><li>@SpringBootApplication、Starter、自动配置和条件装配。</li><li>application.yaml、profile、环境变量和 @ConfigurationProperties。</li><li>Spring Boot 3 的 Jakarta 包名；启动日志、Bean 冲突和循环依赖识别。</li><li>只需先读懂 Nacos spring.config.import、namespace 和 profile 如何影响服务启动，服务发现细节放到第二阶段。</li></ul>
+<h3>I6. REST API、校验、异常和日志</h3>
+<p>学习内容：</p>
+<ul><li>Controller、@RequestMapping、@RequestBody 和 JSON 序列化。</li><li>Request/Response/DTO/DO 的职责，不直接暴露 DO。</li><li>Jakarta Validation 的非空、长度、范围、集合大小和级联校验。</li><li>全局异常处理、业务异常、未知异常和统一 Result&lt;T&gt;。</li><li>SLF4J 占位符、异常对象、日志级别和敏感数据保护。</li></ul>
+<p>项目约定：</p>
+<ul><li>Controller 只做协议入口、校验、鉴权编排、转换和调用 Service。</li><li>领域接口使用 /feign，BFF 使用 /bff，延续所在服务的版本与 POST 约定。</li><li>使用 Result&lt;T&gt;、ResultUtils、统一异常和 @WebLog 等组件。</li><li>登录身份、租户和资源归属由服务端可信上下文确认，不能信任客户端角色声明。</li></ul>
+<h3>I7. MyBatis / MyBatis-Plus 入门</h3>
+<p>在已经会手写 SQL 后学习：</p>
+<ul><li>Mapper 接口、XML namespace、#{} 参数绑定和 resultMap。</li><li>BaseMapper、@TableName/@TableId/@TableField/@TableLogic。</li><li>LambdaQueryWrapper、Wrappers 和基础 IPage/Page 分页。</li><li>简单 CRUD 使用 MyBatis-Plus；需要 JOIN、统计或复杂映射时使用明确的 Mapper XML。</li><li>Wrapper 每次请求新建，不能跨线程复用，也不能通过 RPC 传输。</li></ul>
+<h3>I8. 简单分层和基础测试</h3>
+<p>入门阶段只要求先掌握： 测试从本阶段开始：</p>
+<ul><li>Java 逻辑使用 TestNG 单元测试。</li><li>Service 通过构造器注入替身 Repository/Mapper 测试。</li><li>Mapper/SQL 使用隔离数据库做基础集成测试。</li><li>每个功能至少覆盖成功、空值、非法参数、无数据、重复数据和数据库异常。</li></ul>
+<h3>第一阶段验收作品</h3>
+<ul><li>在项目模板中新增“跟进记录”功能：建表、DO、Mapper/XML、Service、Request/Response 和 Controller。</li><li>支持新增、修改、详情、逻辑删除和条件分页。</li><li>所有租户查询与修改携带正确的 wsTenantId。</li><li>有完整参数校验、业务错误、日志和不少于 15 个测试场景。</li><li>Maven 构建通过，能够讲清一次请求从入口到 SQL 的完整路径。</li></ul>
+<h2>4. 第二阶段：独立开发</h2>
+<h3>阶段目标</h3>
+<p>完成本阶段后，学习者应该能够独立交付大多数日常需求，包括跨服务调用、缓存、消息、事务和任务，并能排查常见故障。</p>
+<h3>D1. 项目模块化与代码阅读</h3>
+<p>在掌握简单分层后，再理解现代服务的模块： 必须掌握：</p>
+<ul><li>Domain 不依赖 Web、Feign 或具体中间件。</li><li>Application 不绕过已有 Repository 直接访问 Mapper。</li><li>外部调用集中在 Dependency/Adapter/Client 防腐层。</li><li>Request、DTO、Entity、DO、Response 只在相邻层显式转换。</li><li>不使用 BeanUtils.copyProperties 隐藏对象转换。</li></ul>
+<h3>D2. PostgreSQL 与 MyBatis 进阶</h3>
+<p>学习内容：</p>
+<ul><li>窗口函数、复杂聚合、CTE、INSERT ... ON CONFLICT 和批量写入。</li><li>jsonb 查询与 GIN 索引、数组、时间和游标分页。</li><li>MyBatis 动态 SQL：if / choose / foreach / where / set。</li><li>MyBatis-Plus Lambda Query/Update Wrapper、自定义 Mapper 分页和插件链。</li><li>EXPLAIN (ANALYZE, BUFFERS)、慢 SQL 和索引选择基础。</li><li>使用已有分片表时必须携带分片路由字段，能够识别不带路由字段的全路由风险。</li></ul>
+<h3>D3. 本地事务与并发正确性</h3>
+<p>需要理解 @Transactional 的 AOP、传播和回滚原理，但本项目业务代码按规范使用 TransactionTemplate，禁止新增 @Transactional。 必须掌握：</p>
+<ul><li>用 TransactionTemplate 明确事务结果、异常和回滚边界。</li><li>事务只覆盖必须原子完成的本地数据库操作。</li><li>Feign、文件、MQ、sleep 和长循环不放在数据库事务中。</li><li>唯一约束、版本字段、幂等键和原子状态迁移的基本使用。</li><li>知道数据库事务不能回滚 Redis、MQ、ES 或远程服务。</li></ul>
+<h3>D4. Nacos、OpenFeign 与服务调用</h3>
+<p>学习内容：</p>
+<ul><li>Nacos 的 namespace、group、Data ID、服务实例和健康状态。</li><li>spring.config.import=nacos:...、配置覆盖、环境隔离和配置刷新。</li><li>服务注册与发现、Spring Cloud LoadBalancer。</li><li>@FeignClient、服务名、contextId、Request/Response 契约。</li><li>Feign Controller 实现共享接口的项目模式。</li><li>连接/读取超时、总体时间预算、错误码校验和日志。</li><li>避免循环内逐条 Feign，优先使用批量接口。</li><li>已发布 Feign、DTO 和枚举只扩展，不破坏旧契约。</li></ul>
+<p>验收：能排查未注册、namespace 不一致、配置未加载、404、超时、序列化错误和下游业务失败。</p>
+<h3>D5. Redis 常规开发</h3>
+<p>学习内容：</p>
+<ul><li>String、Hash、List、Set、Sorted Set 的场景和复杂度。</li><li>项目统一 Redis Client/RedisTemplate/Redisson 的使用边界和序列化。</li><li>Key 命名、TTL、随机抖动、空值缓存和容量意识。</li><li>Cache Aside、更新/删除顺序、不一致窗口和失败补偿。</li><li>原子命令、Lua、计数器、简单限流、SCAN。</li><li>缓存穿透、击穿、雪崩、Big Key 和 Hot Key。</li></ul>
+<p>项目约定：默认设置 TTL；线上禁止 KEYS/FLUSHALL/FLUSHDB；不绕过框架自建 Redis 客户端。</p>
+<h3>D6. RocketMQ / Spring Cloud Stream 常规开发</h3>
+<p>学习内容：</p>
+<ul><li>Topic、Message、Tag、Key、Producer、Consumer、Consumer Group 和 Offset。</li><li>普通消息与顺序消息的基本场景；同步/异步发送。</li><li>Spring Cloud Stream 的 Binder、binding、destination、group 和 content-type。</li><li>函数式 Consumer&lt;Message&lt;...&gt;&gt; 与 StreamBridge。</li><li>读懂并使用项目 MessageConsumer、Wrapper 和 RocketMQClient。</li><li>消息契约包含 messageId、事件类型、版本、时间、租户、业务主键和必要负载。</li><li>默认消息可能重复；消费者至少使用 messageId 或业务唯一键实现幂等。</li><li>消费异常不能吞掉；可重试错误必须正确触发重试。</li></ul>
+<p>本阶段掌握普通消息、顺序消息及基础幂等。事务消息和复杂死信恢复在第三阶段学习。</p>
+<h3>D7. 定时任务、批处理和异步</h3>
+<p>学习内容：</p>
+<ul><li>TaskExecutor/TaskScheduler、@Async/@Scheduled 的代理限制。</li><li>项目 Scheduler Starter/任务框架的使用方式。</li><li>分页批处理、稳定主键游标、断点续跑、幂等、重试上限和失败终态。</li><li>线程池 Bean 的核心数、最大数、有界队列、线程名、拒绝策略和优雅关闭。</li><li>CompletableFuture 的组合、超时、异常和指定线程池。</li></ul>
+<h3>D8. 集成测试、调试和基础可观测性</h3>
+<ul><li>TestNG @DataProvider、项目 BaseTest、MockListener/测试 Starter。</li><li>Service 单测、Feign 防腐层测试、Mapper SQL 测试和 Spring Boot 集成测试。</li><li>PostgreSQL、Redis 和 MQ 使用可重复的隔离环境进行测试。</li><li>日志 correlation/trace ID，Actuator health 和 metrics 基础。</li><li>能从日志、SQL 计划、依赖树和线程池状态建立故障定位链。</li></ul>
+<h3>第二阶段验收作品</h3>
+<ul><li>在第一阶段作品上增加一个跨服务 Feign 调用、Nacos 配置和 Redis 缓存。</li><li>增加“跟进记录变更”MQ 生产与消费，包含消息 ID、版本、租户和幂等处理。</li><li>用 TransactionTemplate 完成“写主记录 + 写明细 + 状态变更”，并验证异常回滚。</li><li>增加可续跑、限量和幂等的批处理任务。</li><li>覆盖下游超时、重复提交、MQ 重复、缓存失效、并发更新和慢 SQL 测试。</li><li>能独立判断接口慢来自 SQL、Redis、Feign、线程池、MQ 积压还是下游。</li></ul>
+<h2>5. 第三阶段：工程进阶</h2>
+<h3>阶段目标</h3>
+<p>完成本阶段后，学习者能够针对失败、重复、并发、扩容、安全和发布设计可验证的工程方案。</p>
+<h3>A1. MQ 可靠性进阶</h3>
+<ul><li>普通、顺序、延迟和事务消息的选择。</li><li>发送结果、发送重试、重复投递、乱序、积压、消费超时和死信。</li><li>顺序键与分区、消费并发度和失败阻塞的关系。</li><li>可重试与不可重试错误分类；重试退避、死信告警、人工恢复和自动补偿。</li><li>幂等记录与业务更新放在同一本地事务中。</li><li>消息契约演进、兼容消费者和灰度发布。</li></ul>
+<h3>A2. 事务消息与补偿一致性</h3>
+<ul><li>读懂项目中的 sendMessageInTransaction、本地事务监听与事务回查。</li><li>本地事务、事务消息、幂等消费者、业务状态流转、发送记录和补偿任务的配合。</li><li>处理“数据库成功、MQ 失败”“MQ 成功、消费失败”“Feign 超时但下游已成功”。</li><li>关键消息可追踪、可补偿、可对账，不能捕获发送失败后返回成功。</li><li>项目禁止 Seata，不假设本地事务可以回滚 Redis、MQ、ES 或第三方系统。</li><li>高价值接口使用幂等键、唯一约束、频控、防重放和审计。</li></ul>
+<h3>A3. PostgreSQL 性能、锁与数据演进</h3>
+<ul><li>MVCC、Read Committed、行锁、死锁、乐观锁和锁范围。</li><li>深入执行计划、统计信息、索引失效、连接池和慢 SQL 治理。</li><li>B-tree、GIN、唯一、组合、部分和表达式索引的选择。</li><li>生产索引使用 CREATE/DROP INDEX CONCURRENTLY。</li><li>新增列、双写、回填、切读和清理的兼容性 DDL 演进。</li></ul>
+<h3>A4. ShardingSphere 与多租户机制</h3>
+<ul><li>逻辑表、真实表、数据节点、分片键、算法、路由、改写、执行和归并。</li><li>ShardingSphereDriver 与 jdbc:shardingsphere:classpath:... 配置路径。</li><li>单路由、多路由、范围路由和全路由；跨分片 JOIN/聚合/分页成本。</li><li>分片算法设计、容量预估、扩容、数据迁移和校验。</li><li>MyBatis-Plus TenantLine/自定义拦截器的作用、边界和旁路风险。</li><li>所有租户访问携带 wsTenantId，分片表同时携带路由字段。</li></ul>
+<h3>A5. 并发、线程池和分布式锁</h3>
+<ul><li>Java 内存模型、happens-before、volatile、锁、原子类和并发集合。</li><li>ThreadPoolExecutor 参数、背压、队列容量、拒绝策略和上下文传递。</li><li>租户、用户和 MDC/trace 上下文的 TTL 传递与 ThreadLocal.remove()。</li><li>优先使用唯一约束、乐观锁和原子状态迁移，锁只保护最小范围。</li><li>分布式锁明确资源、粒度、等待、租约、续期、持有者校验和失败策略。</li></ul>
+<h3>A6. 服务容错与流量治理</h3>
+<ul><li>连接、读取和总体时间预算的分配。</li><li>重试只用于幂等操作或有幂等键保护的写操作。</li><li>Spring Retry：@Retryable、@Backoff、重试异常分类、指数退避和随机抖动。</li><li>Sentinel：流量控制、熔断降级和 Gateway 适配。</li><li>识别 Feign、Spring Retry 与 MQ 各层叠加造成的重试放大。</li><li>模糊成功处理，避免伪造空数据作为成功降级。</li><li>N+1 Feign、批量接口和上下游容量匹配。</li></ul>
+<h3>A7. 网关、安全和接口防护</h3>
+<ul><li>Spring Cloud Gateway 的 route、predicate、filter、全局过滤器和限流。</li><li>Spring Security/OAuth2 Resource Server、JWT 校验、认证与授权。</li><li>租户与资源归属校验、最小权限和服务间信任边界。</li><li>SQL/SpEL/模板/命令注入、文件上传、SSRF、反序列化和敏感日志。</li><li>已发布 API、Feign、DTO、枚举和消息契约的兼容演进。</li></ul>
+<h3>A8. 可观测性、性能和生产治理</h3>
+<ul><li>日志、指标、链路三支柱；trace 跨线程、Feign 和 MQ 传播。</li><li>Actuator health/metrics、JVM、线程池、连接池、Redis 和 MQ 积压指标。</li><li>JVM 内存、GC、线程 dump、CPU、锁竞争和内存泄漏基础排查。</li><li>容量估算、告警、限流、优雅停机和发布检查。</li><li>故障演练：下游超时、Redis 不可用、MQ 重复、数据库死锁和错误配置。</li></ul>
+<h3>A9. 服务专项选修</h3>
+<p>在完成共同技术基线后，再按目标服务选择：</p>
+<ul><li>客户/搜索类：Elasticsearch、索引一致性、重建和双写。</li><li>导入导出类：EasyExcel/POI、流式处理、内存控制和异步导出。</li><li>素材/文件类：对象存储、上传安全、回调和生命周期。</li><li>AI/会话类：SSE、异步编排、模型 API 和检索组件。</li></ul>
+<h3>第三阶段验收作品</h3>
+<ul><li>将第二阶段 MQ 链路升级为项目已有的事务消息或“发送记录 + 补偿任务”方案，补齐有限重试、死信、补偿、告警和对账。</li><li>在分片表上证明带与不带路由键的执行差异，并覆盖租户隔离测试。</li><li>完成并发重复请求、MQ 重复、Feign 模糊成功、Redis 锁超时和数据库死锁测试。</li><li>提供契约兼容、容量估算、监控指标、灰度发布和回滚清单。</li><li>能在代码评审中识别事务边界、吞异常、N+1 Feign、无界线程池、全路由和缓存不一致风险。</li></ul>
+<h2>6. 项目代码阅读顺序</h2>
+<p>不要从最大的服务开始逐文件阅读。每次围绕一条功能链，只读请求入口到数据或消息出口。</p>
+<ul><li>docs/后端开发规范.md：先了解项目允许和禁止什么。</li><li>第一阶段阅读 wshoto-custom-model 的简单接口和 CRUD 链路，但暂不深究全部 DDD 概念。</li><li>第二阶段完整阅读 wshoto-crm-follow 的 Feign、Controller、Application、Repository/Mapper 和 MQ Consumer。</li><li>第二阶段阅读 wshoto-biz-content 的多模块分层、Nacos、ShardingSphere 驱动和消息绑定。</li><li>第三阶段阅读 wshoto-customer 的多租户拦截器、复杂 Feign、大量消息绑定和历史分层。</li><li>第三阶段阅读 wshoto-gateway 的 WebFlux Gateway、认证、路由和过滤器。</li></ul>
+<p>单条链路阅读顺序： 每读完一条链路，输出调用图、对象转换表、事务边界和失败场景表。</p>
+<h2>7. 官方学习资料</h2>
+<h3>7.1 开发入门</h3>
+<table><thead><tr><th>主题</th><th>官方资料</th><th>阅读重点</th></tr></thead><tbody><tr><td>Java 17</td><td>JDK 17 文档首页</td><td>Language、Core Libraries、Troubleshooting</td></tr><tr><td>Java 9～17 语言变化</td><td>Java Language Updates</td><td>var、switch、文本块、record 和 instanceof 模式匹配</td></tr><tr><td>Java 17 API</td><td>Java SE 17 API</td><td>java.lang/util/time/math、集合与异常</td></tr><tr><td>Maven</td><td>Maven Guides</td><td>POM、生命周期、依赖、多模块和 profile</td></tr><tr><td>PostgreSQL</td><td>官方教程</td><td>SQL、JOIN、聚合、事务和窗口函数入门</td></tr><tr><td>PostgreSQL JDBC</td><td>pgJDBC 文档</td><td>连接、类型映射和批处理</td></tr><tr><td>Spring Boot 3.4</td><td>Spring Boot 3.4 Reference</td><td>First Application、Core、Web、Validation 和 Testing</td></tr><tr><td>Spring Framework</td><td>Spring Framework Reference</td><td>IoC、AOP、Spring MVC 和 Testing</td></tr><tr><td>Jakarta Validation</td><td>Bean Validation 3.0 规范</td><td>内置约束、级联和自定义约束</td></tr><tr><td>MyBatis</td><td>MyBatis 3 Getting Started</td><td>Mapper、XML、参数、resultMap 和动态 SQL</td></tr><tr><td>MyBatis-Plus</td><td>Quick Start / CRUD 接口</td><td>BaseMapper、实体注解和 CRUD</td></tr><tr><td>MyBatis-Plus Wrapper</td><td>条件构造器</td><td>Lambda Wrapper、参数绑定和线程安全</td></tr><tr><td>MyBatis-Plus 分页</td><td>分页插件</td><td>IPage、COUNT、maxLimit 和排序白名单</td></tr><tr><td>TestNG</td><td>TestNG Documentation</td><td>生命周期、断言和 DataProvider</td></tr><tr><td>SLF4J</td><td>SLF4J Manual</td><td>占位符、级别和异常日志</td></tr></tbody></table>
+<h3>7.2 独立开发</h3>
+<table><thead><tr><th>主题</th><th>官方资料</th><th>阅读重点</th></tr></thead><tbody><tr><td>Spring 编程式事务</td><td>Programmatic Transaction</td><td>TransactionTemplate、结果与回滚</td></tr><tr><td>Spring 声明式事务原理</td><td>Declarative Transaction</td><td>AOP、传播和回滚原理；项目实现仍使用编程式事务</td></tr><tr><td>PostgreSQL 索引</td><td>Indexes</td><td>B-tree、组合、唯一、部分、表达式和 GIN 索引</td></tr><tr><td>PostgreSQL 执行计划</td><td>Using EXPLAIN</td><td>ANALYZE、BUFFERS 和扫描方式</td></tr><tr><td>PostgreSQL JSON</td><td>JSON Types / JSON Functions</td><td>jsonb 运算和 GIN 索引</td></tr><tr><td>OpenFeign</td><td>Spring Cloud OpenFeign Reference</td><td>客户端、LoadBalancer、超时、日志和错误处理</td></tr><tr><td>Nacos 集成</td><td>Spring Cloud Alibaba 2023.0.x Nacos Quick Start</td><td>spring.config.import、服务发现、namespace/group</td></tr><tr><td>Nacos 服务端</td><td>Nacos Service Discovery</td><td>服务、实例、集群、健康状态和订阅</td></tr><tr><td>Redis</td><td>Redis Data Types</td><td>数据结构、复杂度和典型场景</td></tr><tr><td>Spring Data Redis</td><td>Spring Data Redis Reference</td><td>RedisTemplate、序列化、数据结构操作和 Lua 脚本</td></tr><tr><td>Redis 内存淘汰</td><td>Key Eviction</td><td>maxmemory、淘汰策略和 TTL</td></tr><tr><td>RocketMQ 概念</td><td>RocketMQ Concepts</td><td>Topic、Queue、Message、Group、Offset、Tag 和 Key</td></tr><tr><td>RocketMQ 顺序消息</td><td>Ordered Message</td><td>顺序键、生产和消费顺序</td></tr><tr><td>Spring Cloud Stream</td><td>Reference</td><td>Binder、binding、destination、group 和消息转换</td></tr><tr><td>Stream 收发</td><td>Producing and Consuming Messages</td><td>Consumer、消息转换和 StreamBridge</td></tr><tr><td>Spring Task</td><td>Task Execution and Scheduling</td><td>TaskExecutor、线程池、@Async 和 @Scheduled</td></tr><tr><td>Spring Boot 测试</td><td>Testing Spring Boot Applications</td><td>上下文测试、测试切片和集成测试</td></tr><tr><td>Actuator</td><td>Production-ready Features</td><td>health、metrics 和端点安全基础</td></tr></tbody></table>
+<h3>7.3 工程进阶</h3>
+<table><thead><tr><th>主题</th><th>官方资料</th><th>阅读重点</th></tr></thead><tbody><tr><td>RocketMQ 重试/DLQ</td><td>Consumption Retry</td><td>ack、重投、重试上限和死信恢复</td></tr><tr><td>RocketMQ 延迟消息</td><td>Delay Message</td><td>延迟时间、生命周期、限制和超时任务场景</td></tr><tr><td>RocketMQ 事务消息</td><td>Transaction Message</td><td>半消息、本地事务、回查和最终一致性</td></tr><tr><td>Stream 错误处理</td><td>Error Handling</td><td>Retry、error handler 和 DLQ；再核对 RocketMQ Binder 能力</td></tr><tr><td>PostgreSQL 并发</td><td>Transaction Isolation / Explicit Locking</td><td>MVCC、隔离、行锁和死锁</td></tr><tr><td>ShardingSphere JDBC</td><td>ShardingSphere-JDBC / JDBC Driver</td><td>驱动、YAML 和规则组合</td></tr><tr><td>Sharding 路由</td><td>Route Engine</td><td>单路由、多路由、范围路由和全路由</td></tr><tr><td>Redis 分布式锁</td><td>Distributed Locks with Redis</td><td>安全释放、超时和网络分区</td></tr><tr><td>Java 并发</td><td>java.util.concurrent API</td><td>Executor、Future、锁、原子类和内存一致性</td></tr><tr><td>Spring Retry</td><td>Spring Retry API</td><td>@Retryable、@Backoff、异常分类、退避与恢复</td></tr><tr><td>Sentinel</td><td>Spring Cloud Alibaba 2023.0.x Sentinel</td><td>流量控制、熔断降级和项目中的 Sentinel Starter</td></tr><tr><td>Spring Cloud Gateway</td><td>Gateway Reference</td><td>Route、Predicate、Filter、LoadBalancer 和 Actuator</td></tr><tr><td>Spring Security OAuth2</td><td>OAuth2 Resource Server</td><td>JWT、Bearer Token、认证和授权</td></tr><tr><td>可观测性</td><td>Observability</td><td>logging、metrics、tracing 和上下文传播</td></tr></tbody></table>
+<h2>8. 阶段检查表</h2>
+<h3>进入独立开发阶段前</h3>
+<ul><li>[ ] 能从 Controller 跟到 Service、Mapper 和 SQL。</li><li>[ ] 能独立实现带 wsTenantId 的 CRUD、分页、校验、统一结果和异常。</li><li>[ ] 会写安全的 SQL/Wrapper，不拼接用户输入，不使用 SELECT *。</li><li>[ ] 会新增 Maven 模块依赖并解释 effective POM。</li><li>[ ] 会为成功和异常路径编写基础测试。</li><li>[ ] 不修改既有 Feign/DTO/枚举语义，不使用 BeanUtils。</li></ul>
+<h3>进入工程进阶阶段前</h3>
+<ul><li>[ ] 能设计最小 TransactionTemplate 边界并验证回滚。</li><li>[ ] 能为 Feign 设置时间预算并区分超时、业务失败和模糊成功。</li><li>[ ] 能设计有 TTL、击穿保护和补偿的 Redis 缓存。</li><li>[ ] 能生产、消费和排查 MQ 消息，并实现基础幂等。</li><li>[ ] 能写可续跑、幂等和限量的批处理任务。</li><li>[ ] 能用日志、执行计划和指标定位常见性能问题。</li></ul>
+<h3>完成工程进阶阶段前</h3>
+<ul><li>[ ] 能设计带版本、可追踪的消息契约和可靠幂等消费者。</li><li>[ ] 能处理 DB/MQ/Redis/Feign 任一节点失败后的最终一致性。</li><li>[ ] 能解释分片路由并证明租户查询携带正确路由条件。</li><li>[ ] 能设计有界线程池、上下文传递、背压和安全锁。</li><li>[ ] 能完成安全、监控、容量、发布、灰度、回滚和对账方案。</li><li>[ ] 能评审并阻止吞异常、伪成功、N+1 Feign、全路由和破坏契约等问题。</li></ul>
+<h2>9. 学习方法</h2>
+<p>每个主题都遵循同一循环：</p>
+<ul><li>阅读官方文档的概念、最小示例和限制。</li><li>在独立小项目复现成功路径。</li><li>主动制造一个失败：超时、重复、空值、回滚、死锁或消息重投。</li><li>在 Wshoto 代码中找到同类实现，画出调用与数据流。</li><li>按《后端开发规范》重写或补齐练习。</li><li>用自动化测试和日志/指标证明结果，不只看“接口返回成功”。</li></ul>
+<p>学习记录保留四类内容：概念图、最小可运行示例、失败案例、项目内对应代码位置。</p>
+</div>
+
+<footer>
+  由 <a href="https://lyzbcy.github.io/" target="_blank" rel="noopener">捞鱼</a> 整理
+</footer>
+
+<script>
+// 密码保护检查
+(function(){
+  try{
+    if(sessionStorage.getItem('ck_authed')!=='1'){
+      location.replace('gate.html');
+    }
+  }catch(e){}
+})();
+</script>
+
+</body>
+</html>

@@ -77,6 +77,9 @@ body{
 .card.soon .thumb{background:#EFE9D8;}
 .card.soon .tag{background:#E0D6BB;color:#8A7E5A;}
 .card.soon .go{color:#8A7E5A;}
+/* 一人开发卡片强调色 */
+.card.dev{border-top-color:var(--marker);}
+.card.dev .tag{background:var(--marker);color:#6A5300;}
 footer{
   text-align:center;padding:26px 24px 36px;font-size:.82rem;color:#7A6E54;
 }
@@ -127,9 +130,20 @@ footer a{color:#1d70b8;text-decoration:underline;font-weight:700;}
         <span class="tag">已上线</span>
         <h3>Python 3.12 · 基础</h3>
         <p>响应老田要求学 Python。基于官方教程，含入门/控制流/数据结构/异常 4 章，每章 8 道互动关卡。</p>
-        <div class="go">即将上线</div>
+        <div class="go">进入学习地图 →</div>
       </div>
-    </div>
+    </a>
+
+    <!-- 一人开发（专题资料合集） -->
+    <a class="card dev" href="一人开发/index.html">
+      <div class="thumb">🚀</div>
+      <div class="body">
+        <span class="tag">一人开发</span>
+        <h3>一人开发 · 学习资料</h3>
+        <p>研发岗管培生专题：前端、后端、测试用例设计、质量评估、自动化测试，共 5 份资料。</p>
+        <div class="go">进入资料合集 →</div>
+      </div>
+    </a>
 
     <!-- 占位：更多 -->
     <div class="card soon">
@@ -151,6 +165,18 @@ footer a{color:#1d70b8;text-decoration:underline;font-weight:700;}
 </footer>
 
 <script>
+// ===== 密码保护：未验证则跳转到验证页 =====
+(function(){
+  try{
+    if(sessionStorage.getItem('ck_authed')!=='1'){
+      location.replace('gate.html');
+      return;
+    }
+  }catch(e){
+    // sessionStorage 不可用（如隐私模式），为避免死锁，放行
+  }
+})();
+
 // 已上线栏目数 = 非占位卡片数（数据驱动，加栏目自动更新）
 document.getElementById('cnt').textContent =
   document.querySelectorAll('#grid .card:not(.soon)').length;

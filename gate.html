@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>计算机知识 · 验证</title>
+<link rel="icon" href="Vue3/img/sticker/mascot.png">
+<style>
+:root{
+  --cream:#FAF6EB;--forest:#1E3A24;--sage:#AFCDA8;--ink:#1A2018;
+  --marker:#F5E08A;--brick:#B5482A;
+  --font-display:"Archivo Black","Noto Sans SC","PingFang SC",sans-serif;
+  --font-head:"Poppins","Noto Sans SC","PingFang SC",sans-serif;
+  --font-body:-apple-system,"PingFang SC","Noto Sans SC",sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:var(--font-body);background:var(--cream);color:var(--ink);
+  min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;
+}
+.gate{
+  background:#fff;border:1px solid #E6DCC2;border-radius:18px;
+  max-width:420px;width:100%;padding:40px 34px 34px;text-align:center;
+  box-shadow:0 12px 40px rgba(30,58,36,.12);border-top:6px solid var(--sage);
+}
+.gate .mascot{width:74px;height:74px;border-radius:50%;background:var(--cream);border:4px solid var(--marker);margin-bottom:16px;}
+.gate h1{font-family:var(--font-display);font-size:1.4rem;color:var(--forest);margin-bottom:6px;}
+.gate .hint{font-size:.9rem;color:#7A6E54;margin-bottom:22px;line-height:1.6;}
+.gate .hint b{color:var(--brick);}
+.gate input{
+  width:100%;font-family:var(--font-body);font-size:1rem;
+  padding:13px 16px;border:2px solid #E0D6BB;border-radius:10px;
+  background:var(--cream);color:var(--ink);text-align:center;margin-bottom:12px;
+  transition:border-color .2s;
+}
+.gate input:focus{outline:none;border-color:var(--sage);}
+.gate button{
+  width:100%;font-family:var(--font-head);font-size:1rem;font-weight:600;
+  padding:13px;border:none;border-radius:10px;cursor:pointer;
+  background:var(--forest);color:#fff;transition:background .2s;
+}
+.gate button:hover{background:#16301D;}
+.gate .err{color:var(--brick);font-size:.85rem;margin-top:12px;min-height:20px;}
+.gate .foot{margin-top:22px;font-size:.78rem;color:#9A8E70;}
+</style>
+</head>
+<body>
+
+<div class="gate">
+  <img class="mascot" src="Vue3/img/sticker/mascot.png" alt="捞鱼">
+  <h1>进入计算机知识</h1>
+  <p class="hint">这个站点需要验证身份。<br>请输入<b>开发者花名</b>继续。</p>
+  <form id="form" autocomplete="off">
+    <input id="pwd" type="text" placeholder="请输入开发者花名" autofocus>
+    <button type="submit">进入</button>
+    <div class="err" id="err"></div>
+  </form>
+  <div class="foot">🐟 捞鱼工作室 · 计算机知识学习地图</div>
+</div>
+
+<script>
+(function(){
+  // 已通过验证则直接放行
+  try{
+    if(sessionStorage.getItem('ck_authed')==='1'){
+      location.replace('index.html');
+      return;
+    }
+  }catch(e){}
+
+  var form=document.getElementById('form');
+  var input=document.getElementById('pwd');
+  var err=document.getElementById('err');
+  // 答案：开发者花名
+  var ANSWER='泽恩';
+
+  form.addEventListener('submit',function(e){
+    e.preventDefault();
+    var val=input.value.trim();
+    if(val===ANSWER){
+      try{sessionStorage.setItem('ck_authed','1');}catch(e){}
+      // 验证通过，跳到首页（或来源页）
+      var dest=location.hash.replace('#dest=','')||'index.html';
+      location.replace(decodeURIComponent(dest));
+    }else{
+      err.textContent='花名不对，再想想？';
+      input.select();
+    }
+  });
+  input.addEventListener('input',function(){err.textContent='';});
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>自动化测试生成与执行 · 一人开发</title>
+<link rel="icon" href="../Vue3/img/sticker/mascot.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <a class="back" href="index.html">← 一人开发</a>
+  <span class="crumb">自动化测试生成与执行</span>
+  <span class="tag-pill">一人开发</span>
+</div>
+
+<div class="doc">
+  <div class="doc-hero">
+    <h1>自动化测试生成与执行</h1>
+    <div class="meta">用 AI 生成与执行测试用例的实践 · <b>一人开发</b> 学习资料</div>
+  </div>
+
+<h1>自动化测试生成与执行</h1>
+<h2>一、测试用例生成的环境准备</h2>
+<p>参考下面文档：</p>
+<ul><li>📁 培训十九：Codex &amp; OpenCode Go</li></ul>
+<h2>二、下载测试用例生成的提示词工程</h2>
+<ul><li>🔗 <a href="http://gitlab.oa.com/wshoto-qa/claudecodeprompts" target="_blank" rel="noopener">http://gitlab.oa.com/wshoto-qa/claudecodeprompts</a></li></ul>
+<p>在 codex 客户端上加载工程。</p>
+<h3>创建项目</h3>
+<p>跳转到一个空目录，执行以下命令：</p>
+<pre><code>cd /Users/zhangsan/workspace/codex
+git clone https://gitlab.oa.com/wshoto-qa/claudecodeprompts.git</code></pre>
+<p>为了保护我们的仓库安全，建议设置 codex workspace 在 <code>claudecodeprompts</code> 工程目录下。</p>
+<h2>三、编写测试用例</h2>
+<h3>1. 创建一个项目，在 codex 里编写测试用例</h3>
+<p>在 codex 中创建一个工程用于编写测试用例。</p>
+<h3>2. 输入 prompt</h3>
+<p>项目背景：</p>
+<blockquote>我们是微盛，需要给小程序和 APP 进行自动化测试用例生成与执行。本工程用于测试用例生成与执行的实践验证。</blockquote>
+<p>项目结构：</p>
+<ul><li><code>/codex</code>  （工程根目录）</li><li><code>/codex/prompt</code>  （prompt 根目录）</li><li><code>/codex/prompt/test-case</code>  （测试用例 prompt 目录）</li><li><code>/codex/prompt/test-case/demo-h5</code>  （测试用例 demo 目录）</li><li><code>/codex/prompt/test-case/demo-h5/test-cases</code>  （测试用例目录）</li></ul>
+<p>接下来，需要给它一个 PRD 作为输入。这个 PRD 我们先放到 <code>/codex/prompt/test-case/demo-h5/</code> 目录下。当前目录下已经有了 <code>huawei_phase5_prd.md</code> 文件，它就是一个 PRD 示例。</p>
+<h3>3. 输入 PRD 文件路径</h3>
+<p>在 codex 中输入以下命令：</p>
+<pre><code>请基于 PRD 生成测试用例，PRD 路径：/codex/prompt/test-case/demo-h5/huawei_phase5_prd.md</code></pre>
+<h2>四、生成测试用例</h2>
+<h3>1. 生成测试用例</h3>
+<p>已根据 PRD 生成测试用例产物：</p>
+<ul><li>功能点大纲：<code>功能点大纲.md</code></li><li>测试用例：<code>测试用例.xlsx</code></li></ul>
+<p>本次共拆解 41 个功能点，生成 58 条测试用例。XLSX 已校验包含两个 sheet：测试用例、追踪矩阵，并按你的规范保留了「测试结果」和「测试执行过程」为空，便于后续执行后回填。</p>
+<blockquote>📄 功能点大纲.md（文档 · MD）  📊 测试用例.xlsx（电子表格 · XLSX）</blockquote>
+<h3>2. 工作流程</h3>
+<ol><li>读取 PRD 全文和图片内容。</li><li>按页面、模块、业务流程拆分需求。</li><li>生成测试大纲，包含功能点清单、测试场景矩阵和风险点。</li><li>基于测试大纲和执行结果（如有），迭代更新测试用例。</li><li>生成最终测试用例文件，格式为 xlsx，并包含追踪矩阵 sheet。</li></ol>
+<p>生成测试用例的截图示例如下，实际功能点远比截图多。</p>
+<p>工程根目录的 <code>test-cases</code> 文件夹：</p>
+<p>打开可以看见，生成的测试用例都在 <code>test-cases</code> 文件夹下，以「项目名-模块名-年月日」格式命名。</p>
+<p>例如：</p>
+<pre><code>demo-h5-首页-20250101.xlsx</code></pre>
+<p>实际命名会有细微差异，请以实际生成的文件名准。</p>
+<p>这是 PRD 的处理示例：这是将 PRD 转化为功能点拆解和测试用例的示例。</p>
+<h2>五、执行测试用例</h2>
+<h3>1. 找到执行命令文件</h3>
+<p>在 codex 中找到对应执行命令的文件。</p>
+<h3>2. 部署 odset service 和项目代码</h3>
+<p>请使用 Claude code 部署 odset service 和项目代码：</p>
+<ul><li>项目代码：<a href="https://gitlab.oa.com/wshoto-qa/odsetestservice" target="_blank" rel="noopener">https://gitlab.oa.com/wshoto-qa/odsetestservice</a></li><li>接口文档：<a href="https://gitlab.oa.com/wshoto-qa/odsetestservice/-/blob/master/README.md" target="_blank" rel="noopener">https://gitlab.oa.com/wshoto-qa/odsetestservice/-/blob/master/README.md</a></li></ul>
+<blockquote>注：服务名称截图辨识为「odset service」（对应仓库 <code>odsetestservice</code>），若与实际拼写不符请以仓库为准。</blockquote>
+<h3>3. 复制测试用例并执行</h3>
+<p>odset service 部署成功后，把上面 <code>test-cases</code> 文件夹下生成的测试用例复制到 odset service 对应的 <code>test-cases</code> 目录下，然后点击执行即可。</p>
+</div>
+
+<footer>
+  由 <a href="https://lyzbcy.github.io/" target="_blank" rel="noopener">捞鱼</a> 整理
+</footer>
+
+<script>
+// 密码保护检查
+(function(){
+  try{
+    if(sessionStorage.getItem('ck_authed')!=='1'){
+      location.replace('gate.html');
+    }
+  }catch(e){}
+})();
+</script>
+
+</body>
+</html>

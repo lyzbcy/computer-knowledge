@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>测试用例设计方法 · 一人开发</title>
+<link rel="icon" href="../Vue3/img/sticker/mascot.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <a class="back" href="index.html">← 一人开发</a>
+  <span class="crumb">测试用例设计方法</span>
+  <span class="tag-pill">一人开发</span>
+</div>
+
+<div class="doc">
+  <div class="doc-hero">
+    <h1>测试用例设计方法</h1>
+    <div class="meta">八大核心测试用例设计方法详解 · <b>一人开发</b> 学习资料</div>
+  </div>
+
+<h1>测试用例设计方法</h1>
+<h2>测试用例设计方法详解</h2>
+<p>八大核心方法全面解析</p>
+<ul><li>等价类划分</li><li>边界值分析</li><li>错误推测</li><li>判定表法</li><li>因果图法</li><li>正交实验</li><li>场景法</li><li>状态迁移</li></ul>
+<p>测试培训 · QA团队 · 2026年7月</p>
+<h2>目录</h2>
+<ol><li>等价类划分法</li><li>边界值分析法</li><li>错误推测法</li><li>判定表法</li><li>因果图法</li><li>正交实验法</li><li>场景法</li><li>状态迁移法</li></ol>
+<h2>一、等价类划分法</h2>
+<p><strong>核心思想</strong></p>
+<p>将输入数据划分为若干等价类，每个等价类中的数据对于揭露程序错误具有等效作用。从每个等价类中选取代表性数据进行测试。</p>
+<p><strong>有效等价类</strong></p>
+<p>满足需求规格说明的合理输入。如：用户名 6-20 位字母数字。</p>
+<p><strong>无效等价类</strong></p>
+<p>不满足需求规格说明的不合理输入。如：空值、特殊字符、超长。</p>
+<h2>等价类划分法 - 用户注册案例</h2>
+<p>需求：用户名 6-20 位字母或数字，密码 8-16 位。</p>
+<table><thead><tr><th>类型</th><th>测试数据</th><th>预期结果</th></tr></thead><tbody><tr><td>有效</td><td>6位字母数字（user01）</td><td>注册成功</td></tr><tr><td>有效</td><td>20位字母数字</td><td>注册成功</td></tr><tr><td>无效</td><td>少于6位（abc）</td><td>提示用户名长度不足</td></tr><tr><td>无效</td><td>超过20位</td><td>提示用户名过长</td></tr><tr><td>无效</td><td>特殊字符（user@#$）</td><td>提示格式错误</td></tr><tr><td>无效</td><td>空值</td><td>提示不能为空</td></tr></tbody></table>
+<h2>二、边界值分析法</h2>
+<p><strong>核心思想</strong></p>
+<p>在等价类划分基础上，针对边界条件进行测试的方法。错误往往发生在输入范围的边界上。</p>
+<p><strong>边界值选取</strong></p>
+<ul><li>下边界：a-1, a, a+1</li><li>上边界：b-1, b, b+1</li></ul>
+<p><strong>案例：年龄输入（1-120岁）</strong></p>
+<table><thead><tr><th>无效</th><th>下边界</th><th>下边界+1</th><th>…</th><th>上边界-1</th><th>上边界</th><th>无效</th></tr></thead><tbody><tr><td>0</td><td>1</td><td>2</td><td>…</td><td>119</td><td>120</td><td>121</td></tr></tbody></table>
+<h2>三、错误推测法</h2>
+<p><strong>定义</strong></p>
+<p>基于经验和直觉，推测程序可能存在的缺陷，有针对性地设计测试用例。</p>
+<p><strong>核心思想</strong></p>
+<p>站在破坏者角度思考程序漏洞。</p>
+<p><strong>常见错误推测点</strong></p>
+<table><thead><tr><th>错误场景</th><th>检查要点</th></tr></thead><tbody><tr><td>空值/NULL处理</td><td>检查空指针异常</td></tr><tr><td>并发操作</td><td>检查线程安全</td></tr><tr><td>重复提交</td><td>检查防重机制</td></tr><tr><td>超时处理</td><td>检查资源释放</td></tr><tr><td>网络异常</td><td>检查超时重试</td></tr><tr><td>数据格式异常</td><td>检查格式校验</td></tr></tbody></table>
+<h2>四、判定表法</h2>
+<p><strong>定义</strong></p>
+<p>针对多条件组合逻辑，通过判定表穷举所有条件组合，确保测试覆盖完整。</p>
+<p><strong>适用场景</strong></p>
+<p>多条件组合、逻辑复杂的业务规则。</p>
+<p><strong>案例：电商优惠计算</strong></p>
+<p>规则：VIP会员享8折 · 订单满200减20 · VIP且满200 8折后再减20。</p>
+<table><thead><tr><th>条件</th><th>规则1</th><th>规则2</th><th>规则3</th><th>规则4</th></tr></thead><tbody><tr><td>是否VIP</td><td>Y</td><td>Y</td><td>N</td><td>N</td></tr><tr><td>订单≥200</td><td>Y</td><td>N</td><td>Y</td><td>N</td></tr><tr><td><strong>实付金额</strong></td><td><strong>8折-20</strong></td><td><strong>8折</strong></td><td><strong>原价-20</strong></td><td><strong>原价</strong></td></tr></tbody></table>
+<h2>五、因果图法</h2>
+<p><strong>定义</strong></p>
+<p>分析输入条件（因）和输出结果（果）之间的关系，用图形化方式表达逻辑关系。</p>
+<p><strong>适用场景</strong></p>
+<p>输入输出关系复杂的逻辑判断。</p>
+<p><strong>基本符号</strong></p>
+<table><thead><tr><th>符号</th><th>名称</th><th>含义</th></tr></thead><tbody><tr><td>恒等 =</td><td>恒等</td><td>原因为真，结果为真</td></tr><tr><td>非 ~</td><td>非</td><td>原因为真，结果为假</td></tr><tr><td>与 ^</td><td>与</td><td>所有原因都为真，结果为真</td></tr><tr><td>或 v</td><td>或</td><td>任一原因为真，结果为真</td></tr></tbody></table>
+<h2>六、正交实验法</h2>
+<p><strong>定义</strong></p>
+<p>利用正交表选取代表性组合，用最少用例实现较高覆盖。</p>
+<p><strong>适用场景</strong></p>
+<p>多因素多水平，全组合数量过大无法穷举。</p>
+<p><strong>核心公式</strong></p>
+<p><code>Ln(m^k)</code>：n = 实验次数，m = 水平数，k = 因子数。</p>
+<p><strong>案例：手机兼容性测试</strong></p>
+<table><thead><tr><th>因素</th><th>水平</th></tr></thead><tbody><tr><td>系统（4个）</td><td>Android 11/12、iOS 15/16</td></tr><tr><td>屏幕（3个）</td><td>小屏 / 中屏 / 大屏</td></tr><tr><td>网络（3个）</td><td>WiFi / 4G / 5G</td></tr></tbody></table>
+<ul><li>全组合：36 种</li><li>正交表测试：9 种</li></ul>
+<h2>七、场景法</h2>
+<p><strong>定义</strong></p>
+<p>从用户角度模拟实际操作场景，覆盖基本流和备选流。</p>
+<ul><li><strong>基本流</strong>：正常的操作流程</li><li><strong>备选流</strong>：异常或分支流程</li></ul>
+<p><strong>案例：ATM取款流程</strong></p>
+<ul><li>基本流：插卡 → 输入密码 → 选择取款 → 输入金额 → 取款成功</li><li>备选流：卡片无效、密码错误3次、余额不足、超过限额、用户取消</li></ul>
+<h2>八、状态迁移法</h2>
+<p><strong>定义</strong></p>
+<p>分析状态之间的转换条件，设计测试覆盖所有状态转换。覆盖所有状态转换路径，确保每个转换条件都被测试。</p>
+<p><strong>适用场景</strong></p>
+<p>订单状态、工作流、协议状态机。</p>
+<p><strong>案例：订单状态流转</strong></p>
+<ul><li>正向：待支付 → 待发货 → 待收货 → 已完成</li><li>异常分支：已取消、已退款</li></ul>
+<h2>方法选择指南</h2>
+<table><thead><tr><th>方法</th><th>适用场景</th><th>特点</th><th>优先级</th></tr></thead><tbody><tr><td>等价类划分</td><td>输入域明确</td><td>减少测试用例数量</td><td>高</td></tr><tr><td>边界值分析</td><td>有明确边界</td><td>发现边界错误</td><td>高</td></tr><tr><td>错误推测</td><td>经验丰富</td><td>针对性强</td><td>中</td></tr><tr><td>判定表法</td><td>多条件组合</td><td>逻辑覆盖完整</td><td>中</td></tr><tr><td>因果图法</td><td>因果关系复杂</td><td>可视化逻辑</td><td>低</td></tr><tr><td>正交实验法</td><td>多因素多水平</td><td>高效覆盖</td><td>高</td></tr><tr><td>场景法</td><td>业务流程</td><td>用户视角</td><td>高</td></tr><tr><td>状态迁移法</td><td>状态转换</td><td>状态覆盖</td><td>中</td></tr></tbody></table>
+<h2>组合使用建议</h2>
+<ol><li><strong>等价类划分 + 边界值分析</strong>：处理输入域，减少用例数量，发现边界错误。</li><li><strong>判定表 / 因果图</strong>：处理逻辑组合，确保条件覆盖完整。</li><li><strong>场景法</strong>：覆盖业务流程，从用户视角设计测试。</li><li><strong>状态迁移法</strong>：覆盖状态流转，确保状态转换路径完整。</li><li><strong>错误推测法</strong>：补充异常场景，基于经验发现潜在缺陷。</li></ol>
+<blockquote>组合使用效果更佳。</blockquote>
+<h2>总结</h2>
+<ol><li><strong>没有万能的方法</strong>：根据具体场景选择最合适的测试方法。</li><li><strong>组合使用效果更佳</strong>：多种方法结合，实现更全面的测试覆盖。</li><li><strong>持续补充测试用例库</strong>：积累经验，不断完善测试用例库。</li><li><strong>关注业务价值</strong>：优先测试核心功能，保障业务价值。</li></ol>
+<h2>综合实践题</h2>
+<p><strong>需求场景：电商购物车结算</strong></p>
+<p><strong>练习要求</strong></p>
+<ol><li><strong>等价类 + 边界值</strong>：针对商品数量输入设计测试用例。</li></ol>
+<ul><li>商品数量：1-99 件，支持加减按钮</li><li>支付方式：微信 / 支付宝 / 银行卡 / 货到付款</li><li>优惠规则：VIP 享 8 折，满 200 免运费</li><li>库存限制：商品A库存 50 件</li></ul>
+<ol><li><strong>判定表法</strong>：支付 + 会员 + 金额的组合测试。</li><li><strong>场景法</strong>：购物车结算基本流和备选流。</li><li><strong>错误推测法</strong>：补充可能的异常测试场景。</li></ol>
+<h2>一、等价类划分表（25分）</h2>
+<table><thead><tr><th>输入条件</th><th>有效等价类</th><th>无效等价类</th></tr></thead><tbody><tr><td>商品数量</td><td>① 1-99 之间的整数</td><td>② 小于1的数（0、负数）</td></tr><tr><td></td><td></td><td>③ 大于99的数</td></tr><tr><td></td><td></td><td>④ 非数字字符</td></tr><tr><td></td><td></td><td>⑤ 小数/浮点数</td></tr><tr><td></td><td></td><td>⑥ 空值</td></tr><tr><td>输入方式</td><td>⑦ 手动输入</td><td></td></tr><tr><td></td><td>⑧ 加按钮点击</td><td></td></tr><tr><td></td><td>⑨ 减按钮点击</td><td></td></tr></tbody></table>
+<p><strong>评分要点</strong></p>
+<ul><li>有效等价类（3分）+ 无效等价类（5分）</li><li>遗漏1个无效等价类扣1分</li></ul>
+<h2>边界值分析（评分标准 8分）</h2>
+<p><strong>边界值选取</strong></p>
+<table><thead><tr><th>边界类型</th><th>取值</th></tr></thead><tbody><tr><td>下边界</td><td>0, 1, 2</td></tr><tr><td>上边界</td><td>98, 99, 100</td></tr><tr><td>库存边界</td><td>49, 50, 51</td></tr></tbody></table>
+<p><strong>评分细则（8分）</strong></p>
+<ul><li>下边界选取正确（3分）</li><li>上边界选取正确（3分）</li><li>库存边界考虑（2分）</li></ul>
+<h2>测试用例设计（等价类 + 边界值）</h2>
+<table><thead><tr><th>编号</th><th>测试场景</th><th>输入数据</th><th>预期结果</th><th>类型</th></tr></thead><tbody><tr><td>TC01</td><td>最小有效值</td><td>1</td><td>添加成功，数量显示1</td><td>边界</td></tr><tr><td>TC02</td><td>最大有效值</td><td>99</td><td>添加成功，数量显示99</td><td>边界</td></tr><tr><td>TC03</td><td>下边界-1</td><td>0</td><td>提示&quot;数量不能小于1&quot;</td><td>无效</td></tr><tr><td>TC04</td><td>上边界+1</td><td>100</td><td>提示&quot;数量不能超过99&quot;</td><td>无效</td></tr><tr><td>TC05</td><td>超出库存</td><td>51</td><td>提示&quot;库存不足&quot;</td><td>边界</td></tr><tr><td>TC06</td><td>负数输入</td><td>-1</td><td>提示&quot;请输入有效数量&quot;</td><td>无效</td></tr><tr><td>TC07</td><td>字母输入</td><td>abc</td><td>提示&quot;请输入数字&quot;</td><td>无效</td></tr><tr><td>TC08</td><td>空值</td><td>（不输入）</td><td>提示&quot;请输入数量&quot;</td><td>无效</td></tr><tr><td>TC09</td><td>点击 +</td><td>点击+</td><td>数量+1，最高到99</td><td>有效</td></tr><tr><td>TC10</td><td>点击 -</td><td>点击-</td><td>数量-1，最低到1</td><td>有效</td></tr></tbody></table>
+<h2>二、判定表法 - 条件与结果定义</h2>
+<p><strong>条件（因）</strong></p>
+<table><thead><tr><th>条件</th><th>取值</th></tr></thead><tbody><tr><td>C1：会员状态</td><td>VIP / 普通会员</td></tr><tr><td>C2：订单金额</td><td>满200 / 不满200</td></tr><tr><td>C3：使用优惠券</td><td>是 / 否</td></tr></tbody></table>
+<p><strong>结果（果）</strong></p>
+<table><thead><tr><th>结果</th><th>取值</th></tr></thead><tbody><tr><td>A1：价格折扣</td><td>8折 / 无折扣</td></tr><tr><td>A2：运费</td><td>0元 / 10元</td></tr><tr><td>A3：优惠券减免</td><td>有 / 无</td></tr></tbody></table>
+<h2>判定表（8种组合）</h2>
+<table><thead><tr><th>规则</th><th>C1：VIP</th><th>C2：满200</th><th>C3：优惠券</th><th>A1：8折</th><th>A2：免运费</th><th>A3：优惠券</th><th>运费</th></tr></thead><tbody><tr><td>1</td><td>Y</td><td>Y</td><td>Y</td><td>√</td><td>√</td><td>√</td><td>0元</td></tr><tr><td>2</td><td>Y</td><td>Y</td><td>N</td><td>√</td><td>√</td><td>×</td><td>0元</td></tr><tr><td>3</td><td>Y</td><td>N</td><td>Y</td><td>√</td><td>×</td><td>√</td><td>10元</td></tr><tr><td>4</td><td>Y</td><td>N</td><td>N</td><td>√</td><td>×</td><td>×</td><td>10元</td></tr><tr><td>5</td><td>N</td><td>Y</td><td>Y</td><td>×</td><td>√</td><td>√</td><td>0元</td></tr><tr><td>6</td><td>N</td><td>Y</td><td>N</td><td>×</td><td>√</td><td>×</td><td>0元</td></tr><tr><td>7</td><td>N</td><td>N</td><td>Y</td><td>×</td><td>×</td><td>√</td><td>10元</td></tr><tr><td>8</td><td>N</td><td>N</td><td>N</td><td>×</td><td>×</td><td>×</td><td>10元</td></tr></tbody></table>
+<blockquote>四种组合完整覆盖所有业务场景。</blockquote>
+<h2>判定表法 - 评分标准（25分）</h2>
+<table><thead><tr><th>评分项</th><th>分值</th><th>评分细则</th></tr></thead><tbody><tr><td>条件识别</td><td>5分</td><td>VIP/普通会员（2分）、订单金额（2分）、优惠券（1分）</td></tr><tr><td>判定表完整性</td><td>10分</td><td>8种组合全覆盖（5分）、结果映射正确（5分）</td></tr><tr><td>测试用例设计</td><td>10分</td><td>每种组合有对应用例（5分）、预期结果准确（3分）、包含数值验证（2分）</td></tr></tbody></table>
+<p><strong>常见扣分点</strong></p>
+<ul><li>条件组合不完整（遗漏某些组合）</li><li>忽略优惠券使用条件</li><li>未考虑支付方式的验证</li></ul>
+<h2>三、场景法 - 基本流（25分）</h2>
+<p><strong>购物车结算基本流</strong></p>
+<ol><li>进入购物车</li><li>选择商品</li><li>修改数量</li><li>点击结算</li><li>确认地址</li><li>选择支付</li><li>确认订单</li><li>完成支付</li><li>支付成功</li></ol>
+<p><strong>评分</strong>：流程步骤完整（5分）+ 步骤顺序正确（3分）</p>
+<h2>场景法 - 备选流（10分）</h2>
+<table><thead><tr><th>备选流</th><th>异常场景</th></tr></thead><tbody><tr><td>Alt-1</td><td>购物车为空 — 提示引导购物</td></tr><tr><td>Alt-2</td><td>商品下架 — 提示并移除</td></tr><tr><td>Alt-3</td><td>库存不足 — 提示并调整数量</td></tr><tr><td>Alt-4</td><td>数量超限 — 自动调整为99</td></tr><tr><td>Alt-5</td><td>地址为空 — 提示添加地址</td></tr><tr><td>Alt-6</td><td>地址不支持配送 — 提示用户</td></tr><tr><td>Alt-7</td><td>取消订单 — 返回购物车</td></tr><tr><td>Alt-9</td><td>支付失败 — 提示重试或换方式</td></tr><tr><td>Alt-10</td><td>余额不足 — 提示更换支付方式</td></tr><tr><td>Alt-11</td><td>优惠券已过期 — 提示并移除</td></tr><tr><td>Alt-12</td><td>优惠券不满足条件 — 提示用户</td></tr><tr><td>Alt-13</td><td>网络异常 — 提示重试</td></tr><tr><td>Alt-14</td><td>并发修改库存 — 提示刷新</td></tr></tbody></table>
+<h2>场景测试用例示例</h2>
+<table><thead><tr><th>编号</th><th>场景名称</th><th>覆盖流程</th></tr></thead><tbody><tr><td>S01</td><td>正常购物结算</td><td>基本流</td></tr><tr><td>S02</td><td>空购物车结算</td><td>Alt-1</td></tr><tr><td>S03</td><td>库存不足场景</td><td>Alt-3</td></tr><tr><td>S04</td><td>支付取消</td><td>Alt-7</td></tr><tr><td>S05</td><td>支付失败重试</td><td>Alt-9</td></tr><tr><td>S06</td><td>支付超时</td><td>Alt-9</td></tr><tr><td>S07</td><td>地址未填写</td><td>Alt-5</td></tr><tr><td>S08</td><td>网络异常</td><td>Alt-13</td></tr></tbody></table>
+<h2>四、错误推测法 - 错误分类（25分）</h2>
+<p><strong>输入相关错误（2分）</strong></p>
+<ul><li>超长字符输入</li><li>负数输入</li><li>科学计数法</li><li>Unicode数字</li><li>前导零</li></ul>
+<p><strong>业务逻辑错误（3分）</strong></p>
+<ul><li>多张优惠券</li><li>优惠大于商品</li><li>运费计算错误</li><li>折扣叠加错误</li><li>商品删除残留</li></ul>
+<p><strong>并发/性能错误（2分）</strong></p>
+<ul><li>多设备修改</li><li>库存超卖</li><li>快速连续点击</li><li>支付时库存变化</li></ul>
+<p><strong>网络/环境错误（2分）</strong></p>
+<ul><li>弱网环境</li><li>网络中断重连</li><li>Session过期</li><li>支付回调丢失</li></ul>
+<p><strong>安全相关错误（1分）</strong></p>
+<ul><li>价格篡改</li><li>优惠券重复使用</li><li>越权访问</li><li>SQL注入</li><li>XSS攻击</li></ul>
+<h2>错误推测测试用例示例</h2>
+<table><thead><tr><th>编号</th><th>测试场景</th><th>操作步骤</th><th>预期结果</th></tr></thead><tbody><tr><td>EX01</td><td>超长数量输入</td><td>输入100位数字</td><td>前端限制或后端截断，不崩溃</td></tr><tr><td>EX02</td><td>科学计数法</td><td>输入 1e10</td><td>提示无效输入或自动转换</td></tr><tr><td>EX03</td><td>重复提交订单</td><td>快速连续点击&quot;提交订单&quot;</td><td>只创建一个订单</td></tr><tr><td>EX04</td><td>库存超卖测试</td><td>10用户同时购买库存为5的商品</td><td>只有5个成功，5个失败</td></tr><tr><td>EX05</td><td>价格篡改</td><td>抓包修改价格为0.01元</td><td>以原价计算，或拒绝请求</td></tr><tr><td>EX06</td><td>优惠券重放</td><td>同一优惠券多次提交</td><td>第二次使用失败</td></tr><tr><td>EX07</td><td>Session过期</td><td>登录后等待Session过期再提交</td><td>提示重新登录</td></tr><tr><td>EX08</td><td>弱网支付</td><td>2G网络下支付</td><td>支付成功或超时提示，不卡死</td></tr></tbody></table>
+<p><strong>评分</strong>：错误场景覆盖度（10分）+ 测试用例设计（7分）</p>
+<h2>Q&amp;A</h2>
+<p>谢谢聆听！</p>
+<p>欢迎提问和交流。</p>
+</div>
+
+<footer>
+  由 <a href="https://lyzbcy.github.io/" target="_blank" rel="noopener">捞鱼</a> 整理
+</footer>
+
+<script>
+// 密码保护检查
+(function(){
+  try{
+    if(sessionStorage.getItem('ck_authed')!=='1'){
+      location.replace('gate.html');
+    }
+  }catch(e){}
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1336 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>企业微信私有化产品培训 · 理解地图</title>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Poppins:wght@500;600;700&family=Roboto+Mono:wght@400;600&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#FAF6EB;
+  --paper:#F3EDDD;
+  --forest:#1E3A24;
+  --sky:#BCD8EE;
+  --sage:#AFCDA8;
+  --ink:#1A2018;
+  --marker:#F5E08A;
+  --brick:#B5482A;
+  --correct:#2F7D46;
+  --wrong:#B5482A;
+  --font-display:"Archivo Black","Noto Sans SC","PingFang SC",sans-serif;
+  --font-head:"Poppins","Noto Sans SC","PingFang SC",sans-serif;
+  --font-body:-apple-system,"PingFang SC","Noto Sans SC",sans-serif;
+  --font-mono:"Roboto Mono","JetBrains Mono",monospace;
+  --radius-pill:999px;
+  --radius-card:14px;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0; background:var(--cream); color:var(--ink);
+  font-family:var(--font-body); font-size:16px; line-height:1.7;
+  display:flex;
+}
+/* ===== 左侧固定侧边栏 ===== */
+aside.sidebar{
+  position:fixed; top:0; left:0; width:280px; height:100vh;
+  background:var(--forest); color:var(--cream);
+  padding:1.5rem 1.25rem 2rem; overflow-y:auto;
+  z-index:50; flex-shrink:0;
+}
+aside.sidebar h1{
+  font-family:var(--font-display); font-size:1.28rem; line-height:1.25;
+  margin:0 0 .3rem; letter-spacing:-.01em;
+}
+aside.sidebar .sub{
+  font-size:.78rem; opacity:.75; margin-bottom:1.2rem;
+  padding-bottom:1.2rem; border-bottom:1px solid rgba(250,246,235,.18);
+}
+aside.sidebar .progress-wrap{margin-bottom:1.2rem;}
+aside.sidebar .progress-label{
+  display:flex; justify-content:space-between; align-items:center;
+  font-size:.78rem; opacity:.8; margin-bottom:.4rem;
+  font-family:var(--font-head); letter-spacing:.02em;
+}
+aside.sidebar .progress-bar{
+  height:8px; background:rgba(250,246,235,.15); border-radius:var(--radius-pill);
+  overflow:hidden;
+}
+aside.sidebar .progress-bar .fill{
+  height:100%; width:0%; background:var(--marker); border-radius:var(--radius-pill);
+  transition:width .35s ease;
+}
+aside.sidebar nav a{
+  display:block; padding:.55rem .8rem; margin-bottom:.2rem;
+  color:var(--cream); text-decoration:none; opacity:.78;
+  font-family:var(--font-head); font-weight:500; font-size:.86rem;
+  border-radius:8px; transition:all .18s; border-left:3px solid transparent;
+}
+aside.sidebar nav a:hover{ opacity:1; background:rgba(250,246,235,.08); }
+aside.sidebar nav a .no{
+  display:inline-block; width:1.8em; font-family:var(--font-mono); opacity:.7;
+  font-size:.8rem;
+}
+aside.sidebar nav a.active{ opacity:1; background:rgba(245,224,138,.18); border-left-color:var(--marker); }
+aside.sidebar .mascot{
+  margin-top:1.5rem; text-align:center; opacity:.9;
+}
+aside.sidebar .mascot img{ width:88px; height:88px; object-fit:contain; }
+aside.sidebar .mascot .mascot-text{ font-size:.72rem; opacity:.7; margin-top:.3rem; }
+
+/* ===== 右侧主区（单列纵向堆叠） ===== */
+main{
+  margin-left:280px; padding:3rem 2rem 5rem;
+  max-width:820px; width:100%; min-width:0;
+}
+section.module{
+  margin-bottom:3.5rem; scroll-margin-top:1.5rem;
+  border-top:3px solid var(--forest); padding-top:1.5rem;
+}
+section.module:first-of-type{ border-top:none; padding-top:0; }
+.sec-id{
+  display:inline-block; font-family:var(--font-mono); font-weight:600;
+  font-size:.78rem; background:var(--forest); color:var(--cream);
+  padding:.2em .7em; border-radius:var(--radius-pill); letter-spacing:.05em;
+  margin-bottom:.6rem;
+}
+h2{
+  font-family:var(--font-head); font-weight:700;
+  font-size:1.6rem; line-height:1.3; margin:0 0 1rem; color:var(--forest);
+}
+h3{
+  font-family:var(--font-head); font-weight:600;
+  font-size:1.1rem; margin:1.4rem 0 .6rem; color:var(--forest);
+}
+p{ margin:0 0 .85rem; }
+.lead{ font-size:1.05rem; color:var(--ink); }
+
+/* 单列卡片 */
+.card{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1.25rem 1.35rem; margin-bottom:1rem;
+  border-left:4px solid var(--sage);
+}
+.card.brick{ border-left-color:var(--brick); }
+.card.marker{ border-left-color:var(--marker); background:rgba(245,224,138,.18); }
+.card.sky{ border-left-color:var(--sky); }
+.card-title{
+  font-family:var(--font-head); font-weight:600; font-size:1rem;
+  margin:0 0 .4rem; color:var(--forest);
+}
+
+/* 原文依据块 */
+.src-quote{
+  background:var(--cream); border-left:3px solid var(--brick);
+  padding:.6rem .9rem; margin:.5rem 0; font-size:.9rem;
+  border-radius:0 8px 8px 0;
+}
+.src-quote::before{
+  content:"原文依据 · "; font-family:var(--font-mono); font-size:.74rem;
+  font-weight:600; color:var(--brick); letter-spacing:.05em;
+}
+
+/* 类型标签 */
+.type-tag{
+  display:inline-block; font-size:.72rem; font-family:var(--font-mono);
+  padding:.15em .6em; border-radius:var(--radius-pill); margin-right:.3em;
+  font-weight:600;
+}
+.type-tag.fact{ background:var(--sage); color:var(--forest); }
+.type-tag.judge{ background:var(--marker); color:var(--ink); }
+.type-tag.infer{ background:var(--sky); color:var(--ink); }
+.type-tag.eg{ background:var(--brick); color:var(--cream); }
+
+/* 背景补充块 */
+.bg-block{
+  background:rgba(175,205,168,.22); border-radius:var(--radius-card);
+  padding:1.1rem 1.25rem; margin-bottom:1rem;
+  border-left:4px solid var(--sage);
+}
+.bg-block .bg-label{
+  font-family:var(--font-mono); font-size:.74rem; font-weight:600;
+  color:var(--forest); letter-spacing:.06em; margin-bottom:.5rem;
+}
+.bg-block .why{ font-size:.86rem; opacity:.78; margin-top:.5rem; font-style:italic; }
+
+/* C 类比块 */
+.analogy{
+  background:rgba(188,216,238,.25); border-radius:8px;
+  padding:.7rem .9rem; margin:.6rem 0; font-size:.92rem;
+  border-left:3px solid var(--sky);
+}
+.analogy::before{
+  content:"C 类比 · "; font-family:var(--font-mono); font-size:.74rem;
+  font-weight:600; color:var(--forest); letter-spacing:.05em;
+}
+
+/* 目标项（纵向堆叠） */
+.goal-item{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:.9rem 1.1rem; margin-bottom:.8rem;
+  display:flex; align-items:flex-start; gap:.7rem;
+  border-left:4px solid var(--forest);
+}
+.goal-item .g-num{
+  font-family:var(--font-display); font-size:1.4rem; color:var(--brick);
+  line-height:1; flex-shrink:0;
+}
+
+/* 结构地图（树形/纵向） */
+.tree{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1.1rem 1.25rem; font-family:var(--font-mono); font-size:.85rem;
+  line-height:1.9;
+}
+.tree-node{ margin:.2rem 0; }
+.tree-node .label{ color:var(--forest); font-weight:600; }
+.tree-node .rel{ color:var(--brick); font-size:.78rem; }
+
+/* 关卡题 */
+.q-item{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1rem 1.15rem .9rem; margin-bottom:1rem;
+  border-left:4px solid var(--sky);
+}
+.q-item .q-no{
+  font-family:var(--font-mono); font-size:.74rem; font-weight:600;
+  color:var(--brick); letter-spacing:.05em; margin-bottom:.3rem;
+}
+.q-item .q-text{ font-weight:500; margin-bottom:.7rem; }
+.q-item .q-hint{ font-size:.84rem; opacity:.7; font-style:italic; margin-top:.6rem; }
+details.q-item summary{ cursor:pointer; font-weight:500; }
+details.q-item summary:focus{ outline:none; }
+
+/* 任务（data-* 题目） */
+.task{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1rem 1.15rem 1.1rem; margin-bottom:1.1rem;
+  border-left:4px solid var(--brick);
+}
+.task .q{ font-weight:500; margin-bottom:.7rem; }
+.task .opts{ display:flex; flex-direction:column; gap:.45rem; margin-bottom:.7rem; }
+.task button.opt{
+  background:var(--cream); border:1.5px solid var(--forest);
+  border-radius:8px; padding:.55rem .8rem;
+  font-family:var(--font-body); font-size:.94rem; text-align:left;
+  cursor:pointer; transition:all .15s; color:var(--ink);
+}
+.task button.opt:hover{ background:var(--sage); }
+.task button.opt.selected{ background:var(--forest); color:var(--cream); border-color:var(--forest); }
+.task button.check{
+  background:var(--forest); color:var(--cream); border:none;
+  border-radius:var(--radius-pill); padding:.45rem 1.2rem;
+  font-family:var(--font-head); font-weight:600; font-size:.88rem;
+  cursor:pointer; margin-bottom:.6rem;
+}
+.task button.check:hover{ background:#142710; }
+.task .feedback{
+  background:var(--cream); border-radius:8px; padding:.6rem .8rem;
+  font-size:.88rem; margin-top:.4rem;
+  border-left:3px solid var(--ink);
+}
+.task .feedback.ok{ border-left-color:var(--correct); background:rgba(175,205,168,.22); }
+.task .feedback.no{ border-left-color:var(--wrong); background:rgba(181,72,42,.1); }
+.task .feedback .src{
+  display:block; margin-top:.4rem; font-size:.82rem; opacity:.8;
+  font-style:italic;
+}
+.task .match-row{
+  display:flex; align-items:center; gap:.6rem; margin-bottom:.5rem;
+  flex-wrap:wrap;
+}
+.task select.match{
+  flex:1; min-width:160px; padding:.4rem .5rem;
+  border:1.5px solid var(--forest); border-radius:6px;
+  font-family:var(--font-body); background:var(--cream);
+}
+
+/* 错题回流 */
+.wrong-box{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1rem 1.15rem; border-left:4px solid var(--wrong);
+}
+.wrong-box ul{ margin:.5rem 0 0; padding-left:1.2rem; }
+.wrong-box li{ margin-bottom:.4rem; font-size:.9rem; }
+
+/* 误解卡 */
+.myth{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1.1rem 1.25rem; margin-bottom:1rem;
+  border-left:4px solid var(--brick);
+}
+.myth .myth-head{
+  font-family:var(--font-head); font-weight:600; color:var(--brick);
+  font-size:1rem; margin-bottom:.5rem;
+}
+.myth .row{ margin:.4rem 0; font-size:.92rem; }
+.myth .row .key{
+  font-family:var(--font-mono); font-size:.74rem; font-weight:600;
+  color:var(--forest); margin-right:.4em;
+}
+
+/* 概念卡 */
+.concept{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1.25rem 1.35rem; margin-bottom:1.1rem;
+  border-left:4px solid var(--marker);
+}
+.concept .c-name{
+  font-family:var(--font-head); font-weight:700; font-size:1.15rem;
+  color:var(--forest); margin-bottom:.6rem;
+}
+.concept .c-row{ margin:.5rem 0; font-size:.92rem; }
+.concept .c-row .ck{
+  font-family:var(--font-mono); font-size:.74rem; font-weight:600;
+  color:var(--brick); margin-right:.4em; letter-spacing:.04em;
+}
+
+/* 表格 */
+table.t{
+  width:100%; border-collapse:collapse; margin:.6rem 0;
+  font-size:.86rem; background:var(--cream);
+  border-radius:8px; overflow:hidden;
+}
+table.t th, table.t td{
+  padding:.5rem .7rem; text-align:left; border:1px solid var(--paper);
+  vertical-align:top;
+}
+table.t th{ background:var(--forest); color:var(--cream); font-family:var(--font-head); font-weight:500; }
+table.t td.hit{ background:rgba(175,205,168,.3); }
+table.t td.miss{ background:rgba(181,72,42,.15); }
+
+/* 表情贴纸 */
+.sticker{ display:inline-block; vertical-align:middle; width:24px; height:24px; margin:0 .3em; }
+
+/* 页脚 */
+footer{
+  margin-top:3rem; padding:1.5rem 0 1rem; border-top:2px solid var(--forest);
+  font-size:.86rem; color:var(--ink); text-align:center;
+}
+footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
+
+/* 引用图标 */
+.hero-mark{
+  font-family:var(--font-display); font-size:.74rem;
+  color:var(--marker); background:var(--forest);
+  padding:.2em .7em; border-radius:var(--radius-pill);
+  letter-spacing:.05em; display:inline-block; margin-bottom:.6rem;
+}
+
+/* ===== 语音：右侧书签脊 ===== */
+#voiceFab{
+  position:fixed; right:0; top:50%; transform:translateY(-50%); z-index:9998;
+  display:flex; align-items:center; flex-direction:row;
+  background:var(--forest); color:var(--cream); border:none; cursor:pointer;
+  height:5em; padding:0 .55em;
+  border-radius:16px 0 0 16px;
+  box-shadow:-4px 0 14px rgba(0,0,0,.18);
+  font-family:var(--font-head); font-size:.85rem;
+  overflow:hidden;
+  transition:width .42s cubic-bezier(.4,0,.2,1), box-shadow .3s ease;
+  width:1.9em;
+}
+#voiceFab .fab-icon{
+  font-size:1.15rem; writing-mode:vertical-rl; text-orientation:upright;
+  letter-spacing:.1em; white-space:nowrap; flex-shrink:0;
+}
+#voiceFab .fab-text{
+  white-space:nowrap; opacity:0; margin-left:.6em;
+  transition:opacity .28s ease .12s;
+}
+#voiceFab:hover{
+  width:8.6em; box-shadow:-6px 0 22px rgba(0,0,0,.25);
+}
+#voiceFab:hover .fab-text{ opacity:1; }
+#voiceFab.beat{ animation:voiceBeat 1.6s ease-in-out infinite; }
+@keyframes voiceBeat{ 0%,100%{box-shadow:-4px 0 14px rgba(0,0,0,.18)} 50%{box-shadow:-4px 0 20px rgba(181,72,42,.5)} }
+
+/* ===== 语音：圆润玩具风播放器 ===== */
+#voicePlayer{
+  position:fixed; left:50%; bottom:1rem; transform:translateX(-50%) translateY(140%);
+  width:min(92vw,380px); padding:1rem 1.1rem 1.1rem; background:var(--cream);
+  border:2px solid var(--forest); border-radius:26px;
+  box-shadow:0 8px 28px rgba(0,0,0,.16); z-index:9999; transition:transform .28s ease;
+  text-align:center; font-family:var(--font-body);
+}
+#voicePlayer.show{ transform:translateX(-50%) translateY(0); }
+#voicePlayer .vp-head{ font-size:.75rem; color:var(--forest); opacity:.8; letter-spacing:.05em; }
+#voicePlayer .vp-title{ font:700 1rem/1.35 var(--font-body); color:var(--ink);
+  margin:.25rem 0 .7rem; padding:0 .2rem; word-break:break-word; }
+#voicePlayer .vp-play{
+  width:3.6rem; height:3.6rem; border:none; border-radius:50%;
+  background:var(--forest); color:var(--cream); font-size:1.3rem; cursor:pointer;
+  margin:0 auto .7rem; display:flex; align-items:center; justify-content:center;
+  box-shadow:0 3px 0 #142710; transition:transform .1s, box-shadow .1s;
+}
+#voicePlayer .vp-play:active{ transform:translateY(2px); box-shadow:0 1px 0 #142710; }
+#voicePlayer .vp-prev,#voicePlayer .vp-next{
+  width:2.3rem; height:2.3rem; border:1.5px solid var(--forest); border-radius:50%;
+  background:var(--cream); color:var(--forest); font-size:.9rem; cursor:pointer;
+}
+#voicePlayer .vp-controls{ display:flex; align-items:center; justify-content:center; gap:1.2rem; margin-bottom:.7rem; }
+#voicePlayer .vp-seek{ width:100%; margin:.2rem 0; cursor:pointer; accent-color:var(--forest); }
+#voicePlayer .vp-time{ display:flex; justify-content:space-between; font:600 .72rem/1 var(--font-mono); color:var(--ink); opacity:.75; }
+#voicePlayer .vp-close{ position:absolute; top:.5rem; right:.6rem; width:1.5rem; height:1.5rem;
+  border:none; background:transparent; color:var(--ink); font-size:1rem; cursor:pointer; opacity:.5; }
+#voicePlayer .vp-sub{
+  min-height:2.6em; max-height:3.9em; overflow:hidden;
+  font:.85rem/1.5 var(--font-body); color:var(--ink); opacity:.55;
+  margin:.2rem 0 .5rem; padding:0 .3rem;
+  transition:opacity .2s; text-align:center;
+}
+#voicePlayer .vp-sub.active{ opacity:1; }
+#voicePlayer .vp-sub .cur{ color:var(--forest); font-weight:600; }
+
+/* 「听这章」小按钮 */
+.voice-btn{
+  display:inline-block; vertical-align:middle; margin-left:.6em;
+  padding:.25em .8em; border:1px solid var(--forest); border-radius:var(--radius-pill);
+  background:var(--cream); color:var(--forest); font:600 .8rem/1.2 var(--font-body);
+  cursor:pointer; transition:background .15s;
+}
+.voice-btn:hover{ background:var(--sage); }
+.voice-btn.active{ background:var(--forest); color:var(--cream); }
+
+/* 学习报告按钮 */
+.report-actions{ margin:.8rem 0; display:flex; gap:.6rem; flex-wrap:wrap; }
+.report-actions button{
+  background:var(--forest); color:var(--cream); border:none;
+  border-radius:var(--radius-pill); padding:.5rem 1.1rem;
+  font-family:var(--font-head); font-weight:600; font-size:.88rem; cursor:pointer;
+}
+.report-actions button:hover{ background:#142710; }
+#report{
+  background:var(--cream); border-radius:8px; padding:1rem 1.1rem;
+  font-family:var(--font-mono); font-size:.82rem; white-space:pre-wrap;
+  border-left:3px solid var(--forest); min-height:3rem; line-height:1.7;
+}
+
+/* 移动端 */
+@media (max-width: 880px){
+  body{ flex-direction:column; }
+  aside.sidebar{
+    position:static; width:100%; height:auto; max-height:none;
+    padding:1.2rem 1rem;
+  }
+  main{ margin-left:0; padding:1.5rem 1rem 4rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- 语音播放列表（连续播放用） -->
+<script type="application/json" id="voicePlaylist">
+[
+  {"id":"m1","title":"01 学习目标与阅读路径","src":"audio/m1.mp3"},
+  {"id":"m2","title":"02 零基础背景包","src":"audio/m2.mp3"},
+  {"id":"m3","title":"03 原文问题定位","src":"audio/m3.mp3"},
+  {"id":"m4","title":"04 原文结构地图","src":"audio/m4.mp3"},
+  {"id":"m5","title":"05 核心判断与依据","src":"audio/m5.mp3"},
+  {"id":"m6","title":"06 关键概念拆解","src":"audio/m6.mp3"},
+  {"id":"m7","title":"07 苏格拉底式阅读关卡","src":"audio/m7.mp3"},
+  {"id":"m8","title":"08 闯关式任务","src":"audio/m8.mp3"},
+  {"id":"m9","title":"09 误解与边界","src":"audio/m9.mp3"},
+  {"id":"m10","title":"10 背景知识缺口","src":"audio/m10.mp3"},
+  {"id":"m11","title":"11 复盘与学习报告","src":"audio/m11.mp3"}
+]
+</script>
+
+<!-- ===== 左侧固定侧边栏 ===== -->
+<aside class="sidebar">
+  <h1>企微私有化产品培训</h1>
+  <div class="sub">微盛研发岗管培生 · 理解地图（入门篇）</div>
+
+  <div class="progress-wrap">
+    <div class="progress-label">
+      <span>任务进度</span>
+      <span><span id="barNum">0 / 0</span></span>
+    </div>
+    <div class="progress-bar"><div class="fill" id="barFill"></div></div>
+  </div>
+
+  <nav>
+    <a href="#m01"><span class="no">01</span>学习目标与阅读路径</a>
+    <a href="#m02"><span class="no">02</span>零基础背景包</a>
+    <a href="#m03"><span class="no">03</span>原文问题定位</a>
+    <a href="#m04"><span class="no">04</span>原文结构地图</a>
+    <a href="#m05"><span class="no">05</span>核心判断与依据</a>
+    <a href="#m06"><span class="no">06</span>关键概念拆解</a>
+    <a href="#m07"><span class="no">07</span>苏格拉底式阅读关卡</a>
+    <a href="#m08"><span class="no">08</span>闯关式任务</a>
+    <a href="#m09"><span class="no">09</span>误解与边界</a>
+    <a href="#m10"><span class="no">10</span>背景知识缺口</a>
+    <a href="#m11"><span class="no">11</span>复盘与学习报告</a>
+  </nav>
+
+  <div class="mascot">
+    <img src="https://lyzbcy.github.io/weshoto-study/img/sticker/mascot.png" alt="吉祥物">
+    <div class="mascot-text">陪你学完整章</div>
+  </div>
+</aside>
+
+<!-- ===== 右侧主区（单列纵向堆叠） ===== -->
+<main>
+
+<!-- ===== 01 学习目标与阅读路径 ===== -->
+<section class="module" id="m01">
+  <span class="hero-mark">理解地图</span>
+  <h2>01 学习目标与阅读路径 <button class="voice-btn" data-voice-id="m1">🎧 听这章</button></h2>
+  <p class="lead">这是一份写给"会写 C 语言、但还没接触过部署架构"的同学的拆解地图。它要讲清一件事：<strong>同样是企业微信，为什么有些客户不装在腾讯云上，非要装到自己机房里</strong>。读完这一章，你能做到下面五件事。</p>
+
+  <div class="goal-item">
+    <span class="g-num">1</span>
+    <div><strong>能一句话说清</strong>SaaS 和私有化的本质区别（不只是"装在哪儿"，而是数据在谁手里、谁来运维）。</div>
+  </div>
+  <div class="goal-item">
+    <span class="g-num">2</span>
+    <div><strong>能背出四大核心优势</strong>（数据自主可控、合规与安全、定制与扩展、网络隔离）以及各自的一句话表现。</div>
+  </div>
+  <div class="goal-item">
+    <span class="g-num">3</span>
+    <div><strong>能判断</strong>给一个客户画像（金融银行 / SMB 中小企业 / 芯片厂），他该不该选私有化，并说出理由。</div>
+  </div>
+  <div class="goal-item">
+    <span class="g-num">4</span>
+    <div><strong>能解释</strong>三层架构（接入层/服务层/数据层）各干什么，以及 DMZ 区在网络拓扑里的位置和作用。</div>
+  </div>
+  <div class="goal-item">
+    <span class="g-num">5</span>
+    <div><strong>能指出至少 3 个</strong>新手最常踩的坑（如"私有化=免费""私有化=完全断网""私有化功能=SaaS 全套"）。</div>
+  </div>
+
+  <div class="card marker">
+    <div class="card-title">阅读路径（按顺序）</div>
+    <p style="margin:0">先在 02 补 5 个零件 → 在 03/04 看清"作者在解决什么问题、文章怎么搭" → 在 05/06 抓住 5 条核心判断和 6 个关键概念 → 在 07 自己提问 → 在 08 闯 8 道闭环题 → 在 09/10 看边界 → 在 11 出报告。</p>
+  </div>
+</section>
+
+<!-- ===== 02 零基础背景包 ===== -->
+<section class="module" id="m02">
+  <span class="sec-id">02</span>
+  <h2>零基础背景包 <button class="voice-btn" data-voice-id="m2">🎧 听这章</button></h2>
+  <p class="lead">在拆原文前，先装 5 个最基本的零件。每个都标了"背景补充"——它帮你读懂原文，但<strong>不是作者的论点</strong>。先给定义，再用你熟悉的 C 类比搭桥。</p>
+
+  <div class="bg-block">
+    <div class="bg-label">背景补充 1 · SaaS（软件即服务）</div>
+    <p style="margin:0 0 .4rem">Software as a Service。软件由厂商（腾讯）部署在云服务器上，你按账号/时间付费使用，不用管服务器、运维、升级。</p>
+    <div class="analogy">类比 C：你调用一个云上 API 或用在线编译器，代码和数据都在别人服务器上跑，别人帮你管。</div>
+    <div class="why">为什么现在需要知道：整章的对比锚点就是 SaaS。不懂 SaaS 是啥，就读不懂私有化"换了个部署位置"到底换了什么。</div>
+  </div>
+
+  <div class="bg-block">
+    <div class="bg-label">背景补充 2 · 部署（Deployment）</div>
+    <p style="margin:0 0 .4rem">把一套软件系统从"源码/安装包"安装到服务器上、配置好、让它跑起来的全过程。</p>
+    <div class="analogy">类比 C：在 Linux 上 make &amp;&amp; make install、再 systemd 起一个守护进程，这一整套动作就是部署。</div>
+    <div class="why">为什么现在需要知道：私有化就是"部署"动作发生在客户机房，而不是腾讯机房。</div>
+  </div>
+
+  <div class="bg-block">
+    <div class="bg-label">背景补充 3 · 机房 / 服务器 / 运维</div>
+    <p style="margin:0 0 .4rem">机房 = 放一堆服务器（物理机/虚拟机）的房间，有电、有网、有空调。运维 = 让这些服务器稳定运行的日常活儿（监控、重启、备份、打补丁）。</p>
+    <div class="analogy">类比 C：服务器就像一台 24 小时不关机的机器跑你的 main 程序；运维就是盯着它别崩、磁盘别满、内存别泄漏。</div>
+    <div class="why">为什么现在需要知道："企业自主运维"是私有化的核心特征，不懂运维是干嘛，就读不懂它贵在哪、难在哪。</div>
+  </div>
+
+  <div class="bg-block">
+    <div class="bg-label">背景补充 4 · 等保（网络安全等级保护）</div>
+    <p style="margin:0 0 .4rem">国家强制的信息安全分级制度，分五级，<strong>等保三级</strong>是金融、政务、军工等强监管行业招标的硬门槛。要求覆盖数据加密、访问审计、网络隔离等。</p>
+    <div class="why">为什么现在需要知道：原文反复出现"等保三级"，它是私有化四大优势里"合规与安全"的硬依据，也是判断客户是否必须选私有化的关键。</div>
+  </div>
+
+  <div class="bg-block">
+    <div class="bg-label">背景补充 5 · 内网 / 专网 / 公网</div>
+    <p style="margin:0 0 .4rem">公网 = 互联网，谁都能访问；内网 = 公司内部局域网，外部访问不到；专网 = 为特定机构拉的专用线路（如政府专线），逻辑上或物理上与公网隔离。</p>
+    <div class="analogy">类比 C：公网像一个全局可见的全局变量；内网像 static 文件级变量，外部文件看不见；专网像带权限的 friend class，只有授权的能访问。</div>
+    <div class="why">为什么现在需要知道："数据不出局""网络隔离"全建立在公网/内网/专网的区别上。</div>
+  </div>
+</section>
+
+<!-- ===== 03 原文问题定位 ===== -->
+<section class="module" id="m03">
+  <span class="sec-id">03</span>
+  <h2>原文问题定位 <button class="voice-btn" data-voice-id="m3">🎧 听这章</button></h2>
+
+  <div class="card brick">
+    <div class="card-title">表面在讲什么？</div>
+    <p style="margin:0">一份产品科普 PPT：私有化是什么、和 SaaS 有啥不一样、有四大优势、适合谁、架构怎么搭、怎么实施。<span class="type-tag fact">事实</span></p>
+  </div>
+
+  <div class="card brick">
+    <div class="card-title">深层在回答什么问题？</div>
+    <p style="margin:0 0 .5rem"><strong>"既然 SaaS 又快又省事，为什么还要做私有化？谁非买不可？"</strong>整份材料是在回答"私有化存在的必要性"——它不是产品炫技，而是论证<strong>有一类客户，SaaS 满足不了</strong>。<span class="type-tag judge">判断</span></p>
+    <div class="src-quote">SaaS 功能大家都了解了，但很多大客户有特殊需求——数据必须在自己机房、必须满足等保合规、需要定制客户端……这就是私有化要解决的问题。</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">读者如果只记一个问题，应该记哪个？</div>
+    <p style="margin:0"><strong>"什么样的客户必须选私有化，选 SaaS 会出什么事？"</strong>记住这个问题，四大优势、客户画像、功能差异就都串起来了。<span class="type-tag infer">推论</span></p>
+  </div>
+</section>
+
+<!-- ===== 04 原文结构地图 ===== -->
+<section class="module" id="m04">
+  <span class="sec-id">04</span>
+  <h2>原文结构地图 <button class="voice-btn" data-voice-id="m4">🎧 听这章</button></h2>
+  <p class="lead">判断结构类型：<strong>问题树 + 主题簇</strong>（混合结构）。最上一层是一个"为什么需要私有化"的问题树，每个分支下挂着并列的主题簇（优势 / 客户 / 差异 / 架构 / 实施）。不能把它读成单一线性流程。</p>
+
+  <div class="tree">
+    <div class="tree-node"><span class="label">根问题：为什么需要私有化？</span> <span class="rel">（问题树）</span></div>
+    <div class="tree-node">&nbsp;&nbsp;├─ 分支 1 它是什么 → 概念定义 + SaaS 对比（第4~5页）</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ 分支 2 凭什么选它 → <strong>四大优势</strong>并列（数据可控/合规安全/定制扩展/网络隔离，第6~10页）</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ 分支 3 谁该选 → <strong>适合 vs 不适合</strong>对比（第11~12页）</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ 分支 4 和 SaaS 差在哪 → 功能差异 / 额外授权 / 运维升级（第13~17页）</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ 分支 5 技术上怎么搭 → 三层架构 + 网络分区（第18~19页）</div>
+    <div class="tree-node">&nbsp;&nbsp;└─ 分支 6 怎么落地 → 六步实施流程（第20页）</div>
+    <div class="tree-node" style="margin-top:.6rem"><span class="label">主题簇（并列，相互呼应）</span> <span class="rel">（非因果）</span></div>
+    <div class="tree-node">&nbsp;&nbsp;├─ 四大优势之间是<strong>并列</strong>，不是因果</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ 优势 → 客户画像 是<strong>例证</strong>关系（金融客户证明"合规"优势）</div>
+    <div class="tree-node">&nbsp;&nbsp;└─ 三层架构 ↔ 网络分区 是<strong>同一系统两个视角</strong>（纵向分层 vs 横向分区）</div>
+  </div>
+
+  <div class="card sky">
+    <div class="card-title">节点关系说明</div>
+    <p style="margin:0">最容易误读的是把"四大优势"读成因果链（数据可控→所以合规→所以能定制→所以能隔离）。<strong>它们是并列的四个独立价值</strong>，一个客户可能只为"合规"买单，根本不在乎"定制"。</p>
+  </div>
+</section>
+
+<!-- ===== 05 核心判断与依据 ===== -->
+<section class="module" id="m05">
+  <span class="sec-id">05</span>
+  <h2>核心判断与依据 <button class="voice-btn" data-voice-id="m5">🎧 听这章</button></h2>
+  <p class="lead">挑出 5 条最硬的判断。每条都附原文依据和类型标签。</p>
+
+  <div class="card">
+    <div class="card-title">判断 1 · 私有化的本质是"数据 + 运维"双自管</div>
+    <p style="margin:0 0 .4rem">私有化不是简单的"换个机房装"，而是数据不经过腾讯云、由客户自主运维管理。系统、数据、权限都在客户手里。<span class="type-tag judge">判断</span></p>
+    <div class="src-quote">企业微信私有化，是指将企业微信的整套系统（服务端、客户端、数据）部署到客户自有的服务器与机房中，由客户自主运维管理。数据不经过腾讯云，存储在客户本地。</div>
+    <p style="margin:.4rem 0 0;font-size:.9rem"><strong>易误读</strong>：别把私有化理解成"SaaS 的本地缓存版"——它是一整套独立部署的系统。</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">判断 2 · 数据自主可控是私有化的第一价值</div>
+    <p style="margin:0 0 .4rem">所有数据（通讯录、聊天、文件、审批）存储在客户自有服务器，不经过腾讯。企业可审计、可追溯、可回收。<span class="type-tag fact">事实</span></p>
+    <div class="src-quote">通讯录、聊天记录、文件、审批数据全部存储在客户自有服务器上，不经过腾讯云……可审计、可追溯、可回收。</div>
+    <p style="margin:.4rem 0 0;font-size:.9rem"><strong>为什么重要</strong>：这条直接对应金融/政务"数据不得出境"的硬法规，是私有化能卖的根基。</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">判断 3 · 等保三级是强监管行业的硬准入</div>
+    <p style="margin:0 0 .4rem">金融、政务、能源、军工把"等保三级"作为招标硬性条件，私有化满足这条；SaaS 不一定满足。<span class="type-tag fact">事实</span></p>
+    <div class="src-quote">满足等保三级、行业监管要求，支持内网闭环部署，敏感数据不外泄……金融、政务、能源等行业将"等保三级"作为硬性招标条件。</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">判断 4 · 私有化功能 ≠ SaaS 全套，部分受限</div>
+    <p style="margin:0 0 .4rem">第三方应用、应用市场在私有化里受限；功能迭代周期比 SaaS 长。<span class="type-tag fact">事实</span></p>
+    <div class="src-quote">私有化应用市场第三方应用受限，部分应用不支持……私有化版本迭代周期长，无法及时跟进企微最新功能。</div>
+    <p style="margin:.4rem 0 0;font-size:.9rem"><strong>易误读</strong>：别跟客户承诺"私有化功能跟 SaaS 一模一样"，第三方应用是真有缺的。</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">判断 5 · 私有化更安全，但前提是客户自己运维到位</div>
+    <p style="margin:0 0 .4rem">数据本地 + 网络可隔离，安全性显著优于 SaaS；但"更安全"不是自动的，依赖客户运维团队的能力。<span class="type-tag infer">推论（基于原文事实+反问）</span></p>
+    <div class="src-quote">数据在本地、网络可隔离，安全性显著优于 SaaS，但需客户做好运维……需配置专职运维团队，微盛提供原厂技术支持与培训。</div>
+  </div>
+</section>
+
+<!-- ===== 06 关键概念拆解 ===== -->
+<section class="module" id="m06">
+  <span class="sec-id">06</span>
+  <h2>关键概念拆解 <button class="voice-btn" data-voice-id="m6">🎧 听这章</button></h2>
+  <p class="lead">6 个概念，环环相扣：<strong>SaaS ⇄ 私有化</strong>（一对部署模式）→ 引出 <strong>数据自主可控</strong>（价值）→ 由 <strong>等保三级合规</strong>（硬门槛）+ <strong>DMZ 网络隔离</strong>（技术手段）共同支撑 → 落到 <strong>三层架构</strong>（系统怎么搭）。</p>
+
+  <div class="concept">
+    <div class="c-name">① SaaS（软件即服务）</div>
+    <div class="c-row"><span class="ck">定义</span>软件由腾讯部署在云服务器上，客户按账号/时间付费使用，服务器、运维、升级全由腾讯负责。</div>
+    <div class="c-row"><span class="ck">人话</span>开箱即用，交钱就能用，啥都不用管。</div>
+    <div class="analogy">类比 C：调一个云上 API，代码数据都在腾讯服务器跑，腾讯帮你盯着别崩。</div>
+    <div class="c-row"><span class="ck">关系</span>SaaS 与私有化是<strong>一对部署模式</strong>，对应"要不要把数据放自己机房"的选择。</div>
+    <div class="src-quote">腾讯运营、腾讯部署、腾讯运维……数据存储在腾讯云；升级由腾讯统一推送。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>SaaS ≠ 不安全。SaaS 也走 HTTPS 加密，只是数据在腾讯云、合规等级不一定够强监管行业。</div>
+  </div>
+
+  <div class="concept">
+    <div class="c-name">② 私有化部署</div>
+    <div class="c-row"><span class="ck">定义</span>把企业微信整套系统（服务端 + 客户端 + 数据）部署到客户自有服务器与机房，由客户自主运维。</div>
+    <div class="c-row"><span class="ck">人话</span>把整套程序装到自己买的机器上，自己管、自己修、自己升级。</div>
+    <div class="analogy">类比 C：你把一份源码编译好、连同它依赖的库一起部署到自己买的物理机上，root 权限在你手里。</div>
+    <div class="c-row"><span class="ck">关系</span>它是 SaaS 的对照项。私有化引出的所有优势（数据可控/合规/定制/隔离）都源自"系统在本地"这一事实。</div>
+    <div class="src-quote">将企业微信的整套系统（服务端、客户端、数据）部署到客户自有的服务器与机房中，由客户自主运维管理。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>私有化 ≠ 完全断网。它可连互联网也可不连，取决于客户安全策略。</div>
+  </div>
+
+  <div class="concept">
+    <div class="c-name">③ 数据自主可控</div>
+    <div class="c-row"><span class="ck">定义</span>所有数据存储在客户自有服务器，不经过腾讯，企业对数据访问权限、备份、归档完全自主。</div>
+    <div class="c-row"><span class="ck">人话</span>数据锁在自己家，钥匙在自己手里，谁能看、能看多久、能不能带走，自己说了算。</div>
+    <div class="analogy">类比 C：数据存在你自己的本地 SQLite 文件里，读写权限用 chmod 自己控；不像存在云数据库，得信云厂商不偷看。</div>
+    <div class="c-row"><span class="ck">关系</span>它是私有化的<strong>第一价值</strong>，也是"合规与安全"优势的前提（数据不在自己手里，谈不上合规）。</div>
+    <div class="src-quote">所有数据存储在客户自有服务器，不经过腾讯，企业完全掌控数据资产……可审计、可追溯、可回收。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>"自主可控"≠ "绝对安全"。可控只保证数据不被第三方掌控，安全性还得靠加密、隔离、运维一起撑。</div>
+  </div>
+
+  <div class="concept">
+    <div class="c-name">④ 等保三级合规</div>
+    <div class="c-row"><span class="ck">定义</span>国家网络安全等级保护第三级认证，是金融、政务、军工等强监管行业招标的硬性准入条件，覆盖数据加密、访问审计、网络隔离等要求。</div>
+    <div class="c-row"><span class="ck">人话</span>国家给信息系统发的"安全等级证"，三级是银行、政府这类机构的最低门槛，没这个证连投标资格都没有。</div>
+    <div class="analogy">类比 C：像代码上线前必须过的安全审计 checklist（权限、加密、日志、备份），等保三级就是国家版的强制 checklist。</div>
+    <div class="c-row"><span class="ck">关系</span>它是<strong>"合规与安全"优势的硬依据</strong>，也是判断客户是否必须选私有化的关键信号——要等保三级的客户，基本绕不开私有化。</div>
+    <div class="src-quote">通过等保三级认证，满足金融、政企、军工等强监管行业的合规要求……强监管行业将等保三级作为招标的硬性条件。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>等保三级 ≠ 只是张证书。它是一整套技术+管理要求，私有化只是"能帮你满足"的必要条件，不是充分条件。</div>
+  </div>
+
+  <div class="concept">
+    <div class="c-name">⑤ DMZ 网络隔离</div>
+    <div class="c-row"><span class="ck">定义</span>部署拓扑里把网络划分成多个区域（DMZ 区/业务区/数据区/运维管理区/办公区），各区之间用防火墙策略隔离，只开必要端口。DMZ 区放对外接入的网关和负载均衡。</div>
+    <div class="c-row"><span class="ck">人话</span>用防火墙把网络切成几个"房间"，外面的请求只能进走廊（DMZ），进不到卧室（数据区）。</div>
+    <div class="analogy">类比 C：DMZ 像代码里的 input validation 边界层，外部输入先进它做校验和转发，不准直接碰核心数据结构。防火墙策略像一组 iptables 规则，只放行白名单端口。</div>
+    <div class="c-row"><span class="ck">关系</span>它是<strong>"网络隔离"优势的落地手段</strong>，也是满足等保三级"物理/逻辑隔离"要求的技术实现。</div>
+    <div class="src-quote">部署拓扑分为多个网络区域，各区之间通过防火墙策略隔离，仅开放必要端口……DMZ 区负责外部接入，业务区承载应用，数据区负责存储。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>DMZ ≠ 整个外网。DMZ 是受控的缓冲区，不是把数据直接暴露给公网。</div>
+  </div>
+
+  <div class="concept">
+    <div class="c-name">⑥ 三层架构</div>
+    <div class="c-row"><span class="ck">定义</span>系统纵向分成接入层（负载均衡/网关/CDN/客户端接入）、服务层（IM/应用/API/会议服务）、数据层（数据库/缓存/对象存储）。三层都部署在客户机房。</div>
+    <div class="c-row"><span class="ck">人话</span>把系统按职责切成三段：前台接客的、中台干活的、后台存东西的。</div>
+    <div class="analogy">类比 C：典型分层架构——接入层像 main 里的参数解析和路由分发；服务层像业务函数（处理 IM、应用逻辑）；数据层像底层的 DB 访问模块（CRUD）。三层各自独立、通过明确接口调用。</div>
+    <div class="c-row"><span class="ck">关系</span>它是<strong>系统的纵向视角</strong>，与 DMZ 网络分区的<strong>横向视角</strong>互补：一个按职责分，一个按安全等级分。</div>
+    <div class="src-quote">接入层：负载均衡、网关、CDN……服务层：即时通讯服务、应用服务、API 服务、会议服务……数据层：关系型数据库、缓存集群、对象存储。三层均部署在客户机房。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>三层架构 ≠ 三台机器。每一层可能是一组服务器集群，"层"是逻辑职责划分。</div>
+  </div>
+</section>
+
+<!-- ===== 07 苏格拉底式阅读关卡 ===== -->
+<section class="module" id="m07">
+  <span class="sec-id">07</span>
+  <h2>苏格拉底式阅读关卡 <button class="voice-btn" data-voice-id="m7">🎧 听这章</button></h2>
+  <p class="lead">不直接给答案，自己想。点开每题看参考答案，但请先停 30 秒再展开。</p>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q1 · 入门</span>原文说"私有化 = 整套系统部署到客户机房"，这句话是事实、判断，还是定义？</summary>
+    <div class="q-text">这是<strong>定义</strong>（属于事实的一种）。作者在给"私有化"这个词下界定，没表达立场，只是告诉你"我说的私有化指这个"。</div>
+    <div class="q-hint">提示：定义是中性的，不含褒贬。后文的"四大优势"才是判断。</div>
+  </details>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q2 · 入门</span>"SaaS 由腾讯统一升级，几乎无感知"是事实还是判断？</summary>
+    <div class="q-text">这是<strong>事实</strong>——它是 SaaS 的客观特性描述，作者没说"无感知好还是坏"。但放在对比表里，隐含了"对追求最新功能的客户是优点、对要稳定的大客户可能是缺点"的判断。</div>
+  </details>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q3 · 进阶</span>四大优势里，"数据自主可控"和"合规与安全"是因果还是并列？删掉"数据自主可控"，"合规与安全"还成立吗？</summary>
+    <div class="q-text">原文把四者列为<strong>并列</strong>。但"数据自主可控"是"合规与安全"的<strong>前提</strong>：数据不在自己手里，根本谈不上自主审计、满足等保。所以严格说，四者是"并列呈现、但有依赖"——数据可控是地基，合规安全建在其上。</div>
+    <div class="q-hint">提示：回到 06 概念③④的关系行，看"合规优势的前提"。</div>
+  </details>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q4 · 进阶</span>为什么"追求最新功能的客户"不适合私有化？这背后隐含了什么前提？</summary>
+    <div class="q-text">隐含前提：<strong>私有化版本迭代周期长，需停机升级</strong>，而 SaaS 由腾讯统一推送、几乎无感知。所以想第一时间用上新功能的客户，私有化跟不上节奏。</div>
+  </details>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q5 · 进阶</span>三层架构（接入/服务/数据）和 DMZ 网络分区（DMZ/业务/数据区）是什么关系？是一回事吗？</summary>
+    <div class="q-text"><strong>不是一回事，是同一系统的两个视角</strong>。三层架构是<strong>纵向按职责分</strong>（谁负责接流量/谁负责业务/谁负责存）；网络分区是<strong>横向按安全等级分</strong>（哪个区能被外部碰到/哪个区绝对不能）。两者交叉：数据层通常落在"数据区"，服务层落在"业务区"，接入层落在"DMZ 区"。</div>
+  </details>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q6 · 深度</span>原文说"私有化更安全，但需客户做好运维"。如果把这句话反过来——"客户运维能力差"，私有化还比 SaaS 安全吗？</summary>
+    <div class="q-text">不一定。<strong>私有化的安全性是"潜在上限高、下限也低"</strong>：运维到位 + 网络隔离，确实比 SaaS 安全；但如果客户运维团队不行（不打补丁、权限乱配、备份没做），私有化反而可能比 SaaS 更脆弱——因为 SaaS 至少有腾讯专业团队兜底。这条是原文判断 5 的隐含前提。</div>
+    <div class="q-hint">提示：安全是个系统工程，"装在自己机房"只是其中一个变量。</div>
+  </details>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q7 · 深度</span>如果微盛明天宣布"私有化免费送"，能解决所有问题吗？为什么？</summary>
+    <div class="q-text">不能。<strong>私有化的成本大头不是授权费，而是自建服务器 + 专职运维团队 + 停机升级的业务中断成本</strong>。免费只省了授权那一项，运维人力、硬件、机房、升级风险一样不少。所以原文把"成本高"列在不适合 SMB 的第一条。</div>
+  </details>
+</section>
+
+<!-- ===== 08 闯关式任务 ===== -->
+<section class="module" id="m08">
+  <span class="sec-id">08</span>
+  <h2>闯关式任务 <button class="voice-btn" data-voice-id="m8">🎧 听这章</button></h2>
+  <p class="lead">8 道闭环题，覆盖 SaaS vs 私有化、四大优势、适用场景、三层架构、DMZ 网络隔离、功能差异。选完点"检查"，答对贴 OK 贴纸，答错贴 NO 贴纸并指出错在哪。错题自动进 11 节的错题回流区。</p>
+
+  <!-- 题1 单选：SaaS vs 私有化本质区别 -->
+  <div class="task" data-task="q1" data-answer="C"
+       data-ok="对！本质区别在数据存储和运维责任：私有化数据不经过腾讯云、由客户自主运维。'装在哪儿'只是表象。"
+       data-no="没抓到本质。A/B 只说了表象（机房/升级），D 是错误的（原文明确说可连互联网）。核心是数据 + 运维双自管。"
+       data-src="原文：将企业微信的整套系统……部署到客户自有的服务器与机房中，由客户自主运维管理。数据不经过腾讯云，存储在客户本地。"
+       data-review="回到「06 概念①②」+「05 判断 1」复习">
+    <div class="q">1. 【单选】企业微信 SaaS 和私有化的本质区别是？</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. 私有化装在客户机房，SaaS 装在腾讯机房</button>
+      <button class="opt" data-val="B">B. 私有化升级慢，SaaS 升级快</button>
+      <button class="opt" data-val="C">C. 私有化数据不经过腾讯云、由客户自主运维；SaaS 数据在腾讯云、由腾讯运维</button>
+      <button class="opt" data-val="D">D. 私有化必须完全断网，SaaS 必须连公网</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题2 多选：四大核心优势 -->
+  <div class="task" data-task="q2" data-multi="true" data-answer="A,B,C,D"
+       data-ok="对！四大优势全齐：数据自主可控、合规与安全、定制与扩展、网络隔离。它们是并列的，不是因果链。"
+       data-no="漏了或多选。原文第6页明确列了四个：数据自主可控 / 合规与安全 / 定制与扩展 / 网络隔离。'价格低廉'不是优势（私有化反而成本高）。"
+       data-src="原文：数据自主可控……合规与安全……定制与扩展……网络隔离。"
+       data-review="回到「04 结构地图 · 分支2」+「05 判断 2/3」复习">
+    <div class="q">2. 【多选】企业微信私有化的四大核心优势包括哪些？（多选）</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. 数据自主可控</button>
+      <button class="opt" data-val="B">B. 合规与安全</button>
+      <button class="opt" data-val="C">C. 定制与扩展</button>
+      <button class="opt" data-val="D">D. 网络隔离</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题3 多选：适合私有化的客户 -->
+  <div class="task" data-task="q3" data-multi="true" data-answer="A,B,C,D"
+       data-ok="对！这四类都是典型客户：金融/银行、政府/公共机构、大型央国企、高端制造与高科技。共同点是强监管或核心数据需保密。"
+       data-no="漏了。原文第11页列了四类典型客户画像：强监管行业（金融银行证券保险）、政府与公共机构、大型央国企（能源军工交通运营商）、高端制造业与高科技（芯片半导体）。共同特征是数据合规或保密要求极高。"
+       data-src="原文：强监管行业客户（金融、银行、证券、保险）……政府与公共机构……大型央国企……高端制造业与高科技（芯片、半导体、高端制造）。"
+       data-review="回到「03 原文问题定位」+「05 判断 3」复习">
+    <div class="q">3. 【多选】下列哪些客户典型适合选企业微信私有化？（多选）</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. 一家需要满足等保三级的城商行</button>
+      <button class="opt" data-val="B">B. 要求政务数据必须存境内自有机房的某市公安局</button>
+      <button class="opt" data-val="C">C. 业务连续性要求高、不能依赖第三方云的某央企能源集团</button>
+      <button class="opt" data-val="D">D. 核心研发数据需严格保密的某芯片设计公司</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题4 多选：不适合私有化的客户 -->
+  <div class="task" data-task="q4" data-multi="true" data-answer="A,B,C"
+       data-ok="对！这三类原文明确列为不适合：SMB 中小企业、追求最新功能的客户、无需强合规的普通企业。"
+       data-no="D 是错的——大型央企能源集团恰恰是典型适合客户（强监管 + 业务连续性）。原文第12页不适合的三类：SMB、追求最新功能、无需强合规。"
+       data-src="原文：SMB 中小企业……追求最新功能的客户……无需强合规的普通企业……成本高、功能滞后、运维门槛高。"
+       data-review="回到「04 结构地图 · 分支3」+「09 误解」复习">
+    <div class="q">4. 【多选】下列哪些客户通常不适合选私有化？（多选）</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. 20 人规模、无专业运维团队的初创公司</button>
+      <button class="opt" data-val="B">B. 希望第一时间体验企微最新功能的内容公司</button>
+      <button class="opt" data-val="C">C. 无行业监管要求、数据敏感度低的普通贸易公司</button>
+      <button class="opt" data-val="D">D. 不能依赖第三方云的大型央企能源集团</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题5 匹配：三层架构 -->
+  <div class="task" data-task="q5" data-type="selects"
+       data-ok="全部对！三层架构记牢：接入层接流量、服务层跑业务、数据层存东西。三层都在客户机房，数据不出局。"
+       data-no="有错。逐组对照：接入层=负载均衡/网关/CDN；服务层=IM/应用/API/会议服务；数据层=数据库/缓存/对象存储。注意'即时通讯服务'属于服务层不是数据层。"
+       data-src="原文：接入层：负载均衡、网关、CDN、客户端接入……服务层：即时通讯服务、应用服务、API 服务、会议服务……数据层：关系型数据库、缓存集群、对象存储。"
+       data-review="回到「06 概念⑥ 三层架构」整章复习">
+    <div class="q">5. 【匹配】把三层架构的每一层和它承载的组件配对。</div>
+    <div class="match-row">
+      <span style="min-width:6em">① 接入层</span>
+      <select class="match" data-correct="A">
+        <option value="">— 请选 —</option>
+        <option value="A">A. 负载均衡、网关、CDN、客户端接入</option>
+        <option value="B">B. 即时通讯服务、应用服务、API 服务、会议服务</option>
+        <option value="C">C. 关系型数据库、缓存集群、对象存储</option>
+      </select>
+    </div>
+    <div class="match-row">
+      <span style="min-width:6em">② 服务层</span>
+      <select class="match" data-correct="B">
+        <option value="">— 请选 —</option>
+        <option value="A">A. 负载均衡、网关、CDN、客户端接入</option>
+        <option value="B">B. 即时通讯服务、应用服务、API 服务、会议服务</option>
+        <option value="C">C. 关系型数据库、缓存集群、对象存储</option>
+      </select>
+    </div>
+    <div class="match-row">
+      <span style="min-width:6em">③ 数据层</span>
+      <select class="match" data-correct="C">
+        <option value="">— 请选 —</option>
+        <option value="A">A. 负载均衡、网关、CDN、客户端接入</option>
+        <option value="B">B. 即时通讯服务、应用服务、API 服务、会议服务</option>
+        <option value="C">C. 关系型数据库、缓存集群、对象存储</option>
+      </select>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题6 单选：DMZ 区 -->
+  <div class="task" data-task="q6" data-answer="B"
+       data-ok="对！DMZ 是受控缓冲区，放对外接入的网关和负载均衡，外部请求先进它，进不到数据区。"
+       data-no="错。A 把 DMZ 和数据区搞反了（数据库在数据区）；C 错（监控日志在运维管理区）；D 错（DMZ 不是用户终端，用户终端在办公区）。"
+       data-src="原文：DMZ 区：接入网关、负载均衡……业务区：应用服务器……数据区：数据库、缓存、存储……运维管理区：监控、日志……办公区：用户终端。"
+       data-review="回到「06 概念⑤ DMZ 网络隔离」复习">
+    <div class="q">6. 【单选】在私有化部署拓扑中，DMZ 区通常承载什么？</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. 核心数据库和缓存集群</button>
+      <button class="opt" data-val="B">B. 接入网关、负载均衡（外部请求的受控入口）</button>
+      <button class="opt" data-val="C">C. 监控、日志、运维平台</button>
+      <button class="opt" data-val="D">D. 用户终端（PC/移动）</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题7 判断：功能是否和 SaaS 完全一致 -->
+  <div class="task" data-task="q7" data-answer="B"
+       data-ok="对——这句话本身就是错的。私有化第三方应用和应用市场受限，功能迭代周期比 SaaS 长。本题正确选项是「错」。"
+       data-no="你选了「对」，但这是错的。原文明确：私有化应用市场第三方应用受限，部分应用不支持；版本迭代周期长。本题应选「错」。"
+       data-src="原文：私有化应用市场第三方应用受限，部分应用不支持……私有化版本迭代周期长，无法及时跟进企微最新功能。"
+       data-review="回到「05 判断 4」+「09 误解」复习">
+    <div class="q">7. 【判断】私有化的功能和企业微信 SaaS 完全一致，没有任何差异。</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. 对</button>
+      <button class="opt" data-val="B">B. 错</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题8 单选：升级方式 -->
+  <div class="task" data-task="q8" data-answer="C"
+       data-ok="对！私有化升级需停机，由企业运维团队执行，微盛/腾讯提供升级包与指导；SaaS 才是腾讯统一推送无感知。"
+       data-no="错。A 描述的是 SaaS；B 错（私有化不是自动后台热更）；D 错（私有化必须停机升级，没有不停机选项）。"
+       data-src="原文：SaaS：腾讯统一升级，几乎无感知；私有化：版本迭代周期较长，需客户配合停机升级……私有化升级需停机，由企业运维团队执行，微盛/腾讯提供升级包与指导。"
+       data-review="回到「05 判断 4」+「10 背景缺口」复习">
+    <div class="q">8. 【单选】关于私有化的版本升级，下列哪项符合原文？</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. 腾讯统一推送，用户几乎无感知</button>
+      <button class="opt" data-val="B">B. 自动后台热更新，无需停机</button>
+      <button class="opt" data-val="C">C. 需客户配合停机升级，由企业运维团队执行，微盛提供升级包</button>
+      <button class="opt" data-val="D">D. 永远不需要升级，一次部署永久使用</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+</section>
+
+<!-- ===== 09 误解与边界 ===== -->
+<section class="module" id="m09">
+  <span class="sec-id">09</span>
+  <h2>误解与边界 <button class="voice-btn" data-voice-id="m9">🎧 听这章</button></h2>
+
+  <div class="myth">
+    <div class="myth-head">误解 1 · "私有化 = 完全断网、不能连互联网"</div>
+    <div class="row"><span class="key">为什么容易误解</span>"数据不出局""网络隔离"听起来像拔了网线。</div>
+    <div class="row"><span class="key">原文真正说了</span>私有化系统可连接互联网，也可部署在内网/专网；<strong>是否断网取决于客户安全策略</strong>。</div>
+    <div class="row"><span class="key">原文没有说</span>"必须物理断网"——只有政务/军工等强隔离行业才要求物理隔离，多数客户是逻辑隔离。</div>
+    <div class="row"><span class="key">如何避免</span>把"网络隔离"理解为"用防火墙策略隔离 + 只开必要端口"，不是"拔网线"。</div>
+  </div>
+
+  <div class="myth">
+    <div class="myth-head">误解 2 · "私有化是免费的 / 比 SaaS 便宜"</div>
+    <div class="row"><span class="key">为什么容易误解</span>以为"装自己机房"就省了云服务费。</div>
+    <div class="row"><span class="key">原文真正说了</span>私有化需购买授权、自建服务器、专人运维，<strong>整体成本高于 SaaS</strong>。</div>
+    <div class="row"><span class="key">原文没有说</span>"私有化省钱"——它贵在硬件 + 运维人力 + 停机升级的业务中断成本。</div>
+    <div class="row"><span class="key">如何避免</span>跟客户报价时，把"授权费 + 硬件 + 运维 + 升级风险"四项一起算，别只报授权。</div>
+  </div>
+
+  <div class="myth">
+    <div class="myth-head">误解 3 · "私有化功能 = SaaS 全套，一模一样"</div>
+    <div class="row"><span class="key">为什么容易误解</span>同名功能（即时通讯、通讯录、视频会议）两边都有。</div>
+    <div class="row"><span class="key">原文真正说了</span>第三方应用、应用市场在私有化里<strong>受限</strong>，部分应用不支持；功能迭代周期比 SaaS 长。</div>
+    <div class="row"><span class="key">原文没有说</span>"功能完全一致"——核心通讯协作一致，但生态类（第三方应用）有缺。</div>
+    <div class="row"><span class="key">如何避免</span>给客户演示前，先确认他要的第三方应用在私有化版本里是否支持。</div>
+  </div>
+
+  <div class="myth">
+    <div class="myth-head">误解 4 · "数据在自己机房 = 一定比 SaaS 安全"</div>
+    <div class="row"><span class="key">为什么容易误解</span>直觉认为"在自己手里 = 安全"。</div>
+    <div class="row"><span class="key">原文真正说了</span>私有化安全性显著优于 SaaS，<strong>但需客户做好运维</strong>。</div>
+    <div class="row"><span class="key">原文没有说</span>"装在本地就自动安全"——如果运维团队不打补丁、权限乱配，私有化反而可能更脆弱。</div>
+    <div class="row"><span class="key">如何避免</span>安全是系统工程：数据本地 + 网络隔离 + 加密 + 运维到位，缺一不可。</div>
+  </div>
+
+  <div class="myth">
+    <div class="myth-head">误解 5 · "SaaS 升级无感知，所以私有化也能做到无感知升级"</div>
+    <div class="row"><span class="key">为什么容易误解</span>同样是企业微信，以为升级体验一致。</div>
+    <div class="row"><span class="key">原文真正说了</span>SaaS 由腾讯统一推送几乎无感知；私有化<strong>需停机升级</strong>，由企业运维执行。</div>
+    <div class="row"><span class="key">原文没有说</span>"私有化也能热更新"——它必须停机，这是部署模式决定的。</div>
+    <div class="row"><span class="key">如何避免</span>跟客户约升级窗口期（如凌晨），把停机影响降到最低；别承诺"零停机升级"。</div>
+  </div>
+
+  <div class="myth">
+    <div class="myth-head">误解 6 · "三层架构 = 三台服务器"</div>
+    <div class="row"><span class="key">为什么容易误解</span>C 写多了，习惯把"层"映射成"一个进程/一台机器"。</div>
+    <div class="row"><span class="key">原文真正说了</span>"层"是<strong>逻辑职责划分</strong>，每一层可能是一组服务器集群（如数据层 = 数据库 + 缓存集群 + 对象存储）。</div>
+    <div class="row"><span class="key">如何避免</span>把"层"理解成"职责边界"，不是"机器台数"。三层都部署在客户机房，但物理上可能跑在几十台机器上。</div>
+  </div>
+</section>
+
+<!-- ===== 10 背景知识缺口 ===== -->
+<section class="module" id="m10">
+  <span class="sec-id">10</span>
+  <h2>背景知识缺口 <button class="voice-btn" data-voice-id="m10">🎧 听这章</button></h2>
+  <p class="lead">要彻底吃透这一章，建议补这 4 个背景。现在不补也行，遇到不懂的再回头看。</p>
+
+  <div class="card sky">
+    <div class="card-title">缺口 1 · 等保 2.0 的具体条款</div>
+    <p style="margin:0">原文只说"满足等保三级"，没展开具体要求。等保 2.0 三级要求覆盖物理安全、网络安全、主机安全、应用安全、数据安全、管理安全六大类。<strong>为什么重要</strong>：客户问"私有化到底帮我们过了等保哪几条"，你能接住话。</p>
+  </div>
+
+  <div class="card sky">
+    <div class="card-title">缺口 2 · 负载均衡 / 网关 / CDN 的基础概念</div>
+    <p style="margin:0">接入层的三个组件。负载均衡（如 Nginx/LB）把流量分到多台机器；网关做路由和鉴权；CDN 加速静态资源。<strong>为什么重要</strong>：看懂三层架构和 DMZ 区的职责分工。</p>
+  </div>
+
+  <div class="card sky">
+    <div class="card-title">缺口 3 · 防火墙策略 / VLAN / 物理隔离</div>
+    <p style="margin:0">网络分区的底层技术。防火墙策略 = 端口/IP 白名单规则；VLAN = 二层网络隔离；物理隔离 = 真的拉两套网线。<strong>为什么重要</strong>：理解 DMZ 和"逻辑隔离 vs 物理隔离"的区别。</p>
+  </div>
+
+  <div class="card sky">
+    <div class="card-title">缺口 4 · 容灾 / 备份 / 高可用（HA）</div>
+    <p style="margin:0">原文提到"业务连续性"，背后是容灾备份体系（主备/双活/异地容灾）。<strong>为什么重要</strong>：央企/金融客户最看重这个，私有化方案要能讲清数据备份和故障切换。<strong>下一步追问</strong>：私有化的容灾方案和 SaaS 的多可用区有什么本质区别？</p>
+  </div>
+
+  <div class="card marker">
+    <div class="card-title">可以暂时不补的</div>
+    <p style="margin:0">企微私有化的具体安装脚本、数据库选型（MySQL/PG/达梦）、微盛内部报价表——这些是实施细节，不影响理解产品逻辑。</p>
+  </div>
+</section>
+
+<!-- ===== 11 复盘与学习报告 ===== -->
+<section class="module" id="m11">
+  <span class="sec-id">11</span>
+  <h2>复盘与学习报告 <button class="voice-btn" data-voice-id="m11">🎧 听这章</button></h2>
+  <p class="lead">学完这一章，你应该能用自己的话复述下面三件事；如果你还能问出一个连老员工都要想一想的追问，那你就真的学透了。</p>
+
+  <div class="card">
+    <div class="card-title">能复述的三件事</div>
+    <p style="margin:0">① SaaS 和私有化的本质区别（数据在谁手里 + 谁来运维）；<br>② 四大核心优势各自的一句话表现（数据可控 / 合规安全 / 定制扩展 / 网络隔离）；<br>③ 三层架构的职责分工 + DMZ 区在网络拓扑里的位置。</p>
+  </div>
+
+  <div class="card marker">
+    <div class="card-title">还能问的追问（示例）</div>
+    <p style="margin:0">"如果某客户的运维能力很弱，但又必须满足等保三级，是应该硬上私有化、还是 SaaS + 补偿性控制？私有化和 SaaS 之间，有没有第三条路（比如行业云/专属云）？"</p>
+  </div>
+
+  <h3>错题回流区</h3>
+  <div class="wrong-box">
+    <ul id="wrongBox"><li style="color:#888">还没有错题。答错的题会自动收集到这里。</li></ul>
+  </div>
+
+  <h3>生成你的学习报告</h3>
+  <div class="report-actions">
+    <button id="genReport">生成学习报告</button>
+    <button id="copyReport">复制报告</button>
+  </div>
+  <div id="report">点「生成学习报告」按钮，根据你的答题情况生成存档。</div>
+
+  <div style="text-align:center;margin-top:1.5rem">
+    <img src="https://lyzbcy.github.io/weshoto-study/img/sticker/final.png" alt="通关" style="width:72px;height:72px">
+  </div>
+</section>
+
+<footer>
+  <div>由 <a href="https://lyzbcy.github.io/" target="_blank" rel="noopener">捞鱼</a> 制作 · 工具能帮你预习难啃的干货，但不能代替完整学习。学习愉快 🐟</div>
+  <div style="margin-top:.4rem;font-size:.78rem;opacity:.7">微盛研发岗管培生培训 · 企业微信私有化产品培训 · 理解地图</div>
+</footer>
+
+</main>
+
+<!-- ===== 右侧书签脊入口 ===== -->
+<button id="voiceFab" aria-label="打开后台语音"><span class="fab-icon">🎧</span><span class="fab-text">后台语音</span></button>
+
+<!-- ===== 圆润玩具风播放器 ===== -->
+<div id="voicePlayer">
+  <button class="vp-close" aria-label="关闭">✕</button>
+  <div class="vp-head">🎧 后台语音 · 连续播放</div>
+  <div class="vp-title">—</div>
+  <div class="vp-controls">
+    <button class="vp-prev" aria-label="上一章">⏮</button>
+    <button class="vp-play" aria-label="播放/暂停">▶</button>
+    <button class="vp-next" aria-label="下一章">⏭</button>
+  </div>
+  <input class="vp-seek" type="range" min="0" max="1000" value="0" aria-label="进度">
+  <div class="vp-time"><span class="vp-cur">00:00</span><span class="vp-dur">00:00</span></div>
+  <div class="vp-sub">点开播放后，这里会同步显示字幕</div>
+</div>
+
+<!-- ===== 固定互动引擎（原样粘贴，不要改写） ===== -->
+<script>
+(function(){
+  "use strict";
+  function $all(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));}
+  function selectedVals(t){return $all('.opt.selected',t).map(function(o){return o.getAttribute('data-val');}).sort();}
+  function setFb(t,state,html){var fb=t.querySelector('.feedback');if(!fb)return;fb.className='feedback'+(state?(' '+state):'');fb.innerHTML=html;}
+  function updateBar(){
+    var all=$all('.task'),done=$all('.task[data-answered="1"]');
+    var fill=document.getElementById('barFill'),num=document.getElementById('barNum');
+    if(fill)fill.style.width=all.length?(done.length/all.length*100)+'%':'0%';
+    if(num)num.textContent=done.length+' / '+all.length;
+  }
+  function renderWrong(){
+    var box=document.getElementById('wrongBox');if(!box)return;
+    var wrong=$all('.task[data-answered="1"][data-correct="0"]');
+    if(!wrong.length){box.innerHTML='<li style="color:#888">还没有错题。答错的题会自动收集到这里。</li>';return;}
+    box.innerHTML='';
+    wrong.forEach(function(t){var li=document.createElement('li');li.textContent='【'+(t.getAttribute('data-task')||'')+'】'+(t.getAttribute('data-review')||'回到对应模块复习');box.appendChild(li);});
+  }
+  function check(t){
+    var type=t.getAttribute('data-type'),ok=false;
+    if(type==='selects'){
+      var sels=$all('select.match',t),allok=true,empty=false;
+      sels.forEach(function(s){if(!s.value)empty=true;if(s.value!==s.getAttribute('data-correct'))allok=false;});
+      if(empty){setFb(t,'no','请先把每一项都选好再检查。');return;}
+      ok=allok;
+    }else{
+      var sel=selectedVals(t);
+      if(!sel.length){setFb(t,'no','请先选择一个选项再检查。');return;}
+      var ans=(t.getAttribute('data-answer')||'').split(',').map(function(x){return x.trim();}).sort();
+      ok=(sel.join('|')===ans.join('|'));
+    }
+    var sticker=ok?'<img class="sticker" src="https://lyzbcy.github.io/weshoto-study/img/sticker/ok.png" alt="">':'<img class="sticker" src="https://lyzbcy.github.io/weshoto-study/img/sticker/no.png" alt="">';
+    var body=ok?(t.getAttribute('data-ok')||'回答正确。'):(t.getAttribute('data-no')||'再想想。');
+    var src=t.getAttribute('data-src');
+    setFb(t,ok?'ok':'no',sticker+body+(src?('<span class="src">'+src+'</span>'):''));
+    t.setAttribute('data-answered','1');t.setAttribute('data-correct',ok?'1':'0');
+    updateBar();renderWrong();
+  }
+  function genReport(){
+    var box=document.getElementById('report');if(!box)return;
+    var all=$all('.task'),done=$all('.task[data-answered="1"]'),right=$all('.task[data-answered="1"][data-correct="1"]');
+    var lines=['=== 学习报告 ===','完成题目：'+done.length+' / '+all.length,'答对：'+right.length+' 题',''];
+    var wrong=$all('.task[data-answered="1"][data-correct="0"]');
+    if(wrong.length){lines.push('我答错的题（建议复习）：');wrong.forEach(function(t){lines.push('- '+(t.getAttribute('data-task')||'')+'：'+(t.getAttribute('data-review')||''));});}
+    else{lines.push('暂无错题。');}
+    lines.push('','三件复述清单：');
+    lines.push('① SaaS vs 私有化本质区别（数据在谁手里 + 谁来运维）');
+    lines.push('② 四大核心优势（数据自主可控 / 合规与安全 / 定制与扩展 / 网络隔离）');
+    lines.push('③ 三层架构（接入/服务/数据）职责分工 + DMZ 区位置');
+    box.textContent=lines.join('\n');
+  }
+  document.addEventListener('click',function(e){
+    var c=e.target.closest?e.target:null;
+    var opt=c&&e.target.closest('.opt');
+    if(opt){var t=opt.closest('.task');if(!t)return;
+      if(t.getAttribute('data-multi')==='true'){opt.classList.toggle('selected');}
+      else{$all('.opt',t).forEach(function(o){o.classList.remove('selected');});opt.classList.add('selected');}
+      return;}
+    var btn=c&&e.target.closest('.check');
+    if(btn){var tk=btn.closest('.task');if(tk)check(tk);return;}
+    if(e.target&&e.target.id==='genReport'){genReport();return;}
+    if(e.target&&e.target.id==='copyReport'){var r=document.getElementById('report');if(r&&navigator.clipboard)navigator.clipboard.writeText(r.textContent);return;}
+  });
+  function init(){updateBar();renderWrong();}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+
+<!-- ===== 固定语音引擎（原样粘贴，不要改写） ===== -->
+<script>
+(function(){
+  "use strict";
+  if(window.__voiceEngine) return;
+  window.__voiceEngine = true;
+
+  var listNode = document.getElementById('voicePlaylist');
+  if(!listNode){ return; }
+  var TRACKS = [];
+  try { TRACKS = JSON.parse(listNode.textContent.trim()); } catch(e){ return; }
+  if(!TRACKS.length) return;
+
+  var player = document.getElementById('voicePlayer');
+  var fab = document.getElementById('voiceFab');
+  var audio = new Audio(); audio.preload = 'metadata';
+  var cur = 0;
+  var ranges = [];
+  var total = 0;
+  var seeking = false;
+
+  function $(s){ return player ? player.querySelector(s) : null; }
+  function fmt(s){ s=Math.max(0,Math.floor(s||0)); var m=Math.floor(s/60), x=s%60;
+    return (m<10?'0':'')+m+':'+(x<10?'0':'')+x; }
+
+  var probe = TRACKS.map(function(){ return {dur:0}; });
+  function tryFinalize(){
+    if(probe.some(function(p){return !p.dur;})) return;
+    ranges = []; total = 0;
+    probe.forEach(function(p){ ranges.push({dur:p.dur, start:total}); total += p.dur; });
+    var d = $('.vp-dur'); if(d) d.textContent = fmt(total);
+    var sk = $('.vp-seek'); if(sk){ sk.max = Math.max(1000, Math.floor(total*10)); }
+  }
+  TRACKS.forEach(function(t, i){
+    var a = new Audio(); a.preload = 'metadata'; a.src = t.src;
+    a.addEventListener('loadedmetadata', function(){
+      probe[i].dur = a.duration || 0; tryFinalize();
+    });
+    a.addEventListener('error', function(){ probe[i].dur = 0; tryFinalize(); });
+  });
+
+  function load(i){
+    cur = i; audio.src = TRACKS[i].src;
+    var ti = $('.vp-title'); if(ti) ti.textContent = TRACKS[i].title || ('第 '+(i+1)+' 段');
+    markBtn(i);
+  }
+  function play(){ audio.play().then(function(){ show(); setPlayIcon(true); if(fab) fab.classList.add('beat'); }).catch(function(){}); }
+  function pause(){ audio.pause(); setPlayIcon(false); if(fab) fab.classList.remove('beat'); }
+  function toggle(){ audio.paused ? play() : pause(); }
+  function next(){ if(cur < TRACKS.length-1){ load(cur+1); play(); } else { pause(); } }
+  function prev(){
+    var abs = absTime();
+    if(cur > 0 && abs - ranges[cur].start < 3){ load(cur-1); play(); }
+    else { audio.currentTime = 0; }
+  }
+  function absTime(){ return ranges[cur] ? ranges[cur].start + (audio.currentTime||0) : (audio.currentTime||0); }
+  function setPlayIcon(on){ var b=$('.vp-play'); if(b) b.textContent = on ? '⏸' : '▶'; }
+  function show(){ if(player) player.classList.add('show'); }
+  function hide(){ if(player) player.classList.remove('show'); }
+  function markBtn(i){
+    document.querySelectorAll('.voice-btn[data-voice-id]').forEach(function(b){
+      b.classList.toggle('active', b.getAttribute('data-voice-id') === TRACKS[i].id);
+    });
+  }
+
+  audio.addEventListener('timeupdate', function(){
+    if(seeking) return;
+    if(!ranges[cur]) return;
+    var abs = absTime(); var sk = $('.vp-seek'); var c = $('.vp-cur');
+    if(sk && total) sk.value = Math.round(abs / total * (sk.max||1000));
+    if(c) c.textContent = fmt(abs);
+  });
+  audio.addEventListener('ended', function(){ if(cur < TRACKS.length-1){ load(cur+1); play(); }
+    else { setPlayIcon(false); if(fab) fab.classList.remove('beat'); } });
+
+  function seekToFraction(frac){
+    if(!total) return;
+    var target = Math.max(0, Math.min(total, frac * total));
+    var i = 0; while(i < ranges.length-1 && ranges[i].start + ranges[i].dur < target){ i++; }
+    if(i !== cur){ cur = i; audio.src = TRACKS[i].src;
+      var ti=$('.vp-title'); if(ti) ti.textContent = TRACKS[i].title||('第 '+(i+1)+' 段'); markBtn(i); }
+    audio.currentTime = target - ranges[i].start;
+    var c=$('.vp-cur'); if(c) c.textContent = fmt(target);
+  }
+
+  document.addEventListener('click', function(e){
+    var t = e.target;
+    var vb = t.closest ? t.closest('.voice-btn[data-voice-id]') : null;
+    if(vb){
+      var id = vb.getAttribute('data-voice-id'), idx = -1;
+      TRACKS.forEach(function(tr, k){ if(tr.id === id) idx = k; });
+      if(idx >= 0){ load(idx); play(); }
+      return;
+    }
+    if(t.id === 'voiceFab'){ show(); if(audio.paused && !audio.src){ load(0); } if(audio.paused){ play(); } return; }
+    if(!player || !player.contains(t)) return;
+    if(t.classList.contains('vp-play')){ toggle(); return; }
+    if(t.classList.contains('vp-prev')){ prev(); return; }
+    if(t.classList.contains('vp-next')){ next(); return; }
+    if(t.classList.contains('vp-close')){ pause(); hide(); return; }
+  });
+  var sk = $('.vp-seek');
+  if(sk){
+    sk.addEventListener('input', function(){ seeking = true;
+      if(total){ var c=$('.vp-cur'); if(c) c.textContent = fmt((sk.value/(sk.max||1000))*total); } });
+    sk.addEventListener('change', function(){ seekToFraction(sk.value/(sk.max||1000)); seeking = false; });
+  }
+})();
+</script>
+
+<!-- ===== 字幕同步引擎（原样粘贴，不要改写） ===== -->
+<script>
+(function(){
+  "use strict";
+  if(window.__subEngine) return;
+  window.__subEngine = true;
+
+  var listNode = document.getElementById("voicePlaylist");
+  if(!listNode) return;
+  var subBox = document.querySelector("#voicePlayer .vp-sub");
+  var curEl = document.querySelector("#voicePlayer .vp-cur");
+  var titleEl = document.querySelector("#voicePlayer .vp-title");
+  if(!subBox) return;
+
+  var subs = [];
+  var subCache = {};
+  var curSrc = "";
+
+  function esc(s){ var d=document.createElement("div"); d.textContent=s; return d.innerHTML; }
+
+  function mp3ToJson(src){
+    var m = src.replace(/^.*?([a-zA-Z0-9_\/.\-]+\.mp3)(?:\?.*)?$/i, "$1");
+    return m.replace(/\.mp3$/i, ".json");
+  }
+
+  function loadSubFor(src){
+    if(!src || src === curSrc) return;
+    curSrc = src;
+    var jsonUrl = mp3ToJson(src);
+    if(subCache[jsonUrl]){ subs = subCache[jsonUrl]; return; }
+    fetch(jsonUrl).then(function(r){
+      if(!r.ok) throw new Error(r.status);
+      return r.json();
+    }).then(function(arr){
+      subCache[jsonUrl] = Array.isArray(arr) ? arr : [];
+      subs = subCache[jsonUrl];
+    }).catch(function(){ subs = []; });
+  }
+
+  function parseTime(text){
+    var p = String(text).trim().split(":");
+    if(p.length === 2){
+      var m = parseInt(p[0], 10) || 0;
+      var s = parseInt(p[1], 10) || 0;
+      return m * 60 + s;
+    }
+    return parseFloat(text) || 0;
+  }
+
+  function renderSub(t){
+    if(!subs.length) return;
+    var hit = null, idx = -1;
+    for(var i = 0; i < subs.length; i++){
+      if(t >= subs[i].start && t < subs[i].end){ hit = subs[i]; idx = i; break; }
+    }
+    if(!hit){
+      var prev = null;
+      for(var j = 0; j < subs.length; j++){
+        if(subs[j].start <= t) prev = subs[j]; else break;
+      }
+      subBox.classList.remove("active");
+      subBox.innerHTML = prev ? esc(prev.text) : "";
+      return;
+    }
+    subBox.classList.add("active");
+    var prevHtml = idx > 0
+      ? '<span style="opacity:.45">' + esc(subs[idx - 1].text) + "</span> "
+      : "";
+    subBox.innerHTML = prevHtml + '<span class="cur">' + esc(hit.text) + "</span>";
+  }
+
+  function tick(){
+    if(!curEl) return;
+    var sec = parseTime(curEl.textContent);
+    renderSub(sec);
+  }
+
+  function onTitleChange(){
+    var TRACKS = [];
+    try { TRACKS = JSON.parse(listNode.textContent.trim()); } catch(e){ return; }
+    var title = titleEl ? titleEl.textContent.trim() : "";
+    for(var i = 0; i < TRACKS.length; i++){
+      if(TRACKS[i].title === title){ loadSubFor(TRACKS[i].src); return; }
+    }
+  }
+
+  if(window.MutationObserver){
+    var obs = new MutationObserver(function(){ tick(); onTitleChange(); });
+    if(curEl) obs.observe(curEl, { childList:true, characterData:true, subtree:true });
+    if(titleEl) obs.observe(titleEl, { childList:true, characterData:true, subtree:true });
+  } else {
+    setInterval(function(){ tick(); onTitleChange(); }, 300);
+  }
+  setTimeout(tick, 500);
+})();
+</script>
+
+</body>
+</html>

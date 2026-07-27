@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>工单和TAPD管理 · 理解地图</title>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Poppins:wght@500;600;700&family=Roboto+Mono:wght@400;600&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#FAF6EB;
+  --paper:#F3EDDD;
+  --forest:#1E3A24;
+  --sky:#BCD8EE;
+  --sage:#AFCDA8;
+  --ink:#1A2018;
+  --marker:#F5E08A;
+  --brick:#B5482A;
+  --correct:#2F7D46;
+  --wrong:#B5482A;
+  --font-display:"Archivo Black","Noto Sans SC","PingFang SC",sans-serif;
+  --font-head:"Poppins","Noto Sans SC","PingFang SC",sans-serif;
+  --font-body:-apple-system,"PingFang SC","Noto Sans SC",sans-serif;
+  --font-mono:"Roboto Mono","JetBrains Mono",monospace;
+  --radius-pill:999px;
+  --radius-card:14px;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0; background:var(--cream); color:var(--ink);
+  font-family:var(--font-body); font-size:16px; line-height:1.7;
+  display:flex;
+}
+/* ===== 左侧固定侧边栏 ===== */
+aside.sidebar{
+  position:fixed; top:0; left:0; width:280px; height:100vh;
+  background:var(--forest); color:var(--cream);
+  padding:1.5rem 1.25rem 2rem; overflow-y:auto;
+  z-index:50; flex-shrink:0;
+}
+aside.sidebar h1{
+  font-family:var(--font-display); font-size:1.35rem; line-height:1.25;
+  margin:0 0 .3rem; letter-spacing:-.01em;
+}
+aside.sidebar .sub{
+  font-size:.78rem; opacity:.75; margin-bottom:1.2rem;
+  padding-bottom:1.2rem; border-bottom:1px solid rgba(250,246,235,.18);
+}
+aside.sidebar .progress-wrap{margin-bottom:1.2rem;}
+aside.sidebar .progress-label{
+  display:flex; justify-content:space-between; align-items:center;
+  font-size:.78rem; opacity:.8; margin-bottom:.4rem;
+  font-family:var(--font-head); letter-spacing:.02em;
+}
+aside.sidebar .progress-bar{
+  height:8px; background:rgba(250,246,235,.15); border-radius:var(--radius-pill);
+  overflow:hidden;
+}
+aside.sidebar .progress-bar .fill{
+  height:100%; width:0%; background:var(--marker); border-radius:var(--radius-pill);
+  transition:width .35s ease;
+}
+aside.sidebar nav a{
+  display:block; padding:.55rem .8rem; margin-bottom:.2rem;
+  color:var(--cream); text-decoration:none; opacity:.78;
+  font-family:var(--font-head); font-weight:500; font-size:.88rem;
+  border-radius:8px; transition:all .18s; border-left:3px solid transparent;
+}
+aside.sidebar nav a:hover{ opacity:1; background:rgba(250,246,235,.08); }
+aside.sidebar nav a .no{
+  display:inline-block; width:1.8em; font-family:var(--font-mono); opacity:.7;
+  font-size:.8rem;
+}
+aside.sidebar nav a.active{ opacity:1; background:rgba(245,224,138,.18); border-left-color:var(--marker); }
+aside.sidebar .mascot{
+  margin-top:1.5rem; text-align:center; opacity:.9;
+}
+aside.sidebar .mascot img{ width:88px; height:88px; object-fit:contain; }
+aside.sidebar .mascot .mascot-text{ font-size:.72rem; opacity:.7; margin-top:.3rem; }
+
+/* ===== 右侧主区（单列纵向堆叠） ===== */
+main{
+  margin-left:280px; padding:3rem 2rem 5rem;
+  max-width:820px; width:100%; min-width:0;
+}
+section.module{
+  margin-bottom:3.5rem; scroll-margin-top:1.5rem;
+  border-top:3px solid var(--forest); padding-top:1.5rem;
+}
+section.module:first-of-type{ border-top:none; padding-top:0; }
+.sec-id{
+  display:inline-block; font-family:var(--font-mono); font-weight:600;
+  font-size:.78rem; background:var(--forest); color:var(--cream);
+  padding:.2em .7em; border-radius:var(--radius-pill); letter-spacing:.05em;
+  margin-bottom:.6rem;
+}
+h2{
+  font-family:var(--font-head); font-weight:700;
+  font-size:1.6rem; line-height:1.3; margin:0 0 1rem; color:var(--forest);
+}
+h3{
+  font-family:var(--font-head); font-weight:600;
+  font-size:1.1rem; margin:1.4rem 0 .6rem; color:var(--forest);
+}
+p{ margin:0 0 .85rem; }
+.lead{ font-size:1.05rem; color:var(--ink); }
+
+/* 单列卡片 */
+.card{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1.25rem 1.35rem; margin-bottom:1rem;
+  border-left:4px solid var(--sage);
+}
+.card.brick{ border-left-color:var(--brick); }
+.card.marker{ border-left-color:var(--marker); background:rgba(245,224,138,.18); }
+.card.sky{ border-left-color:var(--sky); }
+.card-title{
+  font-family:var(--font-head); font-weight:600; font-size:1rem;
+  margin:0 0 .4rem; color:var(--forest);
+}
+.card .meta{
+  display:inline-block; font-size:.72rem; font-family:var(--font-mono);
+  background:var(--cream); color:var(--ink); padding:.1em .6em;
+  border-radius:var(--radius-pill); margin-left:.4em; vertical-align:middle;
+}
+
+/* 原文依据块 */
+.src-quote{
+  background:var(--cream); border-left:3px solid var(--brick);
+  padding:.6rem .9rem; margin:.5rem 0; font-size:.9rem;
+  border-radius:0 8px 8px 0;
+}
+.src-quote::before{
+  content:"原文依据 · "; font-family:var(--font-mono); font-size:.74rem;
+  font-weight:600; color:var(--brick); letter-spacing:.05em;
+}
+
+/* 类型标签 */
+.type-tag{
+  display:inline-block; font-size:.72rem; font-family:var(--font-mono);
+  padding:.15em .6em; border-radius:var(--radius-pill); margin-right:.3em;
+  font-weight:600;
+}
+.type-tag.fact{ background:var(--sage); color:var(--forest); }
+.type-tag.judge{ background:var(--marker); color:var(--ink); }
+.type-tag.infer{ background:var(--sky); color:var(--ink); }
+.type-tag.eg{ background:var(--brick); color:var(--cream); }
+
+/* 背景补充块 */
+.bg-block{
+  background:rgba(175,205,168,.22); border-radius:var(--radius-card);
+  padding:1.1rem 1.25rem; margin-bottom:1rem;
+  border-left:4px solid var(--sage);
+}
+.bg-block .bg-label{
+  font-family:var(--font-mono); font-size:.74rem; font-weight:600;
+  color:var(--forest); letter-spacing:.06em; margin-bottom:.5rem;
+}
+.bg-block .why{ font-size:.86rem; opacity:.78; margin-top:.5rem; font-style:italic; }
+
+/* C 类比块 */
+.analogy{
+  background:rgba(188,216,238,.25); border-radius:8px;
+  padding:.7rem .9rem; margin:.6rem 0; font-size:.92rem;
+  border-left:3px solid var(--sky);
+}
+.analogy::before{
+  content:"C 类比 · "; font-family:var(--font-mono); font-size:.74rem;
+  font-weight:600; color:var(--forest); letter-spacing:.05em;
+}
+
+/* 目标项（纵向堆叠） */
+.goal-item{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:.9rem 1.1rem; margin-bottom:.8rem;
+  display:flex; align-items:flex-start; gap:.7rem;
+  border-left:4px solid var(--forest);
+}
+.goal-item .g-num{
+  font-family:var(--font-display); font-size:1.4rem; color:var(--brick);
+  line-height:1; flex-shrink:0;
+}
+
+/* 结构地图（树形/纵向） */
+.tree{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1.1rem 1.25rem; font-family:var(--font-mono); font-size:.85rem;
+  line-height:1.9;
+}
+.tree-node{ margin:.2rem 0; }
+.tree-node .label{ color:var(--forest); font-weight:600; }
+.tree-node .rel{ color:var(--brick); font-size:.78rem; }
+
+/* 关卡题 */
+.q-item{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1rem 1.15rem .9rem; margin-bottom:1rem;
+  border-left:4px solid var(--sky);
+}
+.q-item .q-no{
+  font-family:var(--font-mono); font-size:.74rem; font-weight:600;
+  color:var(--brick); letter-spacing:.05em; margin-bottom:.3rem;
+}
+.q-item .q-text{ font-weight:500; margin-bottom:.7rem; }
+.q-item .q-hint{ font-size:.84rem; opacity:.7; font-style:italic; margin-top:.6rem; }
+
+/* 任务（data-* 题目） */
+.task{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1rem 1.15rem 1.1rem; margin-bottom:1.1rem;
+  border-left:4px solid var(--brick);
+}
+.task .q{ font-weight:500; margin-bottom:.7rem; }
+.task .opts{ display:flex; flex-direction:column; gap:.45rem; margin-bottom:.7rem; }
+.task button.opt{
+  background:var(--cream); border:1.5px solid var(--forest);
+  border-radius:8px; padding:.55rem .8rem;
+  font-family:var(--font-body); font-size:.94rem; text-align:left;
+  cursor:pointer; transition:all .15s; color:var(--ink);
+}
+.task button.opt:hover{ background:var(--sage); }
+.task button.opt.selected{ background:var(--forest); color:var(--cream); border-color:var(--forest); }
+.task button.check{
+  background:var(--forest); color:var(--cream); border:none;
+  border-radius:var(--radius-pill); padding:.45rem 1.2rem;
+  font-family:var(--font-head); font-weight:600; font-size:.88rem;
+  cursor:pointer; margin-bottom:.6rem;
+}
+.task button.check:hover{ background:#142710; }
+.task .feedback{
+  background:var(--cream); border-radius:8px; padding:.6rem .8rem;
+  font-size:.88rem; margin-top:.4rem;
+  border-left:3px solid var(--ink);
+}
+.task .feedback.ok{ border-left-color:var(--correct); background:rgba(175,205,168,.22); }
+.task .feedback.no{ border-left-color:var(--wrong); background:rgba(181,72,42,.1); }
+.task .feedback .src{
+  display:block; margin-top:.4rem; font-size:.82rem; opacity:.8;
+  font-style:italic;
+}
+.task .match-row{
+  display:flex; align-items:center; gap:.6rem; margin-bottom:.5rem;
+  flex-wrap:wrap;
+}
+.task select.match{
+  flex:1; min-width:140px; padding:.4rem .5rem;
+  border:1.5px solid var(--forest); border-radius:6px;
+  font-family:var(--font-body); background:var(--cream);
+}
+
+/* 错题回流 */
+.wrong-box{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1rem 1.15rem; border-left:4px solid var(--wrong);
+}
+.wrong-box ul{ margin:.5rem 0 0; padding-left:1.2rem; }
+.wrong-box li{ margin-bottom:.4rem; font-size:.9rem; }
+
+/* 误解卡 */
+.myth{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1.1rem 1.25rem; margin-bottom:1rem;
+  border-left:4px solid var(--brick);
+}
+.myth .myth-head{
+  font-family:var(--font-head); font-weight:600; color:var(--brick);
+  font-size:1rem; margin-bottom:.5rem;
+}
+.myth .row{ margin:.4rem 0; font-size:.92rem; }
+.myth .row .key{
+  font-family:var(--font-mono); font-size:.74rem; font-weight:600;
+  color:var(--forest); margin-right:.4em;
+}
+
+/* 概念卡 */
+.concept{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1.25rem 1.35rem; margin-bottom:1.1rem;
+  border-left:4px solid var(--marker);
+}
+.concept .c-name{
+  font-family:var(--font-head); font-weight:700; font-size:1.15rem;
+  color:var(--forest); margin-bottom:.6rem;
+}
+.concept .c-row{ margin:.5rem 0; font-size:.92rem; }
+.concept .c-row .ck{
+  font-family:var(--font-mono); font-size:.74rem; font-weight:600;
+  color:var(--brick); margin-right:.4em; letter-spacing:.04em;
+}
+
+/* 公式块 */
+.formula{
+  background:var(--forest); color:var(--marker);
+  border-radius:8px; padding:.8rem 1rem; margin:.6rem 0;
+  font-family:var(--font-mono); font-size:.88rem; text-align:center;
+  overflow-x:auto;
+}
+
+/* 表格 */
+table.t{
+  width:100%; border-collapse:collapse; margin:.6rem 0;
+  font-size:.88rem; background:var(--cream);
+  border-radius:8px; overflow:hidden;
+}
+table.t th, table.t td{
+  padding:.5rem .7rem; text-align:left; border:1px solid var(--paper);
+}
+table.t th{ background:var(--forest); color:var(--cream); font-family:var(--font-head); font-weight:500; }
+table.t td.hit{ background:rgba(175,205,168,.3); }
+table.t td.miss{ background:rgba(181,72,42,.15); }
+
+/* 表情贴纸（反馈区与目标头） */
+.sticker{ display:inline-block; vertical-align:middle; width:24px; height:24px; margin:0 .3em; }
+
+/* 页脚 */
+footer{
+  margin-top:3rem; padding:1.5rem 0 1rem; border-top:2px solid var(--forest);
+  font-size:.86rem; color:var(--ink); text-align:center;
+}
+footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
+
+/* 引用图标 */
+.hero-mark{
+  font-family:var(--font-display); font-size:.74rem;
+  color:var(--marker); background:var(--forest);
+  padding:.2em .7em; border-radius:var(--radius-pill);
+  letter-spacing:.05em; display:inline-block; margin-bottom:.6rem;
+}
+
+/* ===== 语音：右侧书签脊 ===== */
+#voiceFab{
+  position:fixed; right:0; top:50%; transform:translateY(-50%); z-index:9998;
+  display:flex; align-items:center; flex-direction:row;
+  background:var(--forest); color:var(--cream); border:none; cursor:pointer;
+  height:5em; padding:0 .55em;
+  border-radius:16px 0 0 16px;
+  box-shadow:-4px 0 14px rgba(0,0,0,.18);
+  font-family:var(--font-head); font-size:.85rem;
+  overflow:hidden;
+  transition:width .42s cubic-bezier(.4,0,.2,1), box-shadow .3s ease;
+  width:1.9em;
+}
+#voiceFab .fab-icon{
+  font-size:1.15rem; writing-mode:vertical-rl; text-orientation:upright;
+  letter-spacing:.1em; white-space:nowrap; flex-shrink:0;
+}
+#voiceFab .fab-text{
+  white-space:nowrap; opacity:0; margin-left:.6em;
+  transition:opacity .28s ease .12s;
+}
+#voiceFab:hover{
+  width:8.6em; box-shadow:-6px 0 22px rgba(0,0,0,.25);
+}
+#voiceFab:hover .fab-text{ opacity:1; }
+#voiceFab.beat{ animation:voiceBeat 1.6s ease-in-out infinite; }
+@keyframes voiceBeat{ 0%,100%{box-shadow:-4px 0 14px rgba(0,0,0,.18)} 50%{box-shadow:-4px 0 20px rgba(181,72,42,.5)} }
+
+/* ===== 语音：圆润玩具风播放器 ===== */
+#voicePlayer{
+  position:fixed; left:50%; bottom:1rem; transform:translateX(-50%) translateY(140%);
+  width:min(92vw,380px); padding:1rem 1.1rem 1.1rem; background:var(--cream);
+  border:2px solid var(--forest); border-radius:26px;
+  box-shadow:0 8px 28px rgba(0,0,0,.16); z-index:9999; transition:transform .28s ease;
+  text-align:center; font-family:var(--font-body);
+}
+#voicePlayer.show{ transform:translateX(-50%) translateY(0); }
+#voicePlayer .vp-head{ font-size:.75rem; color:var(--forest); opacity:.8; letter-spacing:.05em; }
+#voicePlayer .vp-title{ font:700 1rem/1.35 var(--font-body); color:var(--ink);
+  margin:.25rem 0 .7rem; padding:0 .2rem; word-break:break-word; }
+#voicePlayer .vp-play{
+  width:3.6rem; height:3.6rem; border:none; border-radius:50%;
+  background:var(--forest); color:var(--cream); font-size:1.3rem; cursor:pointer;
+  margin:0 auto .7rem; display:flex; align-items:center; justify-content:center;
+  box-shadow:0 3px 0 #142710; transition:transform .1s, box-shadow .1s;
+}
+#voicePlayer .vp-play:active{ transform:translateY(2px); box-shadow:0 1px 0 #142710; }
+#voicePlayer .vp-prev,#voicePlayer .vp-next{
+  width:2.3rem; height:2.3rem; border:1.5px solid var(--forest); border-radius:50%;
+  background:var(--cream); color:var(--forest); font-size:.9rem; cursor:pointer;
+}
+#voicePlayer .vp-controls{ display:flex; align-items:center; justify-content:center; gap:1.2rem; margin-bottom:.7rem; }
+#voicePlayer .vp-seek{ width:100%; margin:.2rem 0; cursor:pointer; accent-color:var(--forest); }
+#voicePlayer .vp-time{ display:flex; justify-content:space-between; font:600 .72rem/1 var(--font-mono); color:var(--ink); opacity:.75; }
+#voicePlayer .vp-close{ position:absolute; top:.5rem; right:.6rem; width:1.5rem; height:1.5rem;
+  border:none; background:transparent; color:var(--ink); font-size:1rem; cursor:pointer; opacity:.5; }
+#voicePlayer .vp-sub{
+  min-height:2.6em; max-height:3.9em; overflow:hidden;
+  font:.85rem/1.5 var(--font-body); color:var(--ink); opacity:.55;
+  margin:.2rem 0 .5rem; padding:0 .3rem;
+  transition:opacity .2s; text-align:center;
+}
+#voicePlayer .vp-sub.active{ opacity:1; }
+#voicePlayer .vp-sub .cur{ color:var(--forest); font-weight:600; }
+
+/* 「听这章」小按钮 */
+.voice-btn{
+  display:inline-block; vertical-align:middle; margin-left:.6em;
+  padding:.25em .8em; border:1px solid var(--forest); border-radius:var(--radius-pill);
+  background:var(--cream); color:var(--forest); font:600 .8rem/1.2 var(--font-body);
+  cursor:pointer; transition:background .15s;
+}
+.voice-btn:hover{ background:var(--sage); }
+.voice-btn.active{ background:var(--forest); color:var(--cream); }
+
+/* 学习报告按钮 */
+.report-actions{ margin:.8rem 0; display:flex; gap:.6rem; flex-wrap:wrap; }
+.report-actions button{
+  background:var(--forest); color:var(--cream); border:none;
+  border-radius:var(--radius-pill); padding:.5rem 1.1rem;
+  font-family:var(--font-head); font-weight:600; font-size:.88rem; cursor:pointer;
+}
+.report-actions button:hover{ background:#142710; }
+#report{
+  background:var(--cream); border-radius:8px; padding:1rem 1.1rem;
+  font-family:var(--font-mono); font-size:.82rem; white-space:pre-wrap;
+  border-left:3px solid var(--forest); min-height:3rem; line-height:1.7;
+}
+
+/* 移动端 */
+@media (max-width: 880px){
+  body{ flex-direction:column; }
+  aside.sidebar{
+    position:static; width:100%; height:auto; max-height:none;
+    padding:1.2rem 1rem;
+  }
+  main{ margin-left:0; padding:1.5rem 1rem 4rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- 语音播放列表（连续播放用） -->
+<script type="application/json" id="voicePlaylist">
+[
+  {"id":"m1","title":"01 学习目标与阅读路径","src":"audio/m1.mp3"},
+  {"id":"m2","title":"02 零基础背景包","src":"audio/m2.mp3"},
+  {"id":"m3","title":"03 原文问题定位","src":"audio/m3.mp3"},
+  {"id":"m4","title":"04 原文结构地图","src":"audio/m4.mp3"},
+  {"id":"m5","title":"05 核心判断与依据","src":"audio/m5.mp3"},
+  {"id":"m6","title":"06 关键概念拆解","src":"audio/m6.mp3"},
+  {"id":"m7","title":"07 苏格拉底式阅读关卡","src":"audio/m7.mp3"},
+  {"id":"m8","title":"08 闯关式任务","src":"audio/m8.mp3"},
+  {"id":"m9","title":"09 误解与边界","src":"audio/m9.mp3"},
+  {"id":"m10","title":"10 背景知识缺口","src":"audio/m10.mp3"},
+  {"id":"m11","title":"11 复盘与学习报告","src":"audio/m11.mp3"}
+]
+</script>
+
+<!-- ===== 左侧固定侧边栏 ===== -->
+<aside class="sidebar">
+  <h1>工单和 TAPD 管理</h1>
+  <div class="sub">微盛研发岗管培生培训 · 理解地图</div>
+
+  <div class="progress-wrap">
+    <div class="progress-label">
+      <span>任务进度</span>
+      <span><span id="barNum">0 / 0</span></span>
+    </div>
+    <div class="progress-bar"><div class="fill" id="barFill"></div></div>
+  </div>
+
+  <nav>
+    <a href="#m01"><span class="no">01</span>学习目标与阅读路径</a>
+    <a href="#m02"><span class="no">02</span>零基础背景包</a>
+    <a href="#m03"><span class="no">03</span>原文问题定位</a>
+    <a href="#m04"><span class="no">04</span>原文结构地图</a>
+    <a href="#m05"><span class="no">05</span>核心判断与依据</a>
+    <a href="#m06"><span class="no">06</span>关键概念拆解</a>
+    <a href="#m07"><span class="no">07</span>苏格拉底式阅读关卡</a>
+    <a href="#m08"><span class="no">08</span>闯关式任务</a>
+    <a href="#m09"><span class="no">09</span>误解与边界</a>
+    <a href="#m10"><span class="no">10</span>背景知识缺口</a>
+    <a href="#m11"><span class="no">11</span>复盘与学习报告</a>
+  </nav>
+
+  <div class="mascot">
+    <img src="https://lyzbcy.github.io/weshoto-study/img/sticker/mascot.png" alt="吉祥物">
+    <div class="mascot-text">陪你学完整章</div>
+  </div>
+</aside>
+
+<!-- ===== 右侧主区（单列纵向堆叠） ===== -->
+<main>
+
+<!-- ===== 01 学习目标与阅读路径 ===== -->
+<section class="module" id="m01">
+  <span class="hero-mark">理解地图</span>
+  <h2>01 学习目标与阅读路径 <button class="voice-btn" data-voice-id="m1">🎧 听这章</button></h2>
+  <p class="lead">这是一份写给"只会写 C 语言、还没进过企业项目"的同学的拆解地图。它要讲清一件事：公司怎么把客户付的钱，和你写代码花的工时，对得上号。读完这一章，你能做到下面五件事。</p>
+
+  <div class="goal-item">
+    <span class="g-num">1</span>
+    <div><strong>能说出五个核心词</strong>：工单、TAPD 迭代、项目管理（父需求）、交付需求（子需求）、工时，分别指什么、有什么区别。</div>
+  </div>
+  <div class="goal-item">
+    <span class="g-num">2</span>
+    <div><strong>能背出 KA 项目八个阶段</strong>的名称和进入条件（转交付 / 启动 / 实施 / 验收 / 维护 / 关闭 / 维保增购 / 绩效考核）。</div>
+  </div>
+  <div class="goal-item">
+    <span class="g-num">3</span>
+    <div><strong>能算清楚</strong>个人有效工时是怎么被项目投入系数打折的，并指出"超投"会导致工时缩水。</div>
+  </div>
+  <div class="goal-item">
+    <span class="g-num">4</span>
+    <div><strong>能指出至少 3 个</strong>新手最常踩的坑（如子需求不能再拆、跨多天累积工时会被剔除、SaaS 与 KA 同步逻辑不同）。</div>
+  </div>
+  <div class="goal-item">
+    <span class="g-num">5</span>
+    <div><strong>能提出 1 个追问</strong>：例如"为什么 SaaS 团队宁可改统计口径，也不肯继续按迭代拉工时？"</div>
+  </div>
+
+  <div class="card marker">
+    <div class="card-title">阅读路径（按顺序）</div>
+    <p style="margin:0">先在 02 补 5 个零件 → 在 03/04 看清"作者在解决什么问题、文章怎么搭" → 在 05/06 抓住 5 条核心判断和 6 个关键概念 → 在 07 自己提问 → 在 08 闯 8 道闭环题 → 在 09/10 看边界 → 在 11 出报告。</p>
+  </div>
+</section>
+
+<!-- ===== 02 零基础背景包 ===== -->
+<section class="module" id="m02">
+  <span class="sec-id">02</span>
+  <h2>零基础背景包 <button class="voice-btn" data-voice-id="m2">🎧 听这章</button></h2>
+  <p class="lead">在拆原文前，先装 5 个最基本的零件。每个都标了"背景补充"——它帮你读懂原文，但<strong>不是作者的论点</strong>。</p>
+
+  <div class="bg-block">
+    <div class="bg-label">背景补充 1 · 工单（Ticket / Order）</div>
+    <p style="margin:0 0 .4rem">客户为一项服务付了钱，公司开一张记账凭证，里面写着金额、进度、买的是什么产品。它是<strong>钱和进度的载体</strong>。</p>
+    <div class="analogy">类比 C：工单 ≈ 一次函数调用的记账日志，每次"被调用"都留一行：谁、付了多少、做到几成。</div>
+    <div class="why">为什么现在需要知道：整章 70% 的操作都在围绕"怎么把工单挂到项目/需求上"，不懂工单是啥就读不下去。</div>
+  </div>
+
+  <div class="bg-block">
+    <div class="bg-label">背景补充 2 · TAPD</div>
+    <p style="margin:0 0 .4rem">腾讯敏捷产品研发协作平台（<em>Tencent Agile Product Development</em>），是腾讯内部的项目管理网站，可以理解成"代码托管 + 任务看板 + 工时表"三合一。</p>
+    <div class="why">为什么现在需要知道：所有需求和任务都建在 TAPD 上，工时也填在 TAPD 里。</div>
+  </div>
+
+  <div class="bg-block">
+    <div class="bg-label">背景补充 3 · 迭代（Iteration / Sprint）</div>
+    <p style="margin:0 0 .4rem">一段时间内要交付的一组相关需求/任务的集合，通常以月为周期。TAPD 里一个项目对应一个迭代。</p>
+    <div class="analogy">类比 C：迭代 ≈ main 函数里一组一起跑、一起收尾的函数调用，外层是一个时间盒。</div>
+    <div class="why">为什么现在需要知道：工时是按"迭代下的需求"来拉取的，迭代归错，工时就拉不到。</div>
+  </div>
+
+  <div class="bg-block">
+    <div class="bg-label">背景补充 4 · 需求（Story）</div>
+    <p style="margin:0 0 .4rem">一句话的功能规格说明：告诉你要做什么、做成什么样。在 TAPD 里需求有<strong>父子两层</strong>：父叫"项目管理"，子叫"交付需求"。</p>
+    <div class="analogy">类比 C：需求 ≈ 一个具体函数的规格说明（函数签名 + 行为描述）；项目管理是模块头文件。</div>
+  </div>
+
+  <div class="bg-block">
+    <div class="bg-label">背景补充 5 · KA / SaaS / 私有化</div>
+    <p style="margin:0">KA = Key Account，大客户，要走定制交付；SaaS = Software as a Service，标品按月订阅；私有化 = 把整套系统装到客户自己的服务器上。微盛既有 KA 私有化交付，也有 SaaS 标品研发。</p>
+  </div>
+</section>
+
+<!-- ===== 03 原文问题定位 ===== -->
+<section class="module" id="m03">
+  <span class="sec-id">03</span>
+  <h2>原文问题定位 <button class="voice-btn" data-voice-id="m3">🎧 听这章</button></h2>
+
+  <div class="card brick">
+    <div class="card-title">表面在讲什么？</div>
+    <p style="margin:0">操作手册：怎么在工单系统建项目、怎么在 TAPD 建迭代、怎么把工单和需求关联、怎么填工时、怎么管缺陷、怎么响应售后 SLA。<span class="type-tag fact">事实</span></p>
+  </div>
+
+  <div class="card brick">
+    <div class="card-title">深层在回答什么问题？</div>
+    <p style="margin:0 0 .5rem"><strong>怎么让研发人员的产出，可以被公平、透明地核算？</strong>这一整套"工单 + TAPD"的双轨制，本质就是为了解决<strong>公平</strong>和<strong>透明</strong>两件事。<span class="type-tag judge">判断</span></p>
+    <div class="src-quote">当前 KA 交付项目存在责任人不明确、目标不明确、计划不清晰、计划执行不透明，基于项目产出的人效考核不公平等现象。</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">读者如果只记一个问题，应该记哪个？</div>
+    <p style="margin:0"><strong>客户付的钱，和我投入的工时，到底是怎么对应起来的？对应不上会发生什么？</strong>整章都在绕这个问题打转。<span class="type-tag infer">推论</span></p>
+  </div>
+</section>
+
+<!-- ===== 04 原文结构地图 ===== -->
+<section class="module" id="m04">
+  <span class="sec-id">04</span>
+  <h2>原文结构地图 <button class="voice-btn" data-voice-id="m4">🎧 听这章</button></h2>
+  <p class="lead">判断结构类型：<strong>机制流程 + 主题簇</strong>（混合结构）。最上一层是流程（KA 项目 8 阶段），流程里嵌着多个并列的操作手册主题簇。不能把它读成单一因果链。</p>
+
+  <div class="tree">
+    <div class="tree-node"><span class="label">主线流程：KA 项目 8 阶段</span> <span class="rel">（机制流程）</span></div>
+    <div class="tree-node">&nbsp;&nbsp;├─ 1.1 转交付（PM 创建 TAPD 迭代 + 项目管理父需求）</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ 1.2 启动（任务拆分、技术/测试/部署方案评审）</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ 1.3 实施（每日站立会 9:30~10:00，PMO 周视图）</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ 1.4 验收 / 1.5 维护 / 1.6 关闭 / 1.7 维保增购</div>
+    <div class="tree-node">&nbsp;&nbsp;└─ 1.8 绩效考核（有效工时 = 任务工时 × 项目投入系数）</div>
+    <div class="tree-node" style="margin-top:.6rem"><span class="label">并列主题簇（操作手册）</span> <span class="rel">（主题簇，与主线相互呼应）</span></div>
+    <div class="tree-node">&nbsp;&nbsp;├─ 第 2 章 交付池工单（工单项目→TAPD 迭代→父子需求→工时同步）</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ 第 3 章 产研池需求（SaaS 内部工单，单价 100，12 个迭代）</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ 第 4 章 TAPD 任务和工时（按日填花费，AI 拆任务）</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ 第 5 章 缺陷管理（Bug 字段、Bug review、流程图）</div>
+    <div class="tree-node">&nbsp;&nbsp;└─ 第 6 章 KA 售后（10 分钟提单 → 30 分钟定位 → 1 小时计划 → 2 小时临时方案）</div>
+  </div>
+
+  <div class="card sky">
+    <div class="card-title">节点关系说明</div>
+    <p style="margin:0">主线与主题簇是<strong>并列+交叉引用</strong>关系（不是因果）：1.2 说"要拆任务"→第 4 章告诉你"怎么拆、工时怎么估"；1.5 说"维护期要 BUG 日清"→第 5 章告诉你"Bug 怎么管、怎么复盘"。两边必须对着看。</p>
+  </div>
+</section>
+
+<!-- ===== 05 核心判断与依据 ===== -->
+<section class="module" id="m05">
+  <span class="sec-id">05</span>
+  <h2>核心判断与依据 <button class="voice-btn" data-voice-id="m5">🎧 听这章</button></h2>
+  <p class="lead">挑出 5 条最硬的判断。每条都附原文依据和类型标签。</p>
+
+  <div class="card">
+    <div class="card-title">判断 1 · 工单和 TAPD 是两条独立轨道，必须靠项目 ID 关联</div>
+    <p style="margin:0 0 .4rem">工单管"金额和合同"，TAPD 管"需求和工时"，断了一头就核算不出人效。<span class="type-tag judge">判断</span></p>
+    <div class="src-quote">项目 ID 和 TAPD 的工单 ID 关联……将相关工单关联到项目……将相关工单关联到需求（子需求对应具体的产品类型）。</div>
+    <p style="margin:.4rem 0 0;font-size:.9rem"><strong>易误读</strong>：别以为工单系统本身能记工时——工时永远填在 TAPD 里，工单只读结果。</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">判断 2 · 需求严格只有父子两层，子需求不能再拆</div>
+    <p style="margin:0 0 .4rem">父叫"项目管理"（每项目唯一），子叫"交付需求"（最小交付单元）。子需求再拆会变成父需求，工单号就挂不上。<span class="type-tag fact">事实</span></p>
+    <div class="src-quote">需求的层级只有父&子两层（父：项目管理类型；子：STORY 需求类型）。交付需求不要再创建子需求；否则，交付需求就成为了父需求，无法关联上工单号。</div>
+    <p style="margin:.4rem 0 0;font-size:.9rem"><strong>为什么重要</strong>：这条规则是整个工时归集的地基，破了它所有数据都乱。</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">判断 3 · 核算有效工时要乘项目投入系数</div>
+    <p style="margin:0 0 .4rem">个人有效工时 ≠ 你填的工时。最终核算要乘项目投入系数，系数 = 项目评估工时 ÷（总投入工时 × 1.15）。项目超投，工时被压缩。<span class="type-tag fact">事实</span></p>
+    <div class="formula">个人核算有效工时 = 个人有效工时 × 项目投入系数<br>项目投入系数 = 项目评估工时 ÷ (总计项目投入工时 × 1.15)</div>
+    <div class="src-quote">小安在 A 项目中投入 100 工时，项目验收工作量总计工时 400 工时，则小安在 A 项目的有效工时是 100 × 800 ÷ (400 × 1.15) = 173 工时。</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">判断 4 · SaaS 团队工时按"花费月份"统计，不按"所属迭代"</div>
+    <p style="margin:0 0 .4rem">原因：跨月改迭代的需求，旧月份工时永远拉不到。<span class="type-tag infer">推论</span></p>
+    <div class="src-quote">工单中是一个项目对应 TAPD 中一个迭代……这个需求现在归到了 7 月迭代……而 6 月份的工时就永远拉取不到……区别在于现在是以花费工时填的日期对应的月是哪一个月，这个工时就算哪一个月的工时。</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">判断 5 · 任务单条预估不超过 8 小时，且需每日填工时</div>
+    <p style="margin:0 0 .4rem">跨多天的累积任务工时会被系统剔除。<span class="type-tag fact">事实</span></p>
+    <div class="src-quote">任务的预估工时不能超过 8 小时……请按日填写任务和工时，跨越多天的累积任务工时容易出现填写错误、工时上报失真或人为错误。工单针对这种情况会进行剔除。</div>
+  </div>
+</section>
+
+<!-- ===== 06 关键概念拆解 ===== -->
+<section class="module" id="m06">
+  <span class="sec-id">06</span>
+  <h2>关键概念拆解 <button class="voice-btn" data-voice-id="m6">🎧 听这章</button></h2>
+  <p class="lead">6 个概念，环环相扣：<strong>迭代 ⊃ 项目管理（父） ⊃ 交付需求（子） ⊃ 任务 → 工时 → 工单金额</strong>。</p>
+
+  <div class="concept">
+    <div class="c-name">① 工单（Ticket）</div>
+    <div class="c-row"><span class="ck">定义</span>客户为一项服务付费后，在工单系统中生成的记录凭证，含金额、进度、产品类型。</div>
+    <div class="c-row"><span class="ck">人话</span>一张"我买了什么、付了多少、做到几成"的发票式记录。</div>
+    <div class="analogy">类比 C：一次函数调用的记账日志。</div>
+    <div class="c-row"><span class="ck">关系</span>一个工单项目可挂多张工单；工单通过子需求关联到 TAPD。</div>
+    <div class="src-quote">工单号、工单渠道、是否已退单、已关联、交付进度、购买、操作。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>工单 ≠ TAPD 任务。工单管钱，任务管活。</div>
+  </div>
+
+  <div class="concept">
+    <div class="c-name">② TAPD 迭代（Iteration）</div>
+    <div class="c-row"><span class="ck">定义</span>一段时间内要交付的需求/任务集合，由 PM 在工单系统创建项目之后创建。</div>
+    <div class="c-row"><span class="ck">人话</span>一个时间盒，装着这阵子要干完的一堆活。</div>
+    <div class="analogy">类比 C：main 函数里一组一起执行、一起收尾的函数调用。</div>
+    <div class="c-row"><span class="ck">关系</span>迭代与工单项目一一对应；标题须与工单项目名一致。</div>
+    <div class="src-quote">标题：与工单系统的【项目名称】一致……设置时间：项目开始时间和结束时间……项目经理：填写对应的 PM。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>迭代 ≠ 项目。迭代是 TAPD 侧的容器，项目是工单侧的容器，两边靠 ID 桥接。</div>
+  </div>
+
+  <div class="concept">
+    <div class="c-name">③ 项目管理（父需求）</div>
+    <div class="c-row"><span class="ck">定义</span>每个项目唯一的"主需求"，承载项目基础信息（客户、版本、回款、文档索引等）。</div>
+    <div class="c-row"><span class="ck">人话</span>项目的"户口本"，所有子需求都挂在它下面。</div>
+    <div class="analogy">类比 C：一个模块的总头文件，定义了模块的所有元信息。</div>
+    <div class="c-row"><span class="ck">关系</span>它是父，下面只能挂"交付需求"这一层子。</div>
+    <div class="src-quote">项目经理创建项目管理需求（每个项目的唯一主需求），项目管理需求需要包含项目的基础信息。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>父需求不直接关联工单号——工单号挂在子需求上。</div>
+  </div>
+
+  <div class="concept">
+    <div class="c-name">④ 交付需求（子需求 / STORY）</div>
+    <div class="c-row"><span class="ck">定义</span>最小的交付单元，挂在项目管理父需求下，如"测试环境部署""定制一阶段"。</div>
+    <div class="c-row"><span class="ck">人话</span>一块可以独立验收、独立挂工单的活。</div>
+    <div class="analogy">类比 C：一个具体函数的规格说明（函数签名 + 行为）。</div>
+    <div class="c-row"><span class="ck">关系</span>交付需求 ←→ 工单号（一一对应）；命名规则：【部署01&02】【运维01&02】【定制01&02】。</div>
+    <div class="src-quote">交付需求：无法创建子需求，只可创建任务……存在部署类工单，需要创建【部署01&02】。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>子需求不能再拆孙需求！这是新手第一号坑。</div>
+  </div>
+
+  <div class="concept">
+    <div class="c-name">⑤ 工时（花费 / Effort）</div>
+    <div class="c-row"><span class="ck">定义</span>为某个任务实际投入的时间，按日填写，是核算人效的原料。</div>
+    <div class="c-row"><span class="ck">人话</span>你今天为某个任务干了几个小时。</div>
+    <div class="c-row"><span class="ck">关系</span>任务 ←→ 工时（按日记录）；研发人效 = 工单金额 × 研发占比 × 个人工时占比 × 当月进度。</div>
+    <div class="src-quote">项目 A-定制工单 1W，总工时投入是 100 小时；三水投入是 20 小时；当月进度 100%；那么三水当月人效为：10000 × 0.6 × 0.2 × 100% = 1200。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>工时填了 ≠ 就算有效。跨多天累积会被剔除；项目超投还会被打折。</div>
+  </div>
+
+  <div class="concept">
+    <div class="c-name">⑥ 缺陷（Bug）</div>
+    <div class="c-row"><span class="ck">定义</span>系统或功能不符合预期的偏差，按根源分代码类 / 服务类 / 技术类 / 产品类。</div>
+    <div class="c-row"><span class="ck">人话</span>线上或测试中发现的"坏了"。</div>
+    <div class="c-row"><span class="ck">关系</span>缺陷 → 字段维护（Rootcause / Solution / 避免再发生策略）→ Bug review 复盘。</div>
+    <div class="src-quote">代码类 Bug：代码错误、运维部署类……服务类 Bug：企微配置问题、操作错误问题……技术类需求：技术方案优化……产品类需求：smart 需求、产品设计缺陷。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>缺陷 ≠ 任务。缺陷是"做错了要补"，任务是"该做的活"。</div>
+  </div>
+</section>
+
+<!-- ===== 07 苏格拉底式阅读关卡 ===== -->
+<section class="module" id="m07">
+  <span class="sec-id">07</span>
+  <h2>苏格拉底式阅读关卡 <button class="voice-btn" data-voice-id="m7">🎧 听这章</button></h2>
+  <p class="lead">不直接给答案，自己想。参考答案在每题下方，但请先停 30 秒再展开。</p>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q1 · 入门</span>作者开头那段"四大毛病"（责任人不明确、目标不明确、计划不清晰、考核不公平），是事实、判断，还是推论？</summary>
+    <div class="q-text">这是<strong>判断</strong>，但根植于作者对现状的观察。它不是中立陈述，而是为后文"为什么要搞这套规范"做的铺垫。</div>
+    <div class="q-hint">提示：作者在用问题描述问题，本身就是主张"必须改革"。</div>
+  </details>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q2 · 入门</span>项目进度公式：Σ(工单金额 × 工单进度) ÷ 项目金额。这个公式是事实还是判断？</summary>
+    <div class="q-text">这是<strong>事实</strong>——它是系统自动计算规则，作者没表达立场，只是告诉你"按这个算"。</div>
+  </details>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q3 · 进阶</span>如果允许交付需求再建子需求，会出什么问题？</summary>
+    <div class="q-text">交付需求一旦有子，自身就变成了父需求，<strong>工单号无法挂到它身上</strong>，对应的工时也就无法被核算到该工单。</div>
+    <div class="q-hint">提示：回到 05 判断 2 的原文依据。</div>
+  </details>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q4 · 进阶</span>SaaS 团队为什么要从"按迭代"改成"按花费工时的月份"统计？删掉这条改动会丢什么？</summary>
+    <div class="q-text">跨月改迭代的需求（如 6 月的活拖到 7 月做完，迭代也改成 7 月），按迭代统计时 6 月的工时<strong>永远拉不到</strong>。改成按"花费日期"统计，工时落在哪月就算哪月。</div>
+  </details>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q5 · 进阶</span>个人有效工时 vs 核算有效工时，差的那部分去哪了？</summary>
+    <div class="q-text">被<strong>项目投入系数</strong>吃掉了。系数 = 评估工时 ÷ (实际投入 × 1.15)，项目超投时系数 &lt; 1，你的工时被压缩；那"消失"的部分对应的是项目整体的低效。</div>
+  </details>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q6 · 深度</span>SLA 把 P1 响应定为 30 分钟，为什么不是 10 分钟？背后有什么权衡？</summary>
+    <div class="q-text">30 分钟是"售后接口人明确技术保障团队"的时限。更短不现实（要拉 PM + 标品技术 + 运维）；更长则客户感知失控。这是<strong>可执行性 vs 客户感知</strong>的权衡。</div>
+    <div class="q-hint">提示：注意 SLA 表里 30 分钟只对应 P1，且只到"明确团队"这一步。</div>
+  </details>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q7 · 深度</span>如果把"任务预估工时不超过 8 小时"这条规则删掉，整个工时体系会怎么崩？</summary>
+    <div class="q-text">大家会写一条 40 小时的"大任务"撑满一周，<strong>无法识别卡点</strong>（站立会没法报进展）、无法核算每日花费、也无法做 AI 工时矩阵。8 小时上限是站立会和工时颗粒度的共同地基。</div>
+  </details>
+</section>
+
+<!-- ===== 08 闯关式任务 ===== -->
+<section class="module" id="m08">
+  <span class="sec-id">08</span>
+  <h2>闯关式任务 <button class="voice-btn" data-voice-id="m8">🎧 听这章</button></h2>
+  <p class="lead">8 道闭环题，覆盖核心知识点。选完点"检查"，答对贴 OK 贴纸，答错贴 NO 贴纸并指出错在哪。错题自动进 11 节的错题回流区。</p>
+
+  <!-- 题1 单选：项目类型 -->
+  <div class="task" data-task="t1" data-answer="B"
+       data-ok="对。TAPD 交付池对应「产研-」开头的工单项目类型；产研池才对应「产研-内部需求」。"
+       data-no="搞反了。回去看 2.1 节 Tips：交付池=「产研-」，产研池=「产研-内部需求」。"
+       data-src="原文：TAPD 产研池项目对应的工单项目类型选择「产研-内部需求」，TAPD 交付池项目对应的工单项目类型选择「产研-」。"
+       data-review="回到「02 背景包 · KA/SaaS」+「05 判断 1」复习">
+    <div class="q">1. 【单选】TAPD 交付池项目对应的工单项目类型应选？</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. 产研-内部需求</button>
+      <button class="opt" data-val="B">B. 产研-（如产研-私有化+定制）</button>
+      <button class="opt" data-val="C">C. 标准 SaaS</button>
+      <button class="opt" data-val="D">D. 维保增购</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题2 单选：需求层级 -->
+  <div class="task" data-task="t2" data-answer="B"
+       data-ok="对。父子两层是地基：父=项目管理，子=交付需求（STORY）。子再拆就变父，工单号挂不上。"
+       data-no="错。记住：父（项目管理）+ 子（交付需求）= 两层封顶，再拆就崩。"
+       data-src="原文：需求的层级只有父&子两层（父：项目管理类型；子：STORY 需求类型）。"
+       data-review="回到「05 判断 2」+「06 概念③④」复习">
+    <div class="q">2. 【单选】TAPD 交付池需求的层级规则是？</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. 可以无限嵌套，父子孙任意层数</button>
+      <button class="opt" data-val="B">B. 严格只有父子两层，子需求不能再拆</button>
+      <button class="opt" data-val="C">C. 只有一层，所有需求平级</button>
+      <button class="opt" data-val="D">D. 父子孙三层，孙层挂工单</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题3 单选：工时上限 -->
+  <div class="task" data-task="t3" data-answer="C"
+       data-ok="对。8 小时是站立会和工时颗粒度的共同地基。"
+       data-no="错。原文明确：任务的预估工时不能超过 8 小时。"
+       data-src="原文：任务的预估工时不能超过 8 小时；每个任务有唯一的处理人。"
+       data-review="回到「05 判断 5」复习">
+    <div class="q">3. 【单选】项目启动阶段任务拆分时，单条任务的预估工时上限是？</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. 4 小时</button>
+      <button class="opt" data-val="B">B. 6 小时</button>
+      <button class="opt" data-val="C">C. 8 小时</button>
+      <button class="opt" data-val="D">D. 16 小时</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题4 单选：SLA -->
+  <div class="task" data-task="t4" data-answer="B"
+       data-ok="对。P1 是系统整体不可用，30 分钟响应（明确技术保障团队）。"
+       data-no="错。看 SLA 表：P1 响应 = 30 分钟，不是 10 分钟也不是 2 小时。"
+       data-src="原文：P1 紧急……响应（时间）30（分钟）。售后接口人 30 分钟内明确技术保障团队。"
+       data-review="回到「04 结构地图 · 售后 SLA」复习">
+    <div class="q">4. 【单选】KA 售后 P1 级问题（系统整体不可用）的响应时限是？</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. 10 分钟</button>
+      <button class="opt" data-val="B">B. 30 分钟</button>
+      <button class="opt" data-val="C">C. 1 小时</button>
+      <button class="opt" data-val="D">D. 2 小时</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题5 多选：哪些会被剔除/打折 -->
+  <div class="task" data-task="t5" data-multi="true" data-answer="A,B,C"
+       data-ok="对！这三类都不能直接算有效工时。"
+       data-no="漏了或多选。逐条对照：A 跨天累积会被剔除；B 子需求再拆工单挂不上；C 项目超投系数&lt;1 工时打折。D 错——按日填正是规范要求的。"
+       data-src="原文：跨越多天的累积任务工时……工单针对这种情况会进行剔除。交付需求不要再创建子需求……无法关联上工单号。项目最终无法交付……有效工时产出以及人效会受到一定的负面影响。"
+       data-review="回到「05 判断 3 / 5」+「09 误解」复习">
+    <div class="q">5. 【多选】下列哪些情况会导致工时"缩水"或"无法计入"？（多选）</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. 一条任务横跨多天累积填一个总工时</button>
+      <button class="opt" data-val="B">B. 交付需求下又建了一层子需求，把工单号挂到孙层</button>
+      <button class="opt" data-val="C">C. 项目整体超投（实际投入远超评估）</button>
+      <button class="opt" data-val="D">D. 每天按日填写当天花费工时</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题6 多选：SaaS 工时同步 -->
+  <div class="task" data-task="t6" data-multi="true" data-answer="A,B,C"
+       data-ok="对！SaaS 改动核心就这三条。"
+       data-no="D 是错的——SaaS 必须单独做一套，不能复用 KA 同步逻辑。"
+       data-src="原文：跟 KA 交付的项目工时及占比同步逻辑分开，独立处理……此时洗工时要挂到项目 ID 上，而不是需求……占比是以整个项目来算占比。"
+       data-review="回到「05 判断 4」+「09 误解」复习">
+    <div class="q">6. 【多选】SaaS 团队工时方案相对 KA 做了哪些改动？（多选）</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. 按"花费工时填写的月份"统计，不再按所属迭代</button>
+      <button class="opt" data-val="B">B. 清洗工时挂到项目 ID 上，不再挂到需求</button>
+      <button class="opt" data-val="C">C. 占比按整个项目算，不再按需求</button>
+      <button class="opt" data-val="D">D. 继续复用 KA 的【项目管理】-项目工时同步功能</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题7 判断 -->
+  <div class="task" data-task="t7" data-answer="B"
+       data-ok="错——这句话本身就是错的。原文有明确边界：必须是指定的 12 个迭代下的需求工时才可以同步。所以本题正确选项是「错」。"
+       data-no="你选了「对」，但这是错的。原文注意事项第 1 条明说：自建需求没关联指定迭代的一律不算。本题应选「错」。回到原文看注意事项第 1 条。"
+       data-src="原文：必须是指定的 12 个迭代下的需求的工时才可以同步，自己自建需求没有关联这些迭代的，不计算在内。"
+       data-review="回到「05 判断 4」+「10 背景缺口」复习">
+    <div class="q">7. 【判断】只要在 TAPD 里建了需求，它的工时就一定会被算进人效。</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. 对</button>
+      <button class="opt" data-val="B">B. 错</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题8 匹配：概念对应 -->
+  <div class="task" data-task="t8" data-type="selects"
+       data-ok="全部对！这 4 组关系背牢，整章就通了。"
+       data-no="有错。逐组对照：父需求=项目管理；最小交付单元=交付需求；装需求和任务的容器=迭代；金额与进度的凭证=工单。"
+       data-src="原文：迭代由 PM 创建……项目经理创建项目管理需求（每个项目的唯一主需求）……每个需求都是最小的交付单元……工单号、工单渠道、交付进度、购买。"
+       data-review="回到「06 关键概念拆解」整章复习">
+    <div class="q">8. 【匹配】把概念和它的角色配对。</div>
+    <div class="match-row">
+      <span style="min-width:8em">① 项目管理</span>
+      <select class="match" data-correct="B">
+        <option value="">— 请选 —</option>
+        <option value="A">A. 最小的交付单元（如部署、定制）</option>
+        <option value="B">B. 父需求，每项目唯一，承载基础信息</option>
+        <option value="C">C. 一段时间内的需求/任务集合，与工单项目一一对应</option>
+        <option value="D">D. 客户付费记录凭证，含金额与进度</option>
+      </select>
+    </div>
+    <div class="match-row">
+      <span style="min-width:8em">② 交付需求</span>
+      <select class="match" data-correct="A">
+        <option value="">— 请选 —</option>
+        <option value="A">A. 最小的交付单元（如部署、定制）</option>
+        <option value="B">B. 父需求，每项目唯一，承载基础信息</option>
+        <option value="C">C. 一段时间内的需求/任务集合，与工单项目一一对应</option>
+        <option value="D">D. 客户付费记录凭证，含金额与进度</option>
+      </select>
+    </div>
+    <div class="match-row">
+      <span style="min-width:8em">③ 迭代</span>
+      <select class="match" data-correct="C">
+        <option value="">— 请选 —</option>
+        <option value="A">A. 最小的交付单元（如部署、定制）</option>
+        <option value="B">B. 父需求，每项目唯一，承载基础信息</option>
+        <option value="C">C. 一段时间内的需求/任务集合，与工单项目一一对应</option>
+        <option value="D">D. 客户付费记录凭证，含金额与进度</option>
+      </select>
+    </div>
+    <div class="match-row">
+      <span style="min-width:8em">④ 工单</span>
+      <select class="match" data-correct="D">
+        <option value="">— 请选 —</option>
+        <option value="A">A. 最小的交付单元（如部署、定制）</option>
+        <option value="B">B. 父需求，每项目唯一，承载基础信息</option>
+        <option value="C">C. 一段时间内的需求/任务集合，与工单项目一一对应</option>
+        <option value="D">D. 客户付费记录凭证，含金额与进度</option>
+      </select>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+</section>
+
+<!-- ===== 09 误解与边界 ===== -->
+<section class="module" id="m09">
+  <span class="sec-id">09</span>
+  <h2>误解与边界 <button class="voice-btn" data-voice-id="m9">🎧 听这章</button></h2>
+
+  <div class="myth">
+    <div class="myth-head">误解 1 · "交付需求可以再拆子需求，方便细化"</div>
+    <div class="row"><span class="key">为什么容易误解</span>C 写多了，习惯把大函数拆成小函数、再拆成更小的辅助函数。</div>
+    <div class="row"><span class="key">原文真正说了</span>需求严格只有父子两层，子需求不能再拆。</div>
+    <div class="row"><span class="key">原文没有说</span>"为了细化可以加层"——加层是禁的。</div>
+    <div class="row"><span class="key">如何避免</span>需要细化就在子需求下<strong>建任务</strong>，不是建子需求。</div>
+  </div>
+
+  <div class="myth">
+    <div class="myth-head">误解 2 · "我工时填了多少，月底就算多少有效工时"</div>
+    <div class="row"><span class="key">为什么容易误解</span>直觉上"填了 = 算了"。</div>
+    <div class="row"><span class="key">原文真正说了</span>① 跨多天的累积工时会被剔除；② 最终核算要乘项目投入系数，超投会打折。</div>
+    <div class="row"><span class="key">原文没有说</span>"工时填多少算多少"——必须按日填、且受系数影响。</div>
+    <div class="row"><span class="key">如何避免</span>每天按日填当天花费；关注项目整体履约情况（系数来源）。</div>
+  </div>
+
+  <div class="myth">
+    <div class="myth-head">误解 3 · "SaaS 和 KA 用同一套工时同步逻辑"</div>
+    <div class="row"><span class="key">为什么容易误解</span>两者都在 TAPD 里、都填工时。</div>
+    <div class="row"><span class="key">原文真正说了</span>SaaS 必须单独做一套按月份统计的同步功能，不能复用 KA 的"按需求同步"。</div>
+    <div class="row"><span class="key">原文没有说</span>"统一逻辑更省事"——反而强调要"分开、独立处理"。</div>
+    <div class="row"><span class="key">如何避免</span>SaaS 项目在【项目管理】-项目工时里不显示人员及占比，需走专用同步。</div>
+  </div>
+
+  <div class="myth">
+    <div class="myth-head">误解 4 · "在 TAPD 建了需求就能算人效"</div>
+    <div class="row"><span class="key">为什么容易误解</span>以为系统会自动归集所有需求。</div>
+    <div class="row"><span class="key">原文真正说了</span>必须关联到指定的 12 个 SaaS 迭代，自建需求不挂迭代的一律不算。</div>
+    <div class="row"><span class="key">如何避免</span>SaaS 项目名必须以「年-月」开头（如 2025-06）；需求必须挂在对应迭代下。</div>
+  </div>
+
+  <div class="myth">
+    <div class="myth-head">误解 5 · "工单进度想填多少填多少</div>
+    <div class="row"><span class="key">为什么容易误解</span>进度条看起来就是个百分比输入框。</div>
+    <div class="row"><span class="key">原文真正说了</span>项目进度 = Σ(工单金额 × 工单进度) ÷ 项目金额；交付留存 = Σ(工单应收 × 当月进度 × 人效比例)。</div>
+    <div class="row"><span class="key">如何避免</span>进度直接驱动财务核算，乱填等于乱报营收。</div>
+  </div>
+</section>
+
+<!-- ===== 10 背景知识缺口 ===== -->
+<section class="module" id="m10">
+  <span class="sec-id">10</span>
+  <h2>背景知识缺口 <button class="voice-btn" data-voice-id="m10">🎧 听这章</button></h2>
+  <p class="lead">要彻底吃透这一章，建议补这 4 个背景。现在不补也行，遇到不懂的再回头看。</p>
+
+  <div class="card sky">
+    <div class="card-title">缺口 1 · WBS（工作分解结构）</div>
+    <p style="margin:0">原文说"按 WBS 的方式逐步细化和拆分"。WBS = Work Breakdown Structure，把大任务层层拆成可执行小任务的方法论。类比 C：把 main 拆成模块函数、再拆成辅助函数的分层思想。<strong>为什么重要</strong>：项目启动阶段任务拆分的方法论依据。</p>
+  </div>
+
+  <div class="card sky">
+    <div class="card-title">缺口 2 · 敏捷开发 / Scrum</div>
+    <p style="margin:0">迭代、站立会、产品负责人、Sprint 这些词都来自敏捷。建议找一篇入门文读读，半小时就够。<strong>为什么重要</strong>：原文的站立会、迭代节奏、PMO 视图都建立在敏捷框架上。</p>
+  </div>
+
+  <div class="card sky">
+    <div class="card-title">缺口 3 · SOW（工作说明书）</div>
+    <p style="margin:0">Statement of Work，合同里约束交付范围的那份文件。转交付阶段的进入条件之一就是"审核过的 SOW"。<strong>为什么重要</strong>：决定了"做什么"的边界，超 SOW 等于超合同。</p>
+  </div>
+
+  <div class="card sky">
+    <div class="card-title">缺口 4 · 私有化 vs SaaS 的商业模式</div>
+    <p style="margin:0">私有化 = 一次性卖断装到客户机房；SaaS = 按月订阅标品。这决定了为什么 KA 走工单流程（每单独立核算）、SaaS 走内部需求工单（单价 100，按比例分摊）。<strong>下一步追问</strong>：为什么 SaaS 选 100 这个数？它与 12 个迭代的关系？</p>
+  </div>
+
+  <div class="card marker">
+    <div class="card-title">可以暂时不补的</div>
+    <p style="margin:0">edge-tts、TAPD API、AI 任务拆分的具体 Python 调用——这些是工具层，不影响理解业务流程。</p>
+  </div>
+</section>
+
+<!-- ===== 11 复盘与学习报告 ===== -->
+<section class="module" id="m11">
+  <span class="sec-id">11</span>
+  <h2>复盘与学习报告 <button class="voice-btn" data-voice-id="m11">🎧 听这章</button></h2>
+  <p class="lead">学完这一章，你应该能用自己的话复述下面三件事；如果你还能问出一个连老员工都要想一想的追问，那你就真的学透了。</p>
+
+  <div class="card">
+    <div class="card-title">能复述的三件事</div>
+    <p style="margin:0">① 工单和 TAPD 是怎么通过项目 ID 连起来的；<br>② 个人有效工时是怎么被项目投入系数打折的；<br>③ KA 售后 SLA 的几个关键时间节点（10 分钟提单 / 30 分钟定位 / 1 小时计划 / 2 小时临时方案）。</p>
+  </div>
+
+  <div class="card marker">
+    <div class="card-title">还能问的追问（示例）</div>
+    <p style="margin:0">"原文说脏数据（设了迭代但没设父需求的需求）会被尽量避免，但又说这类需求往往存在博弈——那为什么不清洗干净？这个'刻意保留'背后管理层的考量是什么？"</p>
+  </div>
+
+  <h3>错题回流区</h3>
+  <div class="wrong-box">
+    <ul id="wrongBox"><li style="color:#888">还没有错题。答错的题会自动收集到这里。</li></ul>
+  </div>
+
+  <h3>生成你的学习报告</h3>
+  <div class="report-actions">
+    <button id="genReport">生成学习报告</button>
+    <button id="copyReport">复制报告</button>
+  </div>
+  <div id="report">点「生成学习报告」按钮，根据你的答题情况生成存档。</div>
+</section>
+
+<footer>
+  <div>由 <a href="https://lyzbcy.github.io/" target="_blank" rel="noopener">捞鱼</a> 制作 · 工具能帮你预习难啃的干货，但不能代替完整学习。学习愉快 🐟</div>
+  <div style="margin-top:.4rem;font-size:.78rem;opacity:.7">微盛研发岗管培生培训 · 工单和 TAPD 管理 · 理解地图</div>
+</footer>
+
+</main>
+
+<!-- ===== 右侧书签脊入口 ===== -->
+<button id="voiceFab" aria-label="打开后台语音"><span class="fab-icon">🎧</span><span class="fab-text">后台语音</span></button>
+
+<!-- ===== 圆润玩具风播放器 ===== -->
+<div id="voicePlayer">
+  <button class="vp-close" aria-label="关闭">✕</button>
+  <div class="vp-head">🎧 后台语音 · 连续播放</div>
+  <div class="vp-title">—</div>
+  <div class="vp-controls">
+    <button class="vp-prev" aria-label="上一章">⏮</button>
+    <button class="vp-play" aria-label="播放/暂停">▶</button>
+    <button class="vp-next" aria-label="下一章">⏭</button>
+  </div>
+  <input class="vp-seek" type="range" min="0" max="1000" value="0" aria-label="进度">
+  <div class="vp-time"><span class="vp-cur">00:00</span><span class="vp-dur">00:00</span></div>
+  <div class="vp-sub">点开播放后，这里会同步显示字幕</div>
+</div>
+
+<!-- ===== 固定互动引擎（原样粘贴，不要改写） ===== -->
+<script>
+(function(){
+  "use strict";
+  function $all(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));}
+  function selectedVals(t){return $all('.opt.selected',t).map(function(o){return o.getAttribute('data-val');}).sort();}
+  function setFb(t,state,html){var fb=t.querySelector('.feedback');if(!fb)return;fb.className='feedback'+(state?(' '+state):'');fb.innerHTML=html;}
+  function updateBar(){
+    var all=$all('.task'),done=$all('.task[data-answered="1"]');
+    var fill=document.getElementById('barFill'),num=document.getElementById('barNum');
+    if(fill)fill.style.width=all.length?(done.length/all.length*100)+'%':'0%';
+    if(num)num.textContent=done.length+' / '+all.length;
+  }
+  function renderWrong(){
+    var box=document.getElementById('wrongBox');if(!box)return;
+    var wrong=$all('.task[data-answered="1"][data-correct="0"]');
+    if(!wrong.length){box.innerHTML='<li style="color:#888">还没有错题。答错的题会自动收集到这里。</li>';return;}
+    box.innerHTML='';
+    wrong.forEach(function(t){var li=document.createElement('li');li.textContent='【'+(t.getAttribute('data-task')||'')+'】'+(t.getAttribute('data-review')||'回到对应模块复习');box.appendChild(li);});
+  }
+  function check(t){
+    var type=t.getAttribute('data-type'),ok=false;
+    if(type==='selects'){
+      var sels=$all('select.match',t),allok=true,empty=false;
+      sels.forEach(function(s){if(!s.value)empty=true;if(s.value!==s.getAttribute('data-correct'))allok=false;});
+      if(empty){setFb(t,'no','请先把每一项都选好再检查。');return;}
+      ok=allok;
+    }else{
+      var sel=selectedVals(t);
+      if(!sel.length){setFb(t,'no','请先选择一个选项再检查。');return;}
+      var ans=(t.getAttribute('data-answer')||'').split(',').map(function(x){return x.trim();}).sort();
+      ok=(sel.join('|')===ans.join('|'));
+    }
+    var sticker=ok?'<img class="sticker" src="https://lyzbcy.github.io/weshoto-study/img/sticker/ok.png" alt="">':'<img class="sticker" src="https://lyzbcy.github.io/weshoto-study/img/sticker/no.png" alt="">';
+    var body=ok?(t.getAttribute('data-ok')||'回答正确。'):(t.getAttribute('data-no')||'再想想。');
+    var src=t.getAttribute('data-src');
+    setFb(t,ok?'ok':'no',sticker+(ok?'':'')+body+(src?('<span class="src">'+src+'</span>'):''));
+    t.setAttribute('data-answered','1');t.setAttribute('data-correct',ok?'1':'0');
+    updateBar();renderWrong();
+  }
+  function genReport(){
+    var box=document.getElementById('report');if(!box)return;
+    var all=$all('.task'),done=$all('.task[data-answered="1"]'),right=$all('.task[data-answered="1"][data-correct="1"]');
+    var lines=['=== 学习报告 ===','完成题目：'+done.length+' / '+all.length,'答对：'+right.length+' 题',''];
+    var wrong=$all('.task[data-answered="1"][data-correct="0"]');
+    if(wrong.length){lines.push('我答错的题（建议复习）：');wrong.forEach(function(t){lines.push('- '+(t.getAttribute('data-task')||'')+'：'+(t.getAttribute('data-review')||''));});}
+    else{lines.push('暂无错题。');}
+    lines.push('','三件复述清单：');
+    lines.push('① 工单和 TAPD 通过项目 ID 关联（工单管钱，TAPD 管需求和工时）');
+    lines.push('② 个人有效工时 × 项目投入系数 = 核算有效工时（超投会打折）');
+    lines.push('③ KA 售后 SLA：10 分钟提单 / 30 分钟定位 / 1 小时计划 / 2 小时临时方案');
+    box.textContent=lines.join('\n');
+  }
+  document.addEventListener('click',function(e){
+    var c=e.target.closest?e.target:null;
+    var opt=c&&e.target.closest('.opt');
+    if(opt){var t=opt.closest('.task');if(!t)return;
+      if(t.getAttribute('data-multi')==='true'){opt.classList.toggle('selected');}
+      else{$all('.opt',t).forEach(function(o){o.classList.remove('selected');});opt.classList.add('selected');}
+      return;}
+    var btn=c&&e.target.closest('.check');
+    if(btn){var tk=btn.closest('.task');if(tk)check(tk);return;}
+    if(e.target&&e.target.id==='genReport'){genReport();return;}
+    if(e.target&&e.target.id==='copyReport'){var r=document.getElementById('report');if(r&&navigator.clipboard)navigator.clipboard.writeText(r.textContent);return;}
+  });
+  function init(){updateBar();renderWrong();}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+
+<!-- ===== 固定语音引擎（原样粘贴，不要改写） ===== -->
+<script>
+(function(){
+  "use strict";
+  if(window.__voiceEngine) return;
+  window.__voiceEngine = true;
+
+  var listNode = document.getElementById('voicePlaylist');
+  if(!listNode){ return; }
+  var TRACKS = [];
+  try { TRACKS = JSON.parse(listNode.textContent.trim()); } catch(e){ return; }
+  if(!TRACKS.length) return;
+
+  var player = document.getElementById('voicePlayer');
+  var fab = document.getElementById('voiceFab');
+  var audio = new Audio(); audio.preload = 'metadata';
+  var cur = 0;
+  var ranges = [];
+  var total = 0;
+  var seeking = false;
+
+  function $(s){ return player ? player.querySelector(s) : null; }
+  function fmt(s){ s=Math.max(0,Math.floor(s||0)); var m=Math.floor(s/60), x=s%60;
+    return (m<10?'0':'')+m+':'+(x<10?'0':'')+x; }
+
+  var probe = TRACKS.map(function(){ return {dur:0}; });
+  function tryFinalize(){
+    if(probe.some(function(p){return !p.dur;})) return;
+    ranges = []; total = 0;
+    probe.forEach(function(p){ ranges.push({dur:p.dur, start:total}); total += p.dur; });
+    var d = $('.vp-dur'); if(d) d.textContent = fmt(total);
+    var sk = $('.vp-seek'); if(sk){ sk.max = Math.max(1000, Math.floor(total*10)); }
+  }
+  TRACKS.forEach(function(t, i){
+    var a = new Audio(); a.preload = 'metadata'; a.src = t.src;
+    a.addEventListener('loadedmetadata', function(){
+      probe[i].dur = a.duration || 0; tryFinalize();
+    });
+    a.addEventListener('error', function(){ probe[i].dur = 0; tryFinalize(); });
+  });
+
+  function load(i){
+    cur = i; audio.src = TRACKS[i].src;
+    var ti = $('.vp-title'); if(ti) ti.textContent = TRACKS[i].title || ('第 '+(i+1)+' 段');
+    markBtn(i);
+  }
+  function play(){ audio.play().then(function(){ show(); setPlayIcon(true); if(fab) fab.classList.add('beat'); }).catch(function(){}); }
+  function pause(){ audio.pause(); setPlayIcon(false); if(fab) fab.classList.remove('beat'); }
+  function toggle(){ audio.paused ? play() : pause(); }
+  function next(){ if(cur < TRACKS.length-1){ load(cur+1); play(); } else { pause(); } }
+  function prev(){
+    var abs = absTime();
+    if(cur > 0 && abs - ranges[cur].start < 3){ load(cur-1); play(); }
+    else { audio.currentTime = 0; }
+  }
+  function absTime(){ return ranges[cur] ? ranges[cur].start + (audio.currentTime||0) : (audio.currentTime||0); }
+  function setPlayIcon(on){ var b=$('.vp-play'); if(b) b.textContent = on ? '⏸' : '▶'; }
+  function show(){ if(player) player.classList.add('show'); }
+  function hide(){ if(player) player.classList.remove('show'); }
+  function markBtn(i){
+    document.querySelectorAll('.voice-btn[data-voice-id]').forEach(function(b){
+      b.classList.toggle('active', b.getAttribute('data-voice-id') === TRACKS[i].id);
+    });
+  }
+
+  audio.addEventListener('timeupdate', function(){
+    if(seeking) return;
+    if(!ranges[cur]) return;
+    var abs = absTime(); var sk = $('.vp-seek'); var c = $('.vp-cur');
+    if(sk && total) sk.value = Math.round(abs / total * (sk.max||1000));
+    if(c) c.textContent = fmt(abs);
+  });
+  audio.addEventListener('ended', function(){ if(cur < TRACKS.length-1){ load(cur+1); play(); }
+    else { setPlayIcon(false); if(fab) fab.classList.remove('beat'); } });
+
+  function seekToFraction(frac){
+    if(!total) return;
+    var target = Math.max(0, Math.min(total, frac * total));
+    var i = 0; while(i < ranges.length-1 && ranges[i].start + ranges[i].dur < target){ i++; }
+    if(i !== cur){ cur = i; audio.src = TRACKS[i].src;
+      var ti=$('.vp-title'); if(ti) ti.textContent = TRACKS[i].title||('第 '+(i+1)+' 段'); markBtn(i); }
+    audio.currentTime = target - ranges[i].start;
+    var c=$('.vp-cur'); if(c) c.textContent = fmt(target);
+  }
+
+  document.addEventListener('click', function(e){
+    var t = e.target;
+    var vb = t.closest ? t.closest('.voice-btn[data-voice-id]') : null;
+    if(vb){
+      var id = vb.getAttribute('data-voice-id'), idx = -1;
+      TRACKS.forEach(function(tr, k){ if(tr.id === id) idx = k; });
+      if(idx >= 0){ load(idx); play(); }
+      return;
+    }
+    if(t.id === 'voiceFab'){ show(); if(audio.paused && !audio.src){ load(0); } if(audio.paused){ play(); } return; }
+    if(!player || !player.contains(t)) return;
+    if(t.classList.contains('vp-play')){ toggle(); return; }
+    if(t.classList.contains('vp-prev')){ prev(); return; }
+    if(t.classList.contains('vp-next')){ next(); return; }
+    if(t.classList.contains('vp-close')){ pause(); hide(); return; }
+  });
+  var sk = $('.vp-seek');
+  if(sk){
+    sk.addEventListener('input', function(){ seeking = true;
+      if(total){ var c=$('.vp-cur'); if(c) c.textContent = fmt((sk.value/(sk.max||1000))*total); } });
+    sk.addEventListener('change', function(){ seekToFraction(sk.value/(sk.max||1000)); seeking = false; });
+  }
+})();
+</script>
+
+<!-- ===== 字幕同步引擎（原样粘贴，不要改写） ===== -->
+<script>
+(function(){
+  "use strict";
+  if(window.__subEngine) return;
+  window.__subEngine = true;
+
+  var listNode = document.getElementById("voicePlaylist");
+  if(!listNode) return;
+  var subBox = document.querySelector("#voicePlayer .vp-sub");
+  var curEl = document.querySelector("#voicePlayer .vp-cur");
+  var titleEl = document.querySelector("#voicePlayer .vp-title");
+  if(!subBox) return;
+
+  var subs = [];
+  var subCache = {};
+  var curSrc = "";
+
+  function esc(s){ var d=document.createElement("div"); d.textContent=s; return d.innerHTML; }
+
+  function mp3ToJson(src){
+    var m = src.replace(/^.*?([a-zA-Z0-9_\/.\-]+\.mp3)(?:\?.*)?$/i, "$1");
+    return m.replace(/\.mp3$/i, ".json");
+  }
+
+  function loadSubFor(src){
+    if(!src || src === curSrc) return;
+    curSrc = src;
+    var jsonUrl = mp3ToJson(src);
+    if(subCache[jsonUrl]){ subs = subCache[jsonUrl]; return; }
+    fetch(jsonUrl).then(function(r){
+      if(!r.ok) throw new Error(r.status);
+      return r.json();
+    }).then(function(arr){
+      subCache[jsonUrl] = Array.isArray(arr) ? arr : [];
+      subs = subCache[jsonUrl];
+    }).catch(function(){ subs = []; });
+  }
+
+  function parseTime(text){
+    var p = String(text).trim().split(":");
+    if(p.length === 2){
+      var m = parseInt(p[0], 10) || 0;
+      var s = parseInt(p[1], 10) || 0;
+      return m * 60 + s;
+    }
+    return parseFloat(text) || 0;
+  }
+
+  function renderSub(t){
+    if(!subs.length) return;
+    var hit = null, idx = -1;
+    for(var i = 0; i < subs.length; i++){
+      if(t >= subs[i].start && t < subs[i].end){ hit = subs[i]; idx = i; break; }
+    }
+    if(!hit){
+      var prev = null;
+      for(var j = 0; j < subs.length; j++){
+        if(subs[j].start <= t) prev = subs[j]; else break;
+      }
+      subBox.classList.remove("active");
+      subBox.innerHTML = prev ? esc(prev.text) : "";
+      return;
+    }
+    subBox.classList.add("active");
+    var prevHtml = idx > 0
+      ? '<span style="opacity:.45">' + esc(subs[idx - 1].text) + "</span> "
+      : "";
+    subBox.innerHTML = prevHtml + '<span class="cur">' + esc(hit.text) + "</span>";
+  }
+
+  function tick(){
+    if(!curEl) return;
+    var sec = parseTime(curEl.textContent);
+    renderSub(sec);
+  }
+
+  function onTitleChange(){
+    var TRACKS = [];
+    try { TRACKS = JSON.parse(listNode.textContent.trim()); } catch(e){ return; }
+    var title = titleEl ? titleEl.textContent.trim() : "";
+    for(var i = 0; i < TRACKS.length; i++){
+      if(TRACKS[i].title === title){ loadSubFor(TRACKS[i].src); return; }
+    }
+  }
+
+  if(window.MutationObserver){
+    var obs = new MutationObserver(function(){ tick(); onTitleChange(); });
+    if(curEl) obs.observe(curEl, { childList:true, characterData:true, subtree:true });
+    if(titleEl) obs.observe(titleEl, { childList:true, characterData:true, subtree:true });
+  } else {
+    setInterval(function(){ tick(); onTitleChange(); }, 300);
+  }
+  setTimeout(tick, 500);
+})();
+</script>
+
+</body>
+</html>

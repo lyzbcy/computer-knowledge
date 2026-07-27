@@ -1,0 +1,1348 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>研发监控与日志 · 理解地图</title>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Poppins:wght@500;600;700&family=Roboto+Mono:wght@400;600&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#FAF6EB;
+  --paper:#F3EDDD;
+  --forest:#1E3A24;
+  --sky:#BCD8EE;
+  --sage:#AFCDA8;
+  --ink:#1A2018;
+  --marker:#F5E08A;
+  --brick:#B5482A;
+  --correct:#2F7D46;
+  --wrong:#B5482A;
+  --font-display:"Archivo Black","Noto Sans SC","PingFang SC",sans-serif;
+  --font-head:"Poppins","Noto Sans SC","PingFang SC",sans-serif;
+  --font-body:-apple-system,"PingFang SC","Noto Sans SC",sans-serif;
+  --font-mono:"Roboto Mono","JetBrains Mono",monospace;
+  --radius-pill:999px;
+  --radius-card:14px;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0; background:var(--cream); color:var(--ink);
+  font-family:var(--font-body); font-size:16px; line-height:1.7;
+  display:flex;
+}
+/* ===== 左侧固定侧边栏 ===== */
+aside.sidebar{
+  position:fixed; top:0; left:0; width:280px; height:100vh;
+  background:var(--forest); color:var(--cream);
+  padding:1.5rem 1.25rem 2rem; overflow-y:auto;
+  z-index:50; flex-shrink:0;
+}
+aside.sidebar h1{
+  font-family:var(--font-display); font-size:1.3rem; line-height:1.25;
+  margin:0 0 .3rem; letter-spacing:-.01em;
+}
+aside.sidebar .sub{
+  font-size:.78rem; opacity:.75; margin-bottom:1.2rem;
+  padding-bottom:1.2rem; border-bottom:1px solid rgba(250,246,235,.18);
+}
+aside.sidebar .progress-wrap{margin-bottom:1.2rem;}
+aside.sidebar .progress-label{
+  display:flex; justify-content:space-between; align-items:center;
+  font-size:.78rem; opacity:.8; margin-bottom:.4rem;
+  font-family:var(--font-head); letter-spacing:.02em;
+}
+aside.sidebar .progress-bar{
+  height:8px; background:rgba(250,246,235,.15); border-radius:var(--radius-pill);
+  overflow:hidden;
+}
+aside.sidebar .progress-bar .fill{
+  height:100%; width:0%; background:var(--marker); border-radius:var(--radius-pill);
+  transition:width .35s ease;
+}
+aside.sidebar nav a{
+  display:block; padding:.5rem .8rem; margin-bottom:.2rem;
+  color:var(--cream); text-decoration:none; opacity:.78;
+  font-family:var(--font-head); font-weight:500; font-size:.85rem;
+  border-radius:8px; transition:all .18s; border-left:3px solid transparent;
+}
+aside.sidebar nav a:hover{ opacity:1; background:rgba(250,246,235,.08); }
+aside.sidebar nav a .no{
+  display:inline-block; width:1.8em; font-family:var(--font-mono); opacity:.7;
+  font-size:.78rem;
+}
+aside.sidebar nav a.active{ opacity:1; background:rgba(245,224,138,.18); border-left-color:var(--marker); }
+aside.sidebar .mascot{
+  margin-top:1.5rem; text-align:center; opacity:.9;
+}
+aside.sidebar .mascot img{ width:88px; height:88px; object-fit:contain; }
+aside.sidebar .mascot .mascot-text{ font-size:.72rem; opacity:.7; margin-top:.3rem; }
+
+/* ===== 右侧主区（单列纵向堆叠） ===== */
+main{
+  margin-left:280px; padding:3rem 2rem 5rem;
+  max-width:820px; width:100%; min-width:0;
+}
+section.module{
+  margin-bottom:3.5rem; scroll-margin-top:1.5rem;
+  border-top:3px solid var(--forest); padding-top:1.5rem;
+}
+section.module:first-of-type{ border-top:none; padding-top:0; }
+.sec-id{
+  display:inline-block; font-family:var(--font-mono); font-weight:600;
+  font-size:.78rem; background:var(--forest); color:var(--cream);
+  padding:.2em .7em; border-radius:var(--radius-pill); letter-spacing:.05em;
+  margin-bottom:.6rem;
+}
+h2{
+  font-family:var(--font-head); font-weight:700;
+  font-size:1.6rem; line-height:1.3; margin:0 0 1rem; color:var(--forest);
+}
+h3{
+  font-family:var(--font-head); font-weight:600;
+  font-size:1.1rem; margin:1.4rem 0 .6rem; color:var(--forest);
+}
+p{ margin:0 0 .85rem; }
+.lead{ font-size:1.05rem; color:var(--ink); }
+
+/* 单列卡片 */
+.card{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1.25rem 1.35rem; margin-bottom:1rem;
+  border-left:4px solid var(--sage);
+}
+.card.brick{ border-left-color:var(--brick); }
+.card.marker{ border-left-color:var(--marker); background:rgba(245,224,138,.18); }
+.card.sky{ border-left-color:var(--sky); }
+.card-title{
+  font-family:var(--font-head); font-weight:600; font-size:1rem;
+  margin:0 0 .4rem; color:var(--forest);
+}
+
+/* 原文依据块 */
+.src-quote{
+  background:var(--cream); border-left:3px solid var(--brick);
+  padding:.6rem .9rem; margin:.5rem 0; font-size:.9rem;
+  border-radius:0 8px 8px 0;
+}
+.src-quote::before{
+  content:"原文依据 · "; font-family:var(--font-mono); font-size:.74rem;
+  font-weight:600; color:var(--brick); letter-spacing:.05em;
+}
+
+/* 类型标签 */
+.type-tag{
+  display:inline-block; font-size:.72rem; font-family:var(--font-mono);
+  padding:.15em .6em; border-radius:var(--radius-pill); margin-right:.3em;
+  font-weight:600;
+}
+.type-tag.fact{ background:var(--sage); color:var(--forest); }
+.type-tag.judge{ background:var(--marker); color:var(--ink); }
+.type-tag.infer{ background:var(--sky); color:var(--ink); }
+.type-tag.eg{ background:var(--brick); color:var(--cream); }
+
+/* 背景补充块 */
+.bg-block{
+  background:rgba(175,205,168,.22); border-radius:var(--radius-card);
+  padding:1.1rem 1.25rem; margin-bottom:1rem;
+  border-left:4px solid var(--sage);
+}
+.bg-block .bg-label{
+  font-family:var(--font-mono); font-size:.74rem; font-weight:600;
+  color:var(--forest); letter-spacing:.06em; margin-bottom:.5rem;
+}
+.bg-block .why{ font-size:.86rem; opacity:.78; margin-top:.5rem; font-style:italic; }
+
+/* C 类比块 */
+.analogy{
+  background:rgba(188,216,238,.25); border-radius:8px;
+  padding:.7rem .9rem; margin:.6rem 0; font-size:.92rem;
+  border-left:3px solid var(--sky);
+}
+.analogy::before{
+  content:"C 类比 · "; font-family:var(--font-mono); font-size:.74rem;
+  font-weight:600; color:var(--forest); letter-spacing:.05em;
+}
+
+/* 目标项（纵向堆叠） */
+.goal-item{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:.9rem 1.1rem; margin-bottom:.8rem;
+  display:flex; align-items:flex-start; gap:.7rem;
+  border-left:4px solid var(--forest);
+}
+.goal-item .g-num{
+  font-family:var(--font-display); font-size:1.4rem; color:var(--brick);
+  line-height:1; flex-shrink:0;
+}
+
+/* 结构地图（树形/纵向） */
+.tree{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1.1rem 1.25rem; font-family:var(--font-mono); font-size:.85rem;
+  line-height:1.9;
+}
+.tree-node{ margin:.2rem 0; }
+.tree-node .label{ color:var(--forest); font-weight:600; }
+.tree-node .rel{ color:var(--brick); font-size:.78rem; }
+
+/* 关卡题 */
+.q-item{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1rem 1.15rem .9rem; margin-bottom:1rem;
+  border-left:4px solid var(--sky);
+}
+.q-item .q-no{
+  font-family:var(--font-mono); font-size:.74rem; font-weight:600;
+  color:var(--brick); letter-spacing:.05em; margin-bottom:.3rem;
+  display:inline-block; margin-right:.4em;
+}
+.q-item .q-text{ font-weight:500; margin-bottom:.7rem; }
+.q-item .q-hint{ font-size:.84rem; opacity:.7; font-style:italic; margin-top:.6rem; }
+
+/* 任务（data-* 题目） */
+.task{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1rem 1.15rem 1.1rem; margin-bottom:1.1rem;
+  border-left:4px solid var(--brick);
+}
+.task .q{ font-weight:500; margin-bottom:.7rem; }
+.task .opts{ display:flex; flex-direction:column; gap:.45rem; margin-bottom:.7rem; }
+.task button.opt{
+  background:var(--cream); border:1.5px solid var(--forest);
+  border-radius:8px; padding:.55rem .8rem;
+  font-family:var(--font-body); font-size:.94rem; text-align:left;
+  cursor:pointer; transition:all .15s; color:var(--ink);
+}
+.task button.opt:hover{ background:var(--sage); }
+.task button.opt.selected{ background:var(--forest); color:var(--cream); border-color:var(--forest); }
+.task button.check{
+  background:var(--forest); color:var(--cream); border:none;
+  border-radius:var(--radius-pill); padding:.45rem 1.2rem;
+  font-family:var(--font-head); font-weight:600; font-size:.88rem;
+  cursor:pointer; margin-bottom:.6rem;
+}
+.task button.check:hover{ background:#142710; }
+.task .feedback{
+  background:var(--cream); border-radius:8px; padding:.6rem .8rem;
+  font-size:.88rem; margin-top:.4rem;
+  border-left:3px solid var(--ink);
+}
+.task .feedback.ok{ border-left-color:var(--correct); background:rgba(175,205,168,.22); }
+.task .feedback.no{ border-left-color:var(--wrong); background:rgba(181,72,42,.1); }
+.task .feedback .src{
+  display:block; margin-top:.4rem; font-size:.82rem; opacity:.8;
+  font-style:italic;
+}
+.task .match-row{
+  display:flex; align-items:center; gap:.6rem; margin-bottom:.5rem;
+  flex-wrap:wrap;
+}
+.task select.match{
+  flex:1; min-width:140px; padding:.4rem .5rem;
+  border:1.5px solid var(--forest); border-radius:6px;
+  font-family:var(--font-body); background:var(--cream);
+}
+
+/* 错题回流 */
+.wrong-box{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1rem 1.15rem; border-left:4px solid var(--wrong);
+}
+.wrong-box ul{ margin:.5rem 0 0; padding-left:1.2rem; }
+.wrong-box li{ margin-bottom:.4rem; font-size:.9rem; }
+
+/* 误解卡 */
+.myth{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1.1rem 1.25rem; margin-bottom:1rem;
+  border-left:4px solid var(--brick);
+}
+.myth .myth-head{
+  font-family:var(--font-head); font-weight:600; color:var(--brick);
+  font-size:1rem; margin-bottom:.5rem;
+}
+.myth .row{ margin:.4rem 0; font-size:.92rem; }
+.myth .row .key{
+  font-family:var(--font-mono); font-size:.74rem; font-weight:600;
+  color:var(--forest); margin-right:.4em;
+}
+
+/* 概念卡 */
+.concept{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1.25rem 1.35rem; margin-bottom:1.1rem;
+  border-left:4px solid var(--marker);
+}
+.concept .c-name{
+  font-family:var(--font-head); font-weight:700; font-size:1.15rem;
+  color:var(--forest); margin-bottom:.6rem;
+}
+.concept .c-row{ margin:.5rem 0; font-size:.92rem; }
+.concept .c-row .ck{
+  font-family:var(--font-mono); font-size:.74rem; font-weight:600;
+  color:var(--brick); margin-right:.4em; letter-spacing:.04em;
+}
+
+/* 公式块 */
+.formula{
+  background:var(--forest); color:var(--marker);
+  border-radius:8px; padding:.8rem 1rem; margin:.6rem 0;
+  font-family:var(--font-mono); font-size:.86rem; text-align:center;
+  overflow-x:auto;
+}
+
+/* 表格 */
+table.t{
+  width:100%; border-collapse:collapse; margin:.6rem 0;
+  font-size:.88rem; background:var(--cream);
+  border-radius:8px; overflow:hidden;
+}
+table.t th, table.t td{
+  padding:.5rem .7rem; text-align:left; border:1px solid var(--paper);
+}
+table.t th{ background:var(--forest); color:var(--cream); font-family:var(--font-head); font-weight:500; }
+table.t td.hit{ background:rgba(175,205,168,.3); }
+table.t td.miss{ background:rgba(181,72,42,.15); }
+
+/* 表情贴纸（反馈区与目标头） */
+.sticker{ display:inline-block; vertical-align:middle; width:24px; height:24px; margin:0 .3em; }
+
+/* 页脚 */
+footer{
+  margin-top:3rem; padding:1.5rem 0 1rem; border-top:2px solid var(--forest);
+  font-size:.86rem; color:var(--ink); text-align:center;
+}
+footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
+
+/* 引用图标 */
+.hero-mark{
+  font-family:var(--font-display); font-size:.74rem;
+  color:var(--marker); background:var(--forest);
+  padding:.2em .7em; border-radius:var(--radius-pill);
+  letter-spacing:.05em; display:inline-block; margin-bottom:.6rem;
+}
+
+/* ===== 语音：右侧书签脊 ===== */
+#voiceFab{
+  position:fixed; right:0; top:50%; transform:translateY(-50%); z-index:9998;
+  display:flex; align-items:center; flex-direction:row;
+  background:var(--forest); color:var(--cream); border:none; cursor:pointer;
+  height:5em; padding:0 .55em;
+  border-radius:16px 0 0 16px;
+  box-shadow:-4px 0 14px rgba(0,0,0,.18);
+  font-family:var(--font-head); font-size:.85rem;
+  overflow:hidden;
+  transition:width .42s cubic-bezier(.4,0,.2,1), box-shadow .3s ease;
+  width:1.9em;
+}
+#voiceFab .fab-icon{
+  font-size:1.15rem; writing-mode:vertical-rl; text-orientation:upright;
+  letter-spacing:.1em; white-space:nowrap; flex-shrink:0;
+}
+#voiceFab .fab-text{
+  white-space:nowrap; opacity:0; margin-left:.6em;
+  transition:opacity .28s ease .12s;
+}
+#voiceFab:hover{
+  width:8.6em; box-shadow:-6px 0 22px rgba(0,0,0,.25);
+}
+#voiceFab:hover .fab-text{ opacity:1; }
+#voiceFab.beat{ animation:voiceBeat 1.6s ease-in-out infinite; }
+@keyframes voiceBeat{ 0%,100%{box-shadow:-4px 0 14px rgba(0,0,0,.18)} 50%{box-shadow:-4px 0 20px rgba(181,72,42,.5)} }
+
+/* ===== 语音：圆润玩具风播放器 ===== */
+#voicePlayer{
+  position:fixed; left:50%; bottom:1rem; transform:translateX(-50%) translateY(140%);
+  width:min(92vw,380px); padding:1rem 1.1rem 1.1rem; background:var(--cream);
+  border:2px solid var(--forest); border-radius:26px;
+  box-shadow:0 8px 28px rgba(0,0,0,.16); z-index:9999; transition:transform .28s ease;
+  text-align:center; font-family:var(--font-body);
+}
+#voicePlayer.show{ transform:translateX(-50%) translateY(0); }
+#voicePlayer .vp-head{ font-size:.75rem; color:var(--forest); opacity:.8; letter-spacing:.05em; }
+#voicePlayer .vp-title{ font:700 1rem/1.35 var(--font-body); color:var(--ink);
+  margin:.25rem 0 .7rem; padding:0 .2rem; word-break:break-word; }
+#voicePlayer .vp-play{
+  width:3.6rem; height:3.6rem; border:none; border-radius:50%;
+  background:var(--forest); color:var(--cream); font-size:1.3rem; cursor:pointer;
+  margin:0 auto .7rem; display:flex; align-items:center; justify-content:center;
+  box-shadow:0 3px 0 #142710; transition:transform .1s, box-shadow .1s;
+}
+#voicePlayer .vp-play:active{ transform:translateY(2px); box-shadow:0 1px 0 #142710; }
+#voicePlayer .vp-prev,#voicePlayer .vp-next{
+  width:2.3rem; height:2.3rem; border:1.5px solid var(--forest); border-radius:50%;
+  background:var(--cream); color:var(--forest); font-size:.9rem; cursor:pointer;
+}
+#voicePlayer .vp-controls{ display:flex; align-items:center; justify-content:center; gap:1.2rem; margin-bottom:.7rem; }
+#voicePlayer .vp-seek{ width:100%; margin:.2rem 0; cursor:pointer; accent-color:var(--forest); }
+#voicePlayer .vp-time{ display:flex; justify-content:space-between; font:600 .72rem/1 var(--font-mono); color:var(--ink); opacity:.75; }
+#voicePlayer .vp-close{ position:absolute; top:.5rem; right:.6rem; width:1.5rem; height:1.5rem;
+  border:none; background:transparent; color:var(--ink); font-size:1rem; cursor:pointer; opacity:.5; }
+#voicePlayer .vp-sub{
+  min-height:2.6em; max-height:3.9em; overflow:hidden;
+  font:.85rem/1.5 var(--font-body); color:var(--ink); opacity:.55;
+  margin:.2rem 0 .5rem; padding:0 .3rem;
+  transition:opacity .2s; text-align:center;
+}
+#voicePlayer .vp-sub.active{ opacity:1; }
+#voicePlayer .vp-sub .cur{ color:var(--forest); font-weight:600; }
+
+/* 「听这章」小按钮 */
+.voice-btn{
+  display:inline-block; vertical-align:middle; margin-left:.6em;
+  padding:.25em .8em; border:1px solid var(--forest); border-radius:var(--radius-pill);
+  background:var(--cream); color:var(--forest); font:600 .8rem/1.2 var(--font-body);
+  cursor:pointer; transition:background .15s;
+}
+.voice-btn:hover{ background:var(--sage); }
+.voice-btn.active{ background:var(--forest); color:var(--cream); }
+
+/* 学习报告按钮 */
+.report-actions{ margin:.8rem 0; display:flex; gap:.6rem; flex-wrap:wrap; }
+.report-actions button{
+  background:var(--forest); color:var(--cream); border:none;
+  border-radius:var(--radius-pill); padding:.5rem 1.1rem;
+  font-family:var(--font-head); font-weight:600; font-size:.88rem; cursor:pointer;
+}
+.report-actions button:hover{ background:#142710; }
+#report{
+  background:var(--cream); border-radius:8px; padding:1rem 1.1rem;
+  font-family:var(--font-mono); font-size:.82rem; white-space:pre-wrap;
+  border-left:3px solid var(--forest); min-height:3rem; line-height:1.7;
+}
+
+/* 移动端 */
+@media (max-width: 880px){
+  body{ flex-direction:column; }
+  aside.sidebar{
+    position:static; width:100%; height:auto; max-height:none;
+    padding:1.2rem 1rem;
+  }
+  main{ margin-left:0; padding:1.5rem 1rem 4rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- 语音播放列表（连续播放用） -->
+<script type="application/json" id="voicePlaylist">
+[
+  {"id":"m1","title":"01 学习目标与阅读路径","src":"audio/m1.mp3"},
+  {"id":"m2","title":"02 零基础背景包","src":"audio/m2.mp3"},
+  {"id":"m3","title":"03 原文问题定位","src":"audio/m3.mp3"},
+  {"id":"m4","title":"04 原文结构地图","src":"audio/m4.mp3"},
+  {"id":"m5","title":"05 核心判断与依据","src":"audio/m5.mp3"},
+  {"id":"m6","title":"06 关键概念拆解","src":"audio/m6.mp3"},
+  {"id":"m7","title":"07 苏格拉底式阅读关卡","src":"audio/m7.mp3"},
+  {"id":"m8","title":"08 闯关式任务","src":"audio/m8.mp3"},
+  {"id":"m9","title":"09 误解与边界","src":"audio/m9.mp3"},
+  {"id":"m10","title":"10 背景知识缺口","src":"audio/m10.mp3"},
+  {"id":"m11","title":"11 复盘与学习报告","src":"audio/m11.mp3"}
+]
+</script>
+
+<!-- ===== 左侧固定侧边栏 ===== -->
+<aside class="sidebar">
+  <h1>研发监控与日志</h1>
+  <div class="sub">微盛研发岗管培生培训 · 理解地图</div>
+
+  <div class="progress-wrap">
+    <div class="progress-label">
+      <span>任务进度</span>
+      <span><span id="barNum">0 / 0</span></span>
+    </div>
+    <div class="progress-bar"><div class="fill" id="barFill"></div></div>
+  </div>
+
+  <nav>
+    <a href="#m01"><span class="no">01</span>学习目标与阅读路径</a>
+    <a href="#m02"><span class="no">02</span>零基础背景包</a>
+    <a href="#m03"><span class="no">03</span>原文问题定位</a>
+    <a href="#m04"><span class="no">04</span>原文结构地图</a>
+    <a href="#m05"><span class="no">05</span>核心判断与依据</a>
+    <a href="#m06"><span class="no">06</span>关键概念拆解</a>
+    <a href="#m07"><span class="no">07</span>苏格拉底式阅读关卡</a>
+    <a href="#m08"><span class="no">08</span>闯关式任务</a>
+    <a href="#m09"><span class="no">09</span>误解与边界</a>
+    <a href="#m10"><span class="no">10</span>背景知识缺口</a>
+    <a href="#m11"><span class="no">11</span>复盘与学习报告</a>
+  </nav>
+
+  <div class="mascot">
+    <img src="https://lyzbcy.github.io/weshoto-study/img/sticker/mascot.png" alt="吉祥物">
+    <div class="mascot-text">陪你学完整章</div>
+  </div>
+</aside>
+
+<!-- ===== 右侧主区（单列纵向堆叠） ===== -->
+<main>
+
+<!-- ===== 01 学习目标与阅读路径 ===== -->
+<section class="module" id="m01">
+  <span class="hero-mark">理解地图</span>
+  <h2>01 学习目标与阅读路径 <button class="voice-btn" data-voice-id="m1">🎧 听这章</button></h2>
+  <p class="lead">这是一份写给"只会写 C 语言、刚进公司、还没碰过日志和监控体系"的同学的拆解地图。它要讲清两件事：线上出了 bug 怎么去查日志，以及服务跑着的时候怎么知道它"健康不健康"。读完这一章，你能做到下面五件事。</p>
+
+  <div class="goal-item">
+    <span class="g-num">1</span>
+    <div><strong>能背出 CLS 查日志的三种方式</strong>：搜日志主题名、用云资源标签筛选、在实例详情页的"日志 tab"直接看，并说出各自适用场景。</div>
+  </div>
+  <div class="goal-item">
+    <span class="g-num">2</span>
+    <div><strong>能分清"监控项"和"监控指标"</strong>这两个最常被混着说的词——监控项是"看什么"，监控指标是"用多少数值来衡量"。</div>
+  </div>
+  <div class="goal-item">
+    <span class="g-num">3</span>
+    <div><strong>能背出告警体系的四个关键零件</strong>：告警规则（什么时候响）、告警等级 P0~P3（响得多急）、告警接收人（通知谁）、告警渠道（用什么方式通知）。</div>
+  </div>
+  <div class="goal-item">
+    <span class="g-num">4</span>
+    <div><strong>能指出至少 3 个</strong>新手最常踩的坑（如把"监控项"当成"指标"、以为告警渠道和接收人是一回事、以为 P0 比 P3 小事）。</div>
+  </div>
+  <div class="goal-item">
+    <span class="g-num">5</span>
+    <div><strong>能提出 1 个追问</strong>：例如"原文只给了 P0~P3 四个等级名，却没说每个等级对应什么响应时效——这个边界为什么没写？"</div>
+  </div>
+
+  <div class="card marker">
+    <div class="card-title">阅读路径（按顺序）</div>
+    <p style="margin:0">先在 02 补 5 个零件 → 在 03/04 看清"作者在解决什么问题、文章怎么搭" → 在 05/06 抓住 5 条核心判断和 6 个关键概念 → 在 07 自己提问 → 在 08 闯 8 道闭环题 → 在 09/10 看边界 → 在 11 出报告。</p>
+  </div>
+</section>
+
+<!-- ===== 02 零基础背景包 ===== -->
+<section class="module" id="m02">
+  <span class="sec-id">02</span>
+  <h2>零基础背景包 <button class="voice-btn" data-voice-id="m2">🎧 听这章</button></h2>
+  <p class="lead">在拆原文前，先装 5 个最基本的零件。每个都标了"背景补充"——它帮你读懂原文，但<strong>不是作者的论点</strong>。原文对监控常识着墨很少，这里补的是行内人默认知道、但新手需要先建立的常识。</p>
+
+  <div class="bg-block">
+    <div class="bg-label">背景补充 1 · 日志（Log）</div>
+    <p style="margin:0 0 .4rem">程序运行时打印出来的、按时间排好的事件记录。一条日志通常包含时间戳、级别（INFO/WARN/ERROR）、来源和消息正文。本地跑 C 程序时它就是你 printf 到屏幕上的输出；但在服务器上，几千个进程同时在跑，必须把日志统一收集、存起来才查得到。</p>
+    <div class="analogy">类比 C：日志 ≈ 你在代码里写的 printf，但不是打到屏幕上闪一下就没了，而是被持久化存进一个"云端仓库"，随时能搜回来。</div>
+    <div class="why">为什么现在需要知道：原文整章第一句就说"查找 bug 少不了要查看日志"——不懂日志是什么，就理解不了为什么要专门搞个 CLS。</div>
+  </div>
+
+  <div class="bg-block">
+    <div class="bg-label">背景补充 2 · CLS（腾讯云日志服务）</div>
+    <p style="margin:0 0 .4rem">CLS = <em>Cloud Log Service</em>，腾讯云提供的日志服务。它干三件事：把服务器上散落的日志集中收集起来、建索引让你能像搜索引擎一样查、长期保存。微盛的测试环境日志就都存在 CLS 上。</p>
+    <div class="analogy">类比 C：CLS ≈ 日志的云端仓库 + grep 工具，你不用 ssh 到每台机器上 tail 文件，在一个网页里就能搜全所有服务器的日志。</div>
+    <div class="why">为什么现在需要知道：原文三种查日志方式都是在 CLS 里操作，不认识 CLS 这三步就只是"按按钮"。</div>
+  </div>
+
+  <div class="bg-block">
+    <div class="bg-label">背景补充 3 · 监控（Monitoring）</div>
+    <p style="margin:0 0 .4rem">持续、自动地观察服务的运行状态（CPU 多高、内存剩多少、接口报错几次），目的是在用户投诉之前自己先发现问题。监控不是"出事了再看"，而是"一直盯着"。</p>
+    <div class="analogy">类比 C：监控 ≈ 你在调试时给变量加的 watch，只不过这里观察的不是单个变量，而是整台服务器和整个服务的健康度。</div>
+    <div class="why">为什么现在需要知道：原文监控章节的 7 个术语，都建立在"为什么要监控"这个动机上。</div>
+  </div>
+
+  <div class="bg-block">
+    <div class="bg-label">背景补充 4 · 阈值（Threshold）</div>
+    <p style="margin:0 0 .4rem">一个事先约定的"警戒线"数值。当某个监控指标跨过这条线，就认为出状况了，要触发告警。比如"CPU 使用率超过 80%"，80% 就是阈值。</p>
+    <div class="analogy">类比 C：阈值 ≈ <code>if (cpu &gt; 80)</code> 里的那个 80。监控指标是被判断的变量，阈值是 if 里的常量，告警就是 if 成立时执行的代码块。</div>
+    <div class="why">为什么现在需要知道：原文说"指标超过阈值时触发告警"——阈值是连接"指标"和"告警"的桥梁。</div>
+  </div>
+
+  <div class="bg-block">
+    <div class="bg-label">背景补充 5 · P0~P3 故障等级</div>
+    <p style="margin:0 0 .4rem">业界通用的故障严重程度划分。P0 最严重（通常指核心服务整体不可用、大面积用户受影响），P3 最轻（局部小问题、影响有限）。P 越小，事越大、响应越要快。原文采用了这套命名。</p>
+    <div class="analogy">类比 C：P0~P3 ≈ 你给 bug 标的优先级标签，P0 像段错误崩溃必须立刻修，P3 像有个警告日志可以慢慢看。</div>
+    <div class="why">为什么现在需要知道：原文只列了 P0/P1/P2/P3 四个名字，没解释含义，不补这段就看不懂"为什么 P0 最急"。</div>
+  </div>
+</section>
+
+<!-- ===== 03 原文问题定位 ===== -->
+<section class="module" id="m03">
+  <span class="sec-id">03</span>
+  <h2>原文问题定位 <button class="voice-btn" data-voice-id="m3">🎧 听这章</button></h2>
+
+  <div class="card brick">
+    <div class="card-title">表面在讲什么？</div>
+    <p style="margin:0">两份操作清单：①测试环境怎么在 CLS 上查日志（三种方法）；②监控体系里有哪些名词（监控项、监控指标、告警、告警规则、告警等级、告警通知、告警接收人、告警渠道）。<span class="type-tag fact">事实</span></p>
+  </div>
+
+  <div class="card brick">
+    <div class="card-title">深层在回答什么问题？</div>
+    <p style="margin:0 0 .5rem"><strong>线上出问题了，我一个新来的研发，怎么自己定位？</strong>日志解决"事后查证据"，监控解决"事前被发现"。这两件事，是研发除了写代码之外，最先要会的生存技能。<span class="type-tag judge">判断</span></p>
+    <div class="src-quote">查找 bug 少不了要查看日志……监控的作用是为了实时了解服务的运行状态，能够帮助我们发现、定位、解决线上问题。</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">读者如果只记一个问题，应该记哪个？</div>
+    <p style="margin:0"><strong>出了 bug，我的日志和告警，到底是怎么串起来帮我的？</strong>日志是"已经发生的"，告警是"正在发生的"，两者一起把线上问题的"过去"和"现在"接上。<span class="type-tag infer">推论</span></p>
+  </div>
+</section>
+
+<!-- ===== 04 原文结构地图 ===== -->
+<section class="module" id="m04">
+  <span class="sec-id">04</span>
+  <h2>原文结构地图 <button class="voice-btn" data-voice-id="m4">🎧 听这章</button></h2>
+  <p class="lead">判断结构类型：<strong>主题簇（两个并列大簇）</strong>。第一簇是"日志（CLS）"，讲三种查找方式；第二簇是"监控"，讲一条从"监控项→指标→告警规则→告警→通知→接收人→渠道"的概念链。两簇并列，互为补充，不是因果。</p>
+
+  <div class="tree">
+    <div class="tree-node"><span class="label">第一簇 · CLS 日志查找（操作手册）</span> <span class="rel">（并列主题 1）</span></div>
+    <div class="tree-node">&nbsp;&nbsp;├─ 入口：登录腾讯云 → 控制台 → 搜索"日志服务"进入 CLS</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ 方法一：在 CLS 直接搜索"日志主题名"</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ 方法二：用"云资源标签"筛选定位日志主题</div>
+    <div class="tree-node">&nbsp;&nbsp;└─ 方法三：进实例详情页（如 CKafka）→ 点"日志"tab 查看</div>
+    <div class="tree-node" style="margin-top:.6rem"><span class="label">第二簇 · 监控概念链（术语解释）</span> <span class="rel">（并列主题 2）</span></div>
+    <div class="tree-node">&nbsp;&nbsp;├─ 监控项：要监控的内容（CPU、内存、磁盘 IO）</div>
+    <div class="tree-node">&nbsp;&nbsp;└─ 监控指标：监控项的衡量标准（具体数值 + 阈值）</div>
+    <div class="tree-node">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ 告警：指标达到阈值后触发</div>
+    <div class="tree-node">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ 告警规则：满足什么条件触发</div>
+    <div class="tree-node">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ 告警等级：P0/P1/P2/P3 区分严重程度</div>
+    <div class="tree-node">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ 告警通知：告知相关人员的方式</div>
+    <div class="tree-node">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ 告警接收人：谁来收（服务负责人、运维、开发）</div>
+    <div class="tree-node">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ 告警渠道：用什么渠道（企微、电话、短信、邮件）</div>
+    <div class="tree-node" style="margin-top:.6rem"><span class="label">第三簇 · VPN</span> <span class="rel">（原文未覆盖，空缺）</span></div>
+    <div class="tree-node">&nbsp;&nbsp;└─ 目录列了"三、VPN"，但正文未出现，本图不展开。</div>
+  </div>
+
+  <div class="card sky">
+    <div class="card-title">节点关系说明</div>
+    <p style="margin:0">第一簇与第二簇是<strong>并列</strong>关系：日志和监控一起构成"线上可观测性"。第二簇内部是<strong>嵌套递进</strong>关系：监控项 ⊃ 指标 ⊃ 告警 ⊃ 通知 ⊃ {接收人，渠道}，一层套一层。不能把它读成单一因果链。</p>
+  </div>
+</section>
+
+<!-- ===== 05 核心判断与依据 ===== -->
+<section class="module" id="m05">
+  <span class="sec-id">05</span>
+  <h2>核心判断与依据 <button class="voice-btn" data-voice-id="m5">🎧 听这章</button></h2>
+  <p class="lead">挑出 5 条最硬的判断。每条都附原文依据和类型标签。原文偏术语罗列，这里把每条"为什么重要"和"容易误读"补全。</p>
+
+  <div class="card">
+    <div class="card-title">判断 1 · 查日志有三种独立入口，对应不同场景</div>
+    <p style="margin:0 0 .4rem">CLS 查日志不是只有一条路：知道主题名就直接搜；只知道是哪台资源就用云资源标签筛；干脆就在实例详情页里看日志 tab。<span class="type-tag fact">事实</span></p>
+    <div class="src-quote">方法一：在 cls 搜索日志主题名……方法二：通过云资源标签的方式……方法三：在实例详情页的日志 tab 查看。</div>
+    <p style="margin:.4rem 0 0;font-size:.9rem"><strong>为什么重要</strong>：线上着火时你未必记得主题名，但一定知道是哪个服务/实例——方法二、三就是为"记不住名字"准备的兜底。</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">判断 2 · "监控项"和"监控指标"是两个层次，不是一回事</div>
+    <p style="margin:0 0 .4rem">监控项 = 要监控的"对象"（如 CPU、内存、磁盘 IO）；监控指标 = 衡量这个对象的"具体数值"（如 CPU 使用率、剩余内存大小、磁盘使用率）。<span class="type-tag fact">事实</span></p>
+    <div class="src-quote">监控项是指我们要监控的内容……监控指标是监控项的衡量标准，指标可以是一个具体数值。</div>
+    <p style="margin:.4rem 0 0;font-size:.9rem"><strong>易误读</strong>：别把"CPU"和"CPU 使用率 80%"混为一谈——前者是项，后者是指标。指标才有"数值"，项没有。</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">判断 3 · 告警由"指标 × 阈值 × 持续时间"的规则触发</div>
+    <p style="margin:0 0 .4rem">告警不是"指标一变就响"，而是要满足一条"告警规则"。规则规定了：什么指标、跨过什么阈值、持续多久，才触发告警。<span class="type-tag fact">事实</span></p>
+    <div class="src-quote">告警规则是指：当监控指标满足什么条件时触发告警。例如：CPU 使用率 &gt; 80% 持续 5 分钟触发告警。</div>
+    <div class="formula">告警规则 = 监控指标 + 阈值 + 持续条件<br>例：CPU 使用率 &gt; 80% 持续 5 分钟 → 触发告警</div>
+    <p style="margin:.4rem 0 0;font-size:.9rem"><strong>为什么重要</strong>：没有规则，告警要么不响要么响个不停。规则就是"什么时候才算真出事"的判定逻辑。</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">判断 4 · 告警等级 P0~P3 用来区分严重程度，P0 最重</div>
+    <p style="margin:0 0 .4rem">告警一旦触发，还要按严重程度分级。原文给了 P0/P1/P2/P3 四档，越小越严重。<span class="type-tag fact">事实</span> + <span class="type-tag infer">"越小越严重"是行业惯例推论</span></p>
+    <div class="src-quote">告警等级是用来区分告警的严重程度。例如：P0 级、P1 级、P2 级、P3 级。</div>
+    <p style="margin:.4rem 0 0;font-size:.9rem"><strong>注意</strong>：原文只列了四个名字，没给每个等级的定义和响应时效——这是<strong>背景缺口</strong>，不要脑补成原文说过。</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">判断 5 · "告警接收人"和"告警渠道"是两个维度</div>
+    <p style="margin:0 0 .4rem">告警要"通知到人"，由两件事决定：通知<strong>谁</strong>（接收人：服务负责人、运维、开发），用什么<strong>方式</strong>通知（渠道：企微、电话、短信、邮件）。<span class="type-tag fact">事实</span></p>
+    <div class="src-quote">告警接收人是指接收告警通知的人员……告警渠道是指告警通知发送的渠道。例如：企业微信、电话、短信、邮件等。</div>
+    <p style="margin:.4rem 0 0;font-size:.9rem"><strong>易误读</strong>：原文里"告警通知"和"告警渠道"的例子一模一样（都是企微/电话/短信/邮件），容易让人以为它俩是同一回事——其实"通知"是目的，"渠道"是手段。</p>
+  </div>
+</section>
+
+<!-- ===== 06 关键概念拆解 ===== -->
+<section class="module" id="m06">
+  <span class="sec-id">06</span>
+  <h2>关键概念拆解 <button class="voice-btn" data-voice-id="m6">🎧 听这章</button></h2>
+  <p class="lead">6 个概念，环环相扣：<strong>CLS（装日志） → 监控项（看什么） → 监控指标（数值多少） → 告警（数值越界） → 告警规则（越界条件） → 告警等级（多严重）</strong>。这条链覆盖了从"观测"到"响应"的完整闭环。</p>
+
+  <div class="concept">
+    <div class="c-name">① CLS（日志服务 / Cloud Log Service）</div>
+    <div class="c-row"><span class="ck">定义</span>腾讯云提供的日志服务，微盛服务的日志都存在上面，支持检索和长期保存。</div>
+    <div class="c-row"><span class="ck">人话</span>日志的"云端仓库 + 搜索引擎"，不用 ssh 到每台机器上 tail 文件。</div>
+    <div class="analogy">类比 C：CLS ≈ 把所有进程的 printf 输出集中收集、建好索引，你想搜哪句就搜哪句，还能回看历史。</div>
+    <div class="c-row"><span class="ck">关系</span>CLS 是"事后查证据"的工具；监控是"事前被发现"的工具，两者互补。</div>
+    <div class="src-quote">查找 bug 少不了要查看日志，我们服务的日志在 cls 上。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>CLS ≠ 监控系统。CLS 存的是"日志文本"，监控看的是"数值曲线"。</div>
+  </div>
+
+  <div class="concept">
+    <div class="c-name">② 监控项（Metric Item / 观测对象）</div>
+    <div class="c-row"><span class="ck">定义</span>我们要监控的内容，即"看什么"。例如 CPU、内存、磁盘 IO。</div>
+    <div class="c-row"><span class="ck">人话</span>你要盯的那个"东西"，是个名词，不是个数字。</div>
+    <div class="analogy">类比 C：监控项 ≈ 你想在 debugger 里 watch 的那个变量名（变量本身，不是它此刻的值）。</div>
+    <div class="c-row"><span class="ck">关系</span>监控项 ⊃ 监控指标。一个项可以对应多个指标（如"内存"这个项，对应"剩余内存大小""内存使用率"等多个指标）。</div>
+    <div class="src-quote">监控项是指我们要监控的内容。例如我们要监控某台服务器的 CPU、内存、磁盘 IO 等。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>监控项 ≠ 监控指标。项是"对象"，指标是"数值"。说"监控 CPU"是项，说"CPU 80%"是指标。</div>
+  </div>
+
+  <div class="concept">
+    <div class="c-name">③ 监控指标（Metric / 衡量标准）</div>
+    <div class="c-row"><span class="ck">定义</span>监控项的衡量标准，是一个会随时间变化的具体数值。</div>
+    <div class="c-row"><span class="ck">人话</span>给监控项打的"分数"，比如 CPU 使用率 80%、剩余内存 2GB。</div>
+    <div class="analogy">类比 C：监控指标 ≈ 被 watch 的变量在某一时刻的具体取值，它会随程序运行动态变化。</div>
+    <div class="c-row"><span class="ck">关系</span>指标 → 设阈值 → 越界触发告警。指标是"数值"，阈值是"红线"，告警是"踩线报警"。</div>
+    <div class="src-quote">监控指标是监控项的衡量标准，指标可以是一个具体数值……我们一般会为指标设定阈值，当指标超过阈值时触发告警。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>指标 ≠ 告警。指标只是"现在的数值"，告警是"数值越界后的动作"。</div>
+  </div>
+
+  <div class="concept">
+    <div class="c-name">④ 告警（Alert）</div>
+    <div class="c-row"><span class="ck">定义</span>监控指标的阈值达到后触发的通知动作，用于通知相关人员处理问题。</div>
+    <div class="c-row"><span class="ck">人话</span>指标踩了红线，系统主动喊人来看一眼。</div>
+    <div class="analogy">类比 C：告警 ≈ <code>if (指标 &gt; 阈值) { notify(); }</code> 里 if 成立后执行的那个 notify 函数。</div>
+    <div class="c-row"><span class="ck">关系</span>告警由告警规则触发；触发后要走告警等级判定；再通过告警渠道发给告警接收人。</div>
+    <div class="src-quote">告警是监控指标的阈值达到后触发，用于通知相关人员处理问题。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>告警 ≠ 报错日志。告警是"主动通知人"，报错日志只是"留在文件里等人来查"。</div>
+  </div>
+
+  <div class="concept">
+    <div class="c-name">⑤ 告警规则（Alert Rule）</div>
+    <div class="c-row"><span class="ck">定义</span>规定"监控指标满足什么条件时触发告警"的判定逻辑。</div>
+    <div class="c-row"><span class="ck">人话</span>一张写满 if 条件的清单，决定哪条告警该响。</div>
+    <div class="analogy">类比 C：告警规则 ≈ <code>if (cpu_usage &gt; 80 &amp;&amp; duration &gt;= 5min)</code> 这整个判断表达式。</div>
+    <div class="c-row"><span class="ck">关系</span>规则 = 指标 + 阈值 + 持续条件。规则命中 → 产生告警 → 进等级判定。</div>
+    <div class="src-quote">告警规则是指：当监控指标满足什么条件时触发告警。例如：CPU 使用率 &gt; 80% 持续 5 分钟触发告警。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>规则 ≠ 阈值。阈值只是一个数，规则是"指标+阈值+持续时间"的完整判定。</div>
+  </div>
+
+  <div class="concept">
+    <div class="c-name">⑥ 告警等级（P0~P3 / Severity）</div>
+    <div class="c-row"><span class="ck">定义</span>用来区分告警严重程度的标签，原文给出 P0/P1/P2/P3 四档。</div>
+    <div class="c-row"><span class="ck">人话</span>给告警贴的"紧急程度"标签，决定它要叫醒多少人、多快响应。</div>
+    <div class="analogy">类比 C：告警等级 ≈ 你给 bug 标的优先级，P0 像段错误崩溃必须立刻修，P3 像个可忽略的 warning。</div>
+    <div class="c-row"><span class="ck">关系</span>等级越高（P0）→ 通知范围越大、响应时效越短（行业惯例，原文未明说）。</div>
+    <div class="src-quote">告警等级是用来区分告警的严重程度。例如：P0 级、P1 级、P2 级、P3 级。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>P0 ≠ "小问题"。P 后面的数字越小，事情越大。原文没给每级定义，别脑补。</div>
+  </div>
+</section>
+
+<!-- ===== 07 苏格拉底式阅读关卡 ===== -->
+<section class="module" id="m07">
+  <span class="sec-id">07</span>
+  <h2>苏格拉底式阅读关卡 <button class="voice-btn" data-voice-id="m7">🎧 听这章</button></h2>
+  <p class="lead">不直接给答案，自己想。参考答案在每题下方，但请先停 30 秒再展开。</p>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q1 · 入门</span>原文说"日志主题名""云资源标签""实例详情页日志 tab"——这三种查找方式，是事实、判断，还是推论？</summary>
+    <div class="q-text">这是<strong>事实</strong>——它只是客观告诉你"在 CLS 里可以这样查"，没表达任何立场或主张。</div>
+  </details>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q2 · 入门</span>"监控项"和"监控指标"这对词，作者为什么要分开造两个术语？合在一起说"监控 CPU 80%"不行吗？</summary>
+    <div class="q-text">因为<strong>层次不同</strong>。"CPU"是观测对象（项），"80%"是它的一个具体衡量值（指标）。一个项可以对应多个指标（CPU 可对应使用率、负载、温度…）。合在一起说会丢掉"一个项有多个指标"这层关系。</div>
+    <div class="q-hint">提示：回到 05 判断 2 和 06 概念②③看定义。</div>
+  </details>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q3 · 进阶</span>如果把"告警规则里的持续时间"这个条件删掉（比如改成"CPU &gt; 80% 立即告警"），会发生什么？</summary>
+    <div class="q-text">CPU 瞬时飙高是常态（GC、定时任务都可能短时拉满），没有持续时间过滤，告警会<strong>频繁误报</strong>，最终大家把告警群免打扰——这就是"狼来了"。持续时间是为了过滤毛刺。</div>
+  </details>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q4 · 进阶</span>原文里"告警通知"和"告警渠道"举的例子一模一样（都是企微/电话/短信/邮件），作者为什么要分两个词？</summary>
+    <div class="q-text"><strong>"通知"是目的，"渠道"是手段。</strong>告警通知 = "要把这件事告诉人"这个动作；告警渠道 = "用什么管道告诉"。目的相同，渠道可以换（今天企微、明天电话）。混为一谈就理解不了"多渠道兜底"的设计。</div>
+  </details>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q5 · 进阶</span>P0 比 P3 数字小，为什么反而更严重？这种命名有什么好处？</summary>
+    <div class="q-text">这是<strong>行业惯例</strong>：Priority 0 表示"最高优先级、零号位"。好处是排序直观（P0 排在最前要最先处理），且留了向上扩展的空间（理论上还能有 P-1 级灾难）。坏处是新人容易反着记。</div>
+  </details>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q6 · 深度</span>原文只列了 P0~P3 四个等级名字，没写每个等级的"响应时效"和"通知范围"。这是作者的疏漏，还是刻意？</summary>
+    <div class="q-text">更可能是<strong>文档定位使然</strong>——这是一份术语科普，不是 SLA 规范。响应时效属于 SLA（服务等级协议）范畴，通常另一份文档定。读者应意识到：原文给了"词汇表"，没给"执行标准"，这是要追问的背景缺口。</div>
+    <div class="q-hint">提示：注意原文语气是"解释术语"，不是"规定流程"。</div>
+  </details>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q7 · 深度</span>CLS（日志）和监控，为什么必须两套系统并存？只用其中一个不行吗？</summary>
+    <div class="q-text"><strong>它们职责互补。</strong>日志记录"发生过什么"（事后取证、排查根因），监控盯着"正在发生什么"（事前发现、实时告警）。只有日志 = 出事了你才知道；只有监控 = 知道不正常但不知道为什么。两者一起才构成"线上可观测性"。</div>
+  </details>
+</section>
+
+<!-- ===== 08 闯关式任务 ===== -->
+<section class="module" id="m08">
+  <span class="sec-id">08</span>
+  <h2>闯关式任务 <button class="voice-btn" data-voice-id="m8">🎧 听这章</button></h2>
+  <p class="lead">8 道闭环题，覆盖核心知识点。选完点"检查"，答对贴 OK 贴纸，答错贴 NO 贴纸并指出错在哪。错题自动进 11 节的错题回流区。</p>
+
+  <!-- 题1 单选：CLS 三种查找方式 -->
+  <div class="task" data-task="t1" data-answer="C"
+       data-ok="对！方法三就是「在实例详情页的日志 tab 查看」，原文以 CKafka 为例。适合你已经知道是哪个资源、懒得记主题名的场景。"
+       data-no="错。A 是方法一（搜主题名），B 是方法二（云资源标签筛选）。C 才是方法三——进实例详情页点日志 tab。"
+       data-src="原文：方法三：在实例详情页的日志 tab 查看。1.登录腾讯云，找到实例所在页面（以 CKafka 为例）2.进入实例详情页，点击日志 tab。"
+       data-review="回到「04 结构地图 · 第一簇」+「06 概念①CLS」复习">
+    <div class="q">1. 【单选】你已经知道是某台 CKafka 实例出了问题，想最快看到它的日志，应该用 CLS 的哪种方式？</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. 在 CLS 直接搜索日志主题名</button>
+      <button class="opt" data-val="B">B. 用云资源标签筛选日志主题</button>
+      <button class="opt" data-val="C">C. 进该实例详情页，点"日志"tab 直接看</button>
+      <button class="opt" data-val="D">D. 给运维打电话让他截图发你</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题2 单选：监控项 vs 监控指标 -->
+  <div class="task" data-task="t2" data-answer="B"
+       data-ok="对！「内存」是观测对象（监控项），「剩余内存 2GB」才是它的具体数值（监控指标）。"
+       data-no="错。题干里「内存使用率 80%」整体是一个具体数值，属于监控指标；监控项是「内存」这个对象本身。区分关键：有没有「数值」。"
+       data-src="原文：监控项是指我们要监控的内容……监控指标是监控项的衡量标准，指标可以是一个具体数值。"
+       data-review="回到「05 判断 2」+「06 概念②③」复习">
+    <div class="q">2. 【单选】下面这句话里，哪个词是"监控项"？「内存使用率已经 80% 了。」</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. 内存使用率</button>
+      <button class="opt" data-val="B">B. 内存</button>
+      <button class="opt" data-val="C">C. 80%</button>
+      <button class="opt" data-val="D">D. 整句话</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题3 单选：告警规则 -->
+  <div class="task" data-task="t3" data-answer="C"
+       data-ok="对！告警规则 = 指标 + 阈值 + 持续条件，缺一不可。"
+       data-no="错。A 只有指标+阈值，少了「持续时间」；B 只有一个阈值，连指标都没说清。原文例子是「CPU 使用率 > 80% 持续 5 分钟」——指标、阈值、持续三件齐备。"
+       data-src="原文：告警规则是指：当监控指标满足什么条件时触发告警。例如：CPU 使用率 > 80% 持续 5 分钟触发告警。"
+       data-review="回到「05 判断 3」+「06 概念⑤」复习">
+    <div class="q">3. 【单选】下列哪一条，最符合原文"告警规则"的完整定义？</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. CPU 使用率超过 80%</button>
+      <button class="opt" data-val="B">B. 阈值设为 80%</button>
+      <button class="opt" data-val="C">C. CPU 使用率 &gt; 80% 且持续 5 分钟，则触发告警</button>
+      <button class="opt" data-val="D">D. 出现 ERROR 级别日志就告警</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题4 单选：告警等级 P0~P3 -->
+  <div class="task" data-task="t4" data-answer="A"
+       data-ok="对！按行业惯例，P 后数字越小越严重，P0 是最高等级。"
+       data-no="错。P0~P3 里 P0 最严重（数字小=优先级高），P3 最轻。这是业界 Priority 命名惯例，原文也用了这套。"
+       data-src="原文：告警等级是用来区分告警的严重程度。例如：P0 级、P1 级、P2 级、P3 级。背景补充：P0 最严重（核心服务整体不可用），P3 最轻。"
+       data-review="回到「02 背景包 5」+「06 概念⑥」复习">
+    <div class="q">4. 【单选】在 P0/P1/P2/P3 这套告警等级里，哪个最严重？</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. P0</button>
+      <button class="opt" data-val="B">B. P1</button>
+      <button class="opt" data-val="C">C. P2</button>
+      <button class="opt" data-val="D">D. P3</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题5 多选：哪些是告警渠道 -->
+  <div class="task" data-task="t5" data-multi="true" data-answer="A,B,C,D"
+       data-ok="全对！原文明确把企业微信、电话、短信、邮件都列为告警渠道（也是告警通知的方式）。"
+       data-no="漏选了。原文原文一句话全列了：企业微信、电话、短信、邮件等。四个都是合法告警渠道。"
+       data-src="原文：告警渠道是指告警通知发送的渠道。例如：企业微信、电话、短信、邮件等。"
+       data-review="回到「05 判断 5」+「06 概念」复习">
+    <div class="q">5. 【多选】根据原文，下列哪些属于"告警渠道"？（多选）</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. 企业微信</button>
+      <button class="opt" data-val="B">B. 电话</button>
+      <button class="opt" data-val="C">C. 短信</button>
+      <button class="opt" data-val="D">D. 邮件</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题6 多选：告警接收人 -->
+  <div class="task" data-task="t6" data-multi="true" data-answer="A,B,C"
+       data-ok="对！服务负责人、运维人员、开发人员都是原文列出的告警接收人。"
+       data-no="D 是错的——「告警系统」是发告警的，不是收告警的；它不会自己通知自己。原文接收人举例是：服务负责人、运维人员、开发人员等。"
+       data-src="原文：告警接收人是指接收告警通知的人员。例如：服务负责人、运维人员、开发人员等。"
+       data-review="回到「04 结构地图 · 第二簇」复习">
+    <div class="q">6. 【多选】根据原文，下列哪些可以是"告警接收人"？（多选）</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. 服务负责人</button>
+      <button class="opt" data-val="B">B. 运维人员</button>
+      <button class="opt" data-val="C">C. 开发人员</button>
+      <button class="opt" data-val="D">D. 告警系统自己</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题7 判断 -->
+  <div class="task" data-task="t7" data-answer="B"
+       data-ok="对，本题正确选项是「错」。原文明说告警由「监控指标的阈值达到后」触发，跟日志没有直接关系。"
+       data-no="你选了「对」，但这是错的。原文：告警是监控指标的阈值达到后触发。它来自监控数值越界，不是来自「查到 ERROR 日志」。日志和监控是两套系统。回到 05 判断 1 看关系。"
+       data-src="原文：告警是监控指标的阈值达到后触发，用于通知相关人员处理问题。"
+       data-review="回到「05 判断 1 / 3」+「09 误解 1」复习">
+    <div class="q">7. 【判断】告警是在 CLS 里查到 ERROR 级别日志后自动触发的。</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. 对</button>
+      <button class="opt" data-val="B">B. 错</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题8 匹配：概念对应 -->
+  <div class="task" data-task="t8" data-type="selects"
+       data-ok="全部对！这 4 组关系背牢，整章概念链就通了。"
+       data-no="有错。逐组对照：监控项=要监控的内容（对象）；监控指标=具体数值；告警规则=满足什么条件触发；告警渠道=用什么方式发送通知。"
+       data-src="原文：监控项是指我们要监控的内容……监控指标是监控项的衡量标准……告警规则是指：当监控指标满足什么条件时触发告警……告警渠道是指告警通知发送的渠道。"
+       data-review="回到「06 关键概念拆解」整章复习">
+    <div class="q">8. 【匹配】把概念和它的定义配对。</div>
+    <div class="match-row">
+      <span style="min-width:7em">① 监控项</span>
+      <select class="match" data-correct="A">
+        <option value="">— 请选 —</option>
+        <option value="A">A. 要监控的内容（如 CPU、内存、磁盘 IO）</option>
+        <option value="B">B. 监控项的衡量标准，是一个具体数值</option>
+        <option value="C">C. 规定指标满足什么条件时触发告警</option>
+        <option value="D">D. 告警通知发送的管道（企微、电话、短信、邮件）</option>
+      </select>
+    </div>
+    <div class="match-row">
+      <span style="min-width:7em">② 监控指标</span>
+      <select class="match" data-correct="B">
+        <option value="">— 请选 —</option>
+        <option value="A">A. 要监控的内容（如 CPU、内存、磁盘 IO）</option>
+        <option value="B">B. 监控项的衡量标准，是一个具体数值</option>
+        <option value="C">C. 规定指标满足什么条件时触发告警</option>
+        <option value="D">D. 告警通知发送的管道（企微、电话、短信、邮件）</option>
+      </select>
+    </div>
+    <div class="match-row">
+      <span style="min-width:7em">③ 告警规则</span>
+      <select class="match" data-correct="C">
+        <option value="">— 请选 —</option>
+        <option value="A">A. 要监控的内容（如 CPU、内存、磁盘 IO）</option>
+        <option value="B">B. 监控项的衡量标准，是一个具体数值</option>
+        <option value="C">C. 规定指标满足什么条件时触发告警</option>
+        <option value="D">D. 告警通知发送的管道（企微、电话、短信、邮件）</option>
+      </select>
+    </div>
+    <div class="match-row">
+      <span style="min-width:7em">④ 告警渠道</span>
+      <select class="match" data-correct="D">
+        <option value="">— 请选 —</option>
+        <option value="A">A. 要监控的内容（如 CPU、内存、磁盘 IO）</option>
+        <option value="B">B. 监控项的衡量标准，是一个具体数值</option>
+        <option value="C">C. 规定指标满足什么条件时触发告警</option>
+        <option value="D">D. 告警通知发送的管道（企微、电话、短信、邮件）</option>
+      </select>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+</section>
+
+<!-- ===== 09 误解与边界 ===== -->
+<section class="module" id="m09">
+  <span class="sec-id">09</span>
+  <h2>误解与边界 <button class="voice-btn" data-voice-id="m9">🎧 听这章</button></h2>
+
+  <div class="myth">
+    <div class="myth-head">误解 1 · "告警就是日志里出现 ERROR 自动响"</div>
+    <div class="row"><span class="key">为什么容易误解</span>新手直觉把"报错"和"告警"划等号。</div>
+    <div class="row"><span class="key">原文真正说了</span>告警是"监控指标的阈值达到后触发"，跟日志没有直接关系。</div>
+    <div class="row"><span class="key">原文没有说</span>"ERROR 日志会触发告警"——日志和监控是两套独立系统。</div>
+    <div class="row"><span class="key">如何避免</span>记住：日志是事后取证（你去 CLS 查），告警是事前主动喊你（监控指标越界触发）。两者互补，不互相触发。</div>
+  </div>
+
+  <div class="myth">
+    <div class="myth-head">误解 2 · "监控项和监控指标是一回事，叫法不同而已"</div>
+    <div class="row"><span class="key">为什么容易误解</span>日常说话常说"监控一下 CPU"，把项和指标混着用。</div>
+    <div class="row"><span class="key">原文真正说了</span>监控项 = 要监控的内容（对象）；监控指标 = 衡量标准（具体数值）。两个层次。</div>
+    <div class="row"><span class="key">如何避免</span>看有没有"数值"。有数值（80%、2GB）的是指标，只是个名词（CPU、内存）的是项。</div>
+  </div>
+
+  <div class="myth">
+    <div class="myth-head">误解 3 · "告警渠道和告警接收人是一回事"</div>
+    <div class="row"><span class="key">为什么容易误解</span>两者都跟"通知到人"有关，容易糊在一起。</div>
+    <div class="row"><span class="key">原文真正说了</span>接收人 = 通知<strong>谁</strong>（服务负责人、运维、开发）；渠道 = 用<strong>什么方式</strong>通知（企微、电话、短信、邮件）。两个维度。</div>
+    <div class="row"><span class="key">如何避免</span>"人"是接收人，"管道"是渠道。一个人可以接多个渠道，一个渠道也能发多个人。</div>
+  </div>
+
+  <div class="myth">
+    <div class="myth-head">误解 4 · "P0 是小问题，P3 是大问题（数字越大越严重）"</div>
+    <div class="row"><span class="key">为什么容易误解</span>直觉上"3 &gt; 0"，以为数字大更严重。</div>
+    <div class="row"><span class="key">原文+惯例</span>原文列了 P0/P1/P2/P3；行业惯例是数字越小优先级越高，P0 最严重。</div>
+    <div class="row"><span class="key">如何避免</span>把 P0 记成"零号位、最高优先级"。原文没给每级定义，但命名遵循 Priority 惯例。</div>
+  </div>
+
+  <div class="myth">
+    <div class="myth-head">误解 5 · "原文讲了 VPN 怎么用"</div>
+    <div class="row"><span class="key">为什么容易误解</span>目录里有"三、VPN"这一章。</div>
+    <div class="row"><span class="key">原文真正说了</span>原文明确标注：左侧大纲列有 VPN 目录项，但所提供截图范围内正文未出现。</div>
+    <div class="row"><span class="key">如何避免</span>VPN 是<strong>背景缺口</strong>，本地图不展开。需要时单独找资料补。</div>
+  </div>
+</section>
+
+<!-- ===== 10 背景知识缺口 ===== -->
+<section class="module" id="m10">
+  <span class="sec-id">10</span>
+  <h2>背景知识缺口 <button class="voice-btn" data-voice-id="m10">🎧 听这章</button></h2>
+  <p class="lead">原文是一份术语科普，很多"行内人默认懂"的东西它没展开。要彻底吃透，建议补这 4 个缺口。现在不补也行，遇到不懂的再回头看。</p>
+
+  <div class="card sky">
+    <div class="card-title">缺口 1 · P0~P3 各等级的具体定义和响应时效</div>
+    <p style="margin:0">原文只列了 P0/P1/P2/P3 四个名字，没说每个等级对应什么故障范围、要多久响应、通知到哪一级。这些通常写在公司的<strong>SLA（服务等级协议）</strong>或<strong>故障响应规范</strong>里。<strong>为什么重要</strong>：知道等级名 ≠ 知道怎么响应。<strong>下一步追问</strong>：去找本团队的故障响应文档，看 P0 的响应时效是几分钟。</p>
+  </div>
+
+  <div class="card sky">
+    <div class="card-title">缺口 2 · VPN（原文未覆盖）</div>
+    <p style="margin:0">目录列了"三、VPN"但正文缺失。VPN 通常用于在公司外网络安全地访问内网资源（如测试环境、CLS、内网 Git）。<strong>为什么重要</strong>：不在公司网络时，查 CLS、连测试环境都可能要先挂 VPN。<strong>下一步追问</strong>：微盛用什么 VPN 客户端？接入地址和账号找谁要？</p>
+  </div>
+
+  <div class="card sky">
+    <div class="card-title">缺口 3 · 腾讯云控制台的基础操作</div>
+    <p style="margin:0">原文默认你会"登录腾讯云 → 控制台 → 搜索产品 → 进实例详情页"。如果你从没进过腾讯云，这些步骤要补。<strong>为什么重要</strong>：CLS 三种查找方式都建立在"会逛腾讯云控制台"之上。<strong>下一步追问</strong>：找同事要一个测试环境的腾讯云只读账号，自己点一遍。</p>
+  </div>
+
+  <div class="card sky">
+    <div class="card-title">缺口 4 · 日志检索语法（CLS 检索语句）</div>
+    <p style="margin:0">原文只说"进 CLS 查日志"，没讲怎么写检索语句（按时间、关键词、字段过滤）。类比 C：就像会打开 grep，但不知道怎么写正则。<strong>为什么重要</strong>：进了日志页不会写检索，等于进了图书馆不会查目录。</p>
+  </div>
+
+  <div class="card marker">
+    <div class="card-title">可以暂时不补的</div>
+    <p style="margin:0">日志采集 Agent 的部署、监控系统的底层架构（Prometheus/Grafana）、告警引擎的实现——这些是运维/SRE 的深水区，不影响研发日常用 CLS 查日志和响应告警。</p>
+  </div>
+</section>
+
+<!-- ===== 11 复盘与学习报告 ===== -->
+<section class="module" id="m11">
+  <span class="sec-id">11</span>
+  <h2>复盘与学习报告 <button class="voice-btn" data-voice-id="m11">🎧 听这章</button></h2>
+  <p class="lead">学完这一章，你应该能用自己的话复述下面三件事；如果你还能问出一个连老员工都要想一想的追问，那你就真的学透了。</p>
+
+  <div class="card">
+    <div class="card-title">能复述的三件事</div>
+    <p style="margin:0">① CLS 查日志的三种方式（搜主题名 / 云资源标签 / 实例详情页日志 tab）；<br>② 监控项 vs 监控指标的层次区别（对象 vs 数值）；<br>③ 一条告警从触发到送达的完整链路：指标越界 → 告警规则命中 → 等级判定 → 通过告警渠道发给告警接收人。</p>
+  </div>
+
+  <div class="card marker">
+    <div class="card-title">还能问的追问（示例）</div>
+    <p style="margin:0">"原文把 P0~P3 列了出来，但没写每个等级的响应时效和通知范围——如果半夜收到一条 P0 告警，公司到底要求我几分钟内响应、不响应会怎样？这个执行标准藏在哪份文档里？"</p>
+  </div>
+
+  <h3>错题回流区</h3>
+  <div class="wrong-box">
+    <ul id="wrongBox"><li style="color:#888">还没有错题。答错的题会自动收集到这里。</li></ul>
+  </div>
+
+  <h3>生成你的学习报告</h3>
+  <div class="report-actions">
+    <button id="genReport">生成学习报告</button>
+    <button id="copyReport">复制报告</button>
+  </div>
+  <div id="report">点「生成学习报告」按钮，根据你的答题情况生成存档。</div>
+</section>
+
+<footer>
+  <div>由 <a href="https://lyzbcy.github.io/" target="_blank" rel="noopener">捞鱼</a> 制作 · 工具能帮你预习难啃的干货，但不能代替完整学习。学习愉快 🐟</div>
+  <div style="margin-top:.4rem;font-size:.78rem;opacity:.7">微盛研发岗管培生培训 · 研发监控与日志 · 理解地图</div>
+</footer>
+
+</main>
+
+<!-- ===== 右侧书签脊入口 ===== -->
+<button id="voiceFab" aria-label="打开后台语音"><span class="fab-icon">🎧</span><span class="fab-text">后台语音</span></button>
+
+<!-- ===== 圆润玩具风播放器 ===== -->
+<div id="voicePlayer">
+  <button class="vp-close" aria-label="关闭">✕</button>
+  <div class="vp-head">🎧 后台语音 · 连续播放</div>
+  <div class="vp-title">—</div>
+  <div class="vp-controls">
+    <button class="vp-prev" aria-label="上一章">⏮</button>
+    <button class="vp-play" aria-label="播放/暂停">▶</button>
+    <button class="vp-next" aria-label="下一章">⏭</button>
+  </div>
+  <input class="vp-seek" type="range" min="0" max="1000" value="0" aria-label="进度">
+  <div class="vp-time"><span class="vp-cur">00:00</span><span class="vp-dur">00:00</span></div>
+  <div class="vp-sub">点开播放后，这里会同步显示字幕</div>
+</div>
+
+<!-- ===== 固定互动引擎（原样粘贴，不要改写） ===== -->
+<script>
+(function(){
+  "use strict";
+  function $all(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));}
+  function selectedVals(t){return $all('.opt.selected',t).map(function(o){return o.getAttribute('data-val');}).sort();}
+  function setFb(t,state,html){var fb=t.querySelector('.feedback');if(!fb)return;fb.className='feedback'+(state?(' '+state):'');fb.innerHTML=html;}
+  function updateBar(){
+    var all=$all('.task'),done=$all('.task[data-answered="1"]');
+    var fill=document.getElementById('barFill'),num=document.getElementById('barNum');
+    if(fill)fill.style.width=all.length?(done.length/all.length*100)+'%':'0%';
+    if(num)num.textContent=done.length+' / '+all.length;
+  }
+  function renderWrong(){
+    var box=document.getElementById('wrongBox');if(!box)return;
+    var wrong=$all('.task[data-answered="1"][data-correct="0"]');
+    if(!wrong.length){box.innerHTML='<li style="color:#888">还没有错题。答错的题会自动收集到这里。</li>';return;}
+    box.innerHTML='';
+    wrong.forEach(function(t){var li=document.createElement('li');li.textContent='【'+(t.getAttribute('data-task')||'')+'】'+(t.getAttribute('data-review')||'回到对应模块复习');box.appendChild(li);});
+  }
+  function check(t){
+    var type=t.getAttribute('data-type'),ok=false;
+    if(type==='selects'){
+      var sels=$all('select.match',t),allok=true,empty=false;
+      sels.forEach(function(s){if(!s.value)empty=true;if(s.value!==s.getAttribute('data-correct'))allok=false;});
+      if(empty){setFb(t,'no','请先把每一项都选好再检查。');return;}
+      ok=allok;
+    }else{
+      var sel=selectedVals(t);
+      if(!sel.length){setFb(t,'no','请先选择一个选项再检查。');return;}
+      var ans=(t.getAttribute('data-answer')||'').split(',').map(function(x){return x.trim();}).sort();
+      ok=(sel.join('|')===ans.join('|'));
+    }
+    var sticker=ok?'<img class="sticker" src="https://lyzbcy.github.io/weshoto-study/img/sticker/ok.png" alt="">':'<img class="sticker" src="https://lyzbcy.github.io/weshoto-study/img/sticker/no.png" alt="">';
+    var body=ok?(t.getAttribute('data-ok')||'回答正确。'):(t.getAttribute('data-no')||'再想想。');
+    var src=t.getAttribute('data-src');
+    setFb(t,ok?'ok':'no',sticker+body+(src?('<span class="src">'+src+'</span>'):''));
+    t.setAttribute('data-answered','1');t.setAttribute('data-correct',ok?'1':'0');
+    updateBar();renderWrong();
+  }
+  function genReport(){
+    var box=document.getElementById('report');if(!box)return;
+    var all=$all('.task'),done=$all('.task[data-answered="1"]'),right=$all('.task[data-answered="1"][data-correct="1"]');
+    var lines=['=== 学习报告 ===','完成题目：'+done.length+' / '+all.length,'答对：'+right.length+' 题',''];
+    var wrong=$all('.task[data-answered="1"][data-correct="0"]');
+    if(wrong.length){lines.push('我答错的题（建议复习）：');wrong.forEach(function(t){lines.push('- '+(t.getAttribute('data-task')||'')+'：'+(t.getAttribute('data-review')||''));});}
+    else{lines.push('暂无错题。');}
+    lines.push('','三件复述清单：');
+    lines.push('① CLS 查日志三方式：搜主题名 / 云资源标签 / 实例详情页日志 tab');
+    lines.push('② 监控项（对象）≠ 监控指标（数值），看有没有数字区分');
+    lines.push('③ 告警链路：指标越界 → 规则命中 → 等级判定 → 渠道发给接收人');
+    box.textContent=lines.join('\n');
+  }
+  document.addEventListener('click',function(e){
+    var c=e.target.closest?e.target:null;
+    var opt=c&&e.target.closest('.opt');
+    if(opt){var t=opt.closest('.task');if(!t)return;
+      if(t.getAttribute('data-multi')==='true'){opt.classList.toggle('selected');}
+      else{$all('.opt',t).forEach(function(o){o.classList.remove('selected');});opt.classList.add('selected');}
+      return;}
+    var btn=c&&e.target.closest('.check');
+    if(btn){var tk=btn.closest('.task');if(tk)check(tk);return;}
+    if(e.target&&e.target.id==='genReport'){genReport();return;}
+    if(e.target&&e.target.id==='copyReport'){var r=document.getElementById('report');if(r&&navigator.clipboard)navigator.clipboard.writeText(r.textContent);return;}
+  });
+  function init(){updateBar();renderWrong();}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+
+<!-- ===== 固定语音引擎（原样粘贴，不要改写） ===== -->
+<script>
+(function(){
+  "use strict";
+  if(window.__voiceEngine) return;
+  window.__voiceEngine = true;
+
+  var listNode = document.getElementById('voicePlaylist');
+  if(!listNode){ return; }
+  var TRACKS = [];
+  try { TRACKS = JSON.parse(listNode.textContent.trim()); } catch(e){ return; }
+  if(!TRACKS.length) return;
+
+  var player = document.getElementById('voicePlayer');
+  var fab = document.getElementById('voiceFab');
+  var audio = new Audio(); audio.preload = 'metadata';
+  var cur = 0;
+  var ranges = [];
+  var total = 0;
+  var seeking = false;
+
+  function $(s){ return player ? player.querySelector(s) : null; }
+  function fmt(s){ s=Math.max(0,Math.floor(s||0)); var m=Math.floor(s/60), x=s%60;
+    return (m<10?'0':'')+m+':'+(x<10?'0':'')+x; }
+
+  var probe = TRACKS.map(function(){ return {dur:0}; });
+  function tryFinalize(){
+    if(probe.some(function(p){return !p.dur;})) return;
+    ranges = []; total = 0;
+    probe.forEach(function(p){ ranges.push({dur:p.dur, start:total}); total += p.dur; });
+    var d = $('.vp-dur'); if(d) d.textContent = fmt(total);
+    var sk = $('.vp-seek'); if(sk){ sk.max = Math.max(1000, Math.floor(total*10)); }
+  }
+  TRACKS.forEach(function(t, i){
+    var a = new Audio(); a.preload = 'metadata'; a.src = t.src;
+    a.addEventListener('loadedmetadata', function(){
+      probe[i].dur = a.duration || 0; tryFinalize();
+    });
+    a.addEventListener('error', function(){ probe[i].dur = 0; tryFinalize(); });
+  });
+
+  function load(i){
+    cur = i; audio.src = TRACKS[i].src;
+    var ti = $('.vp-title'); if(ti) ti.textContent = TRACKS[i].title || ('第 '+(i+1)+' 段');
+    markBtn(i);
+  }
+  function play(){ audio.play().then(function(){ show(); setPlayIcon(true); if(fab) fab.classList.add('beat'); }).catch(function(){}); }
+  function pause(){ audio.pause(); setPlayIcon(false); if(fab) fab.classList.remove('beat'); }
+  function toggle(){ audio.paused ? play() : pause(); }
+  function next(){ if(cur < TRACKS.length-1){ load(cur+1); play(); } else { pause(); } }
+  function prev(){
+    var abs = absTime();
+    if(cur > 0 && abs - ranges[cur].start < 3){ load(cur-1); play(); }
+    else { audio.currentTime = 0; }
+  }
+  function absTime(){ return ranges[cur] ? ranges[cur].start + (audio.currentTime||0) : (audio.currentTime||0); }
+  function setPlayIcon(on){ var b=$('.vp-play'); if(b) b.textContent = on ? '⏸' : '▶'; }
+  function show(){ if(player) player.classList.add('show'); }
+  function hide(){ if(player) player.classList.remove('show'); }
+  function markBtn(i){
+    document.querySelectorAll('.voice-btn[data-voice-id]').forEach(function(b){
+      b.classList.toggle('active', b.getAttribute('data-voice-id') === TRACKS[i].id);
+    });
+  }
+
+  audio.addEventListener('timeupdate', function(){
+    if(seeking) return;
+    if(!ranges[cur]) return;
+    var abs = absTime(); var sk = $('.vp-seek'); var c = $('.vp-cur');
+    if(sk && total) sk.value = Math.round(abs / total * (sk.max||1000));
+    if(c) c.textContent = fmt(abs);
+  });
+  audio.addEventListener('ended', function(){ if(cur < TRACKS.length-1){ load(cur+1); play(); }
+    else { setPlayIcon(false); if(fab) fab.classList.remove('beat'); } });
+
+  function seekToFraction(frac){
+    if(!total) return;
+    var target = Math.max(0, Math.min(total, frac * total));
+    var i = 0; while(i < ranges.length-1 && ranges[i].start + ranges[i].dur < target){ i++; }
+    if(i !== cur){ cur = i; audio.src = TRACKS[i].src;
+      var ti=$('.vp-title'); if(ti) ti.textContent = TRACKS[i].title||('第 '+(i+1)+' 段'); markBtn(i); }
+    audio.currentTime = target - ranges[i].start;
+    var c=$('.vp-cur'); if(c) c.textContent = fmt(target);
+  }
+
+  document.addEventListener('click', function(e){
+    var t = e.target;
+    var vb = t.closest ? t.closest('.voice-btn[data-voice-id]') : null;
+    if(vb){
+      var id = vb.getAttribute('data-voice-id'), idx = -1;
+      TRACKS.forEach(function(tr, k){ if(tr.id === id) idx = k; });
+      if(idx >= 0){ load(idx); play(); }
+      return;
+    }
+    if(t.id === 'voiceFab'){ show(); if(audio.paused && !audio.src){ load(0); } if(audio.paused){ play(); } return; }
+    if(!player || !player.contains(t)) return;
+    if(t.classList.contains('vp-play')){ toggle(); return; }
+    if(t.classList.contains('vp-prev')){ prev(); return; }
+    if(t.classList.contains('vp-next')){ next(); return; }
+    if(t.classList.contains('vp-close')){ pause(); hide(); return; }
+  });
+  var sk = $('.vp-seek');
+  if(sk){
+    sk.addEventListener('input', function(){ seeking = true;
+      if(total){ var c=$('.vp-cur'); if(c) c.textContent = fmt((sk.value/(sk.max||1000))*total); } });
+    sk.addEventListener('change', function(){ seekToFraction(sk.value/(sk.max||1000)); seeking = false; });
+  }
+})();
+</script>
+
+<!-- ===== 字幕同步引擎（原样粘贴，不要改写） ===== -->
+<script>
+(function(){
+  "use strict";
+  if(window.__subEngine) return;
+  window.__subEngine = true;
+
+  var listNode = document.getElementById("voicePlaylist");
+  if(!listNode) return;
+  var subBox = document.querySelector("#voicePlayer .vp-sub");
+  var curEl = document.querySelector("#voicePlayer .vp-cur");
+  var titleEl = document.querySelector("#voicePlayer .vp-title");
+  if(!subBox) return;
+
+  var subs = [];
+  var subCache = {};
+  var curSrc = "";
+
+  function esc(s){ var d=document.createElement("div"); d.textContent=s; return d.innerHTML; }
+
+  function mp3ToJson(src){
+    var m = src.replace(/^.*?([a-zA-Z0-9_\/.\-]+\.mp3)(?:\?.*)?$/i, "$1");
+    return m.replace(/\.mp3$/i, ".json");
+  }
+
+  function loadSubFor(src){
+    if(!src || src === curSrc) return;
+    curSrc = src;
+    var jsonUrl = mp3ToJson(src);
+    if(subCache[jsonUrl]){ subs = subCache[jsonUrl]; return; }
+    fetch(jsonUrl).then(function(r){
+      if(!r.ok) throw new Error(r.status);
+      return r.json();
+    }).then(function(arr){
+      subCache[jsonUrl] = Array.isArray(arr) ? arr : [];
+      subs = subCache[jsonUrl];
+    }).catch(function(){ subs = []; });
+  }
+
+  function parseTime(text){
+    var p = String(text).trim().split(":");
+    if(p.length === 2){
+      var m = parseInt(p[0], 10) || 0;
+      var s = parseInt(p[1], 10) || 0;
+      return m * 60 + s;
+    }
+    return parseFloat(text) || 0;
+  }
+
+  function renderSub(t){
+    if(!subs.length) return;
+    var hit = null, idx = -1;
+    for(var i = 0; i < subs.length; i++){
+      if(t >= subs[i].start && t < subs[i].end){ hit = subs[i]; idx = i; break; }
+    }
+    if(!hit){
+      var prev = null;
+      for(var j = 0; j < subs.length; j++){
+        if(subs[j].start <= t) prev = subs[j]; else break;
+      }
+      subBox.classList.remove("active");
+      subBox.innerHTML = prev ? esc(prev.text) : "";
+      return;
+    }
+    subBox.classList.add("active");
+    var prevHtml = idx > 0
+      ? '<span style="opacity:.45">' + esc(subs[idx - 1].text) + "</span> "
+      : "";
+    subBox.innerHTML = prevHtml + '<span class="cur">' + esc(hit.text) + "</span>";
+  }
+
+  function tick(){
+    if(!curEl) return;
+    var sec = parseTime(curEl.textContent);
+    renderSub(sec);
+  }
+
+  function onTitleChange(){
+    var TRACKS = [];
+    try { TRACKS = JSON.parse(listNode.textContent.trim()); } catch(e){ return; }
+    var title = titleEl ? titleEl.textContent.trim() : "";
+    for(var i = 0; i < TRACKS.length; i++){
+      if(TRACKS[i].title === title){ loadSubFor(TRACKS[i].src); return; }
+    }
+  }
+
+  if(window.MutationObserver){
+    var obs = new MutationObserver(function(){ tick(); onTitleChange(); });
+    if(curEl) obs.observe(curEl, { childList:true, characterData:true, subtree:true });
+    if(titleEl) obs.observe(titleEl, { childList:true, characterData:true, subtree:true });
+  } else {
+    setInterval(function(){ tick(); onTitleChange(); }, 300);
+  }
+  setTimeout(tick, 500);
+})();
+</script>
+
+</body>
+</html>

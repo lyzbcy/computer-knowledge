@@ -1,0 +1,1346 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>任意门研发过程生命周期 · 理解地图</title>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Poppins:wght@500;600;700&family=Roboto+Mono:wght@400;600&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#FAF6EB;
+  --paper:#F3EDDD;
+  --forest:#1E3A24;
+  --sky:#BCD8EE;
+  --sage:#AFCDA8;
+  --ink:#1A2018;
+  --marker:#F5E08A;
+  --brick:#B5482A;
+  --correct:#2F7D46;
+  --wrong:#B5482A;
+  --font-display:"Archivo Black","Noto Sans SC","PingFang SC",sans-serif;
+  --font-head:"Poppins","Noto Sans SC","PingFang SC",sans-serif;
+  --font-body:-apple-system,"PingFang SC","Noto Sans SC",sans-serif;
+  --font-mono:"Roboto Mono","JetBrains Mono",monospace;
+  --radius-pill:999px;
+  --radius-card:14px;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0; background:var(--cream); color:var(--ink);
+  font-family:var(--font-body); font-size:16px; line-height:1.7;
+  display:flex;
+}
+/* ===== 左侧固定侧边栏 ===== */
+aside.sidebar{
+  position:fixed; top:0; left:0; width:280px; height:100vh;
+  background:var(--forest); color:var(--cream);
+  padding:1.5rem 1.25rem 2rem; overflow-y:auto;
+  z-index:50; flex-shrink:0;
+}
+aside.sidebar h1{
+  font-family:var(--font-display); font-size:1.3rem; line-height:1.25;
+  margin:0 0 .3rem; letter-spacing:-.01em;
+}
+aside.sidebar .sub{
+  font-size:.78rem; opacity:.75; margin-bottom:1.2rem;
+  padding-bottom:1.2rem; border-bottom:1px solid rgba(250,246,235,.18);
+}
+aside.sidebar .progress-wrap{margin-bottom:1.2rem;}
+aside.sidebar .progress-label{
+  display:flex; justify-content:space-between; align-items:center;
+  font-size:.78rem; opacity:.8; margin-bottom:.4rem;
+  font-family:var(--font-head); letter-spacing:.02em;
+}
+aside.sidebar .progress-bar{
+  height:8px; background:rgba(250,246,235,.15); border-radius:var(--radius-pill);
+  overflow:hidden;
+}
+aside.sidebar .progress-bar .fill{
+  height:100%; width:0%; background:var(--marker); border-radius:var(--radius-pill);
+  transition:width .35s ease;
+}
+aside.sidebar nav a{
+  display:block; padding:.55rem .8rem; margin-bottom:.2rem;
+  color:var(--cream); text-decoration:none; opacity:.78;
+  font-family:var(--font-head); font-weight:500; font-size:.85rem;
+  border-radius:8px; transition:all .18s; border-left:3px solid transparent;
+}
+aside.sidebar nav a:hover{ opacity:1; background:rgba(250,246,235,.08); }
+aside.sidebar nav a .no{
+  display:inline-block; width:1.8em; font-family:var(--font-mono); opacity:.7;
+  font-size:.78rem;
+}
+aside.sidebar nav a.active{ opacity:1; background:rgba(245,224,138,.18); border-left-color:var(--marker); }
+aside.sidebar .mascot{
+  margin-top:1.5rem; text-align:center; opacity:.9;
+}
+aside.sidebar .mascot img{ width:88px; height:88px; object-fit:contain; }
+aside.sidebar .mascot .mascot-text{ font-size:.72rem; opacity:.7; margin-top:.3rem; }
+
+/* ===== 右侧主区（单列纵向堆叠） ===== */
+main{
+  margin-left:280px; padding:3rem 2rem 5rem;
+  max-width:820px; width:100%; min-width:0;
+}
+section.module{
+  margin-bottom:3.5rem; scroll-margin-top:1.5rem;
+  border-top:3px solid var(--forest); padding-top:1.5rem;
+}
+section.module:first-of-type{ border-top:none; padding-top:0; }
+.sec-id{
+  display:inline-block; font-family:var(--font-mono); font-weight:600;
+  font-size:.78rem; background:var(--forest); color:var(--cream);
+  padding:.2em .7em; border-radius:var(--radius-pill); letter-spacing:.05em;
+  margin-bottom:.6rem;
+}
+h2{
+  font-family:var(--font-head); font-weight:700;
+  font-size:1.6rem; line-height:1.3; margin:0 0 1rem; color:var(--forest);
+}
+h3{
+  font-family:var(--font-head); font-weight:600;
+  font-size:1.1rem; margin:1.4rem 0 .6rem; color:var(--forest);
+}
+p{ margin:0 0 .85rem; }
+.lead{ font-size:1.05rem; color:var(--ink); }
+
+/* 单列卡片 */
+.card{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1.25rem 1.35rem; margin-bottom:1rem;
+  border-left:4px solid var(--sage);
+}
+.card.brick{ border-left-color:var(--brick); }
+.card.marker{ border-left-color:var(--marker); background:rgba(245,224,138,.18); }
+.card.sky{ border-left-color:var(--sky); }
+.card-title{
+  font-family:var(--font-head); font-weight:600; font-size:1rem;
+  margin:0 0 .4rem; color:var(--forest);
+}
+
+/* 原文依据块 */
+.src-quote{
+  background:var(--cream); border-left:3px solid var(--brick);
+  padding:.6rem .9rem; margin:.5rem 0; font-size:.9rem;
+  border-radius:0 8px 8px 0;
+}
+.src-quote::before{
+  content:"原文依据 · "; font-family:var(--font-mono); font-size:.74rem;
+  font-weight:600; color:var(--brick); letter-spacing:.05em;
+}
+
+/* 类型标签 */
+.type-tag{
+  display:inline-block; font-size:.72rem; font-family:var(--font-mono);
+  padding:.15em .6em; border-radius:var(--radius-pill); margin-right:.3em;
+  font-weight:600;
+}
+.type-tag.fact{ background:var(--sage); color:var(--forest); }
+.type-tag.judge{ background:var(--marker); color:var(--ink); }
+.type-tag.infer{ background:var(--sky); color:var(--ink); }
+.type-tag.eg{ background:var(--brick); color:var(--cream); }
+
+/* 背景补充块 */
+.bg-block{
+  background:rgba(175,205,168,.22); border-radius:var(--radius-card);
+  padding:1.1rem 1.25rem; margin-bottom:1rem;
+  border-left:4px solid var(--sage);
+}
+.bg-block .bg-label{
+  font-family:var(--font-mono); font-size:.74rem; font-weight:600;
+  color:var(--forest); letter-spacing:.06em; margin-bottom:.5rem;
+}
+.bg-block .why{ font-size:.86rem; opacity:.78; margin-top:.5rem; font-style:italic; }
+
+/* C 类比块 */
+.analogy{
+  background:rgba(188,216,238,.25); border-radius:8px;
+  padding:.7rem .9rem; margin:.6rem 0; font-size:.92rem;
+  border-left:3px solid var(--sky);
+}
+.analogy::before{
+  content:"C 类比 · "; font-family:var(--font-mono); font-size:.74rem;
+  font-weight:600; color:var(--forest); letter-spacing:.05em;
+}
+
+/* 目标项（纵向堆叠） */
+.goal-item{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:.9rem 1.1rem; margin-bottom:.8rem;
+  display:flex; align-items:flex-start; gap:.7rem;
+  border-left:4px solid var(--forest);
+}
+.goal-item .g-num{
+  font-family:var(--font-display); font-size:1.4rem; color:var(--brick);
+  line-height:1; flex-shrink:0;
+}
+
+/* 结构地图（树形/纵向） */
+.tree{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1.1rem 1.25rem; font-family:var(--font-mono); font-size:.83rem;
+  line-height:1.9;
+}
+.tree-node{ margin:.2rem 0; }
+.tree-node .label{ color:var(--forest); font-weight:600; }
+.tree-node .rel{ color:var(--brick); font-size:.76rem; }
+
+/* 关卡题 */
+.q-item{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1rem 1.15rem .9rem; margin-bottom:1rem;
+  border-left:4px solid var(--sky);
+}
+.q-item summary{ cursor:pointer; font-weight:500; }
+.q-item .q-no{
+  font-family:var(--font-mono); font-size:.74rem; font-weight:600;
+  color:var(--brick); letter-spacing:.05em; margin-bottom:.3rem;
+}
+.q-item .q-text{ font-weight:500; margin-bottom:.7rem; }
+.q-item .q-hint{ font-size:.84rem; opacity:.7; font-style:italic; margin-top:.6rem; }
+
+/* 任务（data-* 题目） */
+.task{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1rem 1.15rem 1.1rem; margin-bottom:1.1rem;
+  border-left:4px solid var(--brick);
+}
+.task .q{ font-weight:500; margin-bottom:.7rem; }
+.task .opts{ display:flex; flex-direction:column; gap:.45rem; margin-bottom:.7rem; }
+.task button.opt{
+  background:var(--cream); border:1.5px solid var(--forest);
+  border-radius:8px; padding:.55rem .8rem;
+  font-family:var(--font-body); font-size:.94rem; text-align:left;
+  cursor:pointer; transition:all .15s; color:var(--ink);
+}
+.task button.opt:hover{ background:var(--sage); }
+.task button.opt.selected{ background:var(--forest); color:var(--cream); border-color:var(--forest); }
+.task button.check{
+  background:var(--forest); color:var(--cream); border:none;
+  border-radius:var(--radius-pill); padding:.45rem 1.2rem;
+  font-family:var(--font-head); font-weight:600; font-size:.88rem;
+  cursor:pointer; margin-bottom:.6rem;
+}
+.task button.check:hover{ background:#142710; }
+.task .feedback{
+  background:var(--cream); border-radius:8px; padding:.6rem .8rem;
+  font-size:.88rem; margin-top:.4rem;
+  border-left:3px solid var(--ink);
+}
+.task .feedback.ok{ border-left-color:var(--correct); background:rgba(175,205,168,.22); }
+.task .feedback.no{ border-left-color:var(--wrong); background:rgba(181,72,42,.1); }
+.task .feedback .src{
+  display:block; margin-top:.4rem; font-size:.82rem; opacity:.8;
+  font-style:italic;
+}
+.task .match-row{
+  display:flex; align-items:center; gap:.6rem; margin-bottom:.5rem;
+  flex-wrap:wrap;
+}
+.task select.match{
+  flex:1; min-width:140px; padding:.4rem .5rem;
+  border:1.5px solid var(--forest); border-radius:6px;
+  font-family:var(--font-body); background:var(--cream);
+}
+
+/* 错题回流 */
+.wrong-box{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1rem 1.15rem; border-left:4px solid var(--wrong);
+}
+.wrong-box ul{ margin:.5rem 0 0; padding-left:1.2rem; }
+.wrong-box li{ margin-bottom:.4rem; font-size:.9rem; }
+
+/* 误解卡 */
+.myth{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1.1rem 1.25rem; margin-bottom:1rem;
+  border-left:4px solid var(--brick);
+}
+.myth .myth-head{
+  font-family:var(--font-head); font-weight:600; color:var(--brick);
+  font-size:1rem; margin-bottom:.5rem;
+}
+.myth .row{ margin:.4rem 0; font-size:.92rem; }
+.myth .row .key{
+  font-family:var(--font-mono); font-size:.74rem; font-weight:600;
+  color:var(--forest); margin-right:.4em;
+}
+
+/* 概念卡 */
+.concept{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1.25rem 1.35rem; margin-bottom:1.1rem;
+  border-left:4px solid var(--marker);
+}
+.concept .c-name{
+  font-family:var(--font-head); font-weight:700; font-size:1.15rem;
+  color:var(--forest); margin-bottom:.6rem;
+}
+.concept .c-row{ margin:.5rem 0; font-size:.92rem; }
+.concept .c-row .ck{
+  font-family:var(--font-mono); font-size:.74rem; font-weight:600;
+  color:var(--brick); margin-right:.4em; letter-spacing:.04em;
+}
+
+/* 公式块 */
+.formula{
+  background:var(--forest); color:var(--marker);
+  border-radius:8px; padding:.8rem 1rem; margin:.6rem 0;
+  font-family:var(--font-mono); font-size:.85rem; text-align:center;
+  overflow-x:auto;
+}
+
+/* 表格 */
+table.t{
+  width:100%; border-collapse:collapse; margin:.6rem 0;
+  font-size:.86rem; background:var(--cream);
+  border-radius:8px; overflow:hidden;
+}
+table.t th, table.t td{
+  padding:.5rem .7rem; text-align:left; border:1px solid var(--paper);
+}
+table.t th{ background:var(--forest); color:var(--cream); font-family:var(--font-head); font-weight:500; }
+
+/* 表情贴纸 */
+.sticker{ display:inline-block; vertical-align:middle; width:24px; height:24px; margin:0 .3em; }
+
+/* 页脚 */
+footer{
+  margin-top:3rem; padding:1.5rem 0 1rem; border-top:2px solid var(--forest);
+  font-size:.86rem; color:var(--ink); text-align:center;
+}
+footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
+
+.hero-mark{
+  font-family:var(--font-display); font-size:.74rem;
+  color:var(--marker); background:var(--forest);
+  padding:.2em .7em; border-radius:var(--radius-pill);
+  letter-spacing:.05em; display:inline-block; margin-bottom:.6rem;
+}
+
+/* ===== 语音：右侧书签脊 ===== */
+#voiceFab{
+  position:fixed; right:0; top:50%; transform:translateY(-50%); z-index:9998;
+  display:flex; align-items:center; flex-direction:row;
+  background:var(--forest); color:var(--cream); border:none; cursor:pointer;
+  height:5em; padding:0 .55em;
+  border-radius:16px 0 0 16px;
+  box-shadow:-4px 0 14px rgba(0,0,0,.18);
+  font-family:var(--font-head); font-size:.85rem;
+  overflow:hidden;
+  transition:width .42s cubic-bezier(.4,0,.2,1), box-shadow .3s ease;
+  width:1.9em;
+}
+#voiceFab .fab-icon{
+  font-size:1.15rem; writing-mode:vertical-rl; text-orientation:upright;
+  letter-spacing:.1em; white-space:nowrap; flex-shrink:0;
+}
+#voiceFab .fab-text{
+  white-space:nowrap; opacity:0; margin-left:.6em;
+  transition:opacity .28s ease .12s;
+}
+#voiceFab:hover{
+  width:8.6em; box-shadow:-6px 0 22px rgba(0,0,0,.25);
+}
+#voiceFab:hover .fab-text{ opacity:1; }
+#voiceFab.beat{ animation:voiceBeat 1.6s ease-in-out infinite; }
+@keyframes voiceBeat{ 0%,100%{box-shadow:-4px 0 14px rgba(0,0,0,.18)} 50%{box-shadow:-4px 0 20px rgba(181,72,42,.5)} }
+
+/* ===== 语音：圆润玩具风播放器 ===== */
+#voicePlayer{
+  position:fixed; left:50%; bottom:1rem; transform:translateX(-50%) translateY(140%);
+  width:min(92vw,380px); padding:1rem 1.1rem 1.1rem; background:var(--cream);
+  border:2px solid var(--forest); border-radius:26px;
+  box-shadow:0 8px 28px rgba(0,0,0,.16); z-index:9999; transition:transform .28s ease;
+  text-align:center; font-family:var(--font-body);
+}
+#voicePlayer.show{ transform:translateX(-50%) translateY(0); }
+#voicePlayer .vp-head{ font-size:.75rem; color:var(--forest); opacity:.8; letter-spacing:.05em; }
+#voicePlayer .vp-title{ font:700 1rem/1.35 var(--font-body); color:var(--ink);
+  margin:.25rem 0 .7rem; padding:0 .2rem; word-break:break-word; }
+#voicePlayer .vp-play{
+  width:3.6rem; height:3.6rem; border:none; border-radius:50%;
+  background:var(--forest); color:var(--cream); font-size:1.3rem; cursor:pointer;
+  margin:0 auto .7rem; display:flex; align-items:center; justify-content:center;
+  box-shadow:0 3px 0 #142710; transition:transform .1s, box-shadow .1s;
+}
+#voicePlayer .vp-play:active{ transform:translateY(2px); box-shadow:0 1px 0 #142710; }
+#voicePlayer .vp-prev,#voicePlayer .vp-next{
+  width:2.3rem; height:2.3rem; border:1.5px solid var(--forest); border-radius:50%;
+  background:var(--cream); color:var(--forest); font-size:.9rem; cursor:pointer;
+}
+#voicePlayer .vp-controls{ display:flex; align-items:center; justify-content:center; gap:1.2rem; margin-bottom:.7rem; }
+#voicePlayer .vp-seek{ width:100%; margin:.2rem 0; cursor:pointer; accent-color:var(--forest); }
+#voicePlayer .vp-time{ display:flex; justify-content:space-between; font:600 .72rem/1 var(--font-mono); color:var(--ink); opacity:.75; }
+#voicePlayer .vp-close{ position:absolute; top:.5rem; right:.6rem; width:1.5rem; height:1.5rem;
+  border:none; background:transparent; color:var(--ink); font-size:1rem; cursor:pointer; opacity:.5; }
+#voicePlayer .vp-sub{
+  min-height:2.6em; max-height:3.9em; overflow:hidden;
+  font:.85rem/1.5 var(--font-body); color:var(--ink); opacity:.55;
+  margin:.2rem 0 .5rem; padding:0 .3rem;
+  transition:opacity .2s; text-align:center;
+}
+#voicePlayer .vp-sub.active{ opacity:1; }
+#voicePlayer .vp-sub .cur{ color:var(--forest); font-weight:600; }
+
+/* 「听这章」小按钮 */
+.voice-btn{
+  display:inline-block; vertical-align:middle; margin-left:.6em;
+  padding:.25em .8em; border:1px solid var(--forest); border-radius:var(--radius-pill);
+  background:var(--cream); color:var(--forest); font:600 .8rem/1.2 var(--font-body);
+  cursor:pointer; transition:background .15s;
+}
+.voice-btn:hover{ background:var(--sage); }
+.voice-btn.active{ background:var(--forest); color:var(--cream); }
+
+/* 学习报告按钮 */
+.report-actions{ margin:.8rem 0; display:flex; gap:.6rem; flex-wrap:wrap; }
+.report-actions button{
+  background:var(--forest); color:var(--cream); border:none;
+  border-radius:var(--radius-pill); padding:.5rem 1.1rem;
+  font-family:var(--font-head); font-weight:600; font-size:.88rem; cursor:pointer;
+}
+.report-actions button:hover{ background:#142710; }
+#report{
+  background:var(--cream); border-radius:8px; padding:1rem 1.1rem;
+  font-family:var(--font-mono); font-size:.82rem; white-space:pre-wrap;
+  border-left:3px solid var(--forest); min-height:3rem; line-height:1.7;
+}
+
+/* 移动端 */
+@media (max-width: 880px){
+  body{ flex-direction:column; }
+  aside.sidebar{
+    position:static; width:100%; height:auto; max-height:none;
+    padding:1.2rem 1rem;
+  }
+  main{ margin-left:0; padding:1.5rem 1rem 4rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- 语音播放列表（连续播放用） -->
+<script type="application/json" id="voicePlaylist">
+[
+  {"id":"m1","title":"01 学习目标与阅读路径","src":"audio/m1.mp3"},
+  {"id":"m2","title":"02 零基础背景包","src":"audio/m2.mp3"},
+  {"id":"m3","title":"03 原文问题定位","src":"audio/m3.mp3"},
+  {"id":"m4","title":"04 原文结构地图","src":"audio/m4.mp3"},
+  {"id":"m5","title":"05 核心判断与依据","src":"audio/m5.mp3"},
+  {"id":"m6","title":"06 关键概念拆解","src":"audio/m6.mp3"},
+  {"id":"m7","title":"07 苏格拉底式阅读关卡","src":"audio/m7.mp3"},
+  {"id":"m8","title":"08 闯关式任务","src":"audio/m8.mp3"},
+  {"id":"m9","title":"09 误解与边界","src":"audio/m9.mp3"},
+  {"id":"m10","title":"10 背景知识缺口","src":"audio/m10.mp3"},
+  {"id":"m11","title":"11 复盘与学习报告","src":"audio/m11.mp3"}
+]
+</script>
+
+<!-- ===== 左侧固定侧边栏 ===== -->
+<aside class="sidebar">
+  <h1>任意门研发过程生命周期</h1>
+  <div class="sub">微盛研发岗管培生培训 · 理解地图</div>
+
+  <div class="progress-wrap">
+    <div class="progress-label">
+      <span>任务进度</span>
+      <span><span id="barNum">0 / 0</span></span>
+    </div>
+    <div class="progress-bar"><div class="fill" id="barFill"></div></div>
+  </div>
+
+  <nav>
+    <a href="#m01"><span class="no">01</span>学习目标与阅读路径</a>
+    <a href="#m02"><span class="no">02</span>零基础背景包</a>
+    <a href="#m03"><span class="no">03</span>原文问题定位</a>
+    <a href="#m04"><span class="no">04</span>原文结构地图</a>
+    <a href="#m05"><span class="no">05</span>核心判断与依据</a>
+    <a href="#m06"><span class="no">06</span>关键概念拆解</a>
+    <a href="#m07"><span class="no">07</span>苏格拉底式阅读关卡</a>
+    <a href="#m08"><span class="no">08</span>闯关式任务</a>
+    <a href="#m09"><span class="no">09</span>误解与边界</a>
+    <a href="#m10"><span class="no">10</span>背景知识缺口</a>
+    <a href="#m11"><span class="no">11</span>复盘与学习报告</a>
+  </nav>
+
+  <div class="mascot">
+    <img src="https://lyzbcy.github.io/weshoto-study/img/sticker/mascot.png" alt="吉祥物">
+    <div class="mascot-text">陪你学完整章</div>
+  </div>
+</aside>
+
+<!-- ===== 右侧主区（单列纵向堆叠） ===== -->
+<main>
+
+<!-- ===== 01 学习目标与阅读路径 ===== -->
+<section class="module" id="m01">
+  <span class="hero-mark">理解地图</span>
+  <h2>01 学习目标与阅读路径 <button class="voice-btn" data-voice-id="m1">🎧 听这章</button></h2>
+  <p class="lead">这是一份写给"会写 C 语言、但第一次进企业项目"的同学的拆解地图。它要讲清一件事：<strong>你写下的一行代码，是怎么一路走完从需求到上线的</strong>。读完这一章，你能做到下面五件事。</p>
+
+  <div class="goal-item">
+    <span class="g-num">1</span>
+    <div><strong>能说出三个分支的作用</strong>：feature、release、master 分别什么时候出现、合并方向是什么、为什么代码只能改在 feature 上。</div>
+  </div>
+  <div class="goal-item">
+    <span class="g-num">2</span>
+    <div><strong>能背出三大阶段和流转方向</strong>：需求阶段（Feature）→ 版本阶段（Release）→ 上线阶段（Main），以及状态从"待提测"到"已提测"再到"进入上线流程"的卡点。</div>
+  </div>
+  <div class="goal-item">
+    <span class="g-num">3</span>
+    <div><strong>能区分灰度和正式上线</strong>：先发哪一步、合并分支的方向有什么不同、flowStatus 的 1 和 2 各代表什么。</div>
+  </div>
+  <div class="goal-item">
+    <span class="g-num">4</span>
+    <div><strong>能指出至少 3 个</strong>新手最常踩的坑（如直接在 release 改代码、master→release 方向搞反、灰度上线漏掉历史灰度分支）。</div>
+  </div>
+  <div class="goal-item">
+    <span class="g-num">5</span>
+    <div><strong>能提出 1 个追问</strong>：例如"为什么正式上线前要先把 master 合到 release，再合回 master——只做一次合并不行吗？"</div>
+  </div>
+
+  <div class="card marker">
+    <div class="card-title">阅读路径（按顺序）</div>
+    <p style="margin:0">先在 02 补 5 个零件 → 在 03/04 看清"这份手册在解决什么、整体怎么搭" → 在 05/06 抓住 5 条核心判断和 6 个关键概念 → 在 07 自己提问 → 在 08 闯 8 道闭环题 → 在 09/10 看边界 → 在 11 出报告。</p>
+  </div>
+</section>
+
+<!-- ===== 02 零基础背景包 ===== -->
+<section class="module" id="m02">
+  <span class="sec-id">02</span>
+  <h2>零基础背景包 <button class="voice-btn" data-voice-id="m2">🎧 听这章</button></h2>
+  <p class="lead">在拆原文前，先装 5 个最基本的零件。每个都标了"背景补充"——它帮你读懂原文，但<strong>不是任意门系统自己的设计论点</strong>，而是帮你建立"企业研发到底在干什么"的常识。</p>
+
+  <div class="bg-block">
+    <div class="bg-label">背景补充 1 · Git 分支（branch）</div>
+    <p style="margin:0 0 .4rem">同一个代码仓库里，可以同时存在多条"互不干扰的代码副本"，每条叫一个分支。大家各自在一条分支上改代码，改完再合并到一起。</p>
+    <div class="analogy">类比 C：分支 ≈ 同一份源码的多个副本目录，你在副本里改函数，不影响别人在主目录编译。</div>
+    <div class="why">为什么现在需要知道：整章的核心动作（feature/release/master）全是分支名，不懂分支就读不懂"谁合并到谁"。</div>
+  </div>
+
+  <div class="bg-block">
+    <div class="bg-label">背景补充 2 · 环境与发布（deploy）</div>
+    <p style="margin:0 0 .4rem">企业代码不会一次写完就上生产。它先发到<strong>开发环境（UAT）</strong>让开发自己联调，再发到<strong>测试环境（TEST）</strong>给测试验证，最后才发到<strong>生产环境</strong>给真实用户用。"发布"= 把代码编译打包、部署到某个环境。</p>
+    <div class="analogy">类比 C：发布 ≈ 把 .c 编译成可执行文件，再 scp 到对应机器上运行；不同环境是不同的机器。</div>
+    <div class="why">为什么现在需要知道：任意门里"发布"按钮会把应用推到不同环境的 K8s，环境错了等于发错机器。</div>
+  </div>
+
+  <div class="bg-block">
+    <div class="bg-label">背景补充 3 · 灰度发布（gray release）</div>
+    <p style="margin:0 0 .4rem">新代码不一次给所有用户用，而是先发给<strong>一小部分用户</strong>跑一段时间。没出问题，再全量铺开。"正式"= 全量铺开给所有人。</p>
+    <div class="analogy">类比 C：灰度 ≈ 先让部分机器跑新编译的程序，观察一晚上没崩，再把所有机器都换上新版本。</div>
+    <div class="why">为什么现在需要知道：任意门把上线拆成"灰度"和"正式"两条路，方向和分支合并规则都不同。</div>
+  </div>
+
+  <div class="bg-block">
+    <div class="bg-label">背景补充 4 · Pod 与 K8s（容器）</div>
+    <p style="margin:0 0 .4rem">服务不是直接装在物理机上，而是装进一个个"容器"里跑，K8s 是管理这些容器的平台。一个 Pod ≈ 一个正在跑的应用实例。"销毁 Pod"= 把这个实例停掉释放资源。</p>
+    <div class="analogy">类比 C：K8s ≈ 一个进程管理器，Pod ≈ 一个被它 fork 出来监管的进程；销毁 Pod ≈ kill 掉这个进程。</div>
+    <div class="why">为什么现在需要知道：任意门里"发布/重启/释放资源"全是对 K8s 上的 Pod 操作。</div>
+  </div>
+
+  <div class="bg-block">
+    <div class="bg-label">背景补充 5 · 配置中心（Nacos）与流水线（Tekton）</div>
+    <p style="margin:0 0 .4rem"><strong>Nacos</strong> 是一个集中存放配置的网站，服务的连接地址、参数都不写在代码里，而是放在 Nacos 上，运行时去取。<strong>Tekton</strong> 是一条自动化的"构建流水线"，点一下"发布"，它自动编译、打包、推送镜像。</p>
+    <div class="analogy">类比 C：Nacos ≈ 程序运行时的全局变量配置中心（改一处，所有进程读到新值）；Tekton ≈ 一条 make + scp 自动化脚本。</div>
+    <div class="why">为什么现在需要知道：发布动作背后就是 Tekton 流水线，配置都存在 Nacos，原文反复提到这两个名字。</div>
+  </div>
+</section>
+
+<!-- ===== 03 原文问题定位 ===== -->
+<section class="module" id="m03">
+  <span class="sec-id">03</span>
+  <h2>原文问题定位 <button class="voice-btn" data-voice-id="m3">🎧 听这章</button></h2>
+
+  <div class="card brick">
+    <div class="card-title">表面在讲什么？</div>
+    <p style="margin:0">一份操作手册：怎么在任意门里建需求、建版本、合并分支、发布到测试、灰度上线、正式上线，以及配套的 nacos/xxljob/数据库/rocketmq/redis/k8s 怎么连。<span class="type-tag fact">事实</span></p>
+  </div>
+
+  <div class="card brick">
+    <div class="card-title">深层在回答什么问题？</div>
+    <p style="margin:0 0 .5rem"><strong>一条需求，从被提出来到跑在用户面前，怎么用一套固定的、可追溯的流程串起来——而不是各写各的、各发各的？</strong>任意门这套"需求→版本→上线"三阶段，本质是在解决<strong>流程规范化</strong>和<strong>代码可追溯</strong>两件事。<span class="type-tag judge">判断</span></p>
+    <div class="src-quote">任意门是需求管理，服务发布到测试环境和生产环境的平台。</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">读者如果只记一个问题，应该记哪个？</div>
+    <p style="margin:0"><strong>三个分支（feature/release/master）到底是谁合并到谁、在哪个阶段合、为什么是这个方向？</strong>把这条流向搞清楚，整章的操作就串起来了。<span class="type-tag infer">推论</span></p>
+  </div>
+</section>
+
+<!-- ===== 04 原文结构地图 ===== -->
+<section class="module" id="m04">
+  <span class="sec-id">04</span>
+  <h2>原文结构地图 <button class="voice-btn" data-voice-id="m4">🎧 听这章</button></h2>
+  <p class="lead">判断结构类型：<strong>机制流程</strong>（一条主线从头跑到尾）。整篇是一条"需求→版本→上线"的流水线，后面 nacos/xxljob/数据库等是这条线旁边的配套工具。不要把它读成并列清单。</p>
+
+  <div class="tree">
+    <div class="tree-node"><span class="label">主线：研发完整生命周期（三大阶段）</span> <span class="rel">（机制流程）</span></div>
+    <div class="tree-node">&nbsp;&nbsp;├─ <span class="label">1. 需求阶段（Feature）</span></div>
+    <div class="tree-node">&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;创建需求 + 绑定应用 → 自动拉 feature 分支 → 发布到 UAT → 联调 → "联调完成"→ 状态变"已提测"</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ <span class="label">2. 版本阶段（Release）</span></div>
+    <div class="tree-node">&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;创建版本 + 绑定已提测需求 → 自动拉 release 分支 → 合并 feature→release → 发到 TEST 测试环境</div>
+    <div class="tree-node">&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;→ 测试通过后分两条路：<span class="rel">【灰度】flowStatus=2</span> 或 <span class="rel">【正式上线】flowStatus=1</span></div>
+    <div class="tree-node">&nbsp;&nbsp;├─ <span class="label">3a. 生产上线（Main·正式）</span></div>
+    <div class="tree-node">&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;合并分支：① master→release ② release→master ③ master→历史灰度分支（若有）</div>
+    <div class="tree-node">&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;→ 构建镜像 → 推到 K8s 生产 wshoto 空间</div>
+    <div class="tree-node">&nbsp;&nbsp;└─ <span class="label">3b. 灰度上线（Main·灰度）</span></div>
+    <div class="tree-node">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;合并分支：① master→release（单向合并）→ 构建镜像 → 推到 K8s 灰度 wshoto-gray 空间</div>
+    <div class="tree-node" style="margin-top:.6rem"><span class="label">配套工具（主线旁边的支撑）</span> <span class="rel">（主题簇，服务于主线）</span></div>
+    <div class="tree-node">&nbsp;&nbsp;├─ GitLab：源码仓库（git clone 拉代码）</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ Nacos：配置中心（配置 + 服务注册）</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ XXL-JOB：任务调度中心（定时任务）</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ 数据库 / RocketMQ / Redis：存储与中间件</div>
+    <div class="tree-node">&nbsp;&nbsp;└─ K8s（Kuboard）：容器管理平台，看应用详情</div>
+  </div>
+
+  <div class="card sky">
+    <div class="card-title">节点关系说明</div>
+    <p style="margin:0">主线三阶段是<strong>顺序递进</strong>（前一个没完成进不了下一个）；灰度和正式是<strong>对比关系</strong>（同一时刻只能选一条路，灰度在前、正式在后）；配套工具是<strong>支撑关系</strong>（不参与流程，但流程里每一步都要用它们）。把这三层关系分开看，就不会被一堆名词绕晕。</p>
+  </div>
+</section>
+
+<!-- ===== 05 核心判断与依据 ===== -->
+<section class="module" id="m05">
+  <span class="sec-id">05</span>
+  <h2>核心判断与依据 <button class="voice-btn" data-voice-id="m5">🎧 听这章</button></h2>
+  <p class="lead">挑出 5 条最硬的判断。每条都附原文依据和类型标签。</p>
+
+  <div class="card">
+    <div class="card-title">判断 1 · 新建需求不手动建分支，由任意门自动拉 feature 分支</div>
+    <p style="margin:0 0 .4rem">不要手动 git checkout 新建分支，那样不好管理；而是在任意门"新建需求"时，系统会从 master 自动拉一条以 feature 开头的开发分支。<span class="type-tag fact">事实</span></p>
+    <div class="src-quote">在一个需求需要开发的时候，不要手动新建分支，那样不好管理……任意门会将选择的服务从 master 拉一个新的分支出来，分支的名称就是以 feature 开头的开发分支。</div>
+    <p style="margin:.4rem 0 0;font-size:.9rem"><strong>为什么重要</strong>：这条是整条流水线的入口，分支名和需求绑定，后续所有合并、回退都靠这个名字追溯。</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">判断 2 · 代码只能改在 feature 分支，严禁改 release</div>
+    <p style="margin:0 0 .4rem">测试提了 bug，开发只能在 feature 分支上修，再合并到 release；严禁在 release 上直接改代码。因为版本移除需求时会默认删除 release 分支，在 release 改的代码会被带丢或带到生产。<span class="type-tag fact">事实</span></p>
+    <div class="src-quote">严禁在 release 分支上修改代码。……这里之所以默认勾选删除 release 分支，是为了防止代码合到 release 分支，最后被带到生产上。</div>
+    <p style="margin:.4rem 0 0;font-size:.9rem"><strong>易误读</strong>：别以为 release 是"快车道"可以随手改——它恰恰是被严格管控、随时可能被删的那条。</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">判断 3 · 正式上线要双向合并：先 master→release，再 release→master</div>
+    <p style="margin:0 0 .4rem">因为需求是并行开发的，master 上可能有别的需求先上线了、当前 release 里没有的代码，所以必须先把 master 合到 release（补齐），再把 release 合回 master（提交本次需求）。<span class="type-tag fact">事实</span></p>
+    <div class="src-quote">先将 master 分支的代码合并到当前 release 分支，然后再将 release 分支的代码合并到 master……因为 master 也可能会有其他的需求先上线了。</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">判断 4 · 灰度只单向合并 master→release，不合回 master</div>
+    <p style="margin:0 0 .4rem">灰度是把当前 release 的代码发到灰度环境先验证，所以只需把 master 上已有的新代码补进 release（避免覆盖正式环境功能），不必合回 master。<span class="type-tag infer">推论</span></p>
+    <div class="src-quote">合并分支：将 master 分支的代码合并到当前 release 分支……发到灰度上，就不会将正式环境的功能覆盖掉。</div>
+    <p style="margin:.4rem 0 0;font-size:.9rem"><strong>易误读</strong>：灰度和正式的合并方向不同——灰度单向，正式双向，不能混用。</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">判断 5 · flowStatus 标记需求当前走的是哪条上线路</div>
+    <p style="margin:0 0 .4rem">提交上线审核 flowStatus 置为 1（正式），提交灰度审核置为 2（灰度）。状态从"待提测(0)"→"已提测(1)"→"进入上线流程"，每一步都有硬卡点。<span class="type-tag fact">事实</span></p>
+    <div class="formula">需求状态：待提测(flowStatus=0) → 已提测(flowStatus=1) → 进入上线流程<br>版本分流：正式 flowStatus=1　|　灰度 flowStatus=2</div>
+    <div class="src-quote">上线：提交上线审核，flowStatus → "1"……灰度：提交灰度审核，flowStatus → "2"。</div>
+  </div>
+</section>
+
+<!-- ===== 06 关键概念拆解 ===== -->
+<section class="module" id="m06">
+  <span class="sec-id">06</span>
+  <h2>关键概念拆解 <button class="voice-btn" data-voice-id="m6">🎧 听这章</button></h2>
+  <p class="lead">6 个概念，环环相扣：<strong>任意门（平台）→ 拉 feature 分支 → 合并成 release 分支 → 最终进 master；灰度在 release 验证，flowStatus 标记走哪条路，nacos/k8s 是支撑设施</strong>。</p>
+
+  <div class="concept">
+    <div class="c-name">① 任意门</div>
+    <div class="c-row"><span class="ck">定义</span>微盛内部的"一站式研发效能平台"，管需求、管把服务发布到测试和生产环境。</div>
+    <div class="c-row"><span class="ck">人话</span>一个网页，你在上面建需求、建版本、点发布、点上线，不用敲命令行。</div>
+    <div class="analogy">类比 C：任意门 ≈ 一个带按钮的 IDE 插件面板，点"发布"它替你跑 make + scp + restart。</div>
+    <div class="c-row"><span class="ck">关系</span>它是入口，feature/release 分支由它自动创建；登录后进入"应用中心→DevOps"。</div>
+    <div class="src-quote">任意门是需求管理，服务发布到测试环境和生产环境的平台。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>任意门 ≠ GitLab。GitLab 是源码仓库，任意门是流程平台；任意门在背后操作 GitLab 的分支。</div>
+  </div>
+
+  <div class="concept">
+    <div class="c-name">② 三个分支：feature / release / master</div>
+    <div class="c-row"><span class="ck">定义</span><strong>feature-{profile}</strong>：每个需求一条，从 master 拉，开发在这里改代码；<strong>release-{profile}</strong>：每个版本一条，从 master 拉，把若干 feature 合进来去测试；<strong>master</strong>：主线，正式环境的代码来源。</div>
+    <div class="c-row"><span class="ck">人话</span>feature 是"你一个人的草稿纸"，release 是"这一版要一起交的作业本"，master 是"已经公开出版的正式版本"。</div>
+    <div class="analogy">类比 C：feature ≈ 你本地改的副本，release ≈ 小组汇总的副本，master ≈ 已发布的正式版源码。</div>
+    <div class="c-row"><span class="ck">关系</span>feature→release→master 是合并的主方向（代码最终要进 master）；master→release 是"补齐"动作（正式/灰度上线前）。</div>
+    <div class="src-quote">新建需求的时候，任意门会将选择的服务从 master 拉一个新的分支出来……以 feature 开头……任意门会新建一个 release 测试分支，这个 release 分支是从 master 拉的分支。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>三条分支不是平级"随便选一个改"——只有 feature 能改代码，release/master 都靠合并进来。</div>
+  </div>
+
+  <div class="concept">
+    <div class="c-name">③ 灰度发布（gray release）</div>
+    <div class="c-row"><span class="ck">定义</span>正式上线前的一步：把代码先发到 <code>wshoto-gray</code> 灰度空间，让一部分用户先跑新代码验证。</div>
+    <div class="c-row"><span class="ck">人话</span>先小范围试水，没问题再全量。</div>
+    <div class="analogy">类比 C：灰度 ≈ 先把新编译的程序部署到几台机器上跑一晚上，观察没崩再全部替换。</div>
+    <div class="c-row"><span class="ck">关系</span>灰度在前、正式在后；灰度只做 master→release 单向合并；提交灰度审核 flowStatus=2。</div>
+    <div class="src-quote">将应用发布到生产环境，wshoto-gray 空间，相当于是灰度环境。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>灰度 ≠ 正式。灰度环境（wshoto-gray）和正式环境（wshoto）是两个不同的 K8s 空间。</div>
+  </div>
+
+  <div class="concept">
+    <div class="c-name">④ flowStatus（需求/版本的流转状态）</div>
+    <div class="c-row"><span class="ck">定义</span>标记一个需求或版本当前走到流水线哪一步的数字标识。</div>
+    <div class="c-row"><span class="ck">人话</span>一个状态码，告诉系统"这单子现在卡在哪"。</div>
+    <div class="formula">需求：待提测(0) → 已提测(1) → 进入上线流程<br>版本上线分流：正式审核 flowStatus=1　|　灰度审核 flowStatus=2</div>
+    <div class="c-row"><span class="ck">关系</span>需求没"已提测"就不能被版本绑定；版本没合并/没发布就不能提交上线审核。</div>
+    <div class="src-quote">创建需求 → 待提测(flowStatus=0) → … → 已提测(flowStatus=1) → 上线/灰度 → 进入上线流程。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>需求状态里的"1"（已提测）和版本分流里的"1"（正式上线）含义不同——前者是需求层、后者是版本层，看上下文。</div>
+  </div>
+
+  <div class="concept">
+    <div class="c-name">⑤ Nacos（配置中心 + 服务注册）</div>
+    <div class="c-row"><span class="ck">定义</span>阿里巴巴开源的服务发现与配置管理平台。微盛用它统一存各服务的配置（数据库地址、redis 地址、参数），并登记每个服务实例的注册信息。</div>
+    <div class="c-row"><span class="ck">人话</span>一个集中改配置的网站，改一处所有服务都读到新值；同时是"有哪些服务在跑"的花名册。</div>
+    <div class="analogy">类比 C：Nacos ≈ 程序运行时的全局变量配置中心 + 已注册函数指针表；改配置不用重新编译，运行时生效。</div>
+    <div class="c-row"><span class="ck">关系</span>可在任意门"应用中心→Nacos"里直接修改测试/生产配置；redis 连接信息也存在 Nacos 的 redis-info.yaml。</div>
+    <div class="src-quote">可以在任意门上修改、查看 nacos 配置，以及查看服务注册。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>Nacos ≠ 数据库。它存的是"配置"（小量、键值型），不是业务数据。</div>
+  </div>
+
+  <div class="concept">
+    <div class="c-name">⑥ K8s（Kubernetes / Kuboard）</div>
+    <div class="c-row"><span class="ck">定义</span>容器编排平台，把服务装进容器（Pod）跑起来、自动管理副本数。微盛用 Kuboard 作为 K8s 的可视化管理界面。</div>
+    <div class="c-row"><span class="ck">人话</span>一个管"程序在哪里跑、跑几个、挂了重启"的大管家。</div>
+    <div class="analogy">类比 C：K8s ≈ 一个进程管理器（supervisor），Pod ≈ 它监管的一个进程；任意门"发布"就是让 K8s 拉起新 Pod。</div>
+    <div class="c-row"><span class="ck">关系</span>任意门所有"发布/重启/释放资源"操作最终都是对 K8s 的 Pod 操作；测试环境在 wshoto 命名空间，灰度在 wshoto-gray。</div>
+    <div class="src-quote">我们的服务都是容器部署的，在任意门上发布的应用都是发布到 k8s 上了……测试环境的应用都在 wshoto 命名空间。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>K8s ≠ 虚拟机。Pod 是临时的、可被随时销毁重建的，所以"释放资源/销毁 Pod"很常见、不是删服务。</div>
+  </div>
+</section>
+
+<!-- ===== 07 苏格拉底式阅读关卡 ===== -->
+<section class="module" id="m07">
+  <span class="sec-id">07</span>
+  <h2>苏格拉底式阅读关卡 <button class="voice-btn" data-voice-id="m7">🎧 听这章</button></h2>
+  <p class="lead">不直接给答案，自己想。参考答案在每题下方，但请先停 30 秒再展开。</p>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q1 · 入门</span>原文说"不要手动新建分支，那样不好管理"，这是事实、判断，还是推论？</summary>
+    <div class="q-text">这是<strong>判断</strong>——是任意门团队对"该怎么管分支"的主张。背后的事实依据是"任意门会自动从 master 拉 feature 分支"。判断建立在事实之上，但"手动不好管理"本身是观点。</div>
+    <div class="q-hint">提示：区分"系统怎么做"（事实）和"该怎么做"（判断）。</div>
+  </details>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q2 · 入门</span>"feature 分支从 master 拉、release 分支也从 master 拉"——这两条都是事实吗？</summary>
+    <div class="q-text">是<strong>事实</strong>。原文明确：新建需求时从 master 拉 feature；新建版本时任意门新建 release 测试分支，"这个 release 分支是从 master 拉的"。注意 release 不是从 feature 拉的，而是独立的，feature 是被"合并进"release 的。</div>
+  </details>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q3 · 进阶</span>为什么严禁在 release 分支上改代码？如果偏要在 release 上改，会发生什么？</summary>
+    <div class="q-text">因为版本移除需求时会<strong>默认勾选删除 release 分支</strong>，目的是"防止代码合到 release 分支，最后被带到生产上"。你在 release 上改的代码，可能随删除一起丢失，也可能漏过审核被带进生产——两种都很危险。</div>
+    <div class="q-hint">提示：回到 05 判断 2 的原文依据。</div>
+  </details>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q4 · 进阶</span>正式上线前为什么要"先 master→release，再 release→master"？只做一次合并不行吗？</summary>
+    <div class="q-text">因为需求是<strong>并行开发</strong>的，master 上可能已经有别的需求先上线了，而当前 release 里没有这些代码。只做 release→master，会把"当前版本没包含的新功能"用旧版覆盖掉（回退正式环境）。必须先 master→release 补齐，再 release→master 提交。</div>
+  </details>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q5 · 进阶</span>灰度上线只做 master→release 单向合并，为什么不合回 master？</summary>
+    <div class="q-text">灰度只是"先验证一下"，代码还没正式生效，不应污染 master。合回 master 等于把"还没验证通过的代码"定为正式基准。等灰度没问题，走正式上线流程时，才会通过 release→master 把代码并进 master。</div>
+  </details>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q6 · 深度</span>正式上线如果存在"历史灰度分支"，为什么还要把 master 合到历史灰度分支？</summary>
+    <div class="q-text">历史灰度分支上还有正在灰度的旧版本用户在跑。如果不把 master 的最新代码合过去，那条历史灰度分支会和正式环境越走越远，将来它转正式或回退时就会产生冲突。这一步是<strong>保持分支不偏离</strong>的补救动作。</div>
+    <div class="q-hint">提示：注意 04 结构地图里正式上线的第三步合并。</div>
+  </details>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q7 · 深度</span>需求状态从"待提测"到"已提测"的卡点是什么？为什么不能跳过？</summary>
+    <div class="q-text">卡点是<strong>联调完成</strong>（在任意门点"联调完成"按钮，并发布到开发环境验证过）。跳过它，需求就不会出现在版本的"已提测"列表里，测试就搜不到、没法绑进版本。整条流水线的第一道闸就在这里。</div>
+  </details>
+</section>
+
+<!-- ===== 08 闯关式任务 ===== -->
+<section class="module" id="m08">
+  <span class="sec-id">08</span>
+  <h2>闯关式任务 <button class="voice-btn" data-voice-id="m8">🎧 听这章</button></h2>
+  <p class="lead">8 道闭环题，覆盖分支规则、灰度 vs 正式、需求状态流转、flowStatus、nacos、k8s。选完点"检查"，答对贴 OK 贴纸，答错贴 NO 贴纸并指出错在哪。错题自动进 11 节的错题回流区。</p>
+
+  <!-- 题1 单选：feature 分支从哪拉 -->
+  <div class="task" data-task="t1" data-answer="C"
+       data-ok="对。新建需求时，任意门从 master 自动拉一条 feature 开头的分支。"
+       data-no="错。feature 分支是从 master 拉的，不是从 release 拉、也不是手动 git 新建。"
+       data-src="原文：任意门会将选择的服务从 master 拉一个新的分支出来，分支的名称就是以 feature 开头的开发分支。"
+       data-review="回到「05 判断 1」+「06 概念②」复习">
+    <div class="q">1. 【单选】在任意门新建需求时，feature 开发分支是从哪里拉出来的？</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. 从 release 分支拉</button>
+      <button class="opt" data-val="B">B. 由开发人员手动 git checkout 新建</button>
+      <button class="opt" data-val="C">C. 由任意门从 master 自动拉出</button>
+      <button class="opt" data-val="D">D. 从历史灰度分支拉</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题2 单选：代码只能改在哪 -->
+  <div class="task" data-task="t2" data-answer="A"
+       data-ok="对。所有代码只能改在 feature 分支，严禁在 release 上直接改。"
+       data-no="错。原文明确：严禁在 release 分支上修改代码。release 可能被默认删除，在它上面改的代码会丢或被带到生产。"
+       data-src="原文：严禁在 release 分支上修改代码……默认勾选删除 release 分支，是为了防止代码合到 release 分支，最后被带到生产上。"
+       data-review="回到「05 判断 2」+「09 误解 1」复习">
+    <div class="q">2. 【单选】测试提了 bug，开发人员应该在哪个分支上修改代码？</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. 只能在 feature 分支上修改，再合并到 release</button>
+      <button class="opt" data-val="B">B. 直接在 release 分支上修改最快</button>
+      <button class="opt" data-val="C">C. 直接在 master 分支上修改</button>
+      <button class="opt" data-val="D">D. 三个分支都可以，看习惯</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题3 单选：正式上线合并方向 -->
+  <div class="task" data-task="t3" data-answer="B"
+       data-ok="对。正式上线前先 master→release 补齐，再 release→master 提交本次需求。"
+       data-no="顺序或方向错了。原文：先将 master 合到 release，再把 release 合回 master。只做一次会覆盖掉别人先上线的功能。"
+       data-src="原文：先将 master 分支的代码合并到当前 release 分支，然后再将 release 分支的代码合并到 master。"
+       data-review="回到「05 判断 3」+「06 概念②」复习">
+    <div class="q">3. 【单选】正式上线的合并分支顺序是？</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. release→master，单向合并一次</button>
+      <button class="opt" data-val="B">B. 先 master→release，再 release→master（双向）</button>
+      <button class="opt" data-val="C">C. master→release，单向合并一次</button>
+      <button class="opt" data-val="D">D. feature→master，直接合并</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题4 单选：灰度 vs 正式环境 -->
+  <div class="task" data-task="t4" data-answer="C"
+       data-ok="对。wshoto-gray 是灰度环境，wshoto 是正式环境，两者是不同的 K8s 空间。"
+       data-no="搞反了或没分清。灰度发到 wshoto-gray 空间，正式发到 wshoto 空间——这是两个独立环境。"
+       data-src="原文：发布将应用发布到生产环境，wshoto-gray 空间，相当于是灰度环境……wshoto 空间，相当于是正式环境。"
+       data-review="回到「06 概念③ 灰度」+「09 误解 3」复习">
+    <div class="q">4. 【单选】灰度发布和正式发布分别发到哪个 K8s 空间？</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. 灰度发 wshoto，正式发 wshoto-gray</button>
+      <button class="opt" data-val="B">B. 两个都发 wshoto，只是时间不同</button>
+      <button class="opt" data-val="C">C. 灰度发 wshoto-gray，正式发 wshoto</button>
+      <button class="opt" data-val="D">D. 两个都发 wshoto-gray，由用户决定</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题5 单选：flowStatus -->
+  <div class="task" data-task="t5" data-answer="B"
+       data-ok="对。提交正式上线审核 flowStatus=1，提交灰度审核 flowStatus=2。"
+       data-no="反了。flowStatus=1 是正式上线，flowStatus=2 是灰度——别记颠倒。"
+       data-src="原文：上线：提交上线审核，flowStatus → 1……灰度：提交灰度审核，flowStatus → 2。"
+       data-review="回到「05 判断 5」+「06 概念④ flowStatus」复习">
+    <div class="q">5. 【单选】提交正式上线审核时，版本的 flowStatus 会被置为？</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. 0</button>
+      <button class="opt" data-val="B">B. 1</button>
+      <button class="opt" data-val="C">C. 2</button>
+      <button class="opt" data-val="D">D. 3</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题6 多选：需求状态流转卡点 -->
+  <div class="task" data-task="t6" data-multi="true" data-answer="A,B,C"
+       data-ok="对！这三步都是需求从"待提测"变"已提测"的必经动作。"
+       data-no="漏了或多了。需求要变"已提测"必须：绑定应用、发布到开发环境、联调完成。D 错——销毁 Pod 是可选的资源释放，不是流转卡点。"
+       data-src="原文：创建需求 → 绑定应用 → 发布到开发环境(UAT) → 开发联调 → 联调完成 → 状态变为已提测（可选：销毁开发 Pod 释放资源）。"
+       data-review="回到「05 判断 5」+「04 结构地图 需求阶段」复习">
+    <div class="q">6. 【多选】需求从"待提测"流转到"已提测"，必须经过哪些动作？（多选）</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. 绑定应用</button>
+      <button class="opt" data-val="B">B. 发布到开发环境（UAT）</button>
+      <button class="opt" data-val="C">C. 联调完成（点"联调完成"按钮）</button>
+      <button class="opt" data-val="D">D. 销毁开发环境 Pod</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题7 判断：nacos -->
+  <div class="task" data-task="t7" data-answer="B"
+       data-ok="对——这句话错在把 nacos 当数据库。nacos 是配置中心，存的是配置（如 redis 连接信息），业务数据仍在数据库里。"
+       data-no="你选了"对"，但这是错的。nacos 存的是配置（redis-info.yaml 这种），不是业务数据；业务数据在 PostgreSQL 等数据库里。回到 06 概念⑤。"
+       data-src="原文：可以在任意门上修改、查看 nacos 配置……redis 相关的配置可以在任意门上查看（redis-info.yaml）。"
+       data-review="回到「06 概念⑤ Nacos」+「09 误解 4」复习">
+    <div class="q">7. 【判断】Nacos 既能改配置、也能存业务数据（如用户订单），是个数据库。</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. 对</button>
+      <button class="opt" data-val="B">B. 错</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题8 匹配：概念对应 -->
+  <div class="task" data-task="t8" data-type="selects"
+       data-ok="全部对！这 4 组关系背牢，整章就通了。"
+       data-no="有错。逐组对照：feature=每个需求一条开发分支；release=每个版本一条、合多个feature去测试；master=主线、正式环境来源；任意门=管需求和发布的平台。"
+       data-src="原文：任意门会将选择的服务从 master 拉一个新的分支出来……以 feature 开头……任意门会新建一个 release 测试分支……master……任意门是需求管理，服务发布到测试环境和生产环境的平台。"
+       data-review="回到「06 关键概念拆解」整章复习">
+    <div class="q">8. 【匹配】把分支/平台和它的角色配对。</div>
+    <div class="match-row">
+      <span style="min-width:7em">① feature 分支</span>
+      <select class="match" data-correct="A">
+        <option value="">— 请选 —</option>
+        <option value="A">A. 每个需求一条，从 master 拉，代码只能在这里改</option>
+        <option value="B">B. 每个版本一条，从 master 拉，合多个 feature 去测试</option>
+        <option value="C">C. 主线，正式环境的代码来源</option>
+        <option value="D">D. 管需求和发布的网页平台，背后自动拉分支</option>
+      </select>
+    </div>
+    <div class="match-row">
+      <span style="min-width:7em">② release 分支</span>
+      <select class="match" data-correct="B">
+        <option value="">— 请选 —</option>
+        <option value="A">A. 每个需求一条，从 master 拉，代码只能在这里改</option>
+        <option value="B">B. 每个版本一条，从 master 拉，合多个 feature 去测试</option>
+        <option value="C">C. 主线，正式环境的代码来源</option>
+        <option value="D">D. 管需求和发布的网页平台，背后自动拉分支</option>
+      </select>
+    </div>
+    <div class="match-row">
+      <span style="min-width:7em">③ master 分支</span>
+      <select class="match" data-correct="C">
+        <option value="">— 请选 —</option>
+        <option value="A">A. 每个需求一条，从 master 拉，代码只能在这里改</option>
+        <option value="B">B. 每个版本一条，从 master 拉，合多个 feature 去测试</option>
+        <option value="C">C. 主线，正式环境的代码来源</option>
+        <option value="D">D. 管需求和发布的网页平台，背后自动拉分支</option>
+      </select>
+    </div>
+    <div class="match-row">
+      <span style="min-width:7em">④ 任意门</span>
+      <select class="match" data-correct="D">
+        <option value="">— 请选 —</option>
+        <option value="A">A. 每个需求一条，从 master 拉，代码只能在这里改</option>
+        <option value="B">B. 每个版本一条，从 master 拉，合多个 feature 去测试</option>
+        <option value="C">C. 主线，正式环境的代码来源</option>
+        <option value="D">D. 管需求和发布的网页平台，背后自动拉分支</option>
+      </select>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+</section>
+
+<!-- ===== 09 误解与边界 ===== -->
+<section class="module" id="m09">
+  <span class="sec-id">09</span>
+  <h2>误解与边界 <button class="voice-btn" data-voice-id="m9">🎧 听这章</button></h2>
+
+  <div class="myth">
+    <div class="myth-head">误解 1 · "release 是测试分支，可以直接在上面改代码"</div>
+    <div class="row"><span class="key">为什么容易误解</span>C 写多了，习惯在"当前在用的那份源码"上直接改。</div>
+    <div class="row"><span class="key">原文真正说了</span>严禁在 release 分支上修改代码；移除需求时默认删除 release 分支。</div>
+    <div class="row"><span class="key">原文没有说</span>"release 方便随手改"——反而把它定义为会被随时删除的分支。</div>
+    <div class="row"><span class="key">如何避免</span>所有改动回到 feature 分支，再合并进 release。</div>
+  </div>
+
+  <div class="myth">
+    <div class="myth-head">误解 2 · "正式上线合并就是 release→master 一次就够"</div>
+    <div class="row"><span class="key">为什么容易误解</span>直觉上"我的代码要进 master，那就合过去"。</div>
+    <div class="row"><span class="key">原文真正说了</span>先 master→release（补齐别人先上线的代码），再 release→master（提交本次需求），两步缺一不可。</div>
+    <div class="row"><span class="key">原文没有说</span>"单向合并就行"——漏掉第一步会把正式环境的新功能用旧代码覆盖。</div>
+    <div class="row"><span class="key">如何避免</span>正式上线永远做双向合并；若存在历史灰度分支，还要 master→历史灰度分支。</div>
+  </div>
+
+  <div class="myth">
+    <div class="myth-head">误解 3 · "灰度和正式差不多，发哪个环境都行"</div>
+    <div class="row"><span class="key">为什么容易误解</span>都叫"上线"，看起来只是按钮不同。</div>
+    <div class="row"><span class="key">原文真正说了</span>灰度发 wshoto-gray 空间、单向合并、不合回 master；正式发 wshoto 空间、双向合并、合回 master。两条路规则完全不同。</div>
+    <div class="row"><span class="key">如何避免</span>灰度在前（先小范围验证），正式在后（验证通过才全量）；二者是顺序关系不是二选一。</div>
+  </div>
+
+  <div class="myth">
+    <div class="myth-head">误解 4 · "Nacos 是个数据库，能存业务数据"</div>
+    <div class="row"><span class="key">为什么容易误解</span>看到 nacos 里能"查看/修改"东西，以为是数据存储。</div>
+    <div class="row"><span class="key">原文真正说了</span>Nacos 用于"修改、查看配置"和"查看服务注册"，存的是 yaml 配置（如 redis-info.yaml），不是业务数据。</div>
+    <div class="row"><span class="key">如何避免</span>业务数据在 PostgreSQL（数据库），Nacos 只管配置和服务发现。</div>
+  </div>
+
+  <div class="myth">
+    <div class="myth-head">误解 5 · "销毁 Pod = 把服务删了/下线了"</div>
+    <div class="row"><span class="key">为什么容易误解</span>"销毁"听起来像把程序卸载了。</div>
+    <div class="row"><span class="key">原文真正说了</span>销毁 Pod 是"回收 K8s Pod 资源"，比如联调完成后销毁开发环境的 Pod 释放资源；正式服务随时可以重新发布拉起来。</div>
+    <div class="row"><span class="key">如何避免</span>把 Pod 理解成"可随时重建的进程实例"，销毁 Pod ≈ kill 进程，不是卸载服务。</div>
+  </div>
+</section>
+
+<!-- ===== 10 背景知识缺口 ===== -->
+<section class="module" id="m10">
+  <span class="sec-id">10</span>
+  <h2>背景知识缺口 <button class="voice-btn" data-voice-id="m10">🎧 听这章</button></h2>
+  <p class="lead">要彻底吃透这一章，建议补这 4 个背景。现在不补也行，遇到不懂的再回头看。</p>
+
+  <div class="card sky">
+    <div class="card-title">缺口 1 · Git 合并（merge）与冲突解决</div>
+    <p style="margin:0">原文反复说"合并分支"，但没讲合并本身。建议补：git merge 的三方合并、fast-forward、冲突手动解决。类比 C：合并 ≈ 把两个副本目录的 diff 人工对齐应用到主目录。<strong>为什么重要</strong>：合并方向是整章核心，不懂 merge 就不懂"为什么先合谁"。</p>
+  </div>
+
+  <div class="card sky">
+    <div class="card-title">缺口 2 · CI/CD 与 Tekton 流水线</div>
+    <p style="margin:0">原文的"发布"背后是 Tekton Pipeline 自动构建镜像。建议补：什么是 CI（持续集成）、CD（持续部署）、镜像（image）、流水线（pipeline）。类比 C：Tekton ≈ 一条自动跑 make && scp && restart 的脚本链。<strong>下一步追问</strong>：为什么不能本地 make 完手动传上去？自动化带来什么保障？</p>
+  </div>
+
+  <div class="card sky">
+    <div class="card-title">缺口 3 · 容器与 K8s 基础</div>
+    <p style="margin:0">建议补：什么是容器（Docker）、Pod、Deployment、命名空间（namespace）、副本数。原文里"工作负载 867、容器组 4257、wshoto 命名空间"都基于这套概念。<strong>为什么重要</strong>：理解了 Pod 是临时的，才理解"销毁/重启 Pod"为什么是常规操作。</p>
+  </div>
+
+  <div class="card sky">
+    <div class="card-title">缺口 4 · 微服务与中间件</div>
+    <p style="margin:0">建议补：什么是微服务架构、为什么有 nacos（服务注册发现）、rocketmq（消息队列）、redis（缓存）、xxljob（定时任务）这些中间件各自解决什么问题。<strong>为什么重要</strong>：原文最后几节是中间件速查，懂了它们的定位，才知道一个需求可能同时改 nacos 配置、加 xxljob 任务、发 mq 消息。</p>
+  </div>
+
+  <div class="card marker">
+    <div class="card-title">可以暂时不补的</div>
+    <p style="margin:0">GitLab CI 的 .gitlab-ci.yml 细节、Kuboard 的具体操作按钮、PostgreSQL 的 SQL 语法——这些是工具操作层，不影响理解研发流程的整体骨架。</p>
+  </div>
+</section>
+
+<!-- ===== 11 复盘与学习报告 ===== -->
+<section class="module" id="m11">
+  <span class="sec-id">11</span>
+  <h2>复盘与学习报告 <button class="voice-btn" data-voice-id="m11">🎧 听这章</button></h2>
+  <p class="lead">学完这一章，你应该能用自己的话复述下面三件事；如果你还能问出一个连老员工都要想一想的追问，那你就真的学透了。</p>
+
+  <div class="card">
+    <div class="card-title">能复述的三件事</div>
+    <p style="margin:0">① 三大阶段（需求→版本→上线）和三个分支（feature/release/master）的对应关系；<br>② 代码只能改在 feature，正式上线做双向合并（先 master→release 再 release→master），灰度只单向合并；<br>③ flowStatus 的含义：需求层 0=待提测、1=已提测；版本层 1=正式、2=灰度。</p>
+  </div>
+
+  <div class="card marker">
+    <div class="card-title">还能问的追问（示例）</div>
+    <p style="margin:0">"如果两个需求改了同一个文件、都进了同一个 release，合并时冲突怎么解决？任意门有没有自动化的冲突处理，还是必须开发手动解？"</p>
+  </div>
+
+  <h3>错题回流区</h3>
+  <div class="wrong-box">
+    <ul id="wrongBox"><li style="color:#888">还没有错题。答错的题会自动收集到这里。</li></ul>
+  </div>
+
+  <h3>生成你的学习报告</h3>
+  <div class="report-actions">
+    <button id="genReport">生成学习报告</button>
+    <button id="copyReport">复制报告</button>
+  </div>
+  <div id="report">点「生成学习报告」按钮，根据你的答题情况生成存档。</div>
+</section>
+
+<footer>
+  <div>由 <a href="https://lyzbcy.github.io/" target="_blank" rel="noopener">捞鱼</a> 制作 · 工具能帮你预习难啃的干货，但不能代替完整学习。学习愉快 🐟</div>
+  <div style="margin-top:.4rem;font-size:.78rem;opacity:.7">微盛研发岗管培生培训 · 任意门研发过程生命周期 · 理解地图</div>
+</footer>
+
+</main>
+
+<!-- ===== 右侧书签脊入口 ===== -->
+<button id="voiceFab" aria-label="打开后台语音"><span class="fab-icon">🎧</span><span class="fab-text">后台语音</span></button>
+
+<!-- ===== 圆润玩具风播放器 ===== -->
+<div id="voicePlayer">
+  <button class="vp-close" aria-label="关闭">✕</button>
+  <div class="vp-head">🎧 后台语音 · 连续播放</div>
+  <div class="vp-title">—</div>
+  <div class="vp-controls">
+    <button class="vp-prev" aria-label="上一章">⏮</button>
+    <button class="vp-play" aria-label="播放/暂停">▶</button>
+    <button class="vp-next" aria-label="下一章">⏭</button>
+  </div>
+  <input class="vp-seek" type="range" min="0" max="1000" value="0" aria-label="进度">
+  <div class="vp-time"><span class="vp-cur">00:00</span><span class="vp-dur">00:00</span></div>
+  <div class="vp-sub">点开播放后，这里会同步显示字幕</div>
+</div>
+
+<!-- ===== 固定互动引擎（原样粘贴，不要改写） ===== -->
+<script>
+(function(){
+  "use strict";
+  function $all(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));}
+  function selectedVals(t){return $all('.opt.selected',t).map(function(o){return o.getAttribute('data-val');}).sort();}
+  function setFb(t,state,html){var fb=t.querySelector('.feedback');if(!fb)return;fb.className='feedback'+(state?(' '+state):'');fb.innerHTML=html;}
+  function updateBar(){
+    var all=$all('.task'),done=$all('.task[data-answered="1"]');
+    var fill=document.getElementById('barFill'),num=document.getElementById('barNum');
+    if(fill)fill.style.width=all.length?(done.length/all.length*100)+'%':'0%';
+    if(num)num.textContent=done.length+' / '+all.length;
+  }
+  function renderWrong(){
+    var box=document.getElementById('wrongBox');if(!box)return;
+    var wrong=$all('.task[data-answered="1"][data-correct="0"]');
+    if(!wrong.length){box.innerHTML='<li style="color:#888">还没有错题。答错的题会自动收集到这里。</li>';return;}
+    box.innerHTML='';
+    wrong.forEach(function(t){var li=document.createElement('li');li.textContent='【'+(t.getAttribute('data-task')||'')+'】'+(t.getAttribute('data-review')||'回到对应模块复习');box.appendChild(li);});
+  }
+  function check(t){
+    var type=t.getAttribute('data-type'),ok=false;
+    if(type==='selects'){
+      var sels=$all('select.match',t),allok=true,empty=false;
+      sels.forEach(function(s){if(!s.value)empty=true;if(s.value!==s.getAttribute('data-correct'))allok=false;});
+      if(empty){setFb(t,'no','请先把每一项都选好再检查。');return;}
+      ok=allok;
+    }else{
+      var sel=selectedVals(t);
+      if(!sel.length){setFb(t,'no','请先选择一个选项再检查。');return;}
+      var ans=(t.getAttribute('data-answer')||'').split(',').map(function(x){return x.trim();}).sort();
+      ok=(sel.join('|')===ans.join('|'));
+    }
+    var sticker=ok?'<img class="sticker" src="https://lyzbcy.github.io/weshoto-study/img/sticker/ok.png" alt="">':'<img class="sticker" src="https://lyzbcy.github.io/weshoto-study/img/sticker/no.png" alt="">';
+    var body=ok?(t.getAttribute('data-ok')||'回答正确。'):(t.getAttribute('data-no')||'再想想。');
+    var src=t.getAttribute('data-src');
+    setFb(t,ok?'ok':'no',sticker+(ok?'':'')+body+(src?('<span class="src">'+src+'</span>'):''));
+    t.setAttribute('data-answered','1');t.setAttribute('data-correct',ok?'1':'0');
+    updateBar();renderWrong();
+  }
+  function genReport(){
+    var box=document.getElementById('report');if(!box)return;
+    var all=$all('.task'),done=$all('.task[data-answered="1"]'),right=$all('.task[data-answered="1"][data-correct="1"]');
+    var lines=['=== 学习报告 ===','完成题目：'+done.length+' / '+all.length,'答对：'+right.length+' 题',''];
+    var wrong=$all('.task[data-answered="1"][data-correct="0"]');
+    if(wrong.length){lines.push('我答错的题（建议复习）：');wrong.forEach(function(t){lines.push('- '+(t.getAttribute('data-task')||'')+'：'+(t.getAttribute('data-review')||''));});}
+    else{lines.push('暂无错题。');}
+    lines.push('','三件复述清单：');
+    lines.push('① 三大阶段（需求→版本→上线）对应三个分支（feature/release/master）');
+    lines.push('② 代码只改 feature；正式上线双向合并（master→release 再 release→master），灰度单向合并');
+    lines.push('③ flowStatus：需求层 0=待提测/1=已提测；版本层 1=正式上线/2=灰度');
+    box.textContent=lines.join('\n');
+  }
+  document.addEventListener('click',function(e){
+    var c=e.target.closest?e.target:null;
+    var opt=c&&e.target.closest('.opt');
+    if(opt){var t=opt.closest('.task');if(!t)return;
+      if(t.getAttribute('data-multi')==='true'){opt.classList.toggle('selected');}
+      else{$all('.opt',t).forEach(function(o){o.classList.remove('selected');});opt.classList.add('selected');}
+      return;}
+    var btn=c&&e.target.closest('.check');
+    if(btn){var tk=btn.closest('.task');if(tk)check(tk);return;}
+    if(e.target&&e.target.id==='genReport'){genReport();return;}
+    if(e.target&&e.target.id==='copyReport'){var r=document.getElementById('report');if(r&&navigator.clipboard)navigator.clipboard.writeText(r.textContent);return;}
+  });
+  function init(){updateBar();renderWrong();}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+
+<!-- ===== 固定语音引擎（原样粘贴，不要改写） ===== -->
+<script>
+(function(){
+  "use strict";
+  if(window.__voiceEngine) return;
+  window.__voiceEngine = true;
+
+  var listNode = document.getElementById('voicePlaylist');
+  if(!listNode){ return; }
+  var TRACKS = [];
+  try { TRACKS = JSON.parse(listNode.textContent.trim()); } catch(e){ return; }
+  if(!TRACKS.length) return;
+
+  var player = document.getElementById('voicePlayer');
+  var fab = document.getElementById('voiceFab');
+  var audio = new Audio(); audio.preload = 'metadata';
+  var cur = 0;
+  var ranges = [];
+  var total = 0;
+  var seeking = false;
+
+  function $(s){ return player ? player.querySelector(s) : null; }
+  function fmt(s){ s=Math.max(0,Math.floor(s||0)); var m=Math.floor(s/60), x=s%60;
+    return (m<10?'0':'')+m+':'+(x<10?'0':'')+x; }
+
+  var probe = TRACKS.map(function(){ return {dur:0}; });
+  function tryFinalize(){
+    if(probe.some(function(p){return !p.dur;})) return;
+    ranges = []; total = 0;
+    probe.forEach(function(p){ ranges.push({dur:p.dur, start:total}); total += p.dur; });
+    var d = $('.vp-dur'); if(d) d.textContent = fmt(total);
+    var sk = $('.vp-seek'); if(sk){ sk.max = Math.max(1000, Math.floor(total*10)); }
+  }
+  TRACKS.forEach(function(t, i){
+    var a = new Audio(); a.preload = 'metadata'; a.src = t.src;
+    a.addEventListener('loadedmetadata', function(){
+      probe[i].dur = a.duration || 0; tryFinalize();
+    });
+    a.addEventListener('error', function(){ probe[i].dur = 0; tryFinalize(); });
+  });
+
+  function load(i){
+    cur = i; audio.src = TRACKS[i].src;
+    var ti = $('.vp-title'); if(ti) ti.textContent = TRACKS[i].title || ('第 '+(i+1)+' 段');
+    markBtn(i);
+  }
+  function play(){ audio.play().then(function(){ show(); setPlayIcon(true); if(fab) fab.classList.add('beat'); }).catch(function(){}); }
+  function pause(){ audio.pause(); setPlayIcon(false); if(fab) fab.classList.remove('beat'); }
+  function toggle(){ audio.paused ? play() : pause(); }
+  function next(){ if(cur < TRACKS.length-1){ load(cur+1); play(); } else { pause(); } }
+  function prev(){
+    var abs = absTime();
+    if(cur > 0 && abs - ranges[cur].start < 3){ load(cur-1); play(); }
+    else { audio.currentTime = 0; }
+  }
+  function absTime(){ return ranges[cur] ? ranges[cur].start + (audio.currentTime||0) : (audio.currentTime||0); }
+  function setPlayIcon(on){ var b=$('.vp-play'); if(b) b.textContent = on ? '⏸' : '▶'; }
+  function show(){ if(player) player.classList.add('show'); }
+  function hide(){ if(player) player.classList.remove('show'); }
+  function markBtn(i){
+    document.querySelectorAll('.voice-btn[data-voice-id]').forEach(function(b){
+      b.classList.toggle('active', b.getAttribute('data-voice-id') === TRACKS[i].id);
+    });
+  }
+
+  audio.addEventListener('timeupdate', function(){
+    if(seeking) return;
+    if(!ranges[cur]) return;
+    var abs = absTime(); var sk = $('.vp-seek'); var c = $('.vp-cur');
+    if(sk && total) sk.value = Math.round(abs / total * (sk.max||1000));
+    if(c) c.textContent = fmt(abs);
+  });
+  audio.addEventListener('ended', function(){ if(cur < TRACKS.length-1){ load(cur+1); play(); }
+    else { setPlayIcon(false); if(fab) fab.classList.remove('beat'); } });
+
+  function seekToFraction(frac){
+    if(!total) return;
+    var target = Math.max(0, Math.min(total, frac * total));
+    var i = 0; while(i < ranges.length-1 && ranges[i].start + ranges[i].dur < target){ i++; }
+    if(i !== cur){ cur = i; audio.src = TRACKS[i].src;
+      var ti=$('.vp-title'); if(ti) ti.textContent = TRACKS[i].title||('第 '+(i+1)+' 段'); markBtn(i); }
+    audio.currentTime = target - ranges[i].start;
+    var c=$('.vp-cur'); if(c) c.textContent = fmt(target);
+  }
+
+  document.addEventListener('click', function(e){
+    var t = e.target;
+    var vb = t.closest ? t.closest('.voice-btn[data-voice-id]') : null;
+    if(vb){
+      var id = vb.getAttribute('data-voice-id'), idx = -1;
+      TRACKS.forEach(function(tr, k){ if(tr.id === id) idx = k; });
+      if(idx >= 0){ load(idx); play(); }
+      return;
+    }
+    if(t.id === 'voiceFab'){ show(); if(audio.paused && !audio.src){ load(0); } if(audio.paused){ play(); } return; }
+    if(!player || !player.contains(t)) return;
+    if(t.classList.contains('vp-play')){ toggle(); return; }
+    if(t.classList.contains('vp-prev')){ prev(); return; }
+    if(t.classList.contains('vp-next')){ next(); return; }
+    if(t.classList.contains('vp-close')){ pause(); hide(); return; }
+  });
+  var sk = $('.vp-seek');
+  if(sk){
+    sk.addEventListener('input', function(){ seeking = true;
+      if(total){ var c=$('.vp-cur'); if(c) c.textContent = fmt((sk.value/(sk.max||1000))*total); } });
+    sk.addEventListener('change', function(){ seekToFraction(sk.value/(sk.max||1000)); seeking = false; });
+  }
+})();
+</script>
+
+<!-- ===== 字幕同步引擎（原样粘贴，不要改写） ===== -->
+<script>
+(function(){
+  "use strict";
+  if(window.__subEngine) return;
+  window.__subEngine = true;
+
+  var listNode = document.getElementById("voicePlaylist");
+  if(!listNode) return;
+  var subBox = document.querySelector("#voicePlayer .vp-sub");
+  var curEl = document.querySelector("#voicePlayer .vp-cur");
+  var titleEl = document.querySelector("#voicePlayer .vp-title");
+  if(!subBox) return;
+
+  var subs = [];
+  var subCache = {};
+  var curSrc = "";
+
+  function esc(s){ var d=document.createElement("div"); d.textContent=s; return d.innerHTML; }
+
+  function mp3ToJson(src){
+    var m = src.replace(/^.*?([a-zA-Z0-9_\/.\-]+\.mp3)(?:\?.*)?$/i, "$1");
+    return m.replace(/\.mp3$/i, ".json");
+  }
+
+  function loadSubFor(src){
+    if(!src || src === curSrc) return;
+    curSrc = src;
+    var jsonUrl = mp3ToJson(src);
+    if(subCache[jsonUrl]){ subs = subCache[jsonUrl]; return; }
+    fetch(jsonUrl).then(function(r){
+      if(!r.ok) throw new Error(r.status);
+      return r.json();
+    }).then(function(arr){
+      subCache[jsonUrl] = Array.isArray(arr) ? arr : [];
+      subs = subCache[jsonUrl];
+    }).catch(function(){ subs = []; });
+  }
+
+  function parseTime(text){
+    var p = String(text).trim().split(":");
+    if(p.length === 2){
+      var m = parseInt(p[0], 10) || 0;
+      var s = parseInt(p[1], 10) || 0;
+      return m * 60 + s;
+    }
+    return parseFloat(text) || 0;
+  }
+
+  function renderSub(t){
+    if(!subs.length) return;
+    var hit = null, idx = -1;
+    for(var i = 0; i < subs.length; i++){
+      if(t >= subs[i].start && t < subs[i].end){ hit = subs[i]; idx = i; break; }
+    }
+    if(!hit){
+      var prev = null;
+      for(var j = 0; j < subs.length; j++){
+        if(subs[j].start <= t) prev = subs[j]; else break;
+      }
+      subBox.classList.remove("active");
+      subBox.innerHTML = prev ? esc(prev.text) : "";
+      return;
+    }
+    subBox.classList.add("active");
+    var prevHtml = idx > 0
+      ? '<span style="opacity:.45">' + esc(subs[idx - 1].text) + "</span> "
+      : "";
+    subBox.innerHTML = prevHtml + '<span class="cur">' + esc(hit.text) + "</span>";
+  }
+
+  function tick(){
+    if(!curEl) return;
+    var sec = parseTime(curEl.textContent);
+    renderSub(sec);
+  }
+
+  function onTitleChange(){
+    var TRACKS = [];
+    try { TRACKS = JSON.parse(listNode.textContent.trim()); } catch(e){ return; }
+    var title = titleEl ? titleEl.textContent.trim() : "";
+    for(var i = 0; i < TRACKS.length; i++){
+      if(TRACKS[i].title === title){ loadSubFor(TRACKS[i].src); return; }
+    }
+  }
+
+  if(window.MutationObserver){
+    var obs = new MutationObserver(function(){ tick(); onTitleChange(); });
+    if(curEl) obs.observe(curEl, { childList:true, characterData:true, subtree:true });
+    if(titleEl) obs.observe(titleEl, { childList:true, characterData:true, subtree:true });
+  } else {
+    setInterval(function(){ tick(); onTitleChange(); }, 300);
+  }
+  setTimeout(tick, 500);
+})();
+</script>
+
+</body>
+</html>

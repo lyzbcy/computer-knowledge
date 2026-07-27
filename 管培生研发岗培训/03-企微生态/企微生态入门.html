@@ -1,0 +1,1367 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>企微生态入门 · 理解地图</title>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Poppins:wght@500;600;700&family=Roboto+Mono:wght@400;600&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#FAF6EB;
+  --paper:#F3EDDD;
+  --forest:#1E3A24;
+  --sky:#BCD8EE;
+  --sage:#AFCDA8;
+  --ink:#1A2018;
+  --marker:#F5E08A;
+  --brick:#B5482A;
+  --correct:#2F7D46;
+  --wrong:#B5482A;
+  --font-display:"Archivo Black","Noto Sans SC","PingFang SC",sans-serif;
+  --font-head:"Poppins","Noto Sans SC","PingFang SC",sans-serif;
+  --font-body:-apple-system,"PingFang SC","Noto Sans SC",sans-serif;
+  --font-mono:"Roboto Mono","JetBrains Mono",monospace;
+  --radius-pill:999px;
+  --radius-card:14px;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0; background:var(--cream); color:var(--ink);
+  font-family:var(--font-body); font-size:16px; line-height:1.7;
+  display:flex;
+}
+/* ===== 左侧固定侧边栏 ===== */
+aside.sidebar{
+  position:fixed; top:0; left:0; width:280px; height:100vh;
+  background:var(--forest); color:var(--cream);
+  padding:1.5rem 1.25rem 2rem; overflow-y:auto;
+  z-index:50; flex-shrink:0;
+}
+aside.sidebar h1{
+  font-family:var(--font-display); font-size:1.35rem; line-height:1.25;
+  margin:0 0 .3rem; letter-spacing:-.01em;
+}
+aside.sidebar .sub{
+  font-size:.78rem; opacity:.75; margin-bottom:1.2rem;
+  padding-bottom:1.2rem; border-bottom:1px solid rgba(250,246,235,.18);
+}
+aside.sidebar .progress-wrap{margin-bottom:1.2rem;}
+aside.sidebar .progress-label{
+  display:flex; justify-content:space-between; align-items:center;
+  font-size:.78rem; opacity:.8; margin-bottom:.4rem;
+  font-family:var(--font-head); letter-spacing:.02em;
+}
+aside.sidebar .progress-bar{
+  height:8px; background:rgba(250,246,235,.15); border-radius:var(--radius-pill);
+  overflow:hidden;
+}
+aside.sidebar .progress-bar .fill{
+  height:100%; width:0%; background:var(--marker); border-radius:var(--radius-pill);
+  transition:width .35s ease;
+}
+aside.sidebar nav a{
+  display:block; padding:.55rem .8rem; margin-bottom:.2rem;
+  color:var(--cream); text-decoration:none; opacity:.78;
+  font-family:var(--font-head); font-weight:500; font-size:.88rem;
+  border-radius:8px; transition:all .18s; border-left:3px solid transparent;
+}
+aside.sidebar nav a:hover{ opacity:1; background:rgba(250,246,235,.08); }
+aside.sidebar nav a .no{
+  display:inline-block; width:1.8em; font-family:var(--font-mono); opacity:.7;
+  font-size:.8rem;
+}
+aside.sidebar nav a.active{ opacity:1; background:rgba(245,224,138,.18); border-left-color:var(--marker); }
+aside.sidebar .mascot{
+  margin-top:1.5rem; text-align:center; opacity:.9;
+}
+aside.sidebar .mascot img{ width:88px; height:88px; object-fit:contain; }
+aside.sidebar .mascot .mascot-text{ font-size:.72rem; opacity:.7; margin-top:.3rem; }
+
+/* ===== 右侧主区（单列纵向堆叠） ===== */
+main{
+  margin-left:280px; padding:3rem 2rem 5rem;
+  max-width:820px; width:100%; min-width:0;
+}
+section.module{
+  margin-bottom:3.5rem; scroll-margin-top:1.5rem;
+  border-top:3px solid var(--forest); padding-top:1.5rem;
+}
+section.module:first-of-type{ border-top:none; padding-top:0; }
+.sec-id{
+  display:inline-block; font-family:var(--font-mono); font-weight:600;
+  font-size:.78rem; background:var(--forest); color:var(--cream);
+  padding:.2em .7em; border-radius:var(--radius-pill); letter-spacing:.05em;
+  margin-bottom:.6rem;
+}
+h2{
+  font-family:var(--font-head); font-weight:700;
+  font-size:1.6rem; line-height:1.3; margin:0 0 1rem; color:var(--forest);
+}
+h3{
+  font-family:var(--font-head); font-weight:600;
+  font-size:1.1rem; margin:1.4rem 0 .6rem; color:var(--forest);
+}
+p{ margin:0 0 .85rem; }
+.lead{ font-size:1.05rem; color:var(--ink); }
+
+/* 单列卡片 */
+.card{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1.25rem 1.35rem; margin-bottom:1rem;
+  border-left:4px solid var(--sage);
+}
+.card.brick{ border-left-color:var(--brick); }
+.card.marker{ border-left-color:var(--marker); background:rgba(245,224,138,.18); }
+.card.sky{ border-left-color:var(--sky); }
+.card-title{
+  font-family:var(--font-head); font-weight:600; font-size:1rem;
+  margin:0 0 .4rem; color:var(--forest);
+}
+.card .meta{
+  display:inline-block; font-size:.72rem; font-family:var(--font-mono);
+  background:var(--cream); color:var(--ink); padding:.1em .6em;
+  border-radius:var(--radius-pill); margin-left:.4em; vertical-align:middle;
+}
+
+/* 原文依据块 */
+.src-quote{
+  background:var(--cream); border-left:3px solid var(--brick);
+  padding:.6rem .9rem; margin:.5rem 0; font-size:.9rem;
+  border-radius:0 8px 8px 0;
+}
+.src-quote::before{
+  content:"原文依据 · "; font-family:var(--font-mono); font-size:.74rem;
+  font-weight:600; color:var(--brick); letter-spacing:.05em;
+}
+
+/* 类型标签 */
+.type-tag{
+  display:inline-block; font-size:.72rem; font-family:var(--font-mono);
+  padding:.15em .6em; border-radius:var(--radius-pill); margin-right:.3em;
+  font-weight:600;
+}
+.type-tag.fact{ background:var(--sage); color:var(--forest); }
+.type-tag.judge{ background:var(--marker); color:var(--ink); }
+.type-tag.infer{ background:var(--sky); color:var(--ink); }
+.type-tag.eg{ background:var(--brick); color:var(--cream); }
+
+/* 背景补充块 */
+.bg-block{
+  background:rgba(175,205,168,.22); border-radius:var(--radius-card);
+  padding:1.1rem 1.25rem; margin-bottom:1rem;
+  border-left:4px solid var(--sage);
+}
+.bg-block .bg-label{
+  font-family:var(--font-mono); font-size:.74rem; font-weight:600;
+  color:var(--forest); letter-spacing:.06em; margin-bottom:.5rem;
+}
+.bg-block .why{ font-size:.86rem; opacity:.78; margin-top:.5rem; font-style:italic; }
+
+/* C 类比块 */
+.analogy{
+  background:rgba(188,216,238,.25); border-radius:8px;
+  padding:.7rem .9rem; margin:.6rem 0; font-size:.92rem;
+  border-left:3px solid var(--sky);
+}
+.analogy::before{
+  content:"C 类比 · "; font-family:var(--font-mono); font-size:.74rem;
+  font-weight:600; color:var(--forest); letter-spacing:.05em;
+}
+
+/* 目标项（纵向堆叠） */
+.goal-item{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:.9rem 1.1rem; margin-bottom:.8rem;
+  display:flex; align-items:flex-start; gap:.7rem;
+  border-left:4px solid var(--forest);
+}
+.goal-item .g-num{
+  font-family:var(--font-display); font-size:1.4rem; color:var(--brick);
+  line-height:1; flex-shrink:0;
+}
+
+/* 结构地图（树形/纵向） */
+.tree{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1.1rem 1.25rem; font-family:var(--font-mono); font-size:.85rem;
+  line-height:1.9;
+}
+.tree-node{ margin:.2rem 0; }
+.tree-node .label{ color:var(--forest); font-weight:600; }
+.tree-node .rel{ color:var(--brick); font-size:.78rem; }
+
+/* 关卡题 */
+.q-item{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1rem 1.15rem .9rem; margin-bottom:1rem;
+  border-left:4px solid var(--sky);
+}
+.q-item .q-no{
+  font-family:var(--font-mono); font-size:.74rem; font-weight:600;
+  color:var(--brick); letter-spacing:.05em; margin-bottom:.3rem;
+}
+.q-item .q-text{ font-weight:500; margin-bottom:.7rem; }
+.q-item .q-hint{ font-size:.84rem; opacity:.7; font-style:italic; margin-top:.6rem; }
+
+/* 任务（data-* 题目） */
+.task{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1rem 1.15rem 1.1rem; margin-bottom:1.1rem;
+  border-left:4px solid var(--brick);
+}
+.task .q{ font-weight:500; margin-bottom:.7rem; }
+.task .opts{ display:flex; flex-direction:column; gap:.45rem; margin-bottom:.7rem; }
+.task button.opt{
+  background:var(--cream); border:1.5px solid var(--forest);
+  border-radius:8px; padding:.55rem .8rem;
+  font-family:var(--font-body); font-size:.94rem; text-align:left;
+  cursor:pointer; transition:all .15s; color:var(--ink);
+}
+.task button.opt:hover{ background:var(--sage); }
+.task button.opt.selected{ background:var(--forest); color:var(--cream); border-color:var(--forest); }
+.task button.check{
+  background:var(--forest); color:var(--cream); border:none;
+  border-radius:var(--radius-pill); padding:.45rem 1.2rem;
+  font-family:var(--font-head); font-weight:600; font-size:.88rem;
+  cursor:pointer; margin-bottom:.6rem;
+}
+.task button.check:hover{ background:#142710; }
+.task .feedback{
+  background:var(--cream); border-radius:8px; padding:.6rem .8rem;
+  font-size:.88rem; margin-top:.4rem;
+  border-left:3px solid var(--ink);
+}
+.task .feedback.ok{ border-left-color:var(--correct); background:rgba(175,205,168,.22); }
+.task .feedback.no{ border-left-color:var(--wrong); background:rgba(181,72,42,.1); }
+.task .feedback .src{
+  display:block; margin-top:.4rem; font-size:.82rem; opacity:.8;
+  font-style:italic;
+}
+.task .match-row{
+  display:flex; align-items:center; gap:.6rem; margin-bottom:.5rem;
+  flex-wrap:wrap;
+}
+.task select.match{
+  flex:1; min-width:140px; padding:.4rem .5rem;
+  border:1.5px solid var(--forest); border-radius:6px;
+  font-family:var(--font-body); background:var(--cream);
+}
+
+/* 错题回流 */
+.wrong-box{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1rem 1.15rem; border-left:4px solid var(--wrong);
+}
+.wrong-box ul{ margin:.5rem 0 0; padding-left:1.2rem; }
+.wrong-box li{ margin-bottom:.4rem; font-size:.9rem; }
+
+/* 误解卡 */
+.myth{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1.1rem 1.25rem; margin-bottom:1rem;
+  border-left:4px solid var(--brick);
+}
+.myth .myth-head{
+  font-family:var(--font-head); font-weight:600; color:var(--brick);
+  font-size:1rem; margin-bottom:.5rem;
+}
+.myth .row{ margin:.4rem 0; font-size:.92rem; }
+.myth .row .key{
+  font-family:var(--font-mono); font-size:.74rem; font-weight:600;
+  color:var(--forest); margin-right:.4em;
+}
+
+/* 概念卡 */
+.concept{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1.25rem 1.35rem; margin-bottom:1.1rem;
+  border-left:4px solid var(--marker);
+}
+.concept .c-name{
+  font-family:var(--font-head); font-weight:700; font-size:1.15rem;
+  color:var(--forest); margin-bottom:.6rem;
+}
+.concept .c-row{ margin:.5rem 0; font-size:.92rem; }
+.concept .c-row .ck{
+  font-family:var(--font-mono); font-size:.74rem; font-weight:600;
+  color:var(--brick); margin-right:.4em; letter-spacing:.04em;
+}
+
+/* 公式块 / 代码块 */
+.formula{
+  background:var(--forest); color:var(--marker);
+  border-radius:8px; padding:.8rem 1rem; margin:.6rem 0;
+  font-family:var(--font-mono); font-size:.85rem; text-align:center;
+  overflow-x:auto;
+}
+
+/* 表格 */
+table.t{
+  width:100%; border-collapse:collapse; margin:.6rem 0;
+  font-size:.88rem; background:var(--cream);
+  border-radius:8px; overflow:hidden;
+}
+table.t th, table.t td{
+  padding:.5rem .7rem; text-align:left; border:1px solid var(--paper);
+  vertical-align:top;
+}
+table.t th{ background:var(--forest); color:var(--cream); font-family:var(--font-head); font-weight:500; }
+table.t td.hit{ background:rgba(175,205,168,.3); }
+table.t td.miss{ background:rgba(181,72,42,.15); }
+
+/* 表情贴纸（反馈区与目标头） */
+.sticker{ display:inline-block; vertical-align:middle; width:24px; height:24px; margin:0 .3em; }
+
+/* 页脚 */
+footer{
+  margin-top:3rem; padding:1.5rem 0 1rem; border-top:2px solid var(--forest);
+  font-size:.86rem; color:var(--ink); text-align:center;
+}
+footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
+
+/* 引用图标 */
+.hero-mark{
+  font-family:var(--font-display); font-size:.74rem;
+  color:var(--marker); background:var(--forest);
+  padding:.2em .7em; border-radius:var(--radius-pill);
+  letter-spacing:.05em; display:inline-block; margin-bottom:.6rem;
+}
+
+/* ===== 语音：右侧书签脊 ===== */
+#voiceFab{
+  position:fixed; right:0; top:50%; transform:translateY(-50%); z-index:9998;
+  display:flex; align-items:center; flex-direction:row;
+  background:var(--forest); color:var(--cream); border:none; cursor:pointer;
+  height:5em; padding:0 .55em;
+  border-radius:16px 0 0 16px;
+  box-shadow:-4px 0 14px rgba(0,0,0,.18);
+  font-family:var(--font-head); font-size:.85rem;
+  overflow:hidden;
+  transition:width .42s cubic-bezier(.4,0,.2,1), box-shadow .3s ease;
+  width:1.9em;
+}
+#voiceFab .fab-icon{
+  font-size:1.15rem; writing-mode:vertical-rl; text-orientation:upright;
+  letter-spacing:.1em; white-space:nowrap; flex-shrink:0;
+}
+#voiceFab .fab-text{
+  white-space:nowrap; opacity:0; margin-left:.6em;
+  transition:opacity .28s ease .12s;
+}
+#voiceFab:hover{
+  width:8.6em; box-shadow:-6px 0 22px rgba(0,0,0,.25);
+}
+#voiceFab:hover .fab-text{ opacity:1; }
+#voiceFab.beat{ animation:voiceBeat 1.6s ease-in-out infinite; }
+@keyframes voiceBeat{ 0%,100%{box-shadow:-4px 0 14px rgba(0,0,0,.18)} 50%{box-shadow:-4px 0 20px rgba(181,72,42,.5)} }
+
+/* ===== 语音：圆润玩具风播放器 ===== */
+#voicePlayer{
+  position:fixed; left:50%; bottom:1rem; transform:translateX(-50%) translateY(140%);
+  width:min(92vw,380px); padding:1rem 1.1rem 1.1rem; background:var(--cream);
+  border:2px solid var(--forest); border-radius:26px;
+  box-shadow:0 8px 28px rgba(0,0,0,.16); z-index:9999; transition:transform .28s ease;
+  text-align:center; font-family:var(--font-body);
+}
+#voicePlayer.show{ transform:translateX(-50%) translateY(0); }
+#voicePlayer .vp-head{ font-size:.75rem; color:var(--forest); opacity:.8; letter-spacing:.05em; }
+#voicePlayer .vp-title{ font:700 1rem/1.35 var(--font-body); color:var(--ink);
+  margin:.25rem 0 .7rem; padding:0 .2rem; word-break:break-word; }
+#voicePlayer .vp-play{
+  width:3.6rem; height:3.6rem; border:none; border-radius:50%;
+  background:var(--forest); color:var(--cream); font-size:1.3rem; cursor:pointer;
+  margin:0 auto .7rem; display:flex; align-items:center; justify-content:center;
+  box-shadow:0 3px 0 #142710; transition:transform .1s, box-shadow .1s;
+}
+#voicePlayer .vp-play:active{ transform:translateY(2px); box-shadow:0 1px 0 #142710; }
+#voicePlayer .vp-prev,#voicePlayer .vp-next{
+  width:2.3rem; height:2.3rem; border:1.5px solid var(--forest); border-radius:50%;
+  background:var(--cream); color:var(--forest); font-size:.9rem; cursor:pointer;
+}
+#voicePlayer .vp-controls{ display:flex; align-items:center; justify-content:center; gap:1.2rem; margin-bottom:.7rem; }
+#voicePlayer .vp-seek{ width:100%; margin:.2rem 0; cursor:pointer; accent-color:var(--forest); }
+#voicePlayer .vp-time{ display:flex; justify-content:space-between; font:600 .72rem/1 var(--font-mono); color:var(--ink); opacity:.75; }
+#voicePlayer .vp-close{ position:absolute; top:.5rem; right:.6rem; width:1.5rem; height:1.5rem;
+  border:none; background:transparent; color:var(--ink); font-size:1rem; cursor:pointer; opacity:.5; }
+#voicePlayer .vp-sub{
+  min-height:2.6em; max-height:3.9em; overflow:hidden;
+  font:.85rem/1.5 var(--font-body); color:var(--ink); opacity:.55;
+  margin:.2rem 0 .5rem; padding:0 .3rem;
+  transition:opacity .2s; text-align:center;
+}
+#voicePlayer .vp-sub.active{ opacity:1; }
+#voicePlayer .vp-sub .cur{ color:var(--forest); font-weight:600; }
+
+/* 「听这章」小按钮 */
+.voice-btn{
+  display:inline-block; vertical-align:middle; margin-left:.6em;
+  padding:.25em .8em; border:1px solid var(--forest); border-radius:var(--radius-pill);
+  background:var(--cream); color:var(--forest); font:600 .8rem/1.2 var(--font-body);
+  cursor:pointer; transition:background .15s;
+}
+.voice-btn:hover{ background:var(--sage); }
+.voice-btn.active{ background:var(--forest); color:var(--cream); }
+
+/* 学习报告按钮 */
+.report-actions{ margin:.8rem 0; display:flex; gap:.6rem; flex-wrap:wrap; }
+.report-actions button{
+  background:var(--forest); color:var(--cream); border:none;
+  border-radius:var(--radius-pill); padding:.5rem 1.1rem;
+  font-family:var(--font-head); font-weight:600; font-size:.88rem; cursor:pointer;
+}
+.report-actions button:hover{ background:#142710; }
+#report{
+  background:var(--cream); border-radius:8px; padding:1rem 1.1rem;
+  font-family:var(--font-mono); font-size:.82rem; white-space:pre-wrap;
+  border-left:3px solid var(--forest); min-height:3rem; line-height:1.7;
+}
+
+/* 移动端 */
+@media (max-width: 880px){
+  body{ flex-direction:column; }
+  aside.sidebar{
+    position:static; width:100%; height:auto; max-height:none;
+    padding:1.2rem 1rem;
+  }
+  main{ margin-left:0; padding:1.5rem 1rem 4rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- 语音播放列表（连续播放用） -->
+<script type="application/json" id="voicePlaylist">
+[
+  {"id":"m1","title":"01 学习目标与阅读路径","src":"audio/m1.mp3"},
+  {"id":"m2","title":"02 零基础背景包","src":"audio/m2.mp3"},
+  {"id":"m3","title":"03 原文问题定位","src":"audio/m3.mp3"},
+  {"id":"m4","title":"04 原文结构地图","src":"audio/m4.mp3"},
+  {"id":"m5","title":"05 核心判断与依据","src":"audio/m5.mp3"},
+  {"id":"m6","title":"06 关键概念拆解","src":"audio/m6.mp3"},
+  {"id":"m7","title":"07 苏格拉底式阅读关卡","src":"audio/m7.mp3"},
+  {"id":"m8","title":"08 闯关式任务","src":"audio/m8.mp3"},
+  {"id":"m9","title":"09 误解与边界","src":"audio/m9.mp3"},
+  {"id":"m10","title":"10 背景知识缺口","src":"audio/m10.mp3"},
+  {"id":"m11","title":"11 复盘与学习报告","src":"audio/m11.mp3"}
+]
+</script>
+
+<!-- ===== 左侧固定侧边栏 ===== -->
+<aside class="sidebar">
+  <h1>企微生态入门</h1>
+  <div class="sub">微盛研发岗管培生培训 · 理解地图</div>
+
+  <div class="progress-wrap">
+    <div class="progress-label">
+      <span>任务进度</span>
+      <span><span id="barNum">0 / 0</span></span>
+    </div>
+    <div class="progress-bar"><div class="fill" id="barFill"></div></div>
+  </div>
+
+  <nav>
+    <a href="#m01"><span class="no">01</span>学习目标与阅读路径</a>
+    <a href="#m02"><span class="no">02</span>零基础背景包</a>
+    <a href="#m03"><span class="no">03</span>原文问题定位</a>
+    <a href="#m04"><span class="no">04</span>原文结构地图</a>
+    <a href="#m05"><span class="no">05</span>核心判断与依据</a>
+    <a href="#m06"><span class="no">06</span>关键概念拆解</a>
+    <a href="#m07"><span class="no">07</span>苏格拉底式阅读关卡</a>
+    <a href="#m08"><span class="no">08</span>闯关式任务</a>
+    <a href="#m09"><span class="no">09</span>误解与边界</a>
+    <a href="#m10"><span class="no">10</span>背景知识缺口</a>
+    <a href="#m11"><span class="no">11</span>复盘与学习报告</a>
+  </nav>
+
+  <div class="mascot">
+    <img src="https://lyzbcy.github.io/weshoto-study/img/sticker/mascot.png" alt="吉祥物">
+    <div class="mascot-text">陪你学完整章</div>
+  </div>
+</aside>
+
+<!-- ===== 右侧主区（单列纵向堆叠） ===== -->
+<main>
+
+<!-- ===== 01 学习目标与阅读路径 ===== -->
+<section class="module" id="m01">
+  <span class="hero-mark">理解地图</span>
+  <h2>01 学习目标与阅读路径 <button class="voice-btn" data-voice-id="m1">🎧 听这章</button></h2>
+  <p class="lead">这是一份写给"擅长写 C 语言、但对企业微信开放平台、API、鉴权完全陌生"的同学的拆解地图。它要讲清一件事：企微生态里"谁能调接口、谁的事件会被推过来、怎么安全地拿数据"是怎么串起来的。读完这一章，你能做到下面五件事。</p>
+
+  <div class="goal-item">
+    <span class="g-num">1</span>
+    <div><strong>能说清三种开发模式的差异</strong>：自建应用、第三方应用、服务商代开发，分别在「应用归属谁、服务谁、授权多复杂、ID 是明文还是密文」上的区别。</div>
+  </div>
+  <div class="goal-item">
+    <span class="g-num">2</span>
+    <div><strong>能解释 access_token 的角色</strong>：它是后端调用 API 的入场券，不是「有了 token 就有权限」，还要看可见范围、通讯录权限、客户联系权限。</div>
+  </div>
+  <div class="goal-item">
+    <span class="g-num">3</span>
+    <div><strong>能区分 corpid / userid / open_userid / external_userid</strong>：谁是企业主键、谁是成员 ID、为什么有"服务商主体密文"这回事。</div>
+  </div>
+  <div class="goal-item">
+    <span class="g-num">4</span>
+    <div><strong>能讲清回调加解密流程</strong>：URL 验证四步、业务回调五步、EncodingAESKey 和 msg_signature 各自干什么。</div>
+  </div>
+  <div class="goal-item">
+    <span class="g-num">5</span>
+    <div><strong>能指出至少 3 个</strong>新手最常踩的坑（如：把 token 给前端、以为装了应用就有客户联系权限、把 corpid 当成 userid 用）。</div>
+  </div>
+
+  <div class="card marker">
+    <div class="card-title">阅读路径（按顺序）</div>
+    <p style="margin:0">先在 02 补 5 个零件 → 在 03/04 看清"作者在解决什么问题、文章怎么搭" → 在 05/06 抓住核心判断和 6 个关键概念 → 在 07 自己提问 → 在 08 闯 8 道闭环题 → 在 09/10 看边界 → 在 11 出报告。</p>
+  </div>
+</section>
+
+<!-- ===== 02 零基础背景包 ===== -->
+<section class="module" id="m02">
+  <span class="sec-id">02</span>
+  <h2>零基础背景包 <button class="voice-btn" data-voice-id="m2">🎧 听这章</button></h2>
+  <p class="lead">在拆原文前，先装 5 个最基本的零件。每个都标了"背景补充"——它帮你读懂原文，但<strong>不是作者的论点</strong>。</p>
+
+  <div class="bg-block">
+    <div class="bg-label">背景补充 1 · 企业微信（WeCom）是什么</div>
+    <p style="margin:0 0 .4rem">腾讯出的一套面向企业的协作平台，<strong>不是单一系统，而是一套生态</strong>：企业身份 + 组织通讯录 + 应用工作台 + 客户连接 + 开放接口。它和我们平时用的"微信"是两套东西，但能和微信客户互通。</p>
+    <div class="analogy">类比 C：企微生态 ≈ 一个大型操作系统，应用是进程，通讯录是进程表，API 是系统调用，回调是中断信号。</div>
+    <div class="why">为什么现在需要知道：整章所有概念都建立在"企微是一个生态而非单个工具"这个前提上。</div>
+  </div>
+
+  <div class="bg-block">
+    <div class="bg-label">背景补充 2 · API 与 access_token</div>
+    <p style="margin:0 0 .4rem">API（Application Programming Interface）= 应用程序编程接口，程序之间互相调用的"函数入口"。企业微信提供一整套后端 API，业务系统拿到 <strong>access_token</strong> 后就能调用。token 有效期通常 7200 秒。</p>
+    <div class="analogy">类比 C：access_token ≈ 登录后服务器发给你的一张 session 凭证，带着它后续每次"函数调用"才能被授权；和 token 一起的 corpid/secret ≈ 账号密码，只放在后端，绝不下发前端。</div>
+    <div class="why">为什么现在需要知道：后端 API、JS-SDK、回调、ID 转换，全部围绕"谁能拿到 token、拿到的是哪种 token"展开。</div>
+  </div>
+
+  <div class="bg-block">
+    <div class="bg-label">背景补充 3 · 回调（Callback）</div>
+    <p style="margin:0 0 .4rem">业务系统提供一个公网 HTTPS 地址，企业微信在事件发生时<strong>主动把数据 POST 过来</strong>。方向和"业务系统主动调企微 API"相反。</p>
+    <div class="analogy">类比 C：回调 ≈ 中断处理函数（interrupt handler）——平时你的 main 函数在跑自己的活，外部硬件/事件触发中断时，CPU 跳去执行你注册的中断服务程序。你不知道它什么时候来，但必须随时准备好。</div>
+    <div class="why">为什么现在需要知道：授权变化、成员发消息、客户添加/流失等全是靠回调推过来的，这是企微项目的半条命脉。</div>
+  </div>
+
+  <div class="bg-block">
+    <div class="bg-label">背景补充 4 · 对称加密（AES）与签名（SHA1）</div>
+    <p style="margin:0 0 .4rem">AES 是<strong>对称加密</strong>算法（加密和解密用同一把密钥），企微用它加密回调消息体。SHA1 是<strong>散列算法</strong>，企微用它做签名校验，验证"这条消息确实来自企微、没被篡改"。</p>
+    <div class="analogy">类比 C：AES 加解密 ≈ 你和对方共用一把钥匙（EncodingAESKey 解码后的 32 字节 AESKey），锁上的盒子只有你们俩打得开；签名校验 ≈ 校验和（checksum），数据在路上动过一个字节，对不上就拒收。</div>
+    <div class="why">为什么现在需要知道：回调数据是密文，不验签不解密就处理 = 既不安全也跑不通。</div>
+  </div>
+
+  <div class="bg-block">
+    <div class="bg-label">背景补充 5 · OAuth2 与"扫码授权"</div>
+    <p style="margin:0">OAuth2 是一套"让用户把权限授权给第三方应用"的行业标准。企微的"管理员扫码授权代开发模板""网页授权登录"都遵循这套思路：用户不把密码给应用，而是登录企微后<strong>授权一个 code</strong>，应用用 code 换 token。</p>
+    <div class="why">为什么现在需要知道：第三方应用、代开发的授权链路，本质都是 OAuth2 的延伸。</div>
+  </div>
+</section>
+
+<!-- ===== 03 原文问题定位 ===== -->
+<section class="module" id="m03">
+  <span class="sec-id">03</span>
+  <h2>原文问题定位 <button class="voice-btn" data-voice-id="m3">🎧 听这章</button></h2>
+
+  <div class="card brick">
+    <div class="card-title">表面在讲什么？</div>
+    <p style="margin:0">一份企微生态"地图 + 入门手册"：生态概览、业务入口、三种开发模式、后端 API、JS-SDK、回调、权限授权、ID 体系、加解密、典型场景、术语表。<span class="type-tag fact">事实</span></p>
+  </div>
+
+  <div class="card brick">
+    <div class="card-title">深层在回答什么问题？</div>
+    <p style="margin:0 0 .5rem">作为研发，<strong>面对一个企微项目需求，我该选哪种开发模式、要走哪些链路、要在哪里处理鉴权和加密，才能把企业内部系统和微信客户安全地连起来？</strong>整章不是 API 字典，而是教你"先看业务关系，再看接口能力"的判断框架。<span class="type-tag judge">判断</span></p>
+    <div class="src-quote">三种模式不要先从接口能力判断，而要先看业务关系：谁拥有应用、谁服务客户、是否要服务多家企业、是否需要标准化上架。这些问题比「某个接口能不能调」更重要。</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">读者如果只记一个问题，应该记哪个？</div>
+    <p style="margin:0"><strong>"能拿到 token"和"能拿到数据"是不是一回事？为什么？</strong>整章从权限授权到 ID 体系、从可见范围到客户联系权限，都在反复回答这一个问题。<span class="type-tag infer">推论</span></p>
+  </div>
+</section>
+
+<!-- ===== 04 原文结构地图 ===== -->
+<section class="module" id="m04">
+  <span class="sec-id">04</span>
+  <h2>原文结构地图 <button class="voice-btn" data-voice-id="m4">🎧 听这章</button></h2>
+  <p class="lead">判断结构类型：<strong>机制流程 + 主题簇</strong>（混合结构）。最外层是"先建立认知 → 选模式 → 走链路 → 落场景"的流程骨架，内层嵌着多个并列的能力主题簇（API/JS-SDK/回调/ID/加解密）。不能把它读成单一因果链。</p>
+
+  <div class="tree">
+    <div class="tree-node"><span class="label">主线骨架：认知 → 选型 → 链路 → 场景</span> <span class="rel">（机制流程）</span></div>
+    <div class="tree-node">&nbsp;&nbsp;├─ 1. 先建立整体认知（生态四要素 + 三类业务问题 + 四条开发链路）</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ 2. 核心业务入口（工作台 / H5 / 侧边栏 / 客户联系 / 客服 / 会话存档…）</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ 3. 三种开发模式（自建 / 第三方 / 代开发）+ 4. 选型决策</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ 5. 关键开发链路（后端 API / JS-SDK / 回调）</div>
+    <div class="tree-node">&nbsp;&nbsp;└─ 11. 典型业务场景（OA / CRM-SCRM / 微信客服）</div>
+    <div class="tree-node" style="margin-top:.6rem"><span class="label">并列主题簇（能力地图）</span> <span class="rel">（主题簇，被主线调用）</span></div>
+    <div class="tree-node">&nbsp;&nbsp;├─ 第 6 章 权限与授权体系（可见范围 / 通讯录 / 客户联系 / 敏感信息）</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ 第 7 章 后端接口体系（access_token 入口 + 三类 token + 能力地图）</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ 第 8 章 JS-SDK 与前端能力（企业身份签名 / 应用身份签名）</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ 第 9 章 ID 体系与转换（corpid / userid / open_userid / external_userid）</div>
+    <div class="tree-node">&nbsp;&nbsp;└─ 第 10 章 明文密文与回调加解密（URL 验证 / 业务回调 / AES-CBC）</div>
+  </div>
+
+  <div class="card sky">
+    <div class="card-title">节点关系说明</div>
+    <p style="margin:0">主线与主题簇是<strong>调用关系</strong>（不是因果）：第 3 章告诉你"选哪种模式"，决定了第 7 章"你拿哪种 token"；第 6 章的"可见范围/权限"反过来限制第 7 章"token 实际能拿到什么数据"；第 10 章"加解密"是第 5.3 章"回调"能跑通的<strong>前提条件</strong>。各章互相引用，必须对着看。</p>
+  </div>
+
+  <div class="card marker">
+    <div class="card-title">四条核心链路（贯穿全章）</div>
+    <p style="margin:0"><strong>身份链路</strong>（谁在访问、哪个企业、哪个应用）→ <strong>授权链路</strong>（授权了哪些权限）→ <strong>调用链路</strong>（后端拿 access_token 调 API）→ <strong>回调链路</strong>（企微把事件/消息/授权变化推过来）。这四条链路是后面所有概念的"骨架"。</p>
+  </div>
+</section>
+
+<!-- ===== 05 核心判断与依据 ===== -->
+<section class="module" id="m05">
+  <span class="sec-id">05</span>
+  <h2>核心判断与依据 <button class="voice-btn" data-voice-id="m5">🎧 听这章</button></h2>
+  <p class="lead">挑出 6 条最硬的判断。每条都附原文依据和类型标签。</p>
+
+  <div class="card">
+    <div class="card-title">判断 1 · 选型先看业务关系，不看接口能力</div>
+    <p style="margin:0 0 .4rem">"这个接口能不能调"是次要问题，"谁拥有应用、服务谁、是否服务多家企业、是否需要标准化上架"才是首要问题。<span class="type-tag judge">判断</span></p>
+    <div class="src-quote">三种模式不要先从接口能力判断，而要先看业务关系：谁拥有应用、谁服务客户、是否要服务多家企业、是否需要标准化上架。这些问题比「某个接口能不能调」更重要。</div>
+    <p style="margin:.4rem 0 0;font-size:.9rem"><strong>易误读</strong>：别一上来就翻接口文档——接口能力几乎三种模式都覆盖，真正决定方案的是商业模式和客户运维能力。</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">判断 2 · access_token 是后端接口的入场券，但「有 token ≠ 有权限」</div>
+    <p style="margin:0 0 .4rem">token 只能证明"你是合法调用者"，真正能不能访问成员、客户、群、审批数据，还取决于应用可见范围、通讯录权限、客户联系配置。<span class="type-tag fact">事实</span></p>
+    <div class="src-quote">access_token 是后端调用接口的凭证。token 不能给前端，必须由后端保存和使用。有 token 不等于有权限，权限还受应用可见范围、授权能力、客户联系配置等影响。</div>
+    <p style="margin:.4rem 0 0;font-size:.9rem"><strong>为什么重要</strong>：这是区分"调用成功"和"拿到数据"的地基。新手常卡在"接口返回 errcode 但 token 明明没过期"。</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">判断 3 · 第三方应用有「三层凭证」，自建应用只有「一层」</div>
+    <p style="margin:0 0 .4rem">自建应用：corpid + secret → access_token，一步到位。第三方应用要同时维护服务商身份（provider_access_token）、应用身份（suite_access_token）、被授权企业身份（授权企业 access_token）三层。<span class="type-tag fact">事实</span></p>
+    <div class="src-quote">第三方应用比自建应用复杂，因为它需要处理「服务商身份、应用身份、授权企业身份」三层凭证。</div>
+    <p style="margin:.4rem 0 0;font-size:.9rem"><strong>易误读</strong>：别以为三种 token 是"选一个用"——它们各管一档接口，错用会被拒。</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">判断 4 · 回调方向与 API 相反，且必须验签解密才能处理</div>
+    <p style="margin:0 0 .4rem">业务系统主动调企微 = 调用链路；企微主动把事件 POST 给业务系统 = 回调链路。回调消息通常是加密的，必须先验签、解密，再快速响应 success。<span class="type-tag fact">事实</span></p>
+    <div class="src-quote">回调是企业微信主动通知业务系统「发生了什么」。它和后端 API 的方向相反……回调消息通常是加密的，业务系统要验签、解密后才能处理。</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">判断 5 · ID 有「企业主体」和「服务商主体」两套，数据打通必须先认主体</div>
+    <p style="margin:0 0 .4rem">同一个客户/成员，在自建应用里拿到的 ID（明文）和从第三方/代开发应用拿到的 ID（open_userid，密文）<strong>不是同一个字符串</strong>。跨系统对数据前必须做 ID 转换。<span class="type-tag infer">推论</span></p>
+    <div class="src-quote">问一个服务商（第三方或代开发者）拿到的 open_userid，通常在服务商主体下保持一致。做数据打通时，必须先确认 ID 属于企业主体还是服务商主体。</div>
+    <p style="margin:.4rem 0 0;font-size:.9rem"><strong>为什么重要</strong>：这是 SCRM、客服系统最容易出数据错位的地方。</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">判断 6 · 回调要「快响应 + 幂等」，不能在 HTTP 请求里同步跑业务</div>
+    <p style="margin:0 0 .4rem">企微要求 5 秒内响应，超时会重试（通常共三次）。复杂业务必须先落库/入队列，再异步处理，并对相同事件做幂等。<span class="type-tag fact">事实</span></p>
+    <div class="src-quote">收到回调后先落库或入队列，再异步处理业务。不要把复杂业务放在回调 HTTP 请求里同步执行。对相同事件做幂等处理，因为重试可能造成重复投递。</div>
+  </div>
+</section>
+
+<!-- ===== 06 关键概念拆解 ===== -->
+<section class="module" id="m06">
+  <span class="sec-id">06</span>
+  <h2>关键概念拆解 <button class="voice-btn" data-voice-id="m6">🎧 听这章</button></h2>
+  <p class="lead">6 个概念，环环相扣：先有<strong>自建应用 / 第三方应用</strong>两种模式的归属差异，才决定你拿到什么<strong> access_token</strong>；token 驱动<strong>回调（callback）</strong>的反向链路；回调里和解密绑死的是 <strong>EncodingAESKey</strong>；而 <strong>corpid/userid/open_userid</strong> 是贯穿身份、数据打通的主键。</p>
+
+  <div class="concept">
+    <div class="c-name">① 自建应用（企业内部应用）</div>
+    <div class="c-row"><span class="ck">定义</span>由企业管理员在企微管理后台创建、归本企业所有、主要服务本企业成员的应用。也叫"企业内部应用"。</div>
+    <div class="c-row"><span class="ck">人话</span>公司自己给自己写的、装在自己企微里的一个 App。</div>
+    <div class="analogy">类比 C：自建应用 ≈ 你在一个进程里自己静态链接进来的模块，只服务于这一个进程（企业），代码和配置都你说了算。</div>
+    <div class="c-row"><span class="ck">关系</span>凭证链路最短：corpid + secret → access_token，一步到位。拿到的 ID 是企业主体明文。</div>
+    <div class="src-quote">企业内部应用，也叫自建应用。它由企业管理员在企业微信管理后台创建，主要服务本企业成员。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>自建应用 ≠ 只能内部用——它也能调客户联系接口去连微信客户；它和"第三方应用"的区别是<strong>归属</strong>，不是"能不能连客户"。</div>
+  </div>
+
+  <div class="concept">
+    <div class="c-name">② 第三方应用（应用市场应用）</div>
+    <div class="c-row"><span class="ck">定义</span>由服务商或第三方开发者创建、面向<strong>多个企业</strong>授权安装的标准化云应用，通常上架在企微应用市场。</div>
+    <div class="c-row"><span class="ck">人话</span>SaaS 厂商做好的标准产品，任何企业都能"授权安装"用，不用每家单独开发。</div>
+    <div class="analogy">类比 C：第三方应用 ≈ 一个动态库（.so/.dll），由独立供应商编译好，多个进程（企业）按标准 ABI 加载它；服务方负责维护，使用方按需挂载。</div>
+    <div class="c-row"><span class="ck">关系</span>要维护三层凭证：provider_access_token（服务商）、suite_access_token（应用）、授权企业 access_token（被授权企业）。ID 升级后多为服务商主体密文 open_userid。</div>
+    <div class="src-quote">第三方应用比自建应用复杂，因为它需要处理「服务商身份、应用身份、授权企业身份」三层凭证。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>"第三方"≠ 不安全/不正规。它是企微官方支持的标准上架模式，只是凭证链路比自建复杂。</div>
+  </div>
+
+  <div class="concept">
+    <div class="c-name">③ access_token</div>
+    <div class="c-row"><span class="ck">定义</span>业务系统后端调用企业微信服务端 API 的<strong>凭证</strong>。自建应用用 corpid + secret 换取，有效期通常 7200 秒。</div>
+    <div class="c-row"><span class="ck">人话</span>后端调企微接口时必须带的"通行证"。</div>
+    <div class="analogy">类比 C：access_token ≈ 登录成功后服务器发给你的一张 session 凭证，后续每次"系统调用"都带上它才能被授权；和它一起的 secret ≈ 密码，只存在后端，绝不下发前端（类似私钥绝不外泄）。</div>
+    <div class="c-row"><span class="ck">关系</span>token 是"入场券"，但真正能拿什么数据还受可见范围/通讯录权限/客户联系权限限制（见判断 2）。第三方应用还有 suite_access_token、provider_access_token 等不同身份的 token。</div>
+    <div class="src-quote">access_token 是后端调用接口的凭证……有 token 不等于有权限，权限还受应用可见范围、授权能力、客户联系配置等影响。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>access_token ≠ 一劳永逸的钥匙。要按 corp+agent+类型做 key 缓存、提前 5~10 分钟刷新；也不要每次接口都现取（有频率限制）。</div>
+  </div>
+
+  <div class="concept">
+    <div class="c-name">④ 回调（callback）</div>
+    <div class="c-row"><span class="ck">定义</span>业务系统提供公网 HTTPS 地址，企业微信在事件发生时（成员发消息、通讯录变化、授权变更、客户添加/流失等）<strong>主动 POST 数据</strong>给业务系统。方向和后端 API 相反。</div>
+    <div class="c-row"><span class="ck">人话</span>企微喊你"出事了，快来处理"。</div>
+    <div class="analogy">类比 C：回调 ≈ 中断处理函数（ISR）。main 函数平时在跑自己的活，外部事件一来，CPU 跳去执行你注册的中断服务程序。你不知道它何时触发，但必须随时准备好，并且要<strong>快速返回</strong>（5 秒内响应），否则会被重试。</div>
+    <div class="c-row"><span class="ck">关系</span>回调数据是密文，必须用 Token + EncodingAESKey 验签解密。回调配置生效前要先通过 URL 验证。</div>
+    <div class="src-quote">回调是企业微信主动通知业务系统「发生了什么」……回调消息通常是加密的，业务系统要验签、解密后才能处理。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>回调 ≠ 轮询。不要写成"每分钟去查一次有没有新事件"——企微是主动推，你只要把回调服务搭好等它来。</div>
+  </div>
+
+  <div class="concept">
+    <div class="c-name">⑤ corpid / userid / open_userid / external_userid</div>
+    <div class="c-row"><span class="ck">定义</span><strong>corpid</strong>：企业 ID，企业唯一（≈公司的主键）。<strong>userid</strong>：企业内部成员 ID，企业主体下唯一。<strong>open_userid</strong>：服务商主体下的密文成员 ID。<strong>external_userid</strong>：微信客户（外部联系人）ID，也分企业主体/服务商主体。</div>
+    <div class="c-row"><span class="ck">人话</span>corpid 是"公司身份证号"，userid 是"员工工号"，external_userid 是"客户在你这儿的编号"，open_userid 是"同一个员工在服务商那边的另一个加密编号"。</div>
+    <div class="analogy">类比 C：corpid ≈ 进程的主 PID；userid ≈ 进程内部某资源句柄；open_userid ≈ 同一资源在不同命名空间（服务商）下的另一套句柄编号。跨命名空间访问资源要先做"句柄转换"。</div>
+    <div class="c-row"><span class="ck">关系</span>自建应用拿到的是企业主体明文 ID；第三方/代开发应用拿到的是服务商主体密文 ID（open_userid）。跨系统打通要用 <code>openuserid_to_userid</code>、<code>from_service_external_userid</code> 等转换接口。</div>
+    <div class="src-quote">问一个服务商（第三方或代开发者）拿到的 open_userid，通常在服务商主体下保持一致。做数据打通时，必须先确认 ID 属于企业主体还是服务商主体。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>不要把 corpid 当 userid 用——corpid 标识"企业"，userid 标识"人"，差一个层级。也不要把 open_userid 直接当主键存，它依赖服务商主体。</div>
+  </div>
+
+  <div class="concept">
+    <div class="c-name">⑥ EncodingAESKey</div>
+    <div class="c-row"><span class="ck">定义</span>43 位字符串，<strong>解码后得到 32 字节 AES 密钥</strong>，用于回调消息体的 AES-256-CBC 加解密。和 Token（用于签名校验）一起配置在回调设置里。</div>
+    <div class="c-row"><span class="ck">人话</span>你和企业微信之间共享的"加密钥匙"，企微用它把消息锁上，你用同一把钥匙解开。</div>
+    <div class="analogy">类比 C：EncodingAESKey ≈ 你和对方约定的对称密钥（解码前是 43 字符的"密钥种子"，Base64 解码后才是真正的 32 字节 AESKey），AES-256-CBC 是加密算法，PKCS#7 是填充方式。日志里绝不能 print 它，就像不能 print 用户的密码。</div>
+    <div class="c-row"><span class="ck">关系</span>回调里 msg_signature 用 Token + timestamp + nonce + 密文做 SHA1 校验；通过后再用 EncodingAESKey 解 AES 密文得到明文 XML。receiveid 解密后校验（自建应用=corpid，第三方=suiteid）。</div>
+    <div class="src-quote">EncodingAESKey：43 位字符串，解码后得到 32 字节 AESKey……AES-256-CBC：消息体加密算法。PKCS#7 padding：填充方式。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>EncodingAESKey ≠ Token。Token 做签名校验（验来源/防篡改），EncodingAESKey 做内容解密（防窃听），两者各管一档，缺一不可。</div>
+  </div>
+</section>
+
+<!-- ===== 07 苏格拉底式阅读关卡 ===== -->
+<section class="module" id="m07">
+  <span class="sec-id">07</span>
+  <h2>苏格拉底式阅读关卡 <button class="voice-btn" data-voice-id="m7">🎧 听这章</button></h2>
+  <p class="lead">不直接给答案，自己想。参考答案在每题下方，但请先停 30 秒再展开。</p>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q1 · 入门</span>"企业微信生态"这句话，是事实、判断，还是推论？</summary>
+    <div class="q-text">原文开头说"企业微信不是一个单一系统，而是一套……生态"——这既是<strong>事实描述</strong>（企微确实由多个子系统组成），也带<strong>判断</strong>色彩（作者主张读者应该用"生态视角"而非"单个工具"去理解它）。读懂这一句，就知道为什么后面要讲三种模式、四条链路而不是一份接口清单。</div>
+    <div class="q-hint">提示：判断句往往藏在开头那句"是什么"的定义里。</div>
+  </details>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q2 · 入门</span>原文反复强调"有 token 不等于有权限"，这句话属于哪一类信息？作者为什么要说它？</summary>
+    <div class="q-text">这是<strong>判断</strong>。作者用它纠正新手最容易犯的错——以为拿到 token 就万事大吉。说这句话是为了引出后面的"可见范围、通讯录权限、客户联系权限、敏感信息权限"这一整套授权体系。</div>
+  </details>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q3 · 进阶</span>如果删掉"应用可见范围"这个概念，整个权限体系会从哪里开始崩？</summary>
+    <div class="q-text">可见范围同时决定两件事：① 哪些成员能在工作台看到应用；② 应用能围绕哪些成员调接口。删掉它，"发消息给成员""读通讯录""网页授权登录"全部失去边界——发消息可能发给全公司，读通讯录可能读出无权访问的部门。可见范围是<strong>接口权限边界</strong>，不是单纯 UI 配置。</div>
+    <div class="q-hint">提示：回到 06 判断 2 和 6.1 节的"典型影响"。</div>
+  </details>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q4 · 进阶</span>第三方应用为什么需要三层 token？能不能合并成一层？</summary>
+    <div class="q-text">因为第三方应用里"服务商、应用、被授权企业"是三个不同的法律/业务主体，各自的能力域不同：服务商身份调登录/推广接口，应用身份换预授权码/永久授权码，企业身份调通讯录/消息/客户联系。合并成一层意味着一个 token 既能代表服务商又能代表某家企业，权限模型会失控。三层 token 是<strong>最小权限原则</strong>的体现。</div>
+  </details>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q5 · 进阶</span>回调要求"5 秒内响应"，为什么是 5 秒而不是 50 毫秒？背后是什么权衡？</summary>
+    <div class="q-text">5 秒是<strong>"给业务留一点处理时间"和"不让企微长时间挂起连接"</strong>之间的权衡。50 毫秒太短，业务系统来不及落库；但同步等到几十秒又会占用企微的推送资源、影响其他事件。所以标准做法是：收到后立刻验签解密、落库/入队、马上回 success，复杂逻辑放异步。</div>
+  </details>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q6 · 深度</span>同一个员工，自建应用拿到的 userid 和第三方应用拿到的 open_userid 为什么不一样？</summary>
+    <div class="q-text">这是<strong>主体隔离</strong>设计：open_userid 是服务商主体下的密文 ID，是为了防止服务商之间互相串数据、也保护企业成员身份不外泄。要做数据打通，必须用自建应用 access_token 调 <code>openuserid_to_userid</code> 转换，且要求该员工同时落在两个应用的可见范围内。</div>
+    <div class="q-hint">提示：回到 9 章 ID 转换的"限制要点"。</div>
+  </details>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q7 · 深度</span>EncodingAESKey 和 Token 各自负责"防什么"？如果只配了一个会怎样？</summary>
+    <div class="q-text">Token 做<strong>签名校验</strong>（防篡改、防伪造来源），EncodingAESKey 做<strong>内容解密</strong>（防窃听）。只配 Token：能验来源但内容是密文读不了；只配 EncodingAESKey：能解密但没法确认这条消息真是企微发的、中途没被改过。两个必须同时配、同时用。</div>
+  </details>
+</section>
+
+<!-- ===== 08 闯关式任务 ===== -->
+<section class="module" id="m08">
+  <span class="sec-id">08</span>
+  <h2>闯关式任务 <button class="voice-btn" data-voice-id="m8">🎧 听这章</button></h2>
+  <p class="lead">8 道闭环题，覆盖三种开发模式、access_token、ID 体系、回调加解密、JS-SDK。选完点"检查"，答对贴 OK 贴纸，答错贴 NO 贴纸并指出错在哪。错题自动进 11 节的错题回流区。</p>
+
+  <!-- 题1 单选：三种模式的核心差异 -->
+  <div class="task" data-task="t1" data-answer="C"
+       data-ok="对。三种模式最关键的区别就是这四点：应用归属、服务对象、授权复杂度、ID 是明文还是密文。"
+       data-no="错。原文说的是『应用归属、服务对象、授权复杂度、ID 明文/密文』，不是接口数量。"
+       data-src="原文：三者最关键的区别是：应用归属谁、服务对象是谁、授权复杂度如何、拿到的 ID 是明文还是密文。"
+       data-review="回到「05 判断 1 / 3」+「06 概念①②」复习">
+    <div class="q">1. 【单选】区分自建应用 / 第三方应用 / 服务商代开发的「最关键」四个维度是？</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. 接口数量、调用频率、返回格式、错误码</button>
+      <button class="opt" data-val="B">B. 编程语言、框架、数据库、部署方式</button>
+      <button class="opt" data-val="C">C. 应用归属、服务对象、授权复杂度、ID 明文/密文</button>
+      <button class="opt" data-val="D">D. 是否收费、是否有 UI、是否开源、是否支持小程序</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题2 单选：access_token 用途 -->
+  <div class="task" data-task="t2" data-answer="B"
+       data-ok="对。access_token 是后端调用 API 的凭证（入场券），必须由后端保存，不能给前端。"
+       data-no="错。access_token 是后端调用 API 的凭证，不是前端 JS-SDK 签名、也不是加解密密钥、更不是企业 ID。"
+       data-src="原文：access_token 是后端调用企业微信 API 的凭证……token 不能给前端，必须由后端保存和使用。"
+       data-review="回到「05 判断 2」+「06 概念③」复习">
+    <div class="q">2. 【单选】access_token 的核心用途是？</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. 前端 H5 调用 JS-SDK 时的签名材料</button>
+      <button class="opt" data-val="B">B. 后端调用企业微信服务端 API 的凭证</button>
+      <button class="opt" data-val="C">C. 回调消息体的 AES 加解密密钥</button>
+      <button class="opt" data-val="D">D. 标识企业唯一性的企业 ID</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题3 单选：corpid vs userid vs open_userid -->
+  <div class="task" data-task="t3" data-answer="C"
+       data-ok="对！corpid 是企业主键、userid 是成员明文 ID、open_userid 是服务商主体下的密文成员 ID。"
+       data-no="搞混了。corpid 标识企业（不是人），userid 是企业主体下的成员明文 ID，open_userid 才是服务商主体下的密文成员 ID。"
+       data-src="原文：corpid：企业 ID，企业唯一……open_userid：服务商主体下的密文成员 ID。做数据打通时，必须先确认 ID 属于企业主体还是服务商主体。"
+       data-review="回到「06 概念⑤」+「05 判断 5」复习">
+    <div class="q">3. 【单选】关于 corpid / userid / open_userid，下列说法正确的是？</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. corpid 是成员 ID，userid 是企业 ID，两者可互换</button>
+      <button class="opt" data-val="B">B. open_userid 是企业主体下的明文 ID，可以直接当主键</button>
+      <button class="opt" data-val="C">C. corpid 标识企业，userid 是企业主体下成员明文 ID，open_userid 是服务商主体下密文 ID</button>
+      <button class="opt" data-val="D">D. 三者是同一个 ID 的三种写法，长度不同而已</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题4 单选：回调加解密流程 -->
+  <div class="task" data-task="t4" data-answer="B"
+       data-ok="对。回调链路是：企微 POST 加密事件 → 业务服务验签（msg_signature）→ 解密 Encrypt → 异步处理 → 5 秒内响应。"
+       data-no="顺序错了。回调是企微主动 POST 加密事件给业务服务，业务服务先验签、再解密，然后异步处理业务、5 秒内快速响应。不是业务系统先调 API。"
+       data-src="原文：① 企业微信向业务回调服务推送加密事件；② 业务回调服务验签并解密；③ 快速响应 success 或空串；④ 异步处理业务。"
+       data-review="回到「05 判断 4 / 6」+「06 概念④⑥」复习">
+    <div class="q">4. 【单选】接收一条业务回调的正确处理顺序是？</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. 业务系统主动调企微 API 取数据 → 解密 → 落库 → 响应</button>
+      <button class="opt" data-val="B">B. 企微 POST 加密事件 → 验签 msg_signature → 解密 Encrypt → 落库/入队 → 5 秒内响应 success</button>
+      <button class="opt" data-val="C">C. 企微推送明文事件 → 直接处理业务 → 同步返回结果</button>
+      <button class="opt" data-val="D">D. 业务系统轮询企微 → 拉到事件 → 解密 → 处理</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题5 单选：JS-SDK 能力 -->
+  <div class="task" data-task="t5" data-answer="C"
+       data-ok="对。JS-SDK 是企业微信内网页调用客户端能力的工具（扫码、选人、打开客户资料、分享等）。"
+       data-no="错。JS-SDK 是『让 H5 页面调用企微客户端能力』，比如扫码、选联系人、打开客户资料。不是后端 API、不是加密库、不是管理后台。"
+       data-src="原文：JS-SDK 是企业微信内网页调用客户端能力的工具……它不是后端接口，而是让 H5 页面使用企业微信客户端能力。"
+       data-review="回到「02 背景包」+「05 判断 4」对比 API 与 JS-SDK 复习">
+    <div class="q">5. 【单选】关于 JS-SDK，下列说法正确的是？</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. JS-SDK 是后端调用企微 API 的工具，和 access_token 一起用</button>
+      <button class="opt" data-val="B">B. JS-SDK 是回调消息加解密的标准库</button>
+      <button class="opt" data-val="C">C. JS-SDK 让企微内 H5 页面能调用客户端能力（扫码、选人、打开客户资料等），签名由后端生成</button>
+      <button class="opt" data-val="D">D. JS-SDK 是企微管理后台的页面跳转 SDK</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题6 多选：什么情况会导致"有 token 但拿不到数据" -->
+  <div class="task" data-task="t6" data-multi="true" data-answer="A,B,C"
+       data-ok="对！这三类都是『有 token 但拿不到/拿不全数据』的典型原因。"
+       data-no="漏了或选错。逐条对照：A 成员不在可见范围→发消息/读通讯录受限；B 没开客户联系权限→读不到客户/客户群；C 敏感信息要额外授权。D 错——access_token 本就只放后端，不影响数据可见性。"
+       data-src="原文：给某个成员发应用消息，如果成员不在应用可见范围内，可能发送失败……CRM/SCRM 如果没有客户联系权限，就无法完整读取客户和客户群信息……手机号、邮箱等成员敏感信息不是默认都能拿。"
+       data-review="回到「05 判断 2」+「09 误解 1/2」复习">
+    <div class="q">6. 【多选】下列哪些情况会导致「access_token 有效，但接口仍拿不到/拿不全数据」？（多选）</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. 目标成员不在应用的可见范围内</button>
+      <button class="opt" data-val="B">B. 没有开通/授权客户联系权限，却想读客户群</button>
+      <button class="opt" data-val="C">C. 想读成员手机号，但没有成员敏感信息权限</button>
+      <button class="opt" data-val="D">D. access_token 只保存在后端，没下发前端</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题7 判断：可见范围只是 UI 配置 -->
+  <div class="task" data-task="t7" data-answer="B"
+       data-ok="对——这句话本身就是错的。可见范围不只是 UI 配置，它同时也是接口权限边界，决定了应用能围绕哪些成员调接口。本题正确选项是「错」。"
+       data-no="你选了「对」，但这是错的。原文明确：可见范围不是单纯的 UI 配置，它也是接口权限边界。回到 6.1 节看『典型影响』。"
+       data-src="原文：可见范围不是单纯的 UI 配置，它也是接口权限边界。"
+       data-review="回到「06 概念」+「07 Q3」复习可见范围">
+    <div class="q">7. 【判断】"应用可见范围"只是一个 UI 配置，只决定成员能不能在工作台看到应用，不影响接口权限。</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. 对</button>
+      <button class="opt" data-val="B">B. 错</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题8 匹配：概念对应 -->
+  <div class="task" data-task="t8" data-type="selects"
+       data-ok="全部对！这 4 组关系背牢，整章的『身份+授权+加解密』就通了。"
+       data-no="有错。逐组对照：access_token=后端调 API 凭证；EncodingAESKey=43 位 AES 解密钥；回调=企微主动推事件；corpid=企业唯一 ID。"
+       data-src="原文：access_token 是后端调用接口的凭证……EncodingAESKey：43 位字符串，解码后得到 32 字节 AESKey……回调是企业微信主动通知业务系统……corpid：企业 ID，企业唯一。"
+       data-review="回到「06 关键概念拆解」整章复习">
+    <div class="q">8. 【匹配】把概念和它的角色配对。</div>
+    <div class="match-row">
+      <span style="min-width:9em">① access_token</span>
+      <select class="match" data-correct="A">
+        <option value="">— 请选 —</option>
+        <option value="A">A. 后端调用企微 API 的凭证，只存后端</option>
+        <option value="B">B. 43 位字符串，解码后用于回调消息 AES 解密</option>
+        <option value="C">C. 企微主动把事件 POST 给业务系统的反向链路</option>
+        <option value="D">D. 企业唯一 ID，标识「哪家公司」</option>
+      </select>
+    </div>
+    <div class="match-row">
+      <span style="min-width:9em">② EncodingAESKey</span>
+      <select class="match" data-correct="B">
+        <option value="">— 请选 —</option>
+        <option value="A">A. 后端调用企微 API 的凭证，只存后端</option>
+        <option value="B">B. 43 位字符串，解码后用于回调消息 AES 解密</option>
+        <option value="C">C. 企微主动把事件 POST 给业务系统的反向链路</option>
+        <option value="D">D. 企业唯一 ID，标识「哪家公司」</option>
+      </select>
+    </div>
+    <div class="match-row">
+      <span style="min-width:9em">③ 回调（callback）</span>
+      <select class="match" data-correct="C">
+        <option value="">— 请选 —</option>
+        <option value="A">A. 后端调用企微 API 的凭证，只存后端</option>
+        <option value="B">B. 43 位字符串，解码后用于回调消息 AES 解密</option>
+        <option value="C">C. 企微主动把事件 POST 给业务系统的反向链路</option>
+        <option value="D">D. 企业唯一 ID，标识「哪家公司」</option>
+      </select>
+    </div>
+    <div class="match-row">
+      <span style="min-width:9em">④ corpid</span>
+      <select class="match" data-correct="D">
+        <option value="">— 请选 —</option>
+        <option value="A">A. 后端调用企微 API 的凭证，只存后端</option>
+        <option value="B">B. 43 位字符串，解码后用于回调消息 AES 解密</option>
+        <option value="C">C. 企微主动把事件 POST 给业务系统的反向链路</option>
+        <option value="D">D. 企业唯一 ID，标识「哪家公司」</option>
+      </select>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+</section>
+
+<!-- ===== 09 误解与边界 ===== -->
+<section class="module" id="m09">
+  <span class="sec-id">09</span>
+  <h2>误解与边界 <button class="voice-btn" data-voice-id="m9">🎧 听这章</button></h2>
+
+  <div class="myth">
+    <div class="myth-head">误解 1 · "拿到 access_token 就等于有权限了"</div>
+    <div class="row"><span class="key">为什么容易误解</span>token 是"凭证"，直觉上"有凭证=能进"。</div>
+    <div class="row"><span class="key">原文真正说了</span>有 token 不等于有权限。权限还受应用可见范围、通讯录权限、客户联系权限、敏感信息权限影响。</div>
+    <div class="row"><span class="key">原文没有说</span>"拿到 token 就能读全公司通讯录/所有客户"。</div>
+    <div class="row"><span class="key">如何避免</span>接口报权限错时，先查"可见范围、客户联系权限、敏感信息授权"，而不是先怀疑 token 过期。</div>
+  </div>
+
+  <div class="myth">
+    <div class="myth-head">误解 2 · "把 access_token 返回给前端，前端直接调接口更快"</div>
+    <div class="row"><span class="key">为什么容易误解</span>C 写多了，习惯把"句柄/指针"传来传去复用。</div>
+    <div class="row"><span class="key">原文真正说了</span>token 不能给前端，必须由后端保存和使用。secret 更是只在后端。</div>
+    <div class="row"><span class="key">原文没有说</span>"前端也可以持有 token"——这是明确禁止的。</div>
+    <div class="row"><span class="key">如何避免</span>前端要调企微能力走 JS-SDK（后端给签名），不要直接拿 access_token 调后端 API。</div>
+  </div>
+
+  <div class="myth">
+    <div class="myth-head">误解 3 · "企业授权安装了应用，所有能力就自动可用了"</div>
+    <div class="row"><span class="key">为什么容易误解</span>"安装 = 启用"的直觉。</div>
+    <div class="row"><span class="key">原文真正说了</span>忽略可见范围、客户联系权限、敏感信息权限，会导致后续 userid / open_userid / external_userid 对不上、消息发不出去。</div>
+    <div class="row"><span class="key">原文没有说</span>"授权一次就万事大吉"。</div>
+    <div class="row"><span class="key">如何避免</span>项目启动时先拉清单：要哪些权限、敏感信息要不要、客户联系开不开，逐项确认。</div>
+  </div>
+
+  <div class="myth">
+    <div class="myth-head">误解 4 · "把回调当轮询，每分钟去查一次有没有新事件"</div>
+    <div class="row"><span class="key">为什么容易误解</span>不熟悉"事件驱动"模型，习惯写 for 循环主动拉。</div>
+    <div class="row"><span class="key">原文真正说了</span>回调是企微主动 POST 给业务系统，方向和后端 API 相反。业务只要把回调服务搭好等它来。</div>
+    <div class="row"><span class="key">如何避免</span>把回调服务当"中断服务程序"设计：随时就绪、快响应、幂等、异步处理。</div>
+  </div>
+
+  <div class="myth">
+    <div class="myth-head">误解 5 · "open_userid 和 userid 是同一个 ID 的不同写法，能直接当主键混存"</div>
+    <div class="row"><span class="key">为什么容易误解</span>看起来都是"成员标识"。</div>
+    <div class="row"><span class="key">原文真正说了</span>open_userid 是服务商主体下的密文 ID，做数据打通必须先确认 ID 主体，并用转换接口换算。</div>
+    <div class="row"><span class="key">如何避免</span>数据库里存 ID 时一并记"主体类型"（企业/服务商），跨系统对数据前先走 openuserid_to_userid。</div>
+  </div>
+
+  <div class="myth">
+    <div class="myth-head">误解 6 · "三种开发模式就是三档功能，第三方最强、自建最弱"</div>
+    <div class="row"><span class="key">为什么容易误解</span>"代开发"听起来比"自建"高级。</div>
+    <div class="row"><span class="key">原文真正说了</span>三者区别是<strong>归属和服务对象</strong>，不是功能强弱。选型看业务关系：单企业用、还是要服务多企业、是否要标准化上架。</div>
+    <div class="row"><span class="key">如何避免</span>先回答"谁拥有应用、服务谁、是否多企业"，再选模式，而不是比接口数量。</div>
+  </div>
+</section>
+
+<!-- ===== 10 背景知识缺口 ===== -->
+<section class="module" id="m10">
+  <span class="sec-id">10</span>
+  <h2>背景知识缺口 <button class="voice-btn" data-voice-id="m10">🎧 听这章</button></h2>
+  <p class="lead">要彻底吃透这一章，建议补这 4 个背景。现在不补也行，遇到不懂的再回头看。</p>
+
+  <div class="card sky">
+    <div class="card-title">缺口 1 · OAuth2 授权码流程</div>
+    <p style="margin:0">第三方应用的 auth_code → permanent_code → access_token 链路，本质是 OAuth2 的"授权码模式"。建议花 20 分钟读一篇 OAuth2 入门，把"为什么不能直接把密码给应用"这句话想透。<strong>为什么重要</strong>：理解了它，第三方/代开发的凭证链路就不再是死记。</p>
+  </div>
+
+  <div class="card sky">
+    <div class="card-title">缺口 2 · AES-256-CBC + PKCS#7 padding</div>
+    <p style="margin:0">回调加解密用的是 AES-256-CBC 模式 + PKCS#7 填充。建议用任意语言（C 也行）写一个最小 demo：用 32 字节密钥加密一段字符串再解回来。<strong>为什么重要</strong>：调不通回调 80% 是加解密细节错了（密钥解码、IV、padding、receiveid 校验），自己跑一遍才有手感。</p>
+  </div>
+
+  <div class="card sky">
+    <div class="card-title">缺口 3 · HTTPS / 公网域名 / URL 验证</div>
+    <p style="margin:0">回调服务必须是公网 HTTPS 地址，且企微会先做 URL 验证（GET 带 echostr，要求 1 秒内原样返回解密后的明文）。<strong>为什么重要</strong>：本地开发要会做内网穿透（frp/ngrok 等），并理解"为什么企微要先验 URL 再开回调"。</p>
+  </div>
+
+  <div class="card sky">
+    <div class="card-title">缺口 4 · SaaS vs 私有化 vs 代开发的商业模式</div>
+    <p style="margin:0">这决定了为什么会有"第三方应用"和"代开发"两种看似相似的方案：第三方=标准 SaaS 给多企业用；代开发=服务商替单企业托管一个"自建应用"。<strong>下一步追问</strong>：为什么客户有时宁可代开发也不直接装第三方应用？（答：数据归属、定制、合规。）</p>
+  </div>
+
+  <div class="card marker">
+    <div class="card-title">可以暂时不补的</div>
+    <p style="margin:0">具体某个接口的请求参数、错误码全表、JS-SDK 全部方法名——这些是字典层，用的时候查官方文档即可，不影响理解业务链路。</p>
+  </div>
+</section>
+
+<!-- ===== 11 复盘与学习报告 ===== -->
+<section class="module" id="m11">
+  <span class="sec-id">11</span>
+  <h2>复盘与学习报告 <button class="voice-btn" data-voice-id="m11">🎧 听这章</button></h2>
+  <p class="lead">学完这一章，你应该能用自己的话复述下面三件事；如果你还能问出一个连老员工都要想一想的追问，那你就真的学透了。</p>
+
+  <div class="card">
+    <div class="card-title">能复述的三件事</div>
+    <p style="margin:0">① 三种开发模式的区别（归属/服务对象/授权复杂度/ID 明文密文）；<br>② access_token 是后端调 API 的凭证，但"有 token ≠ 有权限"，还要看可见范围和各项授权；<br>③ 回调加解密流程：企微 POST 加密事件 → 验签（Token+SHA1）→ 解密（EncodingAESKey+AES-CBC）→ 异步处理 → 5 秒内响应。</p>
+  </div>
+
+  <div class="card marker">
+    <div class="card-title">还能问的追问（示例）</div>
+    <p style="margin:0">"代开发应用权限分基础权限和自定义权限，自定义权限要服务商申请、企业确认——这套设计是为了保护企业的什么利益？如果企业确认得太慢，服务商该怎么设计用户体验才不让人抓狂？"</p>
+  </div>
+
+  <h3>错题回流区</h3>
+  <div class="wrong-box">
+    <ul id="wrongBox"><li style="color:#888">还没有错题。答错的题会自动收集到这里。</li></ul>
+  </div>
+
+  <h3>生成你的学习报告</h3>
+  <div class="report-actions">
+    <button id="genReport">生成学习报告</button>
+    <button id="copyReport">复制报告</button>
+  </div>
+  <div id="report">点「生成学习报告」按钮，根据你的答题情况生成存档。</div>
+</section>
+
+<footer>
+  <div>由 <a href="https://lyzbcy.github.io/" target="_blank" rel="noopener">捞鱼</a> 制作 · 工具能帮你预习难啃的干货，但不能代替完整学习。学习愉快 🐟</div>
+  <div style="margin-top:.4rem;font-size:.78rem;opacity:.7">微盛研发岗管培生培训 · 企微生态入门 · 理解地图</div>
+</footer>
+
+</main>
+
+<!-- ===== 右侧书签脊入口 ===== -->
+<button id="voiceFab" aria-label="打开后台语音"><span class="fab-icon">🎧</span><span class="fab-text">后台语音</span></button>
+
+<!-- ===== 圆润玩具风播放器 ===== -->
+<div id="voicePlayer">
+  <button class="vp-close" aria-label="关闭">✕</button>
+  <div class="vp-head">🎧 后台语音 · 连续播放</div>
+  <div class="vp-title">—</div>
+  <div class="vp-controls">
+    <button class="vp-prev" aria-label="上一章">⏮</button>
+    <button class="vp-play" aria-label="播放/暂停">▶</button>
+    <button class="vp-next" aria-label="下一章">⏭</button>
+  </div>
+  <input class="vp-seek" type="range" min="0" max="1000" value="0" aria-label="进度">
+  <div class="vp-time"><span class="vp-cur">00:00</span><span class="vp-dur">00:00</span></div>
+  <div class="vp-sub">点开播放后，这里会同步显示字幕</div>
+</div>
+
+<!-- ===== 固定互动引擎（原样粘贴，不要改写） ===== -->
+<script>
+(function(){
+  "use strict";
+  function $all(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));}
+  function selectedVals(t){return $all('.opt.selected',t).map(function(o){return o.getAttribute('data-val');}).sort();}
+  function setFb(t,state,html){var fb=t.querySelector('.feedback');if(!fb)return;fb.className='feedback'+(state?(' '+state):'');fb.innerHTML=html;}
+  function updateBar(){
+    var all=$all('.task'),done=$all('.task[data-answered="1"]');
+    var fill=document.getElementById('barFill'),num=document.getElementById('barNum');
+    if(fill)fill.style.width=all.length?(done.length/all.length*100)+'%':'0%';
+    if(num)num.textContent=done.length+' / '+all.length;
+  }
+  function renderWrong(){
+    var box=document.getElementById('wrongBox');if(!box)return;
+    var wrong=$all('.task[data-answered="1"][data-correct="0"]');
+    if(!wrong.length){box.innerHTML='<li style="color:#888">还没有错题。答错的题会自动收集到这里。</li>';return;}
+    box.innerHTML='';
+    wrong.forEach(function(t){var li=document.createElement('li');li.textContent='【'+(t.getAttribute('data-task')||'')+'】'+(t.getAttribute('data-review')||'回到对应模块复习');box.appendChild(li);});
+  }
+  function check(t){
+    var type=t.getAttribute('data-type'),ok=false;
+    if(type==='selects'){
+      var sels=$all('select.match',t),allok=true,empty=false;
+      sels.forEach(function(s){if(!s.value)empty=true;if(s.value!==s.getAttribute('data-correct'))allok=false;});
+      if(empty){setFb(t,'no','请先把每一项都选好再检查。');return;}
+      ok=allok;
+    }else{
+      var sel=selectedVals(t);
+      if(!sel.length){setFb(t,'no','请先选择一个选项再检查。');return;}
+      var ans=(t.getAttribute('data-answer')||'').split(',').map(function(x){return x.trim();}).sort();
+      ok=(sel.join('|')===ans.join('|'));
+    }
+    var sticker=ok?'<img class="sticker" src="https://lyzbcy.github.io/weshoto-study/img/sticker/ok.png" alt="">':'<img class="sticker" src="https://lyzbcy.github.io/weshoto-study/img/sticker/no.png" alt="">';
+    var body=ok?(t.getAttribute('data-ok')||'回答正确。'):(t.getAttribute('data-no')||'再想想。');
+    var src=t.getAttribute('data-src');
+    setFb(t,ok?'ok':'no',sticker+body+(src?('<span class="src">'+src+'</span>'):''));
+    t.setAttribute('data-answered','1');t.setAttribute('data-correct',ok?'1':'0');
+    updateBar();renderWrong();
+  }
+  function genReport(){
+    var box=document.getElementById('report');if(!box)return;
+    var all=$all('.task'),done=$all('.task[data-answered="1"]'),right=$all('.task[data-answered="1"][data-correct="1"]');
+    var lines=['=== 学习报告 ===','完成题目：'+done.length+' / '+all.length,'答对：'+right.length+' 题',''];
+    var wrong=$all('.task[data-answered="1"][data-correct="0"]');
+    if(wrong.length){lines.push('我答错的题（建议复习）：');wrong.forEach(function(t){lines.push('- '+(t.getAttribute('data-task')||'')+'：'+(t.getAttribute('data-review')||''));});}
+    else{lines.push('暂无错题。');}
+    lines.push('','三件复述清单：');
+    lines.push('① 三种开发模式区别 = 归属/服务对象/授权复杂度/ID 明文密文');
+    lines.push('② access_token 是后端调 API 凭证，但『有 token ≠ 有权限』，还要看可见范围+各项授权');
+    lines.push('③ 回调链路：企微 POST 加密事件 → 验签(Token+SHA1) → 解密(EncodingAESKey+AES-CBC) → 异步处理 → 5 秒内响应');
+    box.textContent=lines.join('\n');
+  }
+  document.addEventListener('click',function(e){
+    var c=e.target.closest?e.target:null;
+    var opt=c&&e.target.closest('.opt');
+    if(opt){var t=opt.closest('.task');if(!t)return;
+      if(t.getAttribute('data-multi')==='true'){opt.classList.toggle('selected');}
+      else{$all('.opt',t).forEach(function(o){o.classList.remove('selected');});opt.classList.add('selected');}
+      return;}
+    var btn=c&&e.target.closest('.check');
+    if(btn){var tk=btn.closest('.task');if(tk)check(tk);return;}
+    if(e.target&&e.target.id==='genReport'){genReport();return;}
+    if(e.target&&e.target.id==='copyReport'){var r=document.getElementById('report');if(r&&navigator.clipboard)navigator.clipboard.writeText(r.textContent);return;}
+  });
+  function init(){updateBar();renderWrong();}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+
+<!-- ===== 固定语音引擎（原样粘贴，不要改写） ===== -->
+<script>
+(function(){
+  "use strict";
+  if(window.__voiceEngine) return;
+  window.__voiceEngine = true;
+
+  var listNode = document.getElementById('voicePlaylist');
+  if(!listNode){ return; }
+  var TRACKS = [];
+  try { TRACKS = JSON.parse(listNode.textContent.trim()); } catch(e){ return; }
+  if(!TRACKS.length) return;
+
+  var player = document.getElementById('voicePlayer');
+  var fab = document.getElementById('voiceFab');
+  var audio = new Audio(); audio.preload = 'metadata';
+  var cur = 0;
+  var ranges = [];
+  var total = 0;
+  var seeking = false;
+
+  function $(s){ return player ? player.querySelector(s) : null; }
+  function fmt(s){ s=Math.max(0,Math.floor(s||0)); var m=Math.floor(s/60), x=s%60;
+    return (m<10?'0':'')+m+':'+(x<10?'0':'')+x; }
+
+  var probe = TRACKS.map(function(){ return {dur:0}; });
+  function tryFinalize(){
+    if(probe.some(function(p){return !p.dur;})) return;
+    ranges = []; total = 0;
+    probe.forEach(function(p){ ranges.push({dur:p.dur, start:total}); total += p.dur; });
+    var d = $('.vp-dur'); if(d) d.textContent = fmt(total);
+    var sk = $('.vp-seek'); if(sk){ sk.max = Math.max(1000, Math.floor(total*10)); }
+  }
+  TRACKS.forEach(function(t, i){
+    var a = new Audio(); a.preload = 'metadata'; a.src = t.src;
+    a.addEventListener('loadedmetadata', function(){
+      probe[i].dur = a.duration || 0; tryFinalize();
+    });
+    a.addEventListener('error', function(){ probe[i].dur = 0; tryFinalize(); });
+  });
+
+  function load(i){
+    cur = i; audio.src = TRACKS[i].src;
+    var ti = $('.vp-title'); if(ti) ti.textContent = TRACKS[i].title || ('第 '+(i+1)+' 段');
+    markBtn(i);
+  }
+  function play(){ audio.play().then(function(){ show(); setPlayIcon(true); if(fab) fab.classList.add('beat'); }).catch(function(){}); }
+  function pause(){ audio.pause(); setPlayIcon(false); if(fab) fab.classList.remove('beat'); }
+  function toggle(){ audio.paused ? play() : pause(); }
+  function next(){ if(cur < TRACKS.length-1){ load(cur+1); play(); } else { pause(); } }
+  function prev(){
+    var abs = absTime();
+    if(cur > 0 && abs - ranges[cur].start < 3){ load(cur-1); play(); }
+    else { audio.currentTime = 0; }
+  }
+  function absTime(){ return ranges[cur] ? ranges[cur].start + (audio.currentTime||0) : (audio.currentTime||0); }
+  function setPlayIcon(on){ var b=$('.vp-play'); if(b) b.textContent = on ? '⏸' : '▶'; }
+  function show(){ if(player) player.classList.add('show'); }
+  function hide(){ if(player) player.classList.remove('show'); }
+  function markBtn(i){
+    document.querySelectorAll('.voice-btn[data-voice-id]').forEach(function(b){
+      b.classList.toggle('active', b.getAttribute('data-voice-id') === TRACKS[i].id);
+    });
+  }
+
+  audio.addEventListener('timeupdate', function(){
+    if(seeking) return;
+    if(!ranges[cur]) return;
+    var abs = absTime(); var sk = $('.vp-seek'); var c = $('.vp-cur');
+    if(sk && total) sk.value = Math.round(abs / total * (sk.max||1000));
+    if(c) c.textContent = fmt(abs);
+  });
+  audio.addEventListener('ended', function(){ if(cur < TRACKS.length-1){ load(cur+1); play(); }
+    else { setPlayIcon(false); if(fab) fab.classList.remove('beat'); } });
+
+  function seekToFraction(frac){
+    if(!total) return;
+    var target = Math.max(0, Math.min(total, frac * total));
+    var i = 0; while(i < ranges.length-1 && ranges[i].start + ranges[i].dur < target){ i++; }
+    if(i !== cur){ cur = i; audio.src = TRACKS[i].src;
+      var ti=$('.vp-title'); if(ti) ti.textContent = TRACKS[i].title||('第 '+(i+1)+' 段'); markBtn(i); }
+    audio.currentTime = target - ranges[i].start;
+    var c=$('.vp-cur'); if(c) c.textContent = fmt(target);
+  }
+
+  document.addEventListener('click', function(e){
+    var t = e.target;
+    var vb = t.closest ? t.closest('.voice-btn[data-voice-id]') : null;
+    if(vb){
+      var id = vb.getAttribute('data-voice-id'), idx = -1;
+      TRACKS.forEach(function(tr, k){ if(tr.id === id) idx = k; });
+      if(idx >= 0){ load(idx); play(); }
+      return;
+    }
+    if(t.id === 'voiceFab'){ show(); if(audio.paused && !audio.src){ load(0); } if(audio.paused){ play(); } return; }
+    if(!player || !player.contains(t)) return;
+    if(t.classList.contains('vp-play')){ toggle(); return; }
+    if(t.classList.contains('vp-prev')){ prev(); return; }
+    if(t.classList.contains('vp-next')){ next(); return; }
+    if(t.classList.contains('vp-close')){ pause(); hide(); return; }
+  });
+  var sk = $('.vp-seek');
+  if(sk){
+    sk.addEventListener('input', function(){ seeking = true;
+      if(total){ var c=$('.vp-cur'); if(c) c.textContent = fmt((sk.value/(sk.max||1000))*total); } });
+    sk.addEventListener('change', function(){ seekToFraction(sk.value/(sk.max||1000)); seeking = false; });
+  }
+})();
+</script>
+
+<!-- ===== 字幕同步引擎（原样粘贴，不要改写） ===== -->
+<script>
+(function(){
+  "use strict";
+  if(window.__subEngine) return;
+  window.__subEngine = true;
+
+  var listNode = document.getElementById("voicePlaylist");
+  if(!listNode) return;
+  var subBox = document.querySelector("#voicePlayer .vp-sub");
+  var curEl = document.querySelector("#voicePlayer .vp-cur");
+  var titleEl = document.querySelector("#voicePlayer .vp-title");
+  if(!subBox) return;
+
+  var subs = [];
+  var subCache = {};
+  var curSrc = "";
+
+  function esc(s){ var d=document.createElement("div"); d.textContent=s; return d.innerHTML; }
+
+  function mp3ToJson(src){
+    var m = src.replace(/^.*?([a-zA-Z0-9_\/.\-]+\.mp3)(?:\?.*)?$/i, "$1");
+    return m.replace(/\.mp3$/i, ".json");
+  }
+
+  function loadSubFor(src){
+    if(!src || src === curSrc) return;
+    curSrc = src;
+    var jsonUrl = mp3ToJson(src);
+    if(subCache[jsonUrl]){ subs = subCache[jsonUrl]; return; }
+    fetch(jsonUrl).then(function(r){
+      if(!r.ok) throw new Error(r.status);
+      return r.json();
+    }).then(function(arr){
+      subCache[jsonUrl] = Array.isArray(arr) ? arr : [];
+      subs = subCache[jsonUrl];
+    }).catch(function(){ subs = []; });
+  }
+
+  function parseTime(text){
+    var p = String(text).trim().split(":");
+    if(p.length === 2){
+      var m = parseInt(p[0], 10) || 0;
+      var s = parseInt(p[1], 10) || 0;
+      return m * 60 + s;
+    }
+    return parseFloat(text) || 0;
+  }
+
+  function renderSub(t){
+    if(!subs.length) return;
+    var hit = null, idx = -1;
+    for(var i = 0; i < subs.length; i++){
+      if(t >= subs[i].start && t < subs[i].end){ hit = subs[i]; idx = i; break; }
+    }
+    if(!hit){
+      var prev = null;
+      for(var j = 0; j < subs.length; j++){
+        if(subs[j].start <= t) prev = subs[j]; else break;
+      }
+      subBox.classList.remove("active");
+      subBox.innerHTML = prev ? esc(prev.text) : "";
+      return;
+    }
+    subBox.classList.add("active");
+    var prevHtml = idx > 0
+      ? '<span style="opacity:.45">' + esc(subs[idx - 1].text) + "</span> "
+      : "";
+    subBox.innerHTML = prevHtml + '<span class="cur">' + esc(hit.text) + "</span>";
+  }
+
+  function tick(){
+    if(!curEl) return;
+    var sec = parseTime(curEl.textContent);
+    renderSub(sec);
+  }
+
+  function onTitleChange(){
+    var TRACKS = [];
+    try { TRACKS = JSON.parse(listNode.textContent.trim()); } catch(e){ return; }
+    var title = titleEl ? titleEl.textContent.trim() : "";
+    for(var i = 0; i < TRACKS.length; i++){
+      if(TRACKS[i].title === title){ loadSubFor(TRACKS[i].src); return; }
+    }
+  }
+
+  if(window.MutationObserver){
+    var obs = new MutationObserver(function(){ tick(); onTitleChange(); });
+    if(curEl) obs.observe(curEl, { childList:true, characterData:true, subtree:true });
+    if(titleEl) obs.observe(titleEl, { childList:true, characterData:true, subtree:true });
+  } else {
+    setInterval(function(){ tick(); onTitleChange(); }, 300);
+  }
+  setTimeout(tick, 500);
+})();
+</script>
+
+</body>
+</html>

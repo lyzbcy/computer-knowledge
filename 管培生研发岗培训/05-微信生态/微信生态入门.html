@@ -1,0 +1,1348 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>微信生态入门 · 理解地图</title>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Poppins:wght@500;600;700&family=Roboto+Mono:wght@400;600&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#FAF6EB;
+  --paper:#F3EDDD;
+  --forest:#1E3A24;
+  --sky:#BCD8EE;
+  --sage:#AFCDA8;
+  --ink:#1A2018;
+  --marker:#F5E08A;
+  --brick:#B5482A;
+  --correct:#2F7D46;
+  --wrong:#B5482A;
+  --font-display:"Archivo Black","Noto Sans SC","PingFang SC",sans-serif;
+  --font-head:"Poppins","Noto Sans SC","PingFang SC",sans-serif;
+  --font-body:-apple-system,"PingFang SC","Noto Sans SC",sans-serif;
+  --font-mono:"Roboto Mono","JetBrains Mono",monospace;
+  --radius-pill:999px;
+  --radius-card:14px;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0; background:var(--cream); color:var(--ink);
+  font-family:var(--font-body); font-size:16px; line-height:1.7;
+  display:flex;
+}
+/* ===== 左侧固定侧边栏 ===== */
+aside.sidebar{
+  position:fixed; top:0; left:0; width:280px; height:100vh;
+  background:var(--forest); color:var(--cream);
+  padding:1.5rem 1.25rem 2rem; overflow-y:auto;
+  z-index:50; flex-shrink:0;
+}
+aside.sidebar h1{
+  font-family:var(--font-display); font-size:1.35rem; line-height:1.25;
+  margin:0 0 .3rem; letter-spacing:-.01em;
+}
+aside.sidebar .sub{
+  font-size:.78rem; opacity:.75; margin-bottom:1.2rem;
+  padding-bottom:1.2rem; border-bottom:1px solid rgba(250,246,235,.18);
+}
+aside.sidebar .progress-wrap{margin-bottom:1.2rem;}
+aside.sidebar .progress-label{
+  display:flex; justify-content:space-between; align-items:center;
+  font-size:.78rem; opacity:.8; margin-bottom:.4rem;
+  font-family:var(--font-head); letter-spacing:.02em;
+}
+aside.sidebar .progress-bar{
+  height:8px; background:rgba(250,246,235,.15); border-radius:var(--radius-pill);
+  overflow:hidden;
+}
+aside.sidebar .progress-bar .fill{
+  height:100%; width:0%; background:var(--marker); border-radius:var(--radius-pill);
+  transition:width .35s ease;
+}
+aside.sidebar nav a{
+  display:block; padding:.55rem .8rem; margin-bottom:.2rem;
+  color:var(--cream); text-decoration:none; opacity:.78;
+  font-family:var(--font-head); font-weight:500; font-size:.88rem;
+  border-radius:8px; transition:all .18s; border-left:3px solid transparent;
+}
+aside.sidebar nav a:hover{ opacity:1; background:rgba(250,246,235,.08); }
+aside.sidebar nav a .no{
+  display:inline-block; width:1.8em; font-family:var(--font-mono); opacity:.7;
+  font-size:.8rem;
+}
+aside.sidebar nav a.active{ opacity:1; background:rgba(245,224,138,.18); border-left-color:var(--marker); }
+aside.sidebar .mascot{
+  margin-top:1.5rem; text-align:center; opacity:.9;
+}
+aside.sidebar .mascot img{ width:88px; height:88px; object-fit:contain; }
+aside.sidebar .mascot .mascot-text{ font-size:.72rem; opacity:.7; margin-top:.3rem; }
+
+/* ===== 右侧主区（单列纵向堆叠） ===== */
+main{
+  margin-left:280px; padding:3rem 2rem 5rem;
+  max-width:820px; width:100%; min-width:0;
+}
+section.module{
+  margin-bottom:3.5rem; scroll-margin-top:1.5rem;
+  border-top:3px solid var(--forest); padding-top:1.5rem;
+}
+section.module:first-of-type{ border-top:none; padding-top:0; }
+.sec-id{
+  display:inline-block; font-family:var(--font-mono); font-weight:600;
+  font-size:.78rem; background:var(--forest); color:var(--cream);
+  padding:.2em .7em; border-radius:var(--radius-pill); letter-spacing:.05em;
+  margin-bottom:.6rem;
+}
+h2{
+  font-family:var(--font-head); font-weight:700;
+  font-size:1.6rem; line-height:1.3; margin:0 0 1rem; color:var(--forest);
+}
+h3{
+  font-family:var(--font-head); font-weight:600;
+  font-size:1.1rem; margin:1.4rem 0 .6rem; color:var(--forest);
+}
+p{ margin:0 0 .85rem; }
+.lead{ font-size:1.05rem; color:var(--ink); }
+
+/* 单列卡片 */
+.card{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1.25rem 1.35rem; margin-bottom:1rem;
+  border-left:4px solid var(--sage);
+}
+.card.brick{ border-left-color:var(--brick); }
+.card.marker{ border-left-color:var(--marker); background:rgba(245,224,138,.18); }
+.card.sky{ border-left-color:var(--sky); }
+.card-title{
+  font-family:var(--font-head); font-weight:600; font-size:1rem;
+  margin:0 0 .4rem; color:var(--forest);
+}
+.card .meta{
+  display:inline-block; font-size:.72rem; font-family:var(--font-mono);
+  background:var(--cream); color:var(--ink); padding:.1em .6em;
+  border-radius:var(--radius-pill); margin-left:.4em; vertical-align:middle;
+}
+
+/* 原文依据块 */
+.src-quote{
+  background:var(--cream); border-left:3px solid var(--brick);
+  padding:.6rem .9rem; margin:.5rem 0; font-size:.9rem;
+  border-radius:0 8px 8px 0;
+}
+.src-quote::before{
+  content:"原文依据 · "; font-family:var(--font-mono); font-size:.74rem;
+  font-weight:600; color:var(--brick); letter-spacing:.05em;
+}
+
+/* 类型标签 */
+.type-tag{
+  display:inline-block; font-size:.72rem; font-family:var(--font-mono);
+  padding:.15em .6em; border-radius:var(--radius-pill); margin-right:.3em;
+  font-weight:600;
+}
+.type-tag.fact{ background:var(--sage); color:var(--forest); }
+.type-tag.judge{ background:var(--marker); color:var(--ink); }
+.type-tag.infer{ background:var(--sky); color:var(--ink); }
+.type-tag.eg{ background:var(--brick); color:var(--cream); }
+
+/* 背景补充块 */
+.bg-block{
+  background:rgba(175,205,168,.22); border-radius:var(--radius-card);
+  padding:1.1rem 1.25rem; margin-bottom:1rem;
+  border-left:4px solid var(--sage);
+}
+.bg-block .bg-label{
+  font-family:var(--font-mono); font-size:.74rem; font-weight:600;
+  color:var(--forest); letter-spacing:.06em; margin-bottom:.5rem;
+}
+.bg-block .why{ font-size:.86rem; opacity:.78; margin-top:.5rem; font-style:italic; }
+
+/* C 类比块 */
+.analogy{
+  background:rgba(188,216,238,.25); border-radius:8px;
+  padding:.7rem .9rem; margin:.6rem 0; font-size:.92rem;
+  border-left:3px solid var(--sky);
+}
+.analogy::before{
+  content:"C 类比 · "; font-family:var(--font-mono); font-size:.74rem;
+  font-weight:600; color:var(--forest); letter-spacing:.05em;
+}
+
+/* 目标项（纵向堆叠） */
+.goal-item{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:.9rem 1.1rem; margin-bottom:.8rem;
+  display:flex; align-items:flex-start; gap:.7rem;
+  border-left:4px solid var(--forest);
+}
+.goal-item .g-num{
+  font-family:var(--font-display); font-size:1.4rem; color:var(--brick);
+  line-height:1; flex-shrink:0;
+}
+
+/* 结构地图（树形/纵向） */
+.tree{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1.1rem 1.25rem; font-family:var(--font-mono); font-size:.85rem;
+  line-height:1.9;
+}
+.tree-node{ margin:.2rem 0; }
+.tree-node .label{ color:var(--forest); font-weight:600; }
+.tree-node .rel{ color:var(--brick); font-size:.78rem; }
+
+/* 关卡题 */
+.q-item{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1rem 1.15rem .9rem; margin-bottom:1rem;
+  border-left:4px solid var(--sky);
+}
+.q-item .q-no{
+  font-family:var(--font-mono); font-size:.74rem; font-weight:600;
+  color:var(--brick); letter-spacing:.05em; margin-bottom:.3rem;
+}
+.q-item .q-text{ font-weight:500; margin-bottom:.7rem; }
+.q-item .q-hint{ font-size:.84rem; opacity:.7; font-style:italic; margin-top:.6rem; }
+
+/* 任务（data-* 题目） */
+.task{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1rem 1.15rem 1.1rem; margin-bottom:1.1rem;
+  border-left:4px solid var(--brick);
+}
+.task .q{ font-weight:500; margin-bottom:.7rem; }
+.task .opts{ display:flex; flex-direction:column; gap:.45rem; margin-bottom:.7rem; }
+.task button.opt{
+  background:var(--cream); border:1.5px solid var(--forest);
+  border-radius:8px; padding:.55rem .8rem;
+  font-family:var(--font-body); font-size:.94rem; text-align:left;
+  cursor:pointer; transition:all .15s; color:var(--ink);
+}
+.task button.opt:hover{ background:var(--sage); }
+.task button.opt.selected{ background:var(--forest); color:var(--cream); border-color:var(--forest); }
+.task button.check{
+  background:var(--forest); color:var(--cream); border:none;
+  border-radius:var(--radius-pill); padding:.45rem 1.2rem;
+  font-family:var(--font-head); font-weight:600; font-size:.88rem;
+  cursor:pointer; margin-bottom:.6rem;
+}
+.task button.check:hover{ background:#142710; }
+.task .feedback{
+  background:var(--cream); border-radius:8px; padding:.6rem .8rem;
+  font-size:.88rem; margin-top:.4rem;
+  border-left:3px solid var(--ink);
+}
+.task .feedback.ok{ border-left-color:var(--correct); background:rgba(175,205,168,.22); }
+.task .feedback.no{ border-left-color:var(--wrong); background:rgba(181,72,42,.1); }
+.task .feedback .src{
+  display:block; margin-top:.4rem; font-size:.82rem; opacity:.8;
+  font-style:italic;
+}
+.task .match-row{
+  display:flex; align-items:center; gap:.6rem; margin-bottom:.5rem;
+  flex-wrap:wrap;
+}
+.task select.match{
+  flex:1; min-width:140px; padding:.4rem .5rem;
+  border:1.5px solid var(--forest); border-radius:6px;
+  font-family:var(--font-body); background:var(--cream);
+}
+
+/* 错题回流 */
+.wrong-box{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1rem 1.15rem; border-left:4px solid var(--wrong);
+}
+.wrong-box ul{ margin:.5rem 0 0; padding-left:1.2rem; }
+.wrong-box li{ margin-bottom:.4rem; font-size:.9rem; }
+
+/* 误解卡 */
+.myth{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1.1rem 1.25rem; margin-bottom:1rem;
+  border-left:4px solid var(--brick);
+}
+.myth .myth-head{
+  font-family:var(--font-head); font-weight:600; color:var(--brick);
+  font-size:1rem; margin-bottom:.5rem;
+}
+.myth .row{ margin:.4rem 0; font-size:.92rem; }
+.myth .row .key{
+  font-family:var(--font-mono); font-size:.74rem; font-weight:600;
+  color:var(--forest); margin-right:.4em;
+}
+
+/* 概念卡 */
+.concept{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1.25rem 1.35rem; margin-bottom:1.1rem;
+  border-left:4px solid var(--marker);
+}
+.concept .c-name{
+  font-family:var(--font-head); font-weight:700; font-size:1.15rem;
+  color:var(--forest); margin-bottom:.6rem;
+}
+.concept .c-row{ margin:.5rem 0; font-size:.92rem; }
+.concept .c-row .ck{
+  font-family:var(--font-mono); font-size:.74rem; font-weight:600;
+  color:var(--brick); margin-right:.4em; letter-spacing:.04em;
+}
+
+/* 公式块 */
+.formula{
+  background:var(--forest); color:var(--marker);
+  border-radius:8px; padding:.8rem 1rem; margin:.6rem 0;
+  font-family:var(--font-mono); font-size:.88rem; text-align:center;
+  overflow-x:auto;
+}
+
+/* 表格 */
+table.t{
+  width:100%; border-collapse:collapse; margin:.6rem 0;
+  font-size:.88rem; background:var(--cream);
+  border-radius:8px; overflow:hidden;
+}
+table.t th, table.t td{
+  padding:.5rem .7rem; text-align:left; border:1px solid var(--paper);
+}
+table.t th{ background:var(--forest); color:var(--cream); font-family:var(--font-head); font-weight:500; }
+table.t td.hit{ background:rgba(175,205,168,.3); }
+table.t td.miss{ background:rgba(181,72,42,.15); }
+
+/* 表情贴纸（反馈区与目标头） */
+.sticker{ display:inline-block; vertical-align:middle; width:24px; height:24px; margin:0 .3em; }
+
+/* 页脚 */
+footer{
+  margin-top:3rem; padding:1.5rem 0 1rem; border-top:2px solid var(--forest);
+  font-size:.86rem; color:var(--ink); text-align:center;
+}
+footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
+
+/* 引用图标 */
+.hero-mark{
+  font-family:var(--font-display); font-size:.74rem;
+  color:var(--marker); background:var(--forest);
+  padding:.2em .7em; border-radius:var(--radius-pill);
+  letter-spacing:.05em; display:inline-block; margin-bottom:.6rem;
+}
+
+/* ===== 语音：右侧书签脊 ===== */
+#voiceFab{
+  position:fixed; right:0; top:50%; transform:translateY(-50%); z-index:9998;
+  display:flex; align-items:center; flex-direction:row;
+  background:var(--forest); color:var(--cream); border:none; cursor:pointer;
+  height:5em; padding:0 .55em;
+  border-radius:16px 0 0 16px;
+  box-shadow:-4px 0 14px rgba(0,0,0,.18);
+  font-family:var(--font-head); font-size:.85rem;
+  overflow:hidden;
+  transition:width .42s cubic-bezier(.4,0,.2,1), box-shadow .3s ease;
+  width:1.9em;
+}
+#voiceFab .fab-icon{
+  font-size:1.15rem; writing-mode:vertical-rl; text-orientation:upright;
+  letter-spacing:.1em; white-space:nowrap; flex-shrink:0;
+}
+#voiceFab .fab-text{
+  white-space:nowrap; opacity:0; margin-left:.6em;
+  transition:opacity .28s ease .12s;
+}
+#voiceFab:hover{
+  width:8.6em; box-shadow:-6px 0 22px rgba(0,0,0,.25);
+}
+#voiceFab:hover .fab-text{ opacity:1; }
+#voiceFab.beat{ animation:voiceBeat 1.6s ease-in-out infinite; }
+@keyframes voiceBeat{ 0%,100%{box-shadow:-4px 0 14px rgba(0,0,0,.18)} 50%{box-shadow:-4px 0 20px rgba(181,72,42,.5)} }
+
+/* ===== 语音：圆润玩具风播放器 ===== */
+#voicePlayer{
+  position:fixed; left:50%; bottom:1rem; transform:translateX(-50%) translateY(140%);
+  width:min(92vw,380px); padding:1rem 1.1rem 1.1rem; background:var(--cream);
+  border:2px solid var(--forest); border-radius:26px;
+  box-shadow:0 8px 28px rgba(0,0,0,.16); z-index:9999; transition:transform .28s ease;
+  text-align:center; font-family:var(--font-body);
+}
+#voicePlayer.show{ transform:translateX(-50%) translateY(0); }
+#voicePlayer .vp-head{ font-size:.75rem; color:var(--forest); opacity:.8; letter-spacing:.05em; }
+#voicePlayer .vp-title{ font:700 1rem/1.35 var(--font-body); color:var(--ink);
+  margin:.25rem 0 .7rem; padding:0 .2rem; word-break:break-word; }
+#voicePlayer .vp-play{
+  width:3.6rem; height:3.6rem; border:none; border-radius:50%;
+  background:var(--forest); color:var(--cream); font-size:1.3rem; cursor:pointer;
+  margin:0 auto .7rem; display:flex; align-items:center; justify-content:center;
+  box-shadow:0 3px 0 #142710; transition:transform .1s, box-shadow .1s;
+}
+#voicePlayer .vp-play:active{ transform:translateY(2px); box-shadow:0 1px 0 #142710; }
+#voicePlayer .vp-prev,#voicePlayer .vp-next{
+  width:2.3rem; height:2.3rem; border:1.5px solid var(--forest); border-radius:50%;
+  background:var(--cream); color:var(--forest); font-size:.9rem; cursor:pointer;
+}
+#voicePlayer .vp-controls{ display:flex; align-items:center; justify-content:center; gap:1.2rem; margin-bottom:.7rem; }
+#voicePlayer .vp-seek{ width:100%; margin:.2rem 0; cursor:pointer; accent-color:var(--forest); }
+#voicePlayer .vp-time{ display:flex; justify-content:space-between; font:600 .72rem/1 var(--font-mono); color:var(--ink); opacity:.75; }
+#voicePlayer .vp-close{ position:absolute; top:.5rem; right:.6rem; width:1.5rem; height:1.5rem;
+  border:none; background:transparent; color:var(--ink); font-size:1rem; cursor:pointer; opacity:.5; }
+#voicePlayer .vp-sub{
+  min-height:2.6em; max-height:3.9em; overflow:hidden;
+  font:.85rem/1.5 var(--font-body); color:var(--ink); opacity:.55;
+  margin:.2rem 0 .5rem; padding:0 .3rem;
+  transition:opacity .2s; text-align:center;
+}
+#voicePlayer .vp-sub.active{ opacity:1; }
+#voicePlayer .vp-sub .cur{ color:var(--forest); font-weight:600; }
+
+/* 「听这章」小按钮 */
+.voice-btn{
+  display:inline-block; vertical-align:middle; margin-left:.6em;
+  padding:.25em .8em; border:1px solid var(--forest); border-radius:var(--radius-pill);
+  background:var(--cream); color:var(--forest); font:600 .8rem/1.2 var(--font-body);
+  cursor:pointer; transition:background .15s;
+}
+.voice-btn:hover{ background:var(--sage); }
+.voice-btn.active{ background:var(--forest); color:var(--cream); }
+
+/* 学习报告按钮 */
+.report-actions{ margin:.8rem 0; display:flex; gap:.6rem; flex-wrap:wrap; }
+.report-actions button{
+  background:var(--forest); color:var(--cream); border:none;
+  border-radius:var(--radius-pill); padding:.5rem 1.1rem;
+  font-family:var(--font-head); font-weight:600; font-size:.88rem; cursor:pointer;
+}
+.report-actions button:hover{ background:#142710; }
+#report{
+  background:var(--cream); border-radius:8px; padding:1rem 1.1rem;
+  font-family:var(--font-mono); font-size:.82rem; white-space:pre-wrap;
+  border-left:3px solid var(--forest); min-height:3rem; line-height:1.7;
+}
+
+/* 移动端 */
+@media (max-width: 880px){
+  body{ flex-direction:column; }
+  aside.sidebar{
+    position:static; width:100%; height:auto; max-height:none;
+    padding:1.2rem 1rem;
+  }
+  main{ margin-left:0; padding:1.5rem 1rem 4rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- 语音播放列表（连续播放用） -->
+<script type="application/json" id="voicePlaylist">
+[
+  {"id":"m1","title":"01 学习目标与阅读路径","src":"audio/m1.mp3"},
+  {"id":"m2","title":"02 零基础背景包","src":"audio/m2.mp3"},
+  {"id":"m3","title":"03 原文问题定位","src":"audio/m3.mp3"},
+  {"id":"m4","title":"04 原文结构地图","src":"audio/m4.mp3"},
+  {"id":"m5","title":"05 核心判断与依据","src":"audio/m5.mp3"},
+  {"id":"m6","title":"06 关键概念拆解","src":"audio/m6.mp3"},
+  {"id":"m7","title":"07 苏格拉底式阅读关卡","src":"audio/m7.mp3"},
+  {"id":"m8","title":"08 闯关式任务","src":"audio/m8.mp3"},
+  {"id":"m9","title":"09 误解与边界","src":"audio/m9.mp3"},
+  {"id":"m10","title":"10 背景知识缺口","src":"audio/m10.mp3"},
+  {"id":"m11","title":"11 复盘与学习报告","src":"audio/m11.mp3"}
+]
+</script>
+
+<!-- ===== 左侧固定侧边栏 ===== -->
+<aside class="sidebar">
+  <h1>微信生态入门</h1>
+  <div class="sub">微盛研发岗管培生培训 · 理解地图</div>
+
+  <div class="progress-wrap">
+    <div class="progress-label">
+      <span>任务进度</span>
+      <span><span id="barNum">0 / 0</span></span>
+    </div>
+    <div class="progress-bar"><div class="fill" id="barFill"></div></div>
+  </div>
+
+  <nav>
+    <a href="#m01"><span class="no">01</span>学习目标与阅读路径</a>
+    <a href="#m02"><span class="no">02</span>零基础背景包</a>
+    <a href="#m03"><span class="no">03</span>原文问题定位</a>
+    <a href="#m04"><span class="no">04</span>原文结构地图</a>
+    <a href="#m05"><span class="no">05</span>核心判断与依据</a>
+    <a href="#m06"><span class="no">06</span>关键概念拆解</a>
+    <a href="#m07"><span class="no">07</span>苏格拉底式阅读关卡</a>
+    <a href="#m08"><span class="no">08</span>闯关式任务</a>
+    <a href="#m09"><span class="no">09</span>误解与边界</a>
+    <a href="#m10"><span class="no">10</span>背景知识缺口</a>
+    <a href="#m11"><span class="no">11</span>复盘与学习报告</a>
+  </nav>
+
+  <div class="mascot">
+    <img src="https://lyzbcy.github.io/weshoto-study/img/sticker/mascot.png" alt="吉祥物">
+    <div class="mascot-text">陪你学完整章</div>
+  </div>
+</aside>
+
+<!-- ===== 右侧主区（单列纵向堆叠） ===== -->
+<main>
+
+<!-- ===== 01 学习目标与阅读路径 ===== -->
+<section class="module" id="m01">
+  <span class="hero-mark">理解地图</span>
+  <h2>01 学习目标与阅读路径 <button class="voice-btn" data-voice-id="m1">🎧 听这章</button></h2>
+  <p class="lead">这是一份写给"只会写 C 语言、第一次进微盛"的同学的拆解地图。它要讲清一件事：微信到底是一堆什么能力拼起来的，它们各自干啥、又怎么协同。读完这一章，你能做到下面五件事。</p>
+
+  <div class="goal-item">
+    <span class="g-num">1</span>
+    <div><strong>能说出 6 个关键产品线</strong>：公众号（订阅号/服务号）、小程序、视频号、企业微信、开放平台、微信支付，各自是什么、解决什么问题。</div>
+  </div>
+  <div class="goal-item">
+    <span class="g-num">2</span>
+    <div><strong>能分清订阅号 vs 服务号</strong>：群发频率、消息位置、适合场景三项区别，并能说出对应原文依据。</div>
+  </div>
+  <div class="goal-item">
+    <span class="g-num">3</span>
+    <div><strong>能解释"为什么企业需要"企业微信</strong>：客户资产企业化、离职继承这两条最硬的价值，而不是停留在"它是个办公 IM"。</div>
+  </div>
+  <div class="goal-item">
+    <span class="g-num">4</span>
+    <div><strong>能指出至少 3 个</strong>新手最常踩的认知坑（如：把小程序当 App、把开放平台当公众平台、把企业微信当普通微信）。</div>
+  </div>
+  <div class="goal-item">
+    <span class="g-num">5</span>
+    <div><strong>能提出 1 个追问</strong>：例如"微盛作为 SCRM 厂商，为什么必须深扎企业微信这一条线，而不是视频号？"</div>
+  </div>
+
+  <div class="card marker">
+    <div class="card-title">阅读路径（按顺序）</div>
+    <p style="margin:0">先在 02 补 4 个零件 → 在 03/04 看清"文章在解决什么问题、怎么搭" → 在 05/06 抓住 6 条核心判断和 6 个关键概念 → 在 07 自己提问 → 在 08 闯 8 道闭环题 → 在 09/10 看边界 → 在 11 出报告。</p>
+  </div>
+</section>
+
+<!-- ===== 02 零基础背景包 ===== -->
+<section class="module" id="m02">
+  <span class="sec-id">02</span>
+  <h2>零基础背景包 <button class="voice-btn" data-voice-id="m2">🎧 听这章</button></h2>
+  <p class="lead">在拆原文前，先装 4 个最基本的零件。每个都标了"背景补充"——它帮你读懂原文，但<strong>不是作者的论点</strong>。</p>
+
+  <div class="bg-block">
+    <div class="bg-label">背景补充 1 · 生态（Ecosystem）</div>
+    <p style="margin:0 0 .4rem">不是一个单点产品，而是一个以微信为核心、由一堆能力（通讯、内容、交易、服务）共同拼起来的开放体系，能力之间互相导流、互相协同。</p>
+    <div class="analogy">类比 C：微信生态 ≈ 一个由多个函数模块组成的工程，每个模块（公众号、小程序、支付）各管一摊，通过统一的"调用约定"（用户身份、社交关系）串起来。</div>
+    <div class="why">为什么现在需要知道：整章 13 节都在讲生态里的一块块拼图，不懂"生态"这个概念就读不懂它们为什么要协同。</div>
+  </div>
+
+  <div class="bg-block">
+    <div class="bg-label">背景补充 2 · 私域 / 公域流量</div>
+    <p style="margin:0 0 .4rem">私域 = 企业能反复触达、不用每次花钱买的那批用户（如加了企业微信的客户）；公域 = 平台分发、要靠内容或广告抢的流量（如视频号推荐、搜一搜）。</p>
+    <div class="why">为什么现在需要知道：原文反复出现"私域引流""客户资产"，微盛作为 SCRM 厂商的主战场就是帮企业把公域流量沉淀进私域。</div>
+  </div>
+
+  <div class="bg-block">
+    <div class="bg-label">背景补充 3 · SCRM（社交化客户关系管理）</div>
+    <p style="margin:0 0 .4rem">Social CRM，在传统 CRM（管客户资料）基础上，叠加社交关系链能力——企业能通过微信生态加客户为好友、发朋友圈、建客户群做长期运营。微盛就是做 SCRM 的。</p>
+    <div class="why">为什么现在需要知道：你是微盛研发管培生，理解"为什么微盛要押注企业微信"，前提是知道 SCRM 这门生意的核心载体。</div>
+  </div>
+
+  <div class="bg-block">
+    <div class="bg-label">背景补充 4 · UnionID</div>
+    <p style="margin:0 0 .4rem">开放平台提供的用户身份机制：同一个开发者账号下的公众号、小程序、App、网站，能识别出"这是同一个人"，从而打通身份。</p>
+    <div class="analogy">类比 C：UnionID ≈ 一个全局唯一的用户 ID，跨多个模块共享，避免每个模块各自维护一份对不上的账号表。</div>
+    <div class="why">为什么现在需要知道：原文讲开放平台"身份打通"时就靠它，这是企业做全域用户画像的地基。</div>
+  </div>
+</section>
+
+<!-- ===== 03 原文问题定位 ===== -->
+<section class="module" id="m03">
+  <span class="sec-id">03</span>
+  <h2>原文问题定位 <button class="voice-btn" data-voice-id="m3">🎧 听这章</button></h2>
+
+  <div class="card brick">
+    <div class="card-title">表面在讲什么？</div>
+    <p style="margin:0">产品清单：把微信生态里的 13 个能力（公众号、视频号、小程序、企业微信、开放平台、微信支付、Weixin/WeChat、小游戏、卡包、搜一搜、运动等）挨个介绍定位、价值、与其他能力的关系。<span class="type-tag fact">事实</span></p>
+  </div>
+
+  <div class="card brick">
+    <div class="card-title">深层在回答什么问题？</div>
+    <p style="margin:0 0 .5rem"><strong>微信生态不是一堆孤立功能，而是一张"内容获客 → 服务承载 → 资产沉淀 → 交易闭环"的价值网，企业该怎么用这张网做客户运营？</strong>原文反复强调"可关联""可承接""闭环"，本质上是在讲协同。<span class="type-tag judge">判断</span></p>
+    <div class="src-quote">微信生态是以微信为核心……共同构成的开放生态体系，覆盖社交、内容、交易、服务等场景。</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">读者如果只记一个问题，应该记哪个？</div>
+    <p style="margin:0"><strong>这十几个能力，每个到底是干嘛的，它们又是怎么拼成一家企业的"获客—运营—成交"链路的？</strong>整章都在绕这个问题打转。<span class="type-tag infer">推论</span></p>
+  </div>
+</section>
+
+<!-- ===== 04 原文结构地图 ===== -->
+<section class="module" id="m04">
+  <span class="sec-id">04</span>
+  <h2>原文结构地图 <button class="voice-btn" data-voice-id="m4">🎧 听这章</button></h2>
+  <p class="lead">判断结构类型：<strong>主题簇 + 价值链</strong>（混合结构）。13 节是并列的产品主题簇，但主题簇之间又隐含一条"获客 → 服务 → 资产 → 交易"的价值链。不能把它读成单一产品手册。</p>
+
+  <div class="tree">
+    <div class="tree-node"><span class="label">价值链主线（企业的客户旅程）</span> <span class="rel">（隐含逻辑）</span></div>
+    <div class="tree-node">&nbsp;&nbsp;├─ 获客：公众号（内容）+ 视频号（公域短视频）+ 搜一搜（搜索入口）</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ 服务承载：小程序（即用即走的轻应用）+ 小游戏（基于小程序）</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ 资产沉淀：企业微信（客户资产企业化、离职继承）</div>
+    <div class="tree-node">&nbsp;&nbsp;└─ 交易闭环：微信支付（贯穿线上线下）</div>
+    <div class="tree-node" style="margin-top:.6rem"><span class="label">并列主题簇（13 节产品能力）</span> <span class="rel">（主题簇，服务于价值链）</span></div>
+    <div class="tree-node">&nbsp;&nbsp;├─ §2 微信本体（IM + 朋友圈，生活方式）</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ §3 公众号（订阅号 / 服务号，内容与服务）</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ §4 视频号（短视频 + 直播，公域内容）</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ §5 小程序（无需下载，即用即走）</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ §6 企业微信（企业级 IM + 私域阵地）</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ §7 开放平台（给开发者的接入接口集合）</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ §8 微信支付（移动支付，交易核心）</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ §9 Weixin/WeChat（境内/境外双版本）</div>
+    <div class="tree-node">&nbsp;&nbsp;└─ §10~13 小游戏 / 卡包 / 搜一搜 / 运动（辅助能力）</div>
+  </div>
+
+  <div class="card sky">
+    <div class="card-title">节点关系说明</div>
+    <p style="margin:0">13 节表面是<strong>并列产品介绍</strong>，但每节末尾的"与其他能力的关系"都把它接回价值链（如"视频号可关联公众号、小程序、企业微信""小程序可嵌入公众号文章、视频号直播"）。所以读法是：<strong>先记每个能力的定位，再记它挂在价值链的哪一环</strong>。</p>
+  </div>
+</section>
+
+<!-- ===== 05 核心判断与依据 ===== -->
+<section class="module" id="m05">
+  <span class="sec-id">05</span>
+  <h2>核心判断与依据 <button class="voice-btn" data-voice-id="m5">🎧 听这章</button></h2>
+  <p class="lead">挑出 6 条最硬的判断。每条都附原文依据和类型标签。</p>
+
+  <div class="card">
+    <div class="card-title">判断 1 · 订阅号和服务号是两种定位完全不同的公众号</div>
+    <p style="margin:0 0 .4rem">订阅号偏内容资讯、每天可群发 1 次、消息折叠在订阅号文件夹；服务号偏业务服务、每月群发 4 次、消息显示在聊天列表。两者的本质区别是"内容广播"还是"服务交互"。<span class="type-tag fact">事实</span></p>
+    <div class="src-quote">订阅号……每天可群发 1 次，消息折叠在"订阅号消息"文件夹中……服务号……每月可群发 4 次，消息显示在聊天列表。</div>
+    <p style="margin:.4rem 0 0;font-size:.9rem"><strong>易误读</strong>：别以为"服务号比订阅号高级"——它们是不同场景，不是高低配。</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">判断 2 · 小程序的核心特征是"无需下载安装、即用即走"</div>
+    <p style="margin:0 0 .4rem">小程序不是"小的 App"，而是一种依托微信运行、扫一扫或搜一下就打开的轻量应用，理念是"用完即走"，降低使用门槛。<span class="type-tag fact">事实</span></p>
+    <div class="src-quote">小程序是一种不需要下载安装即可使用的应用，用户扫一扫或搜一下即可打开应用，体现了"用完即走"的理念。</div>
+    <p style="margin:.4rem 0 0;font-size:.9rem"><strong>为什么重要</strong>：这条决定了小程序在生态里的角色——服务承载层，承接"看完内容想立刻办事"的场景。</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">判断 3 · 企业微信的独特价值是"客户资产企业化"</div>
+    <p style="margin:0 0 .4rem">企业微信不仅是办公 IM，更是企业连接微信用户的私域阵地。客户资产属于企业，员工离职后客户可被继承，避免客户流失。<span class="type-tag judge">判断</span></p>
+    <div class="src-quote">客户资产管理：客户资产属于企业，员工离职客户可继承……离职继承：员工离职后客户可被继承，客户资产企业化。</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">判断 4 · 企业微信与微信互通，是它能做私域的根本前提</div>
+    <p style="margin:0 0 .4rem">企业微信员工可添加微信用户为客户、单聊群聊、发客户朋友圈，而<strong>微信用户无需安装企业微信</strong>。正是这条互通，让企业能触达 13 亿微信用户。<span class="type-tag fact">事实</span></p>
+    <div class="src-quote">企业微信员工可添加微信用户为客户……微信用户无需安装企业微信即可与企业员工沟通。</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">判断 5 · 开放平台是"微信能力对外开放的入口"</div>
+    <p style="margin:0 0 .4rem">开放平台面向第三方开发者，提供微信登录、分享、支付等接口，并通过 UnionID 打通公众号、小程序、移动应用、网站应用的用户身份。<span class="type-tag fact">事实</span></p>
+    <div class="src-quote">微信开放平台是微信面向第三方开发者的开放能力集合……通过 UnionID 机制实现同一用户在不同应用间的身份识别。</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">判断 6 · 微信支付是生态交易闭环的核心</div>
+    <p style="margin:0 0 .4rem">微信支付与小程序、公众号、视频号结合才能完成"商品/服务交易"的闭环；没有支付，前面的获客和服务都收不回钱。<span class="type-tag judge">判断</span></p>
+    <div class="src-quote">微信支付是微信生态交易闭环的核心……与小程序、公众号、视频号等结合完成交易闭环。</div>
+  </div>
+</section>
+
+<!-- ===== 06 关键概念拆解 ===== -->
+<section class="module" id="m06">
+  <span class="sec-id">06</span>
+  <h2>关键概念拆解 <button class="voice-btn" data-voice-id="m6">🎧 听这章</button></h2>
+  <p class="lead">6 个概念，串成一条价值链：<strong>公众号/视频号（获客） → 小程序（服务） → 企业微信（资产） → 微信支付（交易）</strong>，开放平台则是给开发者的接入入口。</p>
+
+  <div class="concept">
+    <div class="c-name">① 公众号（订阅号 / 服务号）</div>
+    <div class="c-row"><span class="ck">定义</span>微信生态中内容沉淀与传播的核心载体，分订阅号（内容资讯为主）和服务号（业务服务为主）两种形态。</div>
+    <div class="c-row"><span class="ck">人话</span>订阅号像一份每天能推送的电子报；服务号像一个能办业务的官方窗口。</div>
+    <div class="analogy">类比 C：公众号 ≈ 一个单向广播频道，运营者 push 内容，用户订阅接收；服务号多了些"可被调用"的服务接口。</div>
+    <div class="c-row"><span class="ck">关系</span>可关联小程序、微信支付、企业微信；公众号文章可作为企业微信客户运营的素材，关注者可被引导加企业微信员工。</div>
+    <div class="src-quote">订阅号……每天可群发 1 次……服务号……每月可群发 4 次……公众号文章不仅是阅读内容，还可以配置为客户轨迹素材。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>公众号 ≠ 企业微信。公众号是"对所有人广播"，企业微信是"一对一/一对客户群运营"。</div>
+  </div>
+
+  <div class="concept">
+    <div class="c-name">② 小程序</div>
+    <div class="c-row"><span class="ck">定义</span>不需要下载安装即可使用的应用，扫一扫或搜一下即可打开，体现"用完即走"理念。</div>
+    <div class="c-row"><span class="ck">人话</span>一个不用装、点开就能用、用完就关的轻量程序，承载商城、预约、会员等服务。</div>
+    <div class="analogy">类比 C：小程序 ≈ 一个轻量级程序，不用安装、在微信运行时里独立运行，更像"按需加载的函数"，而不是常驻的 App 进程。</div>
+    <div class="c-row"><span class="ck">关系</span>可关联公众号、微信支付、企业微信；可嵌入公众号文章、视频号直播；可与微信卡包、会员体系打通。</div>
+    <div class="src-quote">小程序是一种不需要下载安装即可使用的应用……企业需要把服务能力产品化、场景化。小程序是把业务能力封装为"即用即走"轻量应用的最佳载体。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>小程序 ≠ "小的 App"。它必须依托微信运行，不能脱离微信独立分发。</div>
+  </div>
+
+  <div class="concept">
+    <div class="c-name">③ 视频号</div>
+    <div class="c-row"><span class="ck">定义</span>微信推出的短视频内容平台，承载短视频与直播，基于社交关系推荐（熟人社交 + 算法）。</div>
+    <div class="c-row"><span class="ck">人话</span>微信里的抖音，能发短视频、能开直播、能带货。</div>
+    <div class="analogy">类比 C：视频号 ≈ 一个事件驱动的实时内容流，靠社交关系链做推荐分发，是生态里的公域流量入口。</div>
+    <div class="c-row"><span class="ck">关系</span>可关联公众号、小程序、企业微信、微信支付；直播可挂载小程序商城实现带货；内容可转发到朋友圈、聊天、企业微信客户群。</div>
+    <div class="src-quote">视频号……承载微信生态内的短视频与直播内容……私域引流：视频号可挂载公众号、小程序、企业微信，引导用户进入私域。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>视频号 ≠ 公众号的视频版。公众号偏订阅沉淀，视频号偏公域获客。</div>
+  </div>
+
+  <div class="concept">
+    <div class="c-name">④ 企业微信</div>
+    <div class="c-row"><span class="ck">定义</span>企业级即时通讯与办公协作平台，同时是企业连接微信用户、运营客户关系的私域阵地。</div>
+    <div class="c-row"><span class="ck">人话</span>企业版的微信，对内办公协作，对外能加微信客户、管客户群、做长期运营。</div>
+    <div class="analogy">类比 C：企业微信 ≈ 企业版微信——既打通企业内部（组织架构、审批），又打通外部（与微信用户互通），是把"客户关系"从员工变量提升为企业级常量的容器。</div>
+    <div class="c-row"><span class="ck">关系</span>员工可加微信用户为客户、单聊群聊、发客户朋友圈；可关联公众号、小程序、微信支付；承接公众号/视频号引流来的客户，通过小程序/支付完成交易。</div>
+    <div class="src-quote">企业微信是企业沉淀客户资产、构建私域、实现客户长期运营的核心载体……把客户关系从员工个人转移到企业，避免员工离职带来的客户流失。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>企业微信 ≠ 普通微信办公版。它的命门是"与微信互通 + 客户资产企业化"，这是微盛 SCRM 押注它的根本原因。</div>
+  </div>
+
+  <div class="concept">
+    <div class="c-name">⑤ 开放平台</div>
+    <div class="c-row"><span class="ck">定义</span>微信面向第三方开发者的开放能力集合，提供登录、分享、支付等开放接口，支持移动应用、网站应用、第三方平台接入。</div>
+    <div class="c-row"><span class="ck">人话</span>给开发者用的"接入微信"的官方接口集合，让你的 App 或网站能用微信登录、分享、支付。</div>
+    <div class="analogy">类比 C：开放平台 ≈ 给开发者提供的接入接口集合（一组 SDK + API），就像 C 里调用一个库要 include 它的头文件——开放平台就是"include 微信能力"的那个入口。</div>
+    <div class="c-row"><span class="ck">关系</span>是微信能力对外开放的入口；通过 UnionID 打通公众号、小程序、移动应用、网站应用的用户身份。</div>
+    <div class="src-quote">微信开放平台……提供微信登录、分享、支付等开放接口……通过 UnionID 可打通公众号、小程序、移动应用、网站应用的用户身份。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>开放平台 ≠ 公众平台。公众平台是给运营者管公众号/小程序的后台；开放平台是给开发者接入第三方 App/网站的。</div>
+  </div>
+
+  <div class="concept">
+    <div class="c-name">⑥ 微信支付</div>
+    <div class="c-row"><span class="ck">定义</span>微信提供的移动支付能力，覆盖线上支付、线下扫码、转账、收款、跨境等场景。</div>
+    <div class="c-row"><span class="ck">人话</span>微信里的钱包，能付款、能收款、能转账、能发红包。</div>
+    <div class="analogy">类比 C：微信支付 ≈ 生态里的标准"交易函数库"，被小程序、公众号、视频号、企业微信各处调用，是闭环的最后一环。</div>
+    <div class="c-row"><span class="ck">关系</span>与小程序、公众号、视频号结合完成交易闭环；与企业微信结合支持企业收款、员工报销。</div>
+    <div class="src-quote">微信支付是微信生态交易闭环的核心……与小程序、公众号、视频号等结合完成交易闭环。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>微信支付 ≠ 独立的支付 App。它的价值在于"嵌进生态每一个交易场景"，离开微信生态它就只是一般的支付通道。</div>
+  </div>
+</section>
+
+<!-- ===== 07 苏格拉底式阅读关卡 ===== -->
+<section class="module" id="m07">
+  <span class="sec-id">07</span>
+  <h2>苏格拉底式阅读关卡 <button class="voice-btn" data-voice-id="m7">🎧 听这章</button></h2>
+  <p class="lead">不直接给答案，自己想。参考答案在每题下方，但请先停 30 秒再展开。</p>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q1 · 入门</span>原文说"微信已经从社交工具发展成一种生活方式"，这是事实、判断，还是推论？</summary>
+    <div class="q-text">这是<strong>判断</strong>。它不是中立陈述，而是腾讯对微信定位的主张——强调微信已超越 IM，深入沟通、消费、娱乐、服务各场景。</div>
+    <div class="q-hint">提示：注意"生活方式"是个价值定位词，不是客观描述。</div>
+  </details>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q2 · 入门</span>"订阅号每天可群发 1 次，服务号每月可群发 4 次"——这句话是事实还是判断？</summary>
+    <div class="q-text">这是<strong>事实</strong>——它是平台规则的客观陈述，作者没表达立场，只是告诉你"规则就是这样"。</div>
+  </details>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q3 · 进阶</span>如果企业微信不能与微信互通（员工加不了微信客户），企业微信对企业还有私域价值吗？</summary>
+    <div class="q-text">基本没有。企业微信做私域的命门就是"互通"——能加 13 亿微信用户为客户。断掉互通，它就退化为一个普通办公 IM，跟钉钉/飞书没区别。</div>
+    <div class="q-hint">提示：回到 05 判断 4，"互通"是企业微信私域价值的地基。</div>
+  </details>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q4 · 进阶</span>原文说企业微信"客户资产企业化、离职继承"。删掉这条，企业为什么要慌？</summary>
+    <div class="q-text">员工用个人微信加客户，员工离职就把客户带走，企业既留不下客户也管不了。企业微信把客户关系从"员工个人变量"变成"企业级常量"，这是 SCRM 这门生意的根。</div>
+  </details>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q5 · 进阶</span>开放平台的 UnionID 如果不存在，会发生什么？</summary>
+    <div class="q-text">同一个用户在企业的公众号、小程序、App 里会被当成三个不同的人，无法合并用户画像、无法跨端识别。全域用户运营、跨端数据沉淀全都断了。</div>
+  </details>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q6 · 深度</span>视频号、公众号都做内容，为什么微信要分两个产品，而不是公众号加视频功能？</summary>
+    <div class="q-text">定位不同：公众号偏<strong>订阅沉淀</strong>（用户主动关注、深度阅读），视频号偏<strong>公域获客</strong>（社交 + 算法推荐、短视频直播）。强行合并会破坏各自的内容消费心智，也堵死公域流量入口。</div>
+    <div class="q-hint">提示：想想抖音和微信公众号为什么不能是同一个东西。</div>
+  </details>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q7 · 深度</span>如果把微信支付从生态里抽掉，前面"获客—服务—资产"还能闭环吗？</summary>
+    <div class="q-text">闭不了环。公众号引流、小程序服务、企业微信沉淀客户，最终都要落到交易；没有支付，整条链路有流量有服务有客户，但收不回钱，商业模型坍塌。这就是为什么原文反复强调"交易闭环的核心"。</div>
+  </details>
+</section>
+
+<!-- ===== 08 闯关式任务 ===== -->
+<section class="module" id="m08">
+  <span class="sec-id">08</span>
+  <h2>闯关式任务 <button class="voice-btn" data-voice-id="m8">🎧 听这章</button></h2>
+  <p class="lead">8 道闭环题，覆盖核心知识点。选完点"检查"，答对贴 OK 贴纸，答错贴 NO 贴纸并指出错在哪。错题自动进 11 节的错题回流区。</p>
+
+  <!-- 题1 单选：订阅号 vs 服务号 群发频率 -->
+  <div class="task" data-task="t1" data-answer="B"
+       data-ok="对。订阅号偏内容资讯，每天可群发 1 次；服务号偏业务服务，每月群发 4 次。频率差一个数量级，因为定位不同。"
+       data-no="搞反了或记错了。回去看 §3.1：订阅号每天 1 次、消息折叠在订阅号文件夹；服务号每月 4 次、消息在聊天列表。"
+       data-src="原文：订阅号……每天可群发 1 次，消息折叠在'订阅号消息'文件夹中……服务号……每月可群发 4 次，消息显示在聊天列表。"
+       data-review="回到「05 判断 1」+「06 概念①」复习">
+    <div class="q">1. 【单选】关于订阅号和服务号的群发规则，正确的是？</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. 订阅号每月 4 次，服务号每天 1 次</button>
+      <button class="opt" data-val="B">B. 订阅号每天 1 次，服务号每月 4 次</button>
+      <button class="opt" data-val="C">C. 两者都是每天 1 次</button>
+      <button class="opt" data-val="D">D. 两者都是每月 4 次</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题2 单选：订阅号 vs 服务号 消息位置/场景 -->
+  <div class="task" data-task="t2" data-answer="C"
+       data-ok="对。服务号消息显示在聊天列表（强提醒），适合企业/商家提供服务；订阅号消息折叠在订阅号文件夹，适合媒体资讯。"
+       data-no="错。服务号消息进聊天列表、强提醒；订阅号消息折叠在订阅号文件夹。这条直接决定用户能不能第一时间看到。"
+       data-src="原文：订阅号……消息折叠在'订阅号消息'文件夹中……服务号……消息显示在聊天列表……适合企业、商家、机构提供服务。"
+       data-review="回到「05 判断 1」复习">
+    <div class="q">2. 【单选】一家做售后服务的商家，更适合选哪种公众号？消息会出现在哪里？</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. 订阅号；消息折叠在订阅号文件夹</button>
+      <button class="opt" data-val="B">B. 订阅号；消息显示在聊天列表</button>
+      <button class="opt" data-val="C">C. 服务号；消息显示在聊天列表</button>
+      <button class="opt" data-val="D">D. 服务号；消息折叠在订阅号文件夹</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题3 单选：小程序定位 -->
+  <div class="task" data-task="t3" data-answer="C"
+       data-ok="对。小程序的核心是'无需下载安装、即用即走'，依托微信运行，不是'小的 App'。"
+       data-no="错。小程序不等于'小的 App'，它必须依托微信运行；它的理念是'用完即走'，降低使用门槛。"
+       data-src="原文：小程序是一种不需要下载安装即可使用的应用，用户扫一扫或搜一下即可打开应用，体现了'用完即走'的理念。"
+       data-review="回到「05 判断 2」+「06 概念②」复习">
+    <div class="q">3. 【单选】下面哪句最准确地描述了小程序的定位？</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. 一种体积更小、功能更少的 App</button>
+      <button class="opt" data-val="B">B. 公众号的升级版，能发图文也能交易</button>
+      <button class="opt" data-val="C">C. 无需下载安装、即用即走，依托微信运行的轻量应用</button>
+      <button class="opt" data-val="D">D. 微信内的网页浏览器，打开 H5 链接</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题4 单选：企业微信与微信互通 -->
+  <div class="task" data-task="t4" data-answer="B"
+       data-ok="对。微信用户无需安装企业微信，就能与企业员工沟通——这条互通是企业微信做私域的命门。"
+       data-no="错。关键恰恰相反：微信用户不需要装企业微信，这正是企业微信能触达 13 亿微信用户的根本。"
+       data-src="原文：企业微信员工可添加微信用户为客户……微信用户无需安装企业微信即可与企业员工沟通。"
+       data-review="回到「05 判断 4」+「06 概念④」复习">
+    <div class="q">4. 【单选】企业微信员工想和微信用户客户沟通，微信用户需要做什么？</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. 必须先下载并注册企业微信</button>
+      <button class="opt" data-val="B">B. 什么都不用做，直接用微信就能聊</button>
+      <button class="opt" data-val="C">C. 必须先关注企业的公众号</button>
+      <button class="opt" data-val="D">D. 必须先扫企业的小程序码</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题5 多选：企业微信价值 -->
+  <div class="task" data-task="t5" data-multi="true" data-answer="A,B,C"
+       data-ok="对！这三条是企业微信区别于普通办公 IM 的核心价值，也是微盛押注它的原因。"
+       data-no="漏了或多选。逐条对照：A 客户资产企业化（离职继承）；B 可加微信客户做私域；C 客户画像/标签/轨迹/SOP 运营。D 错——'客户资产属于员工个人'恰恰是企业微信要消灭的痛点。"
+       data-src="原文：客户资产管理：客户资产属于企业，员工离职客户可继承……企业微信员工可添加微信用户为客户……客户运营：客户画像、客户标签、客户轨迹、SOP 等。"
+       data-review="回到「05 判断 3/4」+「06 概念④」复习">
+    <div class="q">5. 【多选】下面哪些是企业微信区别于普通办公 IM 的核心价值？（多选）</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. 客户资产属于企业，员工离职客户可继承</button>
+      <button class="opt" data-val="B">B. 员工可添加微信用户为客户，做私域运营</button>
+      <button class="opt" data-val="C">C. 提供客户画像、标签、轨迹、SOP 等运营能力</button>
+      <button class="opt" data-val="D">D. 客户资产属于员工个人，企业不干涉</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题6 多选：生态协同关系 -->
+  <div class="task" data-task="t6" data-multi="true" data-answer="A,B,C"
+       data-ok="对！这三条都是原文明确写的协同关系，构成完整的获客—服务—成交链路。"
+       data-no="D 是错的——企业微信员工加的是微信用户为客户，不是反过来让微信用户去装企业微信办公。原文明确'微信用户无需安装企业微信'。"
+       data-src="原文：视频号可关联公众号、小程序、企业微信……小程序可嵌入公众号文章、视频号直播……企业微信员工可添加微信用户为客户……微信用户无需安装企业微信。"
+       data-review="回到「04 结构地图 · 价值链」+「09 误解」复习">
+    <div class="q">6. 【多选】下面哪些是原文明确写过的"微信生态协同关系"？（多选）</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. 视频号直播可挂载小程序商城实现带货</button>
+      <button class="opt" data-val="B">B. 公众号关注者可被引导添加企业微信员工、加入客户群</button>
+      <button class="opt" data-val="C">C. 小程序可与微信卡包、微信会员体系打通</button>
+      <button class="opt" data-val="D">D. 企业微信员工加客户，需要客户先下载企业微信办公版</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题7 判断：开放平台 vs 公众平台 -->
+  <div class="task" data-task="t7" data-answer="B"
+       data-ok="对——这句话本身就是错的。开放平台面向第三方开发者，提供登录/分享/支付接口；公众号后台（公众平台）才是给运营者管理公众号/小程序的。两者完全不同。所以本题正确选项是「错」。"
+       data-no="你选了「对」，但这是错的。开放平台 ≠ 公众平台：开放平台给开发者接入第三方 App/网站；公众平台给运营者管公众号/小程序。本题应选「错」。回到原文看 §7 开放平台定位。"
+       data-src="原文：微信开放平台是微信面向第三方开发者的开放能力集合……支持移动应用、网站应用、第三方平台开发接入。"
+       data-review="回到「06 概念⑤」+「09 误解」复习">
+    <div class="q">7. 【判断】开放平台和公众平台是一回事，都是给运营者管理公众号用的。</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. 对</button>
+      <button class="opt" data-val="B">B. 错</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题8 匹配：能力与定位 -->
+  <div class="task" data-task="t8" data-type="selects"
+       data-ok="全部对！这 4 组定位背牢，整个生态的角色就清楚了。"
+       data-no="有错。逐组对照：视频号=公域短视频/直播获客；小程序=无需下载即用即走的服务载体；企业微信=沉淀客户资产的私域阵地；微信支付=贯穿生态的交易闭环核心。"
+       data-src="原文：视频号……短视频内容平台……内容获客……小程序……不需要下载安装即可使用的应用……企业微信……企业连接微信用户、运营客户关系的私域阵地……微信支付是微信生态交易闭环的核心。"
+       data-review="回到「06 关键概念拆解」整章复习">
+    <div class="q">8. 【匹配】把能力和它的核心定位配对。</div>
+    <div class="match-row">
+      <span style="min-width:8em">① 视频号</span>
+      <select class="match" data-correct="A">
+        <option value="">— 请选 —</option>
+        <option value="A">A. 公域短视频/直播，内容获客入口</option>
+        <option value="B">B. 无需下载即用即走的服务承载</option>
+        <option value="C">C. 沉淀客户资产、离职继承的私域阵地</option>
+        <option value="D">D. 贯穿生态、完成交易闭环的支付能力</option>
+      </select>
+    </div>
+    <div class="match-row">
+      <span style="min-width:8em">② 小程序</span>
+      <select class="match" data-correct="B">
+        <option value="">— 请选 —</option>
+        <option value="A">A. 公域短视频/直播，内容获客入口</option>
+        <option value="B">B. 无需下载即用即走的服务承载</option>
+        <option value="C">C. 沉淀客户资产、离职继承的私域阵地</option>
+        <option value="D">D. 贯穿生态、完成交易闭环的支付能力</option>
+      </select>
+    </div>
+    <div class="match-row">
+      <span style="min-width:8em">③ 企业微信</span>
+      <select class="match" data-correct="C">
+        <option value="">— 请选 —</option>
+        <option value="A">A. 公域短视频/直播，内容获客入口</option>
+        <option value="B">B. 无需下载即用即走的服务承载</option>
+        <option value="C">C. 沉淀客户资产、离职继承的私域阵地</option>
+        <option value="D">D. 贯穿生态、完成交易闭环的支付能力</option>
+      </select>
+    </div>
+    <div class="match-row">
+      <span style="min-width:8em">④ 微信支付</span>
+      <select class="match" data-correct="D">
+        <option value="">— 请选 —</option>
+        <option value="A">A. 公域短视频/直播，内容获客入口</option>
+        <option value="B">B. 无需下载即用即走的服务承载</option>
+        <option value="C">C. 沉淀客户资产、离职继承的私域阵地</option>
+        <option value="D">D. 贯穿生态、完成交易闭环的支付能力</option>
+      </select>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+</section>
+
+<!-- ===== 09 误解与边界 ===== -->
+<section class="module" id="m09">
+  <span class="sec-id">09</span>
+  <h2>误解与边界 <button class="voice-btn" data-voice-id="m9">🎧 听这章</button></h2>
+
+  <div class="myth">
+    <div class="myth-head">误解 1 · "小程序就是小的 App"</div>
+    <div class="row"><span class="key">为什么容易误解</span>名字里有个"小"字，又是"程序"。</div>
+    <div class="row"><span class="key">原文真正说了</span>小程序是"不需要下载安装、即用即走"的应用，依托微信运行，理念是用完即走。</div>
+    <div class="row"><span class="key">原文没有说</span>"它是 App 的轻量版"——它必须依附微信，不能脱离微信独立分发。</div>
+    <div class="row"><span class="key">如何避免</span>把小程序理解成"微信运行时里的轻量程序"，类似按需加载的函数，而不是常驻进程。</div>
+  </div>
+
+  <div class="myth">
+    <div class="myth-head">误解 2 · "开放平台 = 公众平台"</div>
+    <div class="row"><span class="key">为什么容易误解</span>都叫"平台"，都和微信开发沾边。</div>
+    <div class="row"><span class="key">原文真正说了</span>开放平台面向第三方开发者，提供登录/分享/支付接口，支持移动应用、网站应用接入。</div>
+    <div class="row"><span class="key">原文没有说</span>它是给运营者管理公众号的——那是公众平台（mp.weixin.qq.com）的活。</div>
+    <div class="row"><span class="key">如何避免</span>记一句话：开放平台给开发者"接入微信"，公众平台给运营者"管公众号/小程序"。</div>
+  </div>
+
+  <div class="myth">
+    <div class="myth-head">误解 3 · "企业微信就是微信的办公版"</div>
+    <div class="row"><span class="key">为什么容易误解</span>界面像微信，又是企业用的。</div>
+    <div class="row"><span class="key">原文真正说了</span>企业微信不仅是办公 IM，更是"企业连接微信用户、运营客户关系的私域阵地"，核心价值是客户资产企业化、离职继承、与微信互通。</div>
+    <div class="row"><span class="key">原文没有说</span>"它只是个内部沟通工具"——它的命门是对外触达微信客户。</div>
+    <div class="row"><span class="key">如何避免</span>把企业微信理解成"打通内外"的容器：对内协作，对外加微信客户做私域。这是微盛 SCRM 押注它的根本。</div>
+  </div>
+
+  <div class="myth">
+    <div class="myth-head">误解 4 · "服务号比订阅号高级，所以企业都该选服务号"</div>
+    <div class="row"><span class="key">为什么容易误解</span>服务号消息进聊天列表、更显眼，看起来"权重更高"。</div>
+    <div class="row"><span class="key">原文真正说了</span>两者是不同场景：订阅号适合媒体/自媒体/资讯（高频内容），服务号适合企业/商家/机构提供服务（低频强提醒）。</div>
+    <div class="row"><span class="key">原文没有说</span>"服务号优于订阅号"——它们是并列定位，不是高低配。</div>
+    <div class="row"><span class="key">如何避免</span>按业务选：做内容资讯选订阅号，做业务服务选服务号。</div>
+  </div>
+
+  <div class="myth">
+    <div class="myth-head">误解 5 · "Weixin 和 WeChat 是同一个东西的中英文名"</div>
+    <div class="row"><span class="key">为什么容易误解</span>字面看就是"微信"的两种写法。</div>
+    <div class="row"><span class="key">原文真正说了</span>Weixin 面向中国大陆，WeChat 面向境外，两者在功能、合规、账号体系、支付币种上存在差异。</div>
+    <div class="row"><span class="key">如何避免</span>涉及跨境业务时，要确认对方用的是 Weixin 还是 WeChat，别假设功能完全一致。</div>
+  </div>
+</section>
+
+<!-- ===== 10 背景知识缺口 ===== -->
+<section class="module" id="m10">
+  <span class="sec-id">10</span>
+  <h2>背景知识缺口 <button class="voice-btn" data-voice-id="m10">🎧 听这章</button></h2>
+  <p class="lead">要彻底吃透这一章，建议补这 4 个背景。现在不补也行，遇到不懂的再回头看。</p>
+
+  <div class="card sky">
+    <div class="card-title">缺口 1 · SCRM 与传统 CRM 的区别</div>
+    <p style="margin:0">原文反复出现"客户运营""客户资产"，这些都属于 SCRM 范畴。传统 CRM（如 Salesforce）管客户资料字段；SCRM 叠加社交关系链，能加好友、发朋友圈、建客户群。微盛做的就是企业微信生态的 SCRM。<strong>为什么重要</strong>：理解微盛的商业模式，必须先懂 SCRM。</p>
+  </div>
+
+  <div class="card sky">
+    <div class="card-title">缺口 2 · 公域 vs 私域流量的运营逻辑</div>
+    <p style="margin:0">视频号、搜一搜是公域（要靠内容/算法抢流量）；企业微信、公众号订阅是私域（可反复触达）。<strong>为什么重要</strong>：原文的"私域引流"就是把公域流量沉淀进私域，这是企业做微信生态运营的核心打法。</p>
+  </div>
+
+  <div class="card sky">
+    <div class="card-title">缺口 3 · OpenID vs UnionID</div>
+    <p style="margin:0">OpenID 是用户在单个公众号/小程序内的唯一 ID；UnionID 是同一开发者账号下跨端的唯一 ID。<strong>为什么重要</strong>：开放平台"身份打通"靠 UnionID，企业做全域用户画像绕不开它。<strong>下一步追问</strong>：微盛的多产品线如何用 UnionID 合并同一个客户？</p>
+  </div>
+
+  <div class="card sky">
+    <div class="card-title">缺口 4 · 微信支付的资金流与分账</div>
+    <p style="margin:0">原文提到微信支付支持"企业收款、分账、退款"。背后涉及商户号、资金流向、对账。<strong>为什么重要</strong>：微盛若做交易类能力，必须理解商户体系和资金合规，否则会踩监管红线。</p>
+  </div>
+
+  <div class="card marker">
+    <div class="card-title">可以暂时不补的</div>
+    <p style="margin:0">小游戏、微信卡包、微信运动、搜一搜的具体接入 API——这些是辅助能力，不影响你理解生态主价值链。等你负责相关业务再看。</p>
+  </div>
+</section>
+
+<!-- ===== 11 复盘与学习报告 ===== -->
+<section class="module" id="m11">
+  <span class="sec-id">11</span>
+  <h2>复盘与学习报告 <button class="voice-btn" data-voice-id="m11">🎧 听这章</button></h2>
+  <p class="lead">学完这一章，你应该能用自己的话复述下面三件事；如果你还能问出一个连老员工都要想一想的追问，那你就真的学透了。</p>
+
+  <div class="card">
+    <div class="card-title">能复述的三件事</div>
+    <p style="margin:0">① 订阅号 vs 服务号的三条区别（群发频率、消息位置、适合场景）；<br>② 小程序、企业微信、微信支付各自在生态价值链里扮演什么角色；<br>③ 企业微信为什么是微盛 SCRM 的核心载体（客户资产企业化 + 与微信互通）。</p>
+  </div>
+
+  <div class="card marker">
+    <div class="card-title">还能问的追问（示例）</div>
+    <p style="margin:0">"原文说视频号能挂载小程序商城实现带货，企业微信能承接公众号/视频号引流的客户——那微盛作为 SCRM 厂商，为什么把研发主力压在企业微信这条线，而不是也做视频号 SaaS？背后的商业判断是什么？"</p>
+  </div>
+
+  <h3>错题回流区</h3>
+  <div class="wrong-box">
+    <ul id="wrongBox"><li style="color:#888">还没有错题。答错的题会自动收集到这里。</li></ul>
+  </div>
+
+  <h3>生成你的学习报告</h3>
+  <div class="report-actions">
+    <button id="genReport">生成学习报告</button>
+    <button id="copyReport">复制报告</button>
+  </div>
+  <div id="report">点「生成学习报告」按钮，根据你的答题情况生成存档。</div>
+</section>
+
+<footer>
+  <div>由 <a href="https://lyzbcy.github.io/" target="_blank" rel="noopener">捞鱼</a> 制作 · 工具能帮你预习难啃的干货，但不能代替完整学习。学习愉快 🐟</div>
+  <div style="margin-top:.4rem;font-size:.78rem;opacity:.7">微盛研发岗管培生培训 · 微信生态入门 · 理解地图</div>
+</footer>
+
+</main>
+
+<!-- ===== 右侧书签脊入口 ===== -->
+<button id="voiceFab" aria-label="打开后台语音"><span class="fab-icon">🎧</span><span class="fab-text">后台语音</span></button>
+
+<!-- ===== 圆润玩具风播放器 ===== -->
+<div id="voicePlayer">
+  <button class="vp-close" aria-label="关闭">✕</button>
+  <div class="vp-head">🎧 后台语音 · 连续播放</div>
+  <div class="vp-title">—</div>
+  <div class="vp-controls">
+    <button class="vp-prev" aria-label="上一章">⏮</button>
+    <button class="vp-play" aria-label="播放/暂停">▶</button>
+    <button class="vp-next" aria-label="下一章">⏭</button>
+  </div>
+  <input class="vp-seek" type="range" min="0" max="1000" value="0" aria-label="进度">
+  <div class="vp-time"><span class="vp-cur">00:00</span><span class="vp-dur">00:00</span></div>
+  <div class="vp-sub">点开播放后，这里会同步显示字幕</div>
+</div>
+
+<!-- ===== 固定互动引擎（原样粘贴，不要改写） ===== -->
+<script>
+(function(){
+  "use strict";
+  function $all(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));}
+  function selectedVals(t){return $all('.opt.selected',t).map(function(o){return o.getAttribute('data-val');}).sort();}
+  function setFb(t,state,html){var fb=t.querySelector('.feedback');if(!fb)return;fb.className='feedback'+(state?(' '+state):'');fb.innerHTML=html;}
+  function updateBar(){
+    var all=$all('.task'),done=$all('.task[data-answered="1"]');
+    var fill=document.getElementById('barFill'),num=document.getElementById('barNum');
+    if(fill)fill.style.width=all.length?(done.length/all.length*100)+'%':'0%';
+    if(num)num.textContent=done.length+' / '+all.length;
+  }
+  function renderWrong(){
+    var box=document.getElementById('wrongBox');if(!box)return;
+    var wrong=$all('.task[data-answered="1"][data-correct="0"]');
+    if(!wrong.length){box.innerHTML='<li style="color:#888">还没有错题。答错的题会自动收集到这里。</li>';return;}
+    box.innerHTML='';
+    wrong.forEach(function(t){var li=document.createElement('li');li.textContent='【'+(t.getAttribute('data-task')||'')+'】'+(t.getAttribute('data-review')||'回到对应模块复习');box.appendChild(li);});
+  }
+  function check(t){
+    var type=t.getAttribute('data-type'),ok=false;
+    if(type==='selects'){
+      var sels=$all('select.match',t),allok=true,empty=false;
+      sels.forEach(function(s){if(!s.value)empty=true;if(s.value!==s.getAttribute('data-correct'))allok=false;});
+      if(empty){setFb(t,'no','请先把每一项都选好再检查。');return;}
+      ok=allok;
+    }else{
+      var sel=selectedVals(t);
+      if(!sel.length){setFb(t,'no','请先选择一个选项再检查。');return;}
+      var ans=(t.getAttribute('data-answer')||'').split(',').map(function(x){return x.trim();}).sort();
+      ok=(sel.join('|')===ans.join('|'));
+    }
+    var sticker=ok?'<img class="sticker" src="https://lyzbcy.github.io/weshoto-study/img/sticker/ok.png" alt="">':'<img class="sticker" src="https://lyzbcy.github.io/weshoto-study/img/sticker/no.png" alt="">';
+    var body=ok?(t.getAttribute('data-ok')||'回答正确。'):(t.getAttribute('data-no')||'再想想。');
+    var src=t.getAttribute('data-src');
+    setFb(t,ok?'ok':'no',sticker+(ok?'':'')+body+(src?('<span class="src">'+src+'</span>'):''));
+    t.setAttribute('data-answered','1');t.setAttribute('data-correct',ok?'1':'0');
+    updateBar();renderWrong();
+  }
+  function genReport(){
+    var box=document.getElementById('report');if(!box)return;
+    var all=$all('.task'),done=$all('.task[data-answered="1"]'),right=$all('.task[data-answered="1"][data-correct="1"]');
+    var lines=['=== 学习报告 ===','完成题目：'+done.length+' / '+all.length,'答对：'+right.length+' 题',''];
+    var wrong=$all('.task[data-answered="1"][data-correct="0"]');
+    if(wrong.length){lines.push('我答错的题（建议复习）：');wrong.forEach(function(t){lines.push('- '+(t.getAttribute('data-task')||'')+'：'+(t.getAttribute('data-review')||''));});}
+    else{lines.push('暂无错题。');}
+    lines.push('','三件复述清单：');
+    lines.push('① 订阅号 vs 服务号：群发频率（每天1次/每月4次）、消息位置（订阅号文件夹/聊天列表）、场景（内容资讯/业务服务）');
+    lines.push('② 价值链角色：公众号/视频号（获客）→ 小程序（服务）→ 企业微信（资产）→ 微信支付（交易）');
+    lines.push('③ 企业微信是微盛 SCRM 核心载体：客户资产企业化（离职继承）+ 与微信互通（无需安装即可沟通）');
+    box.textContent=lines.join('\n');
+  }
+  document.addEventListener('click',function(e){
+    var c=e.target.closest?e.target:null;
+    var opt=c&&e.target.closest('.opt');
+    if(opt){var t=opt.closest('.task');if(!t)return;
+      if(t.getAttribute('data-multi')==='true'){opt.classList.toggle('selected');}
+      else{$all('.opt',t).forEach(function(o){o.classList.remove('selected');});opt.classList.add('selected');}
+      return;}
+    var btn=c&&e.target.closest('.check');
+    if(btn){var tk=btn.closest('.task');if(tk)check(tk);return;}
+    if(e.target&&e.target.id==='genReport'){genReport();return;}
+    if(e.target&&e.target.id==='copyReport'){var r=document.getElementById('report');if(r&&navigator.clipboard)navigator.clipboard.writeText(r.textContent);return;}
+  });
+  function init(){updateBar();renderWrong();}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+
+<!-- ===== 固定语音引擎（原样粘贴，不要改写） ===== -->
+<script>
+(function(){
+  "use strict";
+  if(window.__voiceEngine) return;
+  window.__voiceEngine = true;
+
+  var listNode = document.getElementById('voicePlaylist');
+  if(!listNode){ return; }
+  var TRACKS = [];
+  try { TRACKS = JSON.parse(listNode.textContent.trim()); } catch(e){ return; }
+  if(!TRACKS.length) return;
+
+  var player = document.getElementById('voicePlayer');
+  var fab = document.getElementById('voiceFab');
+  var audio = new Audio(); audio.preload = 'metadata';
+  var cur = 0;
+  var ranges = [];
+  var total = 0;
+  var seeking = false;
+
+  function $(s){ return player ? player.querySelector(s) : null; }
+  function fmt(s){ s=Math.max(0,Math.floor(s||0)); var m=Math.floor(s/60), x=s%60;
+    return (m<10?'0':'')+m+':'+(x<10?'0':'')+x; }
+
+  var probe = TRACKS.map(function(){ return {dur:0}; });
+  function tryFinalize(){
+    if(probe.some(function(p){return !p.dur;})) return;
+    ranges = []; total = 0;
+    probe.forEach(function(p){ ranges.push({dur:p.dur, start:total}); total += p.dur; });
+    var d = $('.vp-dur'); if(d) d.textContent = fmt(total);
+    var sk = $('.vp-seek'); if(sk){ sk.max = Math.max(1000, Math.floor(total*10)); }
+  }
+  TRACKS.forEach(function(t, i){
+    var a = new Audio(); a.preload = 'metadata'; a.src = t.src;
+    a.addEventListener('loadedmetadata', function(){
+      probe[i].dur = a.duration || 0; tryFinalize();
+    });
+    a.addEventListener('error', function(){ probe[i].dur = 0; tryFinalize(); });
+  });
+
+  function load(i){
+    cur = i; audio.src = TRACKS[i].src;
+    var ti = $('.vp-title'); if(ti) ti.textContent = TRACKS[i].title || ('第 '+(i+1)+' 段');
+    markBtn(i);
+  }
+  function play(){ audio.play().then(function(){ show(); setPlayIcon(true); if(fab) fab.classList.add('beat'); }).catch(function(){}); }
+  function pause(){ audio.pause(); setPlayIcon(false); if(fab) fab.classList.remove('beat'); }
+  function toggle(){ audio.paused ? play() : pause(); }
+  function next(){ if(cur < TRACKS.length-1){ load(cur+1); play(); } else { pause(); } }
+  function prev(){
+    var abs = absTime();
+    if(cur > 0 && abs - ranges[cur].start < 3){ load(cur-1); play(); }
+    else { audio.currentTime = 0; }
+  }
+  function absTime(){ return ranges[cur] ? ranges[cur].start + (audio.currentTime||0) : (audio.currentTime||0); }
+  function setPlayIcon(on){ var b=$('.vp-play'); if(b) b.textContent = on ? '⏸' : '▶'; }
+  function show(){ if(player) player.classList.add('show'); }
+  function hide(){ if(player) player.classList.remove('show'); }
+  function markBtn(i){
+    document.querySelectorAll('.voice-btn[data-voice-id]').forEach(function(b){
+      b.classList.toggle('active', b.getAttribute('data-voice-id') === TRACKS[i].id);
+    });
+  }
+
+  audio.addEventListener('timeupdate', function(){
+    if(seeking) return;
+    if(!ranges[cur]) return;
+    var abs = absTime(); var sk = $('.vp-seek'); var c = $('.vp-cur');
+    if(sk && total) sk.value = Math.round(abs / total * (sk.max||1000));
+    if(c) c.textContent = fmt(abs);
+  });
+  audio.addEventListener('ended', function(){ if(cur < TRACKS.length-1){ load(cur+1); play(); }
+    else { setPlayIcon(false); if(fab) fab.classList.remove('beat'); } });
+
+  function seekToFraction(frac){
+    if(!total) return;
+    var target = Math.max(0, Math.min(total, frac * total));
+    var i = 0; while(i < ranges.length-1 && ranges[i].start + ranges[i].dur < target){ i++; }
+    if(i !== cur){ cur = i; audio.src = TRACKS[i].src;
+      var ti=$('.vp-title'); if(ti) ti.textContent = TRACKS[i].title||('第 '+(i+1)+' 段'); markBtn(i); }
+    audio.currentTime = target - ranges[i].start;
+    var c=$('.vp-cur'); if(c) c.textContent = fmt(target);
+  }
+
+  document.addEventListener('click', function(e){
+    var t = e.target;
+    var vb = t.closest ? t.closest('.voice-btn[data-voice-id]') : null;
+    if(vb){
+      var id = vb.getAttribute('data-voice-id'), idx = -1;
+      TRACKS.forEach(function(tr, k){ if(tr.id === id) idx = k; });
+      if(idx >= 0){ load(idx); play(); }
+      return;
+    }
+    if(t.id === 'voiceFab'){ show(); if(audio.paused && !audio.src){ load(0); } if(audio.paused){ play(); } return; }
+    if(!player || !player.contains(t)) return;
+    if(t.classList.contains('vp-play')){ toggle(); return; }
+    if(t.classList.contains('vp-prev')){ prev(); return; }
+    if(t.classList.contains('vp-next')){ next(); return; }
+    if(t.classList.contains('vp-close')){ pause(); hide(); return; }
+  });
+  var sk = $('.vp-seek');
+  if(sk){
+    sk.addEventListener('input', function(){ seeking = true;
+      if(total){ var c=$('.vp-cur'); if(c) c.textContent = fmt((sk.value/(sk.max||1000))*total); } });
+    sk.addEventListener('change', function(){ seekToFraction(sk.value/(sk.max||1000)); seeking = false; });
+  }
+})();
+</script>
+
+<!-- ===== 字幕同步引擎（原样粘贴，不要改写） ===== -->
+<script>
+(function(){
+  "use strict";
+  if(window.__subEngine) return;
+  window.__subEngine = true;
+
+  var listNode = document.getElementById("voicePlaylist");
+  if(!listNode) return;
+  var subBox = document.querySelector("#voicePlayer .vp-sub");
+  var curEl = document.querySelector("#voicePlayer .vp-cur");
+  var titleEl = document.querySelector("#voicePlayer .vp-title");
+  if(!subBox) return;
+
+  var subs = [];
+  var subCache = {};
+  var curSrc = "";
+
+  function esc(s){ var d=document.createElement("div"); d.textContent=s; return d.innerHTML; }
+
+  function mp3ToJson(src){
+    var m = src.replace(/^.*?([a-zA-Z0-9_\/.\-]+\.mp3)(?:\?.*)?$/i, "$1");
+    return m.replace(/\.mp3$/i, ".json");
+  }
+
+  function loadSubFor(src){
+    if(!src || src === curSrc) return;
+    curSrc = src;
+    var jsonUrl = mp3ToJson(src);
+    if(subCache[jsonUrl]){ subs = subCache[jsonUrl]; return; }
+    fetch(jsonUrl).then(function(r){
+      if(!r.ok) throw new Error(r.status);
+      return r.json();
+    }).then(function(arr){
+      subCache[jsonUrl] = Array.isArray(arr) ? arr : [];
+      subs = subCache[jsonUrl];
+    }).catch(function(){ subs = []; });
+  }
+
+  function parseTime(text){
+    var p = String(text).trim().split(":");
+    if(p.length === 2){
+      var m = parseInt(p[0], 10) || 0;
+      var s = parseInt(p[1], 10) || 0;
+      return m * 60 + s;
+    }
+    return parseFloat(text) || 0;
+  }
+
+  function renderSub(t){
+    if(!subs.length) return;
+    var hit = null, idx = -1;
+    for(var i = 0; i < subs.length; i++){
+      if(t >= subs[i].start && t < subs[i].end){ hit = subs[i]; idx = i; break; }
+    }
+    if(!hit){
+      var prev = null;
+      for(var j = 0; j < subs.length; j++){
+        if(subs[j].start <= t) prev = subs[j]; else break;
+      }
+      subBox.classList.remove("active");
+      subBox.innerHTML = prev ? esc(prev.text) : "";
+      return;
+    }
+    subBox.classList.add("active");
+    var prevHtml = idx > 0
+      ? '<span style="opacity:.45">' + esc(subs[idx - 1].text) + "</span> "
+      : "";
+    subBox.innerHTML = prevHtml + '<span class="cur">' + esc(hit.text) + "</span>";
+  }
+
+  function tick(){
+    if(!curEl) return;
+    var sec = parseTime(curEl.textContent);
+    renderSub(sec);
+  }
+
+  function onTitleChange(){
+    var TRACKS = [];
+    try { TRACKS = JSON.parse(listNode.textContent.trim()); } catch(e){ return; }
+    var title = titleEl ? titleEl.textContent.trim() : "";
+    for(var i = 0; i < TRACKS.length; i++){
+      if(TRACKS[i].title === title){ loadSubFor(TRACKS[i].src); return; }
+    }
+  }
+
+  if(window.MutationObserver){
+    var obs = new MutationObserver(function(){ tick(); onTitleChange(); });
+    if(curEl) obs.observe(curEl, { childList:true, characterData:true, subtree:true });
+    if(titleEl) obs.observe(titleEl, { childList:true, characterData:true, subtree:true });
+  } else {
+    setInterval(function(){ tick(); onTitleChange(); }, 300);
+  }
+  setTimeout(tick, 500);
+})();
+</script>
+
+</body>
+</html>

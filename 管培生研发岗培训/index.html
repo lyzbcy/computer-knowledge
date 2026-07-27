@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>管培生研发岗培训 · 学习地图</title>
+<link rel="icon" href="../Vue3/img/sticker/mascot.png">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Poppins:wght@400;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#FAF6EB;--paper:#F3EDDD;--forest:#1E3A24;--sky:#BCD8EE;--sage:#AFCDA8;--ink:#1A2018;--marker:#F5E08A;--brick:#B5482A;--font-display:"Archivo Black","Noto Sans SC","PingFang SC",sans-serif;--font-head:"Poppins","Noto Sans SC","PingFang SC",sans-serif;--font-body:-apple-system,"PingFang SC","Noto Sans SC",sans-serif;--radius-card:14px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font-body);background:var(--cream);color:var(--ink);line-height:1.7;}
+.hero{background:var(--forest);color:var(--cream);padding:3.5rem 1.2rem 2.8rem;text-align:center;}
+.hero .mascot{width:80px;height:80px;border-radius:50%;border:3px solid var(--marker);margin-bottom:.8rem;}
+.hero h1{font-family:var(--font-display);font-size:2rem;margin-bottom:.5rem;}
+.hero p{opacity:.85;max-width:560px;margin:0 auto;font-size:.95rem;}
+.wrap{max-width:960px;margin:0 auto;padding:2.5rem 1.2rem 4rem;}
+.wrap>h2{font-family:var(--font-head);font-size:1.4rem;color:var(--forest);margin-bottom:.4rem;}
+.sub{color:#666;font-size:.9rem;margin-bottom:1.5rem;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.2rem;}
+.card{background:#fff;border:1px solid #E6DCC2;border-radius:var(--radius-card);overflow:hidden;text-decoration:none;color:var(--ink);transition:transform .2s,box-shadow .2s;display:flex;}
+.card:hover{transform:translateY(-4px);box-shadow:0 8px 20px rgba(30,58,36,.12);}
+.card .thumb{width:64px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;background:var(--paper);flex-shrink:0;}
+.card .body{padding:16px 18px 18px;flex:1;display:flex;flex-direction:column;}
+.card .tag{display:inline-block;background:var(--sage);color:var(--forest);font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:999px;letter-spacing:.05em;margin-bottom:6px;width:fit-content;}
+.card h3{font-family:var(--font-head);color:var(--forest);font-size:1.05rem;margin-bottom:6px;}
+.card p{font-size:.85rem;color:#5A5040;flex:1;}
+.card .go{margin-top:12px;color:var(--brick);font-weight:600;font-size:.84rem;}
+.back{display:inline-flex;align-items:center;gap:6px;color:var(--forest);text-decoration:none;font-weight:600;font-size:.9rem;margin-bottom:1.5rem;font-family:var(--font-head);}
+.back:hover{opacity:.7;}
+footer{text-align:center;padding:2rem 1.2rem;color:#7A6E54;font-size:.82rem;border-top:1px solid #E6DCC2;}
+footer a{color:var(--brick);font-weight:700;text-decoration:underline;}
+@media(max-width:600px){.hero h1{font-size:1.5rem;}}
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <img class="mascot" src="../Vue3/img/sticker/mascot.png" alt="捞鱼">
+  <h1>管培生研发岗培训</h1>
+  <p>微盛研发岗管培生通识课程，做成一张张有原文依据、能交互、能复盘的理解地图。<br>
+  面向基础薄弱的同学（默认擅长 C 语言），含后台语音，边听边学。</p>
+</section>
+
+<div class="wrap">
+  <a class="back" href="../index.html">← 返回计算机知识</a>
+  <h2>📚 全部课程</h2>
+  <p class="sub">共 6 章，每章含 11 个学习模块 + 8 道互动闯关题 + 后台语音播报。点击卡片进入。</p>
+
+  <div class="grid">
+
+    <a class="card" href="01-工单TAPD/工单和TAPD管理.html">
+      <div class="thumb">📋</div>
+      <div class="body">
+        <span class="tag">已上线</span>
+        <h3>工单和TAPD管理</h3>
+        <p>项目管理规范 8 阶段、交付池工单、TAPD 标准流程（迭代→父需求→子需求）、产研池需求、任务工时、缺陷管理、KA 售后 SLA。</p>
+        <div class="go">进入学习地图 →</div>
+      </div>
+    </a>
+
+    <a class="card" href="02-任意门/任意门研发过程生命周期.html">
+      <div class="thumb">🚪</div>
+      <div class="body">
+        <span class="tag">已上线</span>
+        <h3>任意门研发过程生命周期</h3>
+        <p>GitLab 仓库、任意门平台、分支规则（feature/release/master）、需求状态流转、灰度与正式上线、Nacos、XXL-Job、数据库、RocketMQ、Redis、K8s。</p>
+        <div class="go">进入学习地图 →</div>
+      </div>
+    </a>
+
+    <a class="card" href="03-企微生态/企微生态入门.html">
+      <div class="thumb">🔌</div>
+      <div class="body">
+        <span class="tag">已上线</span>
+        <h3>企微生态入门</h3>
+        <p>三种开发模式（自建/第三方/代开发）、核心业务入口、后端 API、JS-SDK、回调、权限授权体系、access_token、ID 体系、加解密。</p>
+        <div class="go">进入学习地图 →</div>
+      </div>
+    </a>
+
+    <a class="card" href="04-企微私有化/企微私有化产品培训.html">
+      <div class="thumb">🏢</div>
+      <div class="body">
+        <span class="tag">已上线</span>
+        <h3>企微私有化产品培训</h3>
+        <p>SaaS vs 私有化、四大核心优势（数据自主可控/合规安全/定制扩展/网络隔离）、适用场景、三层架构、部署拓扑、实施流程。</p>
+        <div class="go">进入学习地图 →</div>
+      </div>
+    </a>
+
+    <a class="card" href="05-微信生态/微信生态入门.html">
+      <div class="thumb">💬</div>
+      <div class="body">
+        <span class="tag">已上线</span>
+        <h3>微信生态入门</h3>
+        <p>公众号（订阅号/服务号）、视频号、小程序、企业微信、开放平台、微信支付等微信生态全景，各产品定位、价值与协同关系。</p>
+        <div class="go">进入学习地图 →</div>
+      </div>
+    </a>
+
+    <a class="card" href="06-研发监控/研发监控与日志.html">
+      <div class="thumb">📊</div>
+      <div class="body">
+        <span class="tag">已上线</span>
+        <h3>研发监控与日志</h3>
+        <p>CLS 日志服务（三种查找方式）、监控体系（监控项/监控指标/告警/告警规则/告警等级 P0-P3/告警通知/告警渠道）。</p>
+        <div class="go">进入学习地图 →</div>
+      </div>
+    </a>
+
+  </div>
+</div>
+
+<footer>
+  管培生研发岗培训 · 通识课程学习地图<br>
+  由 <a href="https://lyzbcy.github.io/" target="_blank" rel="noopener">捞鱼</a> 制作
+</footer>
+
+</body>
+</html>

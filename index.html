@@ -193,5 +193,19 @@ document.getElementById('cnt').textContent =
   document.querySelectorAll('#grid .card:not(.soon)').length;
 </script>
 
+<script>
+// 版本检测：内联版本号 vs version.json，不一致就刷新（解决CDN缓存旧HTML）
+(function(){
+  var PAGE_V = 1;
+  fetch("version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.json();}).then(function(d){
+    if(PAGE_V!==d.v){
+      var last=0; try{last=parseInt(sessionStorage.getItem("ck_refreshed")||"0");}catch(e){}
+      if(Date.now()-last<3000) return;
+      try{sessionStorage.setItem("ck_refreshed",String(Date.now()));}catch(e){}
+      setTimeout(function(){location.reload(true);},800);
+    }
+  }).catch(function(){});
+})();
+</script>
 </body>
 </html>

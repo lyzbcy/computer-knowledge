@@ -475,6 +475,7 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
     <a href="#m09"><span class="no">09</span>误解与边界</a>
     <a href="#m10"><span class="no">10</span>背景知识缺口</a>
     <a href="#m11"><span class="no">11</span>复盘与学习报告</a>
+    <a href="#m12" style="color:#FFCC80;"><span class="no">🔥</span>考试重点（培训标注）</a>
   </nav>
 
   <div class="mascot">
@@ -1034,6 +1035,195 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
     <button id="copyReport">复制报告</button>
   </div>
   <div id="report">点「生成学习报告」按钮，根据你的答题情况生成存档。</div>
+</section>
+
+<!-- ===== 12 培训讲师标注考试重点（云蕾老师逐字提示） ===== -->
+<section class="module" id="m12">
+  <span class="sec-id">🔥 考试重点</span>
+  <h2>云蕾老师培训中标注的考点 <button class="voice-btn" data-voice-id="m12">🎧 听这章</button></h2>
+  <p class="lead" style="background:linear-gradient(135deg,#FFF8E1,#FFE0B2);padding:.8rem 1rem;border-radius:var(--radius-card);border-left:4px solid #E65100;">
+    ⚠️ 以下内容来自云蕾老师在2026年培训中的<strong>原话标注</strong>——凡他说「这里有考点」「考试会考这个」的地方都在这里。建议<strong>考前逐条过一遍</strong>。
+  </p>
+
+  <!-- 考点清单 -->
+  <div class="concept-card" style="border-color:#E65100;">
+    <div class="concept-card__header" style="background:var(--brick);color:#fff;">
+      <span class="tag">原话引用</span> 🔴 考点 1：工单系统与 TAPD 的关联方式
+    </div>
+    <div class="concept-card__body">
+      <p><strong>云蕾原话：</strong>「这个地方也是考点，考试会有这个题目」</p>
+      <ul>
+        <li>工单系统和 TAPD 通过<strong>「工单项目 ID」</strong>做关联</li>
+        <li>在 TAPD 里定义一个字段叫「工单项目 ID」，填入即可关联上</li>
+        <li>工单管「金额和合同」，TAPD 管「需求和工时」</li>
+        <li><strong>工单项目 → 迭代：一对一</strong>；<strong>工单项目 → 工单：一对多（一个项目可以有多个工单）</strong></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="concept-card" style="border-color:#E65100;">
+    <div class="concept-card__header" style="background:var(--brick);color:#fff;">
+      <span class="tag">原话引用</span> 🔴 考点 2：需求层级（父子结构）
+    </div>
+    <div class="concept-card__body">
+      <p><strong>云蕾原话：</strong>「父需求有且只能有一个，考点」「需求跟任务也是一对多的关系」</p>
+      <ul>
+        <li><strong>父需求（项目管理需求）</strong>：每个项目 <strong>有且仅有一个</strong></li>
+        <li><strong>子需求（交付需求 / STORY）</strong>：可以有多个，一对多</li>
+        <li>⚠️ <strong>子需求不能再拆子需求！</strong> 否则原需求变父需求，工单号挂不上</li>
+        <li>命名规则：【部署01】、【运维01】、【定制01】</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="concept-card" style="border-color:#E65100;">
+    <div class="concept-card__header" style="background:var(--brick);color:#fff;">
+      <span class="tag">原话引用</span> 🔴 考点 3：工时按小时计，每天 ≤ 8 小时
+    </div>
+    <div class="concept-card__body">
+      <p><strong>云蕾原话：</strong>「这是考点」「工时按小时计，不是按天计」</p>
+      <ul>
+        <li>工时单位是<strong>小时</strong>，不是天</li>
+        <li><strong>每天有效工时上限 8 小时</strong></li>
+        <li>填多了（12、16小时）反而不被认可，说明效率低</li>
+        <li>建议 <strong>按天创建任务</strong>，避免跨多天累积</li>
+        <li>可以一天建多个任务：上午 2h 设计 + 下午 4h 编码</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="concept-card" style="border-color:#E65100;">
+    <div class="concept-card__header" style="background:var(--brick);color:#fff;">
+      <span class="tag">原话引用</span> 🔴 考点 4：任务必须有迭代才能统计人效
+    </div>
+    <div class="concept-card__body">
+      <p><strong>云蕾原话：</strong>「统计人效的唯一方法：你的任务必须有迭代」「很多人问我为什么没有人效，根本原因只有一个——你参与的需求没有迭代」</p>
+      <ul>
+        <li>创建任务时必须关联迭代，否则永远没有工时数据</li>
+        <li>自建需求不设迭代 = 工时白填</li>
+        <li>产研池和交付池都是这个规则</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="concept-card" style="border-color:#E65100;">
+    <div class="concept-card__header" style="background:var(--brick);color:#fff;">
+      <span class="tag">原话引用</span> 🔴 考点 5：缺陷（Bug）流程图
+    </div>
+    <div class="concept-card__body">
+      <p><strong>云蕾原话：</strong>「这个图有一个考点」</p>
+      <p><strong>标准缺陷处理流程：</strong></p>
+      <div style="text-align:center;padding:.8rem 0;font-family:var(--font-mono);font-size:.85rem;">
+        待处理 → 开发中 → 测试验证 → 运营确认中 → 结束
+      </div>
+      <p><strong>关键字段（Bug Review 重点关注）：</strong></p>
+      <ul>
+        <li><strong>Root Cause</strong>（根本原因）</li>
+        <li><strong>Solution</strong>（解决方案）</li>
+        <li><strong>避免再发生策略</strong></li>
+      </ul>
+      <p>缺陷分类：代码类 / 服务类 / 技术类 / 产品类</p>
+    </div>
+  </div>
+
+  <div class="concept-card" style="border-color:#E65100;">
+    <div class="concept-card__header" style="background:var(--brick);color:#fff;">
+      <span class="tag">原话引用</span> 🔴 考点 6：需求必须关联工单号
+    </div>
+    <div class="concept-card__body">
+      <p><strong>云蕾原话：</strong>「也是很重要的，跟你们营销有关系」</p>
+      <ul>
+        <li>工单号关联在 <strong>子需求</strong> 上（不是父需求）</li>
+        <li>有工单号 = 关联成功 ✅</li>
+        <li>没有工单号 = 没关联 ❌ → 人效统计不到</li>
+        <li>如果打开一个需求，发现它有<strong>多个父需求</strong>或者<strong>只有子需求没有父需求</strong>，都是有问题</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 额外高频考点（非原话标注但极可能考） -->
+  <h3 style="margin-top:2rem;">🧠 额外高频考点（云蕾反复强调但未说「考点」二字）</h3>
+
+  <div class="concept-card">
+    <div class="concept-card__header">📌 三个池子的区别</div>
+    <div class="concept-card__body">
+      <table style="width:100%;font-size:.88rem;">
+        <tr><th>池子</th><th>用途</th><th>人效模式</th><th>关键规则</th></tr>
+        <tr><td>交付池</td><td>800+ 交付项目</td><td>工单金额 × 进度 × 个人占比</td><td>手动填交付进度</td></tr>
+        <tr><td>产研池</td><td>SaaS 产品迭代</td><td>「吃大锅饭」：总工时 ÷ 100 份</td><td>需求必须有迭代</td></tr>
+        <tr><td>售后池</td><td>客户 Bug/需求</td><td>SLA 时效</td><td>Root Cause 必填</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="concept-card">
+    <div class="concept-card__header">📌 交付留存计算公式</div>
+    <div class="concept-card__body">
+      <p style="font-family:var(--font-mono);font-size:.9rem;background:#f9f9f9;padding:.6rem 1rem;border-radius:8px;">
+        交付留存 = Σ(工单应收金额 × 当月交付进度 × 个人工时占比)
+      </p>
+      <ul>
+        <li>当月交付进度由 PM 手动填写——<strong>没填就没人效！</strong></li>
+        <li>产研池：总工时池（如 4709h）÷ 100 份 × 你的占比 = 你的人效</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="concept-card">
+    <div class="concept-card__header">📌 KA 售后 SLA 时效</div>
+    <div class="concept-card__body">
+      <ul>
+        <li>运营人员：尽快响应</li>
+        <li><strong>技术保障团队：1 小时内给出规划</strong></li>
+        <li>问题上抛链：技术人员 → TPM / 研发 TL</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="concept-card">
+    <div class="concept-card__header">📌 新手最常踩的 5 个坑</div>
+    <div class="concept-card__body">
+      <ol>
+        <li>❌ 子需求下面再建子需求 → 工单号挂不上</li>
+        <li>❌ 跨多天填一个任务 → 工时被系统剔除</li>
+        <li>❌ 自建需求不设迭代 → 永远没有工时数据</li>
+        <li>❌ 填工时超过 8 小时/天 → 不被认可</li>
+        <li>❌ 父需求建多个 → 管理混乱</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="concept-card">
+    <div class="concept-card__header">📌 组织架构速查</div>
+    <div class="concept-card__body">
+      <table style="width:100%;font-size:.85rem;">
+        <tr><th>组别</th><th>方向</th></tr>
+        <tr><td>业务一组</td><td>偏零售</td></tr>
+        <tr><td>业务二组</td><td>偏金融</td></tr>
+        <tr><td>业务三组</td><td>偏企业微信私有化 + SaaS 定制</td></tr>
+        <tr><td>业务四组（云飞）</td><td>偏会话存档（密钥版/专区版/私有化版）</td></tr>
+        <tr><td>基线组</td><td>SaaS → 交付基线的中间团队</td></tr>
+        <tr><td>架构组 + AI组</td><td>Java 开源架构、中间件、AI 相关</td></tr>
+        <tr><td>前端组</td><td>Vue3 + Element 框架</td></tr>
+        <tr><td>测试组</td><td>白盒（自动化）+ 黑盒（手工测试用例）</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="concept-card">
+    <div class="concept-card__header">📌 云蕾明确说「不考」的内容（放心跳过）</div>
+    <div class="concept-card__body">
+      <ul>
+        <li>❌ 产研池 3.1 和 3.2（内部需求工单合成）——「没有考点」</li>
+        <li>❌ TAPD Skill（AI 工具）4.3——「不考，大家了解就行」</li>
+        <li>❌ 绩效考核的详细公式——「后台运作，不用太关心」</li>
+        <li>❌ PM 的人效计算——「基本固定，不用管」</li>
+        <li>❌ 组织架构细节——「没有考点，了解就行」</li>
+        <li>❌ 6.3 紧急问题保障——「没有考点，看看就好」</li>
+      </ul>
+    </div>
+  </div>
+
 </section>
 
 <footer>

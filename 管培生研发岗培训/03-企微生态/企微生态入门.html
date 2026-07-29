@@ -660,6 +660,50 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
     <p style="margin:0 0 .4rem">企微要求 5 秒内响应，超时会重试（通常共三次）。复杂业务必须先落库/入队列，再异步处理，并对相同事件做幂等。<span class="type-tag fact">事实</span></p>
     <div class="src-quote">收到回调后先落库或入队列，再异步处理业务。不要把复杂业务放在回调 HTTP 请求里同步执行。对相同事件做幂等处理，因为重试可能造成重复投递。</div>
   </div>
+
+  <div class="card marker">
+    <div class="card-title">落地工具 · 三种模式选型决策表 <span class="meta">对应原文第 4 章</span></div>
+    <p style="margin:0 0 .6rem;font-size:.92rem">上面判断 1 说"先看业务关系"——这张表就是它的落地版。拿到需求别先翻接口文档，先在这张表里对号入座。</p>
+    <table class="t">
+      <thead>
+        <tr><th>典型业务场景</th><th>推荐模式</th><th>判断理由</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>企业自己内部用 OA、报表、审批、工单</td><td>企业内部应用</td><td>使用范围单一，企业自己管理应用和权限</td></tr>
+        <tr><td>已有内部系统，希望员工从企微工作台进入</td><td>企业内部应用</td><td>只服务本企业，接入成本最低</td></tr>
+        <tr><td>SaaS 厂商做标准 CRM，卖给很多企业</td><td>第三方应用</td><td>多企业授权安装，产品能力标准化</td></tr>
+        <tr><td>服务商给客户做定制客户运营应用</td><td>服务商代开发</td><td>应用在企业侧生成，但由服务商配置和维护</td></tr>
+        <tr><td>客户不想自己创建应用、配置回调和权限</td><td>服务商代开发</td><td>服务商可通过模板和授权二维码降低客户操作成本</td></tr>
+        <tr><td>企业要把自建系统和第三方 SaaS 数据打通</td><td>自建 + 第三方对接</td><td>通常涉及 userid/open_userid、external_userid 转换</td></tr>
+        <tr><td>私有化交付给单个大客户</td><td>视客户要求选择自建或代开发</td><td>客户技术团队强→可自建；服务商统一维护→可代开发</td></tr>
+        <tr><td>标准产品但每家客户都要明显定制</td><td>倾向代开发或「第三方 + 配置化」</td><td>需要在标准化和定制交付之间取舍</td></tr>
+      </tbody>
+    </table>
+    <div class="src-quote">业务需求 → 推荐模式 → 判断理由（原文第 4 章对照表）。</div>
+  </div>
+
+  <div class="card brick">
+    <div class="card-title">容易选错的 3 种情况 <span class="meta">原文「容易选错的情况」清单</span></div>
+    <div class="c-row"><span class="ck">错法 1</span><strong>只给一家企业用，却做成复杂的第三方应用</strong>——授权和凭证链路会被放大。服务对象只有一个企业时，自建应用一步到位，没必要背三层 token。</div>
+    <div class="c-row"><span class="ck">错法 2</span><strong>明明是标准 SaaS 产品，却按每家企业代开发</strong>——后续版本管理和上线成本会变高。标准品应走第三方应用一次上架、多企业授权安装。</div>
+    <div class="c-row"><span class="ck">错法 3</span><strong>只看接口可用性，不看数据主体</strong>——导致后续 userid、open_userid、external_userid 对不上。不同模式下 ID 是明文还是密文、属于哪个主体完全不同。</div>
+    <div class="src-quote">把「企业授权了应用」理解成「所有能力都自动可用」，忽略了可见范围、客户联系权限、敏感信息权限——这是第 4 种隐蔽误判。</div>
+  </div>
+
+  <div class="card sky">
+    <div class="card-title">一个简单的选型决策树</div>
+    <p style="margin:0 0 .4rem">三个问题，逐个回答：</p>
+    <div class="formula" style="text-align:left;font-size:.82rem">
+      ① 只服务一个企业吗？&nbsp;否 → 可能是第三方/代开发<br>
+      &nbsp;&nbsp;&nbsp;└─ 是 → ② 企业愿意自己建应用并维护配置吗？<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ 是 → <strong>企业内部应用</strong><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ 否 → <strong>服务商代开发</strong><br>
+      ① 否 → ③ 产品是否标准化给多企业使用？<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ 是 → <strong>第三方应用</strong><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ 否（偏定制交付） → <strong>服务商代开发</strong>
+    </div>
+    <p style="margin:.5rem 0 0;font-size:.86rem">选型不是技术人员单独决定的，它同时受产品形态、客户运维能力、服务商商业模式、数据合规要求影响。</p>
+  </div>
 </section>
 
 <!-- ===== 06 关键概念拆解 ===== -->
@@ -718,6 +762,38 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
     <div class="c-row"><span class="ck">不要误解成</span>不要把 corpid 当 userid 用——corpid 标识"企业"，userid 标识"人"，差一个层级。也不要把 open_userid 直接当主键存，它依赖服务商主体。</div>
   </div>
 
+  <div class="card brick">
+    <div class="card-title">ID 转换的硬限制 <span class="meta">原文第 9.3 章 · 容易踩的坑</span></div>
+    <p style="margin:0 0 .6rem;font-size:.92rem">概念⑤提到了两个转换接口，这里补上它们各自的<strong>限制要点</strong>——这些限制直接决定了"能不能转得通"。</p>
+    <table class="t">
+      <thead>
+        <tr><th>转换接口</th><th>用途</th><th>硬限制要点</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>openuserid_to_userid</code></td>
+          <td>把代开发/第三方应用拿到的 open_userid 转成企业自建应用可识别的明文 userid</td>
+          <td>
+            ① 使用<strong>自建应用的 access_token</strong>；<br>
+            ② 成员需要<strong>同时在自建应用和来源应用的可见范围内</strong>；<br>
+            ③ <strong>一次最多转换 1000 个</strong> open_userid（批量要分页）。
+          </td>
+        </tr>
+        <tr>
+          <td><code>from_service_external_userid</code></td>
+          <td>把第三方/代开发应用拿到的服务商主体客户 ID 转成企业主体客户 ID</td>
+          <td>
+            ① 使用<strong>自建应用的 access_token</strong>；<br>
+            ② <strong>需要传来源应用的 source_agentid</strong>；<br>
+            ③ 客户<strong>跟进人或客户群群主</strong>需要同时在两个应用的可见范围内。
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="src-quote">原文限制要点：openuserid_to_userid 使用自建应用 access_token、成员需同时在两个应用可见范围内、一次最多 1000 个；from_service_external_userid 需传 source_agentid、跟进人/群主需同时在两个应用可见范围内。</div>
+    <p style="margin:.5rem 0 0;font-size:.86rem"><strong>实战提示</strong>：转换失败时先查三件事——token 是不是自建应用的？成员/跟进人是不是同时落在两个应用的可见范围内？批量转换有没有超过 1000 个上限？这三点比"接口是不是写错了"更常出问题。</p>
+  </div>
+
   <div class="concept">
     <div class="c-name">⑥ EncodingAESKey</div>
     <div class="c-row"><span class="ck">定义</span>43 位字符串，<strong>解码后得到 32 字节 AES 密钥</strong>，用于回调消息体的 AES-256-CBC 加解密。和 Token（用于签名校验）一起配置在回调设置里。</div>
@@ -726,6 +802,29 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
     <div class="c-row"><span class="ck">关系</span>回调里 msg_signature 用 Token + timestamp + nonce + 密文做 SHA1 校验；通过后再用 EncodingAESKey 解 AES 密文得到明文 XML。receiveid 解密后校验（自建应用=corpid，第三方=suiteid）。</div>
     <div class="src-quote">EncodingAESKey：43 位字符串，解码后得到 32 字节 AESKey……AES-256-CBC：消息体加密算法。PKCS#7 padding：填充方式。</div>
     <div class="c-row"><span class="ck">不要误解成</span>EncodingAESKey ≠ Token。Token 做签名校验（验来源/防篡改），EncodingAESKey 做内容解密（防窃听），两者各管一档，缺一不可。</div>
+  </div>
+
+  <div class="card sky">
+    <div class="card-title">常见后端能力地图 <span class="meta">原文第 7.4 章</span></div>
+    <p style="margin:0 0 .6rem;font-size:.92rem">学完 6 个概念后，你会问："企微后端到底能调哪些接口？"——这张表就是地图。重点是<strong>每个能力域的"关键理解点"</strong>，不是背接口参数。</p>
+    <table class="t">
+      <thead>
+        <tr><th style="width:20%">能力域</th><th>典型能力</th><th>关键理解点</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>通讯录管理</strong></td><td>成员、部门、标签、异步导入导出、通讯录回调</td><td>受<strong>应用可见范围和通讯录权限</strong>影响，不是有 token 就能读全公司</td></tr>
+        <tr><td><strong>身份验证</strong></td><td>网页授权登录、Web 登录、获取访问用户身份</td><td>H5 免登录常用，拿到 userid 后再关联业务账号</td></tr>
+        <tr><td><strong>应用消息</strong></td><td>发送文本、图片、图文、模板卡片等</td><td><strong>消息接收人必须在应用可见范围内</strong>，否则可能发送失败</td></tr>
+        <tr><td><strong>应用管理</strong></td><td>获取应用、菜单、应用配置</td><td><strong>代开发应用有部分限制</strong>（如不可调用"设置应用"接口）</td></tr>
+        <tr><td><strong>客户联系</strong></td><td>客户、客户群、群发、标签、朋友圈、联系我</td><td>涉及外部联系人 ID，<strong>第三方/代开发模式要注意主体差异</strong>（见概念⑤）</td></tr>
+        <tr><td><strong>审批/OA</strong></td><td>审批模板、审批实例、打卡、汇报等</td><td>需要企业<strong>开通并授权</strong>对应能力，不是默认可用</td></tr>
+        <tr><td><strong>素材媒体</strong></td><td>上传临时素材、图片、语音、文件</td><td>常用于消息推送和富文本内容（临时素材有过期时间）</td></tr>
+        <tr><td><strong>回调事件</strong></td><td>应用消息、菜单事件、授权变化、通讯录变化</td><td>要做<strong>签名校验、解密、快速响应</strong>（见概念④⑥）</td></tr>
+        <tr><td><strong>工具资源</strong></td><td>错误码查询、接口调试、签名工具、加解密库</td><td>排查问题时<strong>优先使用官方工具</strong>，别自己造轮子</td></tr>
+      </tbody>
+    </table>
+    <div class="src-quote">原文 7.4 章「常见后端能力地图」：9 个能力域 + 各自的关键理解点。</div>
+    <p style="margin:.5rem 0 0;font-size:.86rem"><strong>用法</strong>：项目启动时，按这张表逐个勾选"这个能力域我们要不要用、权限够不够、ID 主体对不对"。它和上面 05 节的"选型决策表"配套——先选模式，再按这张表确认能力范围。</p>
   </div>
 </section>
 
@@ -1046,6 +1145,48 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
   <div class="card marker">
     <div class="card-title">还能问的追问（示例）</div>
     <p style="margin:0">"代开发应用权限分基础权限和自定义权限，自定义权限要服务商申请、企业确认——这套设计是为了保护企业的什么利益？如果企业确认得太慢，服务商该怎么设计用户体验才不让人抓狂？"</p>
+  </div>
+
+  <div class="card sky">
+    <div class="card-title">延伸阅读 · 官方文档入口 <span class="meta">原文第 13 章</span></div>
+    <p style="margin:0 0 .6rem;font-size:.92rem">这一章的概念都对得上官方文档。需要查接口参数、错误码、最新变更时，从下面这些入口进。主入口：<a href="https://developer.work.weixin.qq.com/document/" target="_blank" rel="noopener"><strong>developer.work.weixin.qq.com/document/</strong></a></p>
+
+    <h3 style="margin:.8rem 0 .4rem;font-size:.95rem">企业内部开发（自建应用）</h3>
+    <table class="t">
+      <tbody>
+        <tr><td>企业内部开发概述</td><td><a href="https://developer.work.weixin.qq.com/document/path/90556" target="_blank" rel="noopener">path/90556</a></td></tr>
+        <tr><td>服务端 API 开发前必读</td><td><a href="https://developer.work.weixin.qq.com/document/path/90664" target="_blank" rel="noopener">path/90664</a></td></tr>
+        <tr><td>基本概念</td><td><a href="https://developer.work.weixin.qq.com/document/path/90665" target="_blank" rel="noopener">path/90665</a></td></tr>
+        <tr><td>获取 access_token</td><td><a href="https://developer.work.weixin.qq.com/document/path/91039" target="_blank" rel="noopener">path/91039</a></td></tr>
+        <tr><td>回调配置</td><td><a href="https://developer.work.weixin.qq.com/document/path/90930" target="_blank" rel="noopener">path/90930</a></td></tr>
+        <tr><td>加解密方案说明</td><td><a href="https://developer.work.weixin.qq.com/document/path/90968" target="_blank" rel="noopener">path/90968</a></td></tr>
+      </tbody>
+    </table>
+
+    <h3 style="margin:.8rem 0 .4rem;font-size:.95rem">第三方应用 & 服务商代开发</h3>
+    <table class="t">
+      <tbody>
+        <tr><td>第三方应用开发快速入门</td><td><a href="https://developer.work.weixin.qq.com/document/path/90594" target="_blank" rel="noopener">path/90594</a></td></tr>
+        <tr><td>第三方应用基本概念</td><td><a href="https://developer.work.weixin.qq.com/document/path/91199" target="_blank" rel="noopener">path/91199</a></td></tr>
+        <tr><td>获取服务商凭证</td><td><a href="https://developer.work.weixin.qq.com/document/path/91200" target="_blank" rel="noopener">path/91200</a></td></tr>
+        <tr><td>获取第三方应用凭证</td><td><a href="https://developer.work.weixin.qq.com/document/path/90600" target="_blank" rel="noopener">path/90600</a></td></tr>
+        <tr><td>获取授权企业凭证</td><td><a href="https://developer.work.weixin.qq.com/document/path/90605" target="_blank" rel="noopener">path/90605</a></td></tr>
+        <tr><td>服务商代开发流程</td><td><a href="https://developer.work.weixin.qq.com/document/path/97112" target="_blank" rel="noopener">path/97112</a></td></tr>
+        <tr><td>代开发与自建应用接口差异</td><td><a href="https://developer.work.weixin.qq.com/document/path/97165" target="_blank" rel="noopener">path/97165</a></td></tr>
+      </tbody>
+    </table>
+
+    <h3 style="margin:.8rem 0 .4rem;font-size:.95rem">JS-SDK & ID 对接</h3>
+    <table class="t">
+      <tbody>
+        <tr><td>JS-SDK 概述</td><td><a href="https://developer.work.weixin.qq.com/document/path/90513" target="_blank" rel="noopener">path/90513</a></td></tr>
+        <tr><td>JS-SDK 开始使用</td><td><a href="https://developer.work.weixin.qq.com/document/path/90514" target="_blank" rel="noopener">path/90514</a></td></tr>
+        <tr><td>JS-SDK 签名算法</td><td><a href="https://developer.work.weixin.qq.com/document/path/90506" target="_blank" rel="noopener">path/90506</a></td></tr>
+        <tr><td>账号 ID 概述</td><td><a href="https://developer.work.weixin.qq.com/document/path/98728" target="_blank" rel="noopener">path/98728</a></td></tr>
+        <tr><td>自建应用与第三方应用 ID 对接</td><td><a href="https://developer.work.weixin.qq.com/document/path/95884" target="_blank" rel="noopener">path/95884</a></td></tr>
+      </tbody>
+    </table>
+    <div class="src-quote">原文第 13 章「官方文档入口」共 19 个链接，按"内部开发 / 第三方+代开发 / JS-SDK+ID"三类分组。</div>
   </div>
 
   <h3>错题回流区</h3>

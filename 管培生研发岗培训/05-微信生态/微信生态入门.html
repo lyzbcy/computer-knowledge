@@ -490,32 +490,32 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
 <section class="module" id="m01">
   <span class="hero-mark">理解地图</span>
   <h2>01 学习目标与阅读路径 <button class="voice-btn" data-voice-id="m1">🎧 听这章</button></h2>
-  <p class="lead">这是一份写给"只会写 C 语言、第一次进微盛"的同学的拆解地图。它要讲清一件事：微信到底是一堆什么能力拼起来的，它们各自干啥、又怎么协同。读完这一章，你能做到下面五件事。</p>
+  <p class="lead">这是一份写给"只会写 C 语言、第一次进微盛"的同学的拆解地图。本文不是产品科普大全，它只回答一个问题：<strong>微信生态在企微管家这套产品里到底扮演什么角色？</strong>读完这一章，你应该能做到下面五件事。</p>
 
   <div class="goal-item">
     <span class="g-num">1</span>
-    <div><strong>能说出 6 个关键产品线</strong>：公众号（订阅号/服务号）、小程序、视频号、企业微信、开放平台、微信支付，各自是什么、解决什么问题。</div>
+    <div><strong>能画出"获客 → 转化 → 运营"主链路</strong>：外部流量（短信/广告/外链）→ 微信（小程序/公众号文章/H5/活动/商城）→ 客户参与浏览留资下单 → 沉淀到企业微信客户/客户群/标签/素材/活动/订单。</div>
   </div>
   <div class="goal-item">
     <span class="g-num">2</span>
-    <div><strong>能分清订阅号 vs 服务号</strong>：群发频率、消息位置、适合场景三项区别，并能说出对应原文依据。</div>
+    <div><strong>能说出小程序在企微管家的 4 个承载角色</strong>：活码短链链路、获客拉新活动（抽奖/红包/群裂变/任务裂变）、商城和交易、作为素材类型——而不只是"即用即走"。</div>
   </div>
   <div class="goal-item">
     <span class="g-num">3</span>
-    <div><strong>能解释"为什么企业需要"企业微信</strong>：客户资产企业化、离职继承这两条最硬的价值，而不是停留在"它是个办公 IM"。</div>
+    <div><strong>能解释为什么"公众号文章 ≠ 加了企微客户"</strong>：阅读文章不等于进入私域，必须经过素材/活动/小程序/活码/员工跟进，与企业微信客户关系发生连接，后续运营才有抓手。</div>
   </div>
   <div class="goal-item">
     <span class="g-num">4</span>
-    <div><strong>能指出至少 3 个</strong>新手最常踩的认知坑（如：把小程序当 App、把开放平台当公众平台、把企业微信当普通微信）。</div>
+    <div><strong>能背出微信生态接入流程 6 步</strong>：准备账号主体 → 绑定开放平台 → 授权第三方平台 → 关联企业微信 → 配置业务入口 → 员工使用与数据回收。</div>
   </div>
   <div class="goal-item">
     <span class="g-num">5</span>
-    <div><strong>能提出 1 个追问</strong>：例如"微盛作为 SCRM 厂商，为什么必须深扎企业微信这一条线，而不是视频号？"</div>
+    <div><strong>能说出商家账号该绑哪个开放平台</strong>：商家自己的开放平台账号（用于商家自身身份打通），不是服务商的；服务商通过第三方平台提供代开发/代运营，不是把所有商家账号都绑到服务商开放平台下。</div>
   </div>
 
   <div class="card marker">
     <div class="card-title">阅读路径（按顺序）</div>
-    <p style="margin:0">先在 02 补 4 个零件 → 在 03/04 看清"文章在解决什么问题、怎么搭" → 在 05/06 抓住 6 条核心判断和 6 个关键概念 → 在 07 自己提问 → 在 08 闯 8 道闭环题 → 在 09/10 看边界 → 在 11 出报告。</p>
+    <p style="margin:0">先在 02 补 7 个零件（企微管家/活码/轨迹素材/内容中心/第三方平台/UnionID 等）→ 在 03/04 看清"原文在解决什么问题、怎么搭" → 在 05/06 抓住核心判断和关键概念 → 在 07 自己提问 → 在 08 闯 8 道闭环题 → 在 09/10 看边界 → 在 11 出报告。</p>
   </div>
 </section>
 
@@ -523,32 +523,55 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
 <section class="module" id="m02">
   <span class="sec-id">02</span>
   <h2>零基础背景包 <button class="voice-btn" data-voice-id="m2">🎧 听这章</button></h2>
-  <p class="lead">在拆原文前，先装 4 个最基本的零件。每个都标了"背景补充"——它帮你读懂原文，但<strong>不是作者的论点</strong>。</p>
+  <p class="lead">在拆原文前，先装 7 个最基本的零件。每个都标了"背景补充"——它帮你读懂原文，但<strong>不是作者的论点</strong>。</p>
 
   <div class="bg-block">
-    <div class="bg-label">背景补充 1 · 生态（Ecosystem）</div>
-    <p style="margin:0 0 .4rem">不是一个单点产品，而是一个以微信为核心、由一堆能力（通讯、内容、交易、服务）共同拼起来的开放体系，能力之间互相导流、互相协同。</p>
-    <div class="analogy">类比 C：微信生态 ≈ 一个由多个函数模块组成的工程，每个模块（公众号、小程序、支付）各管一摊，通过统一的"调用约定"（用户身份、社交关系）串起来。</div>
-    <div class="why">为什么现在需要知道：整章 13 节都在讲生态里的一块块拼图，不懂"生态"这个概念就读不懂它们为什么要协同。</div>
+    <div class="bg-label">背景补充 1 · 企微管家</div>
+    <p style="margin:0 0 .4rem">微盛的核心产品。它是一套基于企业微信的客户运营产品，把微信生态的客户侧入口和企业微信的员工侧承接能力连接起来，让获客、转化、运营动作可配置、可统计、可复用。</p>
+    <div class="analogy">类比 C：企微管家 ≈ 一个把"微信侧函数库"和"企微侧函数库"胶水拼起来的中间层框架，对外暴露统一配置接口。</div>
+    <div class="why">为什么现在需要知道：整章都站在"企微管家产品集成视角"讲微信生态，不懂这个视角就读不懂为什么要打通。</div>
   </div>
 
   <div class="bg-block">
-    <div class="bg-label">背景补充 2 · 私域 / 公域流量</div>
-    <p style="margin:0 0 .4rem">私域 = 企业能反复触达、不用每次花钱买的那批用户（如加了企业微信的客户）；公域 = 平台分发、要靠内容或广告抢的流量（如视频号推荐、搜一搜）。</p>
-    <div class="why">为什么现在需要知道：原文反复出现"私域引流""客户资产"，微盛作为 SCRM 厂商的主战场就是帮企业把公域流量沉淀进私域。</div>
+    <div class="bg-label">背景补充 2 · 微信生态 vs 企业微信生态</div>
+    <p style="margin:0 0 .4rem">微信生态面向微信用户（客户侧触点：小程序、公众号、H5、活动、商城）；企业微信生态面向企业员工、客户关系、私域运营（客户联系、客户群、标签、欢迎语、聊天工具栏）。前者解决"客户在哪里进入、在哪里操作"，后者解决"员工如何承接、客户如何沉淀、后续如何运营"。</p>
+    <div class="analogy">类比 C：微信生态 ≈ 前端 UI 层（接收用户输入），企业微信生态 ≈ 后端业务层（处理客户数据），企微管家是连接两层的 API 网关。</div>
+    <div class="why">为什么现在需要知道：原文第 2 章就靠这条二分法把整章串起来。</div>
   </div>
 
   <div class="bg-block">
-    <div class="bg-label">背景补充 3 · SCRM（社交化客户关系管理）</div>
-    <p style="margin:0 0 .4rem">Social CRM，在传统 CRM（管客户资料）基础上，叠加社交关系链能力——企业能通过微信生态加客户为好友、发朋友圈、建客户群做长期运营。微盛就是做 SCRM 的。</p>
-    <div class="why">为什么现在需要知道：你是微盛研发管培生，理解"为什么微盛要押注企业微信"，前提是知道 SCRM 这门生意的核心载体。</div>
+    <div class="bg-label">背景补充 3 · 活码</div>
+    <p style="margin:0 0 .4rem">客户进入企业微信私域的基础入口二维码。企微管家常见的活码有 4 种：员工活码（加员工）、客户群活码（进群）、区域活码（按区域规则加附近员工/门店群）、识客码（识别客户来源引导添加/进群）。活码可出现在海报、公众号、网页、小程序、线下物料、短信短链等位置。</p>
+    <div class="analogy">类比 C：活码 ≈ 一个工厂方法（factory），同一个二维码入口根据规则分发到不同的"员工对象"或"群对象"，背后是动态路由而不是写死的指针。</div>
+    <div class="why">为什么现在需要知道：原文 7.1 把活码列为获客拉新的基础入口，是"微信侧入口 → 企微侧沉淀"的桥梁。</div>
   </div>
 
   <div class="bg-block">
-    <div class="bg-label">背景补充 4 · UnionID</div>
-    <p style="margin:0 0 .4rem">开放平台提供的用户身份机制：同一个开发者账号下的公众号、小程序、App、网站，能识别出"这是同一个人"，从而打通身份。</p>
-    <div class="analogy">类比 C：UnionID ≈ 一个全局唯一的用户 ID，跨多个模块共享，避免每个模块各自维护一份对不上的账号表。</div>
-    <div class="why">为什么现在需要知道：原文讲开放平台"身份打通"时就靠它，这是企业做全域用户画像的地基。</div>
+    <div class="bg-label">背景补充 4 · 轨迹素材 vs 普通素材</div>
+    <p style="margin:0 0 .4rem">内容中心有两类素材：普通素材（文本/图片/小程序）偏向快捷发送和内容标准化，不强调客户浏览轨迹；轨迹素材（文章/网页/视频/文件）重点是记录客户的查看行为——查看次数、查看时长，员工据此判断客户兴趣。公众号文章链接就是一种典型的轨迹素材来源。</p>
+    <div class="analogy">类比 C：轨迹素材 ≈ 一个埋了埋点的对象，每次被访问都会把"访问次数/时长"写回客户画像；普通素材 ≈ 一个纯静态资源，发出去就完了。</div>
+    <div class="why">为什么现在需要知道：原文 5.1 和 6.2 反复强调"轨迹素材"的价值不是阅读量，而是把浏览行为纳入客户运营链路。</div>
+  </div>
+
+  <div class="bg-block">
+    <div class="bg-label">背景补充 5 · 内容中心</div>
+    <p style="margin:0 0 .4rem">微信生态和企业微信运营之间的连接层。它把文章、网页、图片、小程序、海报、表单、视频、文件整理成可被员工使用的素材，再通过企业微信会话、群发、欢迎语、朋友圈等渠道触达客户。包含普通素材、轨迹素材、海报、收集表、自定义网页/小程序。</p>
+    <div class="analogy">类比 C：内容中心 ≈ 一个统一的素材仓库（素材管理模块），员工会话、群发、欢迎语等场景都从这里取数据，避免每个场景各存一份。</div>
+    <div class="why">为什么现在需要知道：原文第 6 章把它定位为"连接层"，是理解微信侧内容如何进入企微运营的关键。</div>
+  </div>
+
+  <div class="bg-block">
+    <div class="bg-label">背景补充 6 · 第三方平台 / 服务商模式</div>
+    <p style="margin:0 0 .4rem">服务商为多个商家提供公众号、小程序能力接入时使用的平台。商家把公众号或小程序授权给第三方平台后，服务商可以在授权范围内代商家调用接口、发布小程序、配置能力。服务商不需要每个客户都单独维护一套独立开发流程，而是通过授权机制提供标准化服务。</p>
+    <div class="analogy">类比 C：第三方平台 ≈ 一个授权代理服务器，商家把自己的权限 token 委托给它，它代为发起 API 调用——类似 OAuth2 的代理模式。</div>
+    <div class="why">为什么现在需要知道：原文第 3、9、10 章都涉及"授权""第三方平台""服务商"，微盛就是扮演服务商角色。</div>
+  </div>
+
+  <div class="bg-block">
+    <div class="bg-label">背景补充 7 · UnionID 身份打通</div>
+    <p style="margin:0 0 .4rem">同一个微信用户在不同公众号或小程序下的 openid 通常不同。如果企业想识别"这个公众号用户"和"这个小程序用户"是同一个人，就需要把公众号、小程序绑定到同一个开放平台账号下，靠 UnionID 机制识别。这对客户来源识别、活动参与记录、浏览行为分析、交易转化分析有价值。</p>
+    <div class="analogy">类比 C：openid ≈ 每个应用各自维护的用户主键（不同表里 id 不同），UnionID ≈ 一个跨表的全局外键，靠它做 join 才能把多条记录合并成同一个用户。</div>
+    <div class="why">为什么现在需要知道：原文第 3 章把"打通用户身份"列为开放平台三大价值之一，是全域用户画像的地基。</div>
   </div>
 </section>
 
@@ -559,18 +582,18 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
 
   <div class="card brick">
     <div class="card-title">表面在讲什么？</div>
-    <p style="margin:0">产品清单：把微信生态里的 13 个能力（公众号、视频号、小程序、企业微信、开放平台、微信支付、Weixin/WeChat、小游戏、卡包、搜一搜、运动等）挨个介绍定位、价值、与其他能力的关系。<span class="type-tag fact">事实</span></p>
+    <p style="margin:0">一份微信生态能力清单：开放平台、公众号、小程序、微信支付、视频号等能力，在企微管家产品链路里各自扮演什么角色——活码体系、内容中心、商城交易、获客拉新、营销转化怎么串成一条链。<span class="type-tag fact">事实</span></p>
   </div>
 
   <div class="card brick">
     <div class="card-title">深层在回答什么问题？</div>
-    <p style="margin:0 0 .5rem"><strong>微信生态不是一堆孤立功能，而是一张"内容获客 → 服务承载 → 资产沉淀 → 交易闭环"的价值网，企业该怎么用这张网做客户运营？</strong>原文反复强调"可关联""可承接""闭环"，本质上是在讲协同。<span class="type-tag judge">判断</span></p>
-    <div class="src-quote">微信生态是以微信为核心……共同构成的开放生态体系，覆盖社交、内容、交易、服务等场景。</div>
+    <p style="margin:0 0 .5rem"><strong>企微管家怎么把微信的公域/外部流量沉淀成企业可运营的私域客户？微信生态各能力在这条链路里分别承担"入口、承载、识别、转化、回流"中的哪一环？</strong>原文反复强调"前端入口""沉淀""承接""数据回收"，本质上是在讲一条端到端的客户链路。<span class="type-tag judge">判断</span></p>
+    <div class="src-quote">微信生态不是单独存在的一套系统，而是客户进入、浏览、参与、留资、下单的前端入口。企业微信更偏向员工承接和客户关系管理，微信生态更偏向客户侧触点和业务承载。</div>
   </div>
 
   <div class="card">
     <div class="card-title">读者如果只记一个问题，应该记哪个？</div>
-    <p style="margin:0"><strong>这十几个能力，每个到底是干嘛的，它们又是怎么拼成一家企业的"获客—运营—成交"链路的？</strong>整章都在绕这个问题打转。<span class="type-tag infer">推论</span></p>
+    <p style="margin:0"><strong>客户从哪里来、在哪里操作、如何被识别、怎样沉淀到企业微信，以及后续如何被员工运营？</strong>——这正是原文末尾"总结"里给出的核心读法。<span class="type-tag infer">推论</span></p>
   </div>
 </section>
 
@@ -578,29 +601,28 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
 <section class="module" id="m04">
   <span class="sec-id">04</span>
   <h2>原文结构地图 <button class="voice-btn" data-voice-id="m4">🎧 听这章</button></h2>
-  <p class="lead">判断结构类型：<strong>主题簇 + 价值链</strong>（混合结构）。13 节是并列的产品主题簇，但主题簇之间又隐含一条"获客 → 服务 → 资产 → 交易"的价值链。不能把它读成单一产品手册。</p>
+  <p class="lead">判断结构类型：<strong>主链路 + 能力簇</strong>（一条链路被多个能力簇支撑）。主线是"获客 → 转化 → 运营"，每个能力簇挂在链路的不同环节上。不能把它读成独立产品手册。</p>
 
   <div class="tree">
-    <div class="tree-node"><span class="label">价值链主线（企业的客户旅程）</span> <span class="rel">（隐含逻辑）</span></div>
-    <div class="tree-node">&nbsp;&nbsp;├─ 获客：公众号（内容）+ 视频号（公域短视频）+ 搜一搜（搜索入口）</div>
-    <div class="tree-node">&nbsp;&nbsp;├─ 服务承载：小程序（即用即走的轻应用）+ 小游戏（基于小程序）</div>
-    <div class="tree-node">&nbsp;&nbsp;├─ 资产沉淀：企业微信（客户资产企业化、离职继承）</div>
-    <div class="tree-node">&nbsp;&nbsp;└─ 交易闭环：微信支付（贯穿线上线下）</div>
-    <div class="tree-node" style="margin-top:.6rem"><span class="label">并列主题簇（13 节产品能力）</span> <span class="rel">（主题簇，服务于价值链）</span></div>
-    <div class="tree-node">&nbsp;&nbsp;├─ §2 微信本体（IM + 朋友圈，生活方式）</div>
-    <div class="tree-node">&nbsp;&nbsp;├─ §3 公众号（订阅号 / 服务号，内容与服务）</div>
-    <div class="tree-node">&nbsp;&nbsp;├─ §4 视频号（短视频 + 直播，公域内容）</div>
-    <div class="tree-node">&nbsp;&nbsp;├─ §5 小程序（无需下载，即用即走）</div>
-    <div class="tree-node">&nbsp;&nbsp;├─ §6 企业微信（企业级 IM + 私域阵地）</div>
-    <div class="tree-node">&nbsp;&nbsp;├─ §7 开放平台（给开发者的接入接口集合）</div>
-    <div class="tree-node">&nbsp;&nbsp;├─ §8 微信支付（移动支付，交易核心）</div>
-    <div class="tree-node">&nbsp;&nbsp;├─ §9 Weixin/WeChat（境内/境外双版本）</div>
-    <div class="tree-node">&nbsp;&nbsp;└─ §10~13 小游戏 / 卡包 / 搜一搜 / 运动（辅助能力）</div>
+    <div class="tree-node"><span class="label">主链路（客户的完整旅程）</span> <span class="rel">（原文 §2/§13 的核心读法）</span></div>
+    <div class="tree-node">&nbsp;&nbsp;├─ 外部渠道：短信 / 广告 / 外部网页 / 其他外部入口</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ 微信侧入口与承载：小程序 / 公众号文章 / H5 / 活动页 / 商城页</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ 客户动作：参与、浏览、留资、下单</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ 沉淀到企微：添加员工 / 进入客户群 / 产生客户行为记录</div>
+    <div class="tree-node">&nbsp;&nbsp;└─ 企微运营：标签、欢迎语、群发、素材跟进、客户画像、转化管理</div>
+    <div class="tree-node" style="margin-top:.6rem"><span class="label">能力簇（支撑链路的几大模块）</span> <span class="rel">（原文 §3~§10）</span></div>
+    <div class="tree-node">&nbsp;&nbsp;├─ §3 开放平台（身份底座：账号授权 / UnionID 打通 / 服务商模式）</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ §4 小程序（业务承载：活码链路 / 获客拉新 / 商城交易 / 素材类型）</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ §5 公众号（内容触点：文章作为轨迹素材 / ≠ 企微客户关系）</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ §6 内容中心（连接层：普通素材 / 轨迹素材 / 海报 / 收集表 / 自定义网页·小程序）</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ §7 获客拉新入口（活码 4 种 / 裂变活动 / 邀客进群）</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ §8 营销转化入口（聊天工具栏 / 群发任务 / 商城优惠券 / 抽奖红包）</div>
+    <div class="tree-node">&nbsp;&nbsp;└─ §9/§10 接入流程与开发接入点（接入 6 步 / 4 层开发接入点）</div>
   </div>
 
   <div class="card sky">
     <div class="card-title">节点关系说明</div>
-    <p style="margin:0">13 节表面是<strong>并列产品介绍</strong>，但每节末尾的"与其他能力的关系"都把它接回价值链（如"视频号可关联公众号、小程序、企业微信""小程序可嵌入公众号文章、视频号直播"）。所以读法是：<strong>先记每个能力的定位，再记它挂在价值链的哪一环</strong>。</p>
+    <p style="margin:0">14 节表面是<strong>能力介绍</strong>，但每节都把能力接回主链路（如"小程序承载活码短链链路""公众号文章作为轨迹素材""聊天工具栏连接会话与客户页面"）。所以读法是：<strong>先记每个能力挂在主链路的哪一环（入口/承载/识别/转化/回流），再记它的具体功能</strong>。</p>
   </div>
 </section>
 
@@ -611,41 +633,42 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
   <p class="lead">挑出 6 条最硬的判断。每条都附原文依据和类型标签。</p>
 
   <div class="card">
-    <div class="card-title">判断 1 · 订阅号和服务号是两种定位完全不同的公众号</div>
-    <p style="margin:0 0 .4rem">订阅号偏内容资讯、每天可群发 1 次、消息折叠在订阅号文件夹；服务号偏业务服务、每月群发 4 次、消息显示在聊天列表。两者的本质区别是"内容广播"还是"服务交互"。<span class="type-tag fact">事实</span></p>
-    <div class="src-quote">订阅号……每天可群发 1 次，消息折叠在"订阅号消息"文件夹中……服务号……每月可群发 4 次，消息显示在聊天列表。</div>
-    <p style="margin:.4rem 0 0;font-size:.9rem"><strong>易误读</strong>：别以为"服务号比订阅号高级"——它们是不同场景，不是高低配。</p>
+    <div class="card-title">判断 1 · 微信生态是"客户侧入口"，企业微信是"员工侧承接"，二者结合才闭环</div>
+    <p style="margin:0 0 .4rem">微信生态解决"客户在哪里进入、在哪里操作"，企业微信生态解决"员工如何承接、客户如何沉淀、后续如何运营"。企微管家把两侧能力连接起来，让获客、转化、运营可配置、可统计、可复用。<span class="type-tag judge">判断</span></p>
+    <div class="src-quote">微信生态解决"客户在哪里进入、在哪里操作"的问题。企业微信生态解决"员工如何承接、客户如何沉淀、后续如何运营"的问题。企微管家把两侧能力连接起来。</div>
+    <p style="margin:.4rem 0 0;font-size:.9rem"><strong>易误读</strong>：别把微信生态当成独立系统——它"不是单独存在的一套系统，而是前端入口"。</p>
   </div>
 
   <div class="card">
-    <div class="card-title">判断 2 · 小程序的核心特征是"无需下载安装、即用即走"</div>
-    <p style="margin:0 0 .4rem">小程序不是"小的 App"，而是一种依托微信运行、扫一扫或搜一下就打开的轻量应用，理念是"用完即走"，降低使用门槛。<span class="type-tag fact">事实</span></p>
-    <div class="src-quote">小程序是一种不需要下载安装即可使用的应用，用户扫一扫或搜一下即可打开应用，体现了"用完即走"的理念。</div>
-    <p style="margin:.4rem 0 0;font-size:.9rem"><strong>为什么重要</strong>：这条决定了小程序在生态里的角色——服务承载层，承接"看完内容想立刻办事"的场景。</p>
+    <div class="card-title">判断 2 · 公众号文章 ≠ 企微客户关系</div>
+    <p style="margin:0 0 .4rem">关注公众号不等于添加企业微信员工，阅读公众号文章也不等于进入企微私域。公众号内容必须通过素材、活动、小程序、活码、员工跟进等能力，与企业微信客户关系发生连接，后续运营才有抓手。<span class="type-tag judge">判断</span></p>
+    <div class="src-quote">关注公众号不等于添加企业微信员工，阅读公众号文章也不等于进入企微私域。公众号内容需要通过素材、活动、小程序、活码、员工跟进等能力，与企业微信客户关系发生连接。</div>
+    <p style="margin:.4rem 0 0;font-size:.9rem"><strong>为什么重要</strong>：这条是新手最容易踩的坑——把"阅读量"误当成"私域客户"。</p>
   </div>
 
   <div class="card">
-    <div class="card-title">判断 3 · 企业微信的独特价值是"客户资产企业化"</div>
-    <p style="margin:0 0 .4rem">企业微信不仅是办公 IM，更是企业连接微信用户的私域阵地。客户资产属于企业，员工离职后客户可被继承，避免客户流失。<span class="type-tag judge">判断</span></p>
-    <div class="src-quote">客户资产管理：客户资产属于企业，员工离职客户可继承……离职继承：员工离职后客户可被继承，客户资产企业化。</div>
+    <div class="card-title">判断 3 · 商家账号应绑定到商家自己的开放平台，不是服务商的</div>
+    <p style="margin:0 0 .4rem">商家的公众号和小程序应绑定到商家自己的开放平台账号下，用于实现商家自身的用户身份打通。服务商第三方平台的作用是获得授权并提供代开发、代运营或能力接入，<strong>不是</strong>把所有商家的账号都绑定到服务商开放平台下进行身份打通。<span class="type-tag fact">事实</span></p>
+    <div class="src-quote">商家的公众号和小程序应绑定到商家自己的开放平台账号下，用于实现商家自身的用户身份打通。服务商第三方平台的作用是获得授权并提供代开发、代运营或能力接入，不是把所有商家的账号都绑定到服务商开放平台下进行身份打通。</div>
+    <p style="margin:.4rem 0 0;font-size:.9rem"><strong>为什么重要</strong>：身份归属归商家，这是企微管家做集成时必须守住的边界。</p>
   </div>
 
   <div class="card">
-    <div class="card-title">判断 4 · 企业微信与微信互通，是它能做私域的根本前提</div>
-    <p style="margin:0 0 .4rem">企业微信员工可添加微信用户为客户、单聊群聊、发客户朋友圈，而<strong>微信用户无需安装企业微信</strong>。正是这条互通，让企业能触达 13 亿微信用户。<span class="type-tag fact">事实</span></p>
-    <div class="src-quote">企业微信员工可添加微信用户为客户……微信用户无需安装企业微信即可与企业员工沟通。</div>
+    <div class="card-title">判断 4 · 小程序在企微管家不止"即用即走"，有 4 个承载角色</div>
+    <p style="margin:0 0 .4rem">小程序在企微管家产品链路里承载 4 类能力：①活码短链链路（外链拉起小程序展示活码）②获客拉新活动（抽奖/红包裂变/群裂变/任务裂变）③商城和交易（商品/订单/支付/售后）④作为素材类型（员工在聊天工具栏/欢迎语/群发里发小程序卡片）。<span class="type-tag fact">事实</span></p>
+    <div class="src-quote">在企微管家的产品链路中，小程序不只是商城入口，还承载大量获客拉新和营销转化能力。</div>
   </div>
 
   <div class="card">
-    <div class="card-title">判断 5 · 开放平台是"微信能力对外开放的入口"</div>
-    <p style="margin:0 0 .4rem">开放平台面向第三方开发者，提供微信登录、分享、支付等接口，并通过 UnionID 打通公众号、小程序、移动应用、网站应用的用户身份。<span class="type-tag fact">事实</span></p>
-    <div class="src-quote">微信开放平台是微信面向第三方开发者的开放能力集合……通过 UnionID 机制实现同一用户在不同应用间的身份识别。</div>
+    <div class="card-title">判断 5 · 活码是客户进入企业微信私域的基础入口</div>
+    <p style="margin:0 0 .4rem">活码出现在海报、公众号文章、网页、小程序页面、线下物料、短信短链等位置。微信生态提供入口和承载，企业微信负责完成添加员工、进群和后续运营。没有活码，外部流量就接不到企微侧。<span class="type-tag judge">判断</span></p>
+    <div class="src-quote">活码是客户进入企业微信私域的基础入口……微信生态提供入口和承载，企业微信负责完成添加员工、进群和后续运营。</div>
   </div>
 
   <div class="card">
-    <div class="card-title">判断 6 · 微信支付是生态交易闭环的核心</div>
-    <p style="margin:0 0 .4rem">微信支付与小程序、公众号、视频号结合才能完成"商品/服务交易"的闭环；没有支付，前面的获客和服务都收不回钱。<span class="type-tag judge">判断</span></p>
-    <div class="src-quote">微信支付是微信生态交易闭环的核心……与小程序、公众号、视频号等结合完成交易闭环。</div>
+    <div class="card-title">判断 6 · 内容中心是微信生态和企微运营的连接层</div>
+    <p style="margin:0 0 .4rem">内容中心把文章、网页、图片、小程序、海报、表单、视频、文件整理成可被员工使用的素材，通过企微会话、群发、欢迎语、朋友圈等渠道触达客户。没有这一层，微信侧的内容没法被企微侧员工标准化地复用。<span class="type-tag judge">判断</span></p>
+    <div class="src-quote">内容中心是微信生态和企微运营之间的重要连接层……通过企业微信会话、群发、欢迎语、朋友圈等渠道触达客户。</div>
   </div>
 </section>
 
@@ -653,66 +676,74 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
 <section class="module" id="m06">
   <span class="sec-id">06</span>
   <h2>关键概念拆解 <button class="voice-btn" data-voice-id="m6">🎧 听这章</button></h2>
-  <p class="lead">6 个概念，串成一条价值链：<strong>公众号/视频号（获客） → 小程序（服务） → 企业微信（资产） → 微信支付（交易）</strong>，开放平台则是给开发者的接入入口。</p>
+  <p class="lead">8 个概念，串成企微管家的客户链路：<strong>活码（入口）→ 小程序/公众号/内容中心（承载与素材）→ 开放平台 + UnionID（身份底座）→ 第三方平台 + 授权账号 + access_token（接入机制）→ 主体一致要求（合规边界）</strong>。</p>
 
   <div class="concept">
-    <div class="c-name">① 公众号（订阅号 / 服务号）</div>
-    <div class="c-row"><span class="ck">定义</span>微信生态中内容沉淀与传播的核心载体，分订阅号（内容资讯为主）和服务号（业务服务为主）两种形态。</div>
-    <div class="c-row"><span class="ck">人话</span>订阅号像一份每天能推送的电子报；服务号像一个能办业务的官方窗口。</div>
-    <div class="analogy">类比 C：公众号 ≈ 一个单向广播频道，运营者 push 内容，用户订阅接收；服务号多了些"可被调用"的服务接口。</div>
-    <div class="c-row"><span class="ck">关系</span>可关联小程序、微信支付、企业微信；公众号文章可作为企业微信客户运营的素材，关注者可被引导加企业微信员工。</div>
-    <div class="src-quote">订阅号……每天可群发 1 次……服务号……每月可群发 4 次……公众号文章不仅是阅读内容，还可以配置为客户轨迹素材。</div>
-    <div class="c-row"><span class="ck">不要误解成</span>公众号 ≠ 企业微信。公众号是"对所有人广播"，企业微信是"一对一/一对客户群运营"。</div>
+    <div class="c-name">① 活码（4 种）</div>
+    <div class="c-row"><span class="ck">定义</span>客户进入企业微信私域的基础入口二维码，可在海报、公众号、网页、小程序、线下物料、短信短链中出现。</div>
+    <div class="c-row"><span class="ck">4 种类型</span><strong>员工活码</strong>（扫码加员工）· <strong>客户群活码</strong>（扫码进客户群，群满或失效可切换）· <strong>区域活码</strong>（按区域/门店规则加附近员工或门店群）· <strong>识客码/识客群码</strong>（识别客户来源，引导添加或进群）。</div>
+    <div class="analogy">类比 C：活码 ≈ 工厂方法，同一个二维码入口根据规则路由到不同员工对象/群对象，背后是动态分发而非写死的指针。</div>
+    <div class="src-quote">活码是客户进入企业微信私域的基础入口……员工活码：客户扫码添加企业微信员工；客户群活码：客户扫码进入客户群；区域活码：根据区域或门店规则添加附近员工或门店群；识客码、识客群码：用于识别客户来源。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>活码 ≠ 只有一种"加员工二维码"。它有 4 种类型，且活码本身属于企业微信客户联系链路。</div>
   </div>
 
   <div class="concept">
-    <div class="c-name">② 小程序</div>
-    <div class="c-row"><span class="ck">定义</span>不需要下载安装即可使用的应用，扫一扫或搜一下即可打开，体现"用完即走"理念。</div>
-    <div class="c-row"><span class="ck">人话</span>一个不用装、点开就能用、用完就关的轻量程序，承载商城、预约、会员等服务。</div>
-    <div class="analogy">类比 C：小程序 ≈ 一个轻量级程序，不用安装、在微信运行时里独立运行，更像"按需加载的函数"，而不是常驻的 App 进程。</div>
-    <div class="c-row"><span class="ck">关系</span>可关联公众号、微信支付、企业微信；可嵌入公众号文章、视频号直播；可与微信卡包、会员体系打通。</div>
-    <div class="src-quote">小程序是一种不需要下载安装即可使用的应用……企业需要把服务能力产品化、场景化。小程序是把业务能力封装为"即用即走"轻量应用的最佳载体。</div>
-    <div class="c-row"><span class="ck">不要误解成</span>小程序 ≠ "小的 App"。它必须依托微信运行，不能脱离微信独立分发。</div>
+    <div class="c-name">② 轨迹素材 vs 普通素材</div>
+    <div class="c-row"><span class="ck">普通素材</span>文本、图片、小程序等类型。偏向"快捷发送"和"内容标准化"，通常<strong>不强调</strong>客户浏览轨迹。</div>
+    <div class="c-row"><span class="ck">轨迹素材</span>文章、网页、视频、文件等类型。重点是<strong>记录客户查看行为</strong>（查看次数、查看时长），员工据此在客户画像里判断客户兴趣。公众号文章链接是典型来源。</div>
+    <div class="analogy">类比 C：轨迹素材 ≈ 埋了埋点的对象，访问次数/时长回写客户画像；普通素材 ≈ 纯静态资源，发出去不回流数据。</div>
+    <div class="src-quote">轨迹素材包含文章、网页、视频、文件等类型，重点是记录客户查看行为……员工可以在客户画像或客户动态中看到这些行为，从而判断客户兴趣点。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>两者不是一回事。运营上轨迹素材用于"判断兴趣、跟进转化"，普通素材用于"快捷标准化发送"。</div>
   </div>
 
   <div class="concept">
-    <div class="c-name">③ 视频号</div>
-    <div class="c-row"><span class="ck">定义</span>微信推出的短视频内容平台，承载短视频与直播，基于社交关系推荐（熟人社交 + 算法）。</div>
-    <div class="c-row"><span class="ck">人话</span>微信里的抖音，能发短视频、能开直播、能带货。</div>
-    <div class="analogy">类比 C：视频号 ≈ 一个事件驱动的实时内容流，靠社交关系链做推荐分发，是生态里的公域流量入口。</div>
-    <div class="c-row"><span class="ck">关系</span>可关联公众号、小程序、企业微信、微信支付；直播可挂载小程序商城实现带货；内容可转发到朋友圈、聊天、企业微信客户群。</div>
-    <div class="src-quote">视频号……承载微信生态内的短视频与直播内容……私域引流：视频号可挂载公众号、小程序、企业微信，引导用户进入私域。</div>
-    <div class="c-row"><span class="ck">不要误解成</span>视频号 ≠ 公众号的视频版。公众号偏订阅沉淀，视频号偏公域获客。</div>
+    <div class="c-name">③ 内容中心</div>
+    <div class="c-row"><span class="ck">定义</span>微信生态和企微运营之间的连接层。把文章、网页、图片、小程序、海报、表单、视频、文件整理成可被员工使用的素材。</div>
+    <div class="c-row"><span class="ck">5 类内容</span>普通素材 · 轨迹素材 · 海报（可嵌员工活码/群活码）· 收集表（留资入口）· 自定义网页 / 自定义小程序（承载 H5 或小程序页面）。</div>
+    <div class="analogy">类比 C：内容中心 ≈ 统一的素材仓库模块，会话/群发/欢迎语/朋友圈各场景都从这里取数据，避免每个场景各存一份。</div>
+    <div class="src-quote">内容中心是微信生态和企微运营之间的重要连接层……通过企业微信会话、群发、欢迎语、朋友圈等渠道触达客户。</div>
   </div>
 
   <div class="concept">
-    <div class="c-name">④ 企业微信</div>
-    <div class="c-row"><span class="ck">定义</span>企业级即时通讯与办公协作平台，同时是企业连接微信用户、运营客户关系的私域阵地。</div>
-    <div class="c-row"><span class="ck">人话</span>企业版的微信，对内办公协作，对外能加微信客户、管客户群、做长期运营。</div>
-    <div class="analogy">类比 C：企业微信 ≈ 企业版微信——既打通企业内部（组织架构、审批），又打通外部（与微信用户互通），是把"客户关系"从员工变量提升为企业级常量的容器。</div>
-    <div class="c-row"><span class="ck">关系</span>员工可加微信用户为客户、单聊群聊、发客户朋友圈；可关联公众号、小程序、微信支付；承接公众号/视频号引流来的客户，通过小程序/支付完成交易。</div>
-    <div class="src-quote">企业微信是企业沉淀客户资产、构建私域、实现客户长期运营的核心载体……把客户关系从员工个人转移到企业，避免员工离职带来的客户流失。</div>
-    <div class="c-row"><span class="ck">不要误解成</span>企业微信 ≠ 普通微信办公版。它的命门是"与微信互通 + 客户资产企业化"，这是微盛 SCRM 押注它的根本原因。</div>
+    <div class="c-name">④ 第三方平台 / 服务商</div>
+    <div class="c-row"><span class="ck">定义</span>服务商为多个商家提供公众号、小程序能力接入时使用的平台。商家把账号授权给它后，服务商可在授权范围内代商家调用接口、发布小程序、配置能力。</div>
+    <div class="c-row"><span class="ck">价值</span>服务商不需要每个客户都维护一套独立开发流程，而是通过授权机制提供标准化服务。微盛就是这种服务商角色。</div>
+    <div class="analogy">类比 C：第三方平台 ≈ 授权代理服务器，商家把权限 token 委托给它代为发起 API 调用，类似 OAuth2 代理模式。</div>
+    <div class="src-quote">第三方平台是服务商为多个商家提供公众号、小程序等能力接入时使用的平台……服务商可以在授权范围内代商家调用接口、发布小程序、配置能力或提供产品服务。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>第三方平台 ≠ 把商家账号都绑到服务商开放平台下。身份打通归商家自己的开放平台，第三方平台只负责授权接入。</div>
   </div>
 
   <div class="concept">
-    <div class="c-name">⑤ 开放平台</div>
-    <div class="c-row"><span class="ck">定义</span>微信面向第三方开发者的开放能力集合，提供登录、分享、支付等开放接口，支持移动应用、网站应用、第三方平台接入。</div>
-    <div class="c-row"><span class="ck">人话</span>给开发者用的"接入微信"的官方接口集合，让你的 App 或网站能用微信登录、分享、支付。</div>
-    <div class="analogy">类比 C：开放平台 ≈ 给开发者提供的接入接口集合（一组 SDK + API），就像 C 里调用一个库要 include 它的头文件——开放平台就是"include 微信能力"的那个入口。</div>
-    <div class="c-row"><span class="ck">关系</span>是微信能力对外开放的入口；通过 UnionID 打通公众号、小程序、移动应用、网站应用的用户身份。</div>
-    <div class="src-quote">微信开放平台……提供微信登录、分享、支付等开放接口……通过 UnionID 可打通公众号、小程序、移动应用、网站应用的用户身份。</div>
-    <div class="c-row"><span class="ck">不要误解成</span>开放平台 ≠ 公众平台。公众平台是给运营者管公众号/小程序的后台；开放平台是给开发者接入第三方 App/网站的。</div>
+    <div class="c-name">⑤ UnionID / openid / AppID</div>
+    <div class="c-row"><span class="ck">AppID</span>微信生态中不同应用的唯一标识。公众号、小程序、开放平台、第三方平台、移动应用、网站应用都有各自 AppID。</div>
+    <div class="c-row"><span class="ck">openid</span>微信用户在某个具体应用下的身份标识。同一用户在公众号 A 和小程序 B 下的 openid 通常不同，<strong>不能</strong>直接互相识别。</div>
+    <div class="c-row"><span class="ck">UnionID</span>用于识别同一开放平台账号下的同一个微信用户。当公众号和小程序绑到同一开放平台账号下时，同一用户在这些应用中可获得相同 UnionID。</div>
+    <div class="analogy">类比 C：openid ≈ 各应用表里的本地主键（不同表 id 不同）；UnionID ≈ 跨表的全局外键，靠它做 join 才能把多条记录合并成同一用户。</div>
+    <div class="src-quote">openid 是某个微信应用内的用户标识……UnionID 用于在同一开放平台账号下识别同一个微信用户。</div>
   </div>
 
   <div class="concept">
-    <div class="c-name">⑥ 微信支付</div>
-    <div class="c-row"><span class="ck">定义</span>微信提供的移动支付能力，覆盖线上支付、线下扫码、转账、收款、跨境等场景。</div>
-    <div class="c-row"><span class="ck">人话</span>微信里的钱包，能付款、能收款、能转账、能发红包。</div>
-    <div class="analogy">类比 C：微信支付 ≈ 生态里的标准"交易函数库"，被小程序、公众号、视频号、企业微信各处调用，是闭环的最后一环。</div>
-    <div class="c-row"><span class="ck">关系</span>与小程序、公众号、视频号结合完成交易闭环；与企业微信结合支持企业收款、员工报销。</div>
-    <div class="src-quote">微信支付是微信生态交易闭环的核心……与小程序、公众号、视频号等结合完成交易闭环。</div>
-    <div class="c-row"><span class="ck">不要误解成</span>微信支付 ≠ 独立的支付 App。它的价值在于"嵌进生态每一个交易场景"，离开微信生态它就只是一般的支付通道。</div>
+    <div class="c-name">⑥ access_token（三种凭证）</div>
+    <div class="c-row"><span class="ck">定义</span>接口调用凭证，代表调用方身份和权限。不同模式下凭证含义不同。</div>
+    <div class="c-row"><span class="ck">三种</span><strong>自研 access_token</strong>：自研公众号/小程序用应用自己的凭证；<strong>component_access_token</strong>：第三方平台表示服务商平台身份；<strong>authorizer_access_token</strong>：服务商代商家调用时表示已授权账号的调用身份。</div>
+    <div class="analogy">类比 C：access_token ≈ API 调用的 session key。自研的是"你自己的登录态"，component 的是"服务商平台的登录态"，authorizer 的是"商家授权给服务商代用的登录态"。</div>
+    <div class="src-quote">自研公众号或小程序通常使用应用自己的 access_token。第三方平台使用 component_access_token 表示服务商平台身份。服务商代商家调用接口时，会使用 authorizer_access_token 表示已授权账号的接口调用身份。</div>
+    <div class="c-row"><span class="ck">重点</span>业务人员需理解"接口调用需要凭证，凭证代表调用方身份和权限"，不必背每条 API。</div>
+  </div>
+
+  <div class="concept">
+    <div class="c-name">⑦ 主体一致要求</div>
+    <div class="c-row"><span class="ck">定义</span>很多能力要求主体一致或完成关联授权。</div>
+    <div class="c-row"><span class="ck">典型</span>商城小程序通常要求小程序主体与企业主体一致，并绑定微信支付商户号；微信支付商户号主体、企业微信主体、公众号/服务号主体、开放平台账号主体都需明确一致或关联。</div>
+    <div class="analogy">类比 C：主体一致 ≈ 编译期类型检查——不同模块（小程序/支付/企微）的"主体类型"必须匹配，否则交易链路编译不过。</div>
+    <div class="src-quote">很多能力要求主体一致或完成关联授权。比如商城小程序通常要求小程序主体与企业主体一致，并绑定微信支付商户号。</div>
+  </div>
+
+  <div class="concept">
+    <div class="c-name">⑧ 授权账号</div>
+    <div class="c-row"><span class="ck">定义</span>授权给第三方平台的公众号或小程序。授权后，服务商可通过第三方平台机制代表该账号完成部分操作。</div>
+    <div class="c-row"><span class="ck">关系</span>授权账号 + 第三方平台 = 服务商模式。商家扫码授权后，服务商获得对应账号的接口调用权限，可代为发布、配置、调用。</div>
+    <div class="src-quote">授权账号指授权给第三方平台的公众号或小程序。授权后，服务商可以通过第三方平台机制代表该账号完成部分操作。</div>
   </div>
 </section>
 
@@ -723,41 +754,42 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
   <p class="lead">不直接给答案，自己想。参考答案在每题下方，但请先停 30 秒再展开。</p>
 
   <details class="q-item">
-    <summary><span class="q-no">Q1 · 入门</span>原文说"微信已经从社交工具发展成一种生活方式"，这是事实、判断，还是推论？</summary>
-    <div class="q-text">这是<strong>判断</strong>。它不是中立陈述，而是腾讯对微信定位的主张——强调微信已超越 IM，深入沟通、消费、娱乐、服务各场景。</div>
-    <div class="q-hint">提示：注意"生活方式"是个价值定位词，不是客观描述。</div>
+    <summary><span class="q-no">Q1 · 入门</span>客户在公众号看了一篇文章，等于他进了企业的私域吗？为什么？</summary>
+    <div class="q-text"><strong>不等于。</strong>原文 5.3 明确："关注公众号不等于添加企业微信员工，阅读公众号文章也不等于进入企微私域。"必须通过素材、活动、小程序、活码、员工跟进，与企业微信客户关系发生连接，后续运营才有抓手。阅读量只是阅读量，不是私域客户。</div>
+    <div class="q-hint">提示：回到 05 判断 2，区分"内容触达"和"客户沉淀"。</div>
   </details>
 
   <details class="q-item">
-    <summary><span class="q-no">Q2 · 入门</span>"订阅号每天可群发 1 次，服务号每月可群发 4 次"——这句话是事实还是判断？</summary>
-    <div class="q-text">这是<strong>事实</strong>——它是平台规则的客观陈述，作者没表达立场，只是告诉你"规则就是这样"。</div>
+    <summary><span class="q-no">Q2 · 入门</span>商家的公众号和小程序，应该绑到商家自己的开放平台，还是服务商的开放平台？为什么？</summary>
+    <div class="q-text"><strong>绑商家自己的开放平台。</strong>身份打通归商家自身——UnionID 是商家做全域用户画像的地基。服务商第三方平台的作用是"获得授权并提供代开发/代运营/能力接入"，不是"把所有商家账号绑到服务商开放平台下做身份打通"。身份归商家，授权归服务商，两者不能混。</div>
+    <div class="q-hint">提示：回到 05 判断 3 + 06 概念④，区分"身份归属"和"授权接入"。</div>
   </details>
 
   <details class="q-item">
-    <summary><span class="q-no">Q3 · 进阶</span>如果企业微信不能与微信互通（员工加不了微信客户），企业微信对企业还有私域价值吗？</summary>
-    <div class="q-text">基本没有。企业微信做私域的命门就是"互通"——能加 13 亿微信用户为客户。断掉互通，它就退化为一个普通办公 IM，跟钉钉/飞书没区别。</div>
-    <div class="q-hint">提示：回到 05 判断 4，"互通"是企业微信私域价值的地基。</div>
+    <summary><span class="q-no">Q3 · 进阶</span>轨迹素材和普通素材都是"员工发给客户的内容"，为什么运营上要分开？</summary>
+    <div class="q-text">因为它们解决不同问题。普通素材解决"快捷发送 + 内容标准化"，发出去就完了；轨迹素材解决"判断客户兴趣"——它会记录查看次数、查看时长，回写客户画像，员工据此判断意向、跟进转化。把轨迹素材当普通素材用，就浪费了"行为回流"这个核心价值。</div>
   </details>
 
   <details class="q-item">
-    <summary><span class="q-no">Q4 · 进阶</span>原文说企业微信"客户资产企业化、离职继承"。删掉这条，企业为什么要慌？</summary>
-    <div class="q-text">员工用个人微信加客户，员工离职就把客户带走，企业既留不下客户也管不了。企业微信把客户关系从"员工个人变量"变成"企业级常量"，这是 SCRM 这门生意的根。</div>
+    <summary><span class="q-no">Q4 · 进阶</span>小程序在企微管家和在普通微信里，定位有什么不同？</summary>
+    <div class="q-text">在普通微信里，小程序是"即用即走的轻应用"；但在企微管家产品链路里，它有 4 个承载角色：①活码短链链路（外链拉起小程序展示活码）②获客拉新活动（抽奖/红包/群裂变/任务裂变）③商城和交易（商品/订单/支付/售后）④作为素材类型（员工在工具栏/欢迎语/群发里发）。它不只是"用完即走"，而是客户侧业务的核心承载入口。</div>
+    <div class="q-hint">提示：回到 05 判断 4 + 06 概念体系。</div>
   </details>
 
   <details class="q-item">
-    <summary><span class="q-no">Q5 · 进阶</span>开放平台的 UnionID 如果不存在，会发生什么？</summary>
-    <div class="q-text">同一个用户在企业的公众号、小程序、App 里会被当成三个不同的人，无法合并用户画像、无法跨端识别。全域用户运营、跨端数据沉淀全都断了。</div>
+    <summary><span class="q-no">Q5 · 深度</span>如果开放平台的 UnionID 机制不存在，企微管家的客户链路哪一环会断？</summary>
+    <div class="q-text">"识别"环会断。同一个客户在公众号、小程序、商城里会被当成几个不同的人，无法合并画像、无法把文章浏览、活动参与、小程序访问、商城交易关联到同一客户。客户来源识别、活动参与记录、浏览行为分析、交易转化分析全都失效。链路能跑通"入口→承载"，但"识别→回流"会断成几个孤岛。</div>
   </details>
 
   <details class="q-item">
-    <summary><span class="q-no">Q6 · 深度</span>视频号、公众号都做内容，为什么微信要分两个产品，而不是公众号加视频功能？</summary>
-    <div class="q-text">定位不同：公众号偏<strong>订阅沉淀</strong>（用户主动关注、深度阅读），视频号偏<strong>公域获客</strong>（社交 + 算法推荐、短视频直播）。强行合并会破坏各自的内容消费心智，也堵死公域流量入口。</div>
-    <div class="q-hint">提示：想想抖音和微信公众号为什么不能是同一个东西。</div>
+    <summary><span class="q-no">Q6 · 深度</span>接入流程 6 步里，如果跳过"绑定开放平台"直接授权第三方平台，会丢掉什么能力？</summary>
+    <div class="q-text">会丢掉"跨应用识别同一用户"的能力。第三方平台解决的是"服务商代商家调用接口、发布、配置"，但跨公众号/小程序识别同一微信用户要靠 UnionID，而 UnionID 必须把账号绑到同一开放平台账号下才能拿到。跳过绑定开放平台，授权照常能用，但全域用户画像就建不起来。</div>
+    <div class="q-hint">提示：回到 05 判断 3，区分开放平台和第三方平台各自解决什么问题。</div>
   </details>
 
   <details class="q-item">
-    <summary><span class="q-no">Q7 · 深度</span>如果把微信支付从生态里抽掉，前面"获客—服务—资产"还能闭环吗？</summary>
-    <div class="q-text">闭不了环。公众号引流、小程序服务、企业微信沉淀客户，最终都要落到交易；没有支付，整条链路有流量有服务有客户，但收不回钱，商业模型坍塌。这就是为什么原文反复强调"交易闭环的核心"。</div>
+    <summary><span class="q-no">Q7 · 深度</span>聊天工具栏为什么是"员工使用微信生态能力的重要入口"，而不是"发消息的工具"？</summary>
+    <div class="q-text">因为它连接了企业微信会话和微信侧客户页面。员工在聊天过程中能快速发送素材、商品、活动、优惠券、小程序、查看客户画像、快速拉群——这些都是微信生态能力的出口。把它理解成"发消息"，就忽略了它"把微信侧内容/交易能力接到企微会话里"的桥梁定位。</div>
   </details>
 </section>
 
@@ -765,117 +797,100 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
 <section class="module" id="m08">
   <span class="sec-id">08</span>
   <h2>闯关式任务 <button class="voice-btn" data-voice-id="m8">🎧 听这章</button></h2>
-  <p class="lead">8 道闭环题，覆盖核心知识点。选完点"检查"，答对贴 OK 贴纸，答错贴 NO 贴纸并指出错在哪。错题自动进 11 节的错题回流区。</p>
+  <p class="lead">8 道闭环题，覆盖核心考点。选完点"检查"，答对贴 OK 贴纸，答错贴 NO 贴纸并指出错在哪。错题自动进 11 节的错题回流区。</p>
 
-  <!-- 题1 单选：订阅号 vs 服务号 群发频率 -->
+  <!-- 题1 单选：微信生态在企微管家的定位 -->
   <div class="task" data-task="t1" data-answer="B"
-       data-ok="对。订阅号偏内容资讯，每天可群发 1 次；服务号偏业务服务，每月群发 4 次。频率差一个数量级，因为定位不同。"
-       data-no="搞反了或记错了。回去看 §3.1：订阅号每天 1 次、消息折叠在订阅号文件夹；服务号每月 4 次、消息在聊天列表。"
-       data-src="原文：订阅号……每天可群发 1 次，消息折叠在'订阅号消息'文件夹中……服务号……每月可群发 4 次，消息显示在聊天列表。"
-       data-review="回到「05 判断 1」+「06 概念①」复习">
-    <div class="q">1. 【单选】关于订阅号和服务号的群发规则，正确的是？</div>
+       data-ok="对。微信生态在企微管家里的定位是客户侧获客入口——客户进入、浏览、参与、留资、下单的前端入口；企业微信负责员工侧承接和运营。"
+       data-no="错。微信生态不是独立系统，也不是员工侧工具。它是'客户侧前端入口'，企业微信才是员工侧承接。回去看 §1/§2。"
+       data-src="原文：微信生态不是单独存在的一套系统，而是客户进入、浏览、参与、留资、下单的前端入口。"
+       data-review="回到「05 判断 1」+「03 原文问题定位」复习">
+    <div class="q">1. 【单选】微信生态在企微管家产品里的定位是？</div>
     <div class="opts">
-      <button class="opt" data-val="A">A. 订阅号每月 4 次，服务号每天 1 次</button>
-      <button class="opt" data-val="B">B. 订阅号每天 1 次，服务号每月 4 次</button>
-      <button class="opt" data-val="C">C. 两者都是每天 1 次</button>
-      <button class="opt" data-val="D">D. 两者都是每月 4 次</button>
+      <button class="opt" data-val="A">A. 一套独立运行的社交系统，和企业微信无关</button>
+      <button class="opt" data-val="B">B. 客户侧获客入口（客户进入、浏览、留资、下单的前端入口）</button>
+      <button class="opt" data-val="C">C. 员工侧的客户关系管理系统</button>
+      <button class="opt" data-val="D">D. 只用来发朋友圈的广告平台</button>
     </div>
     <button class="check">检查</button>
     <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
   </div>
 
-  <!-- 题2 单选：订阅号 vs 服务号 消息位置/场景 -->
-  <div class="task" data-task="t2" data-answer="C"
-       data-ok="对。服务号消息显示在聊天列表（强提醒），适合企业/商家提供服务；订阅号消息折叠在订阅号文件夹，适合媒体资讯。"
-       data-no="错。服务号消息进聊天列表、强提醒；订阅号消息折叠在订阅号文件夹。这条直接决定用户能不能第一时间看到。"
-       data-src="原文：订阅号……消息折叠在'订阅号消息'文件夹中……服务号……消息显示在聊天列表……适合企业、商家、机构提供服务。"
-       data-review="回到「05 判断 1」复习">
-    <div class="q">2. 【单选】一家做售后服务的商家，更适合选哪种公众号？消息会出现在哪里？</div>
+  <!-- 题2 多选：活码类型 -->
+  <div class="task" data-task="t2" data-multi="true" data-answer="A,B,C,D"
+       data-ok="对！4 种全选——员工活码、客户群活码、区域活码、识客码（识客群码）。活码是客户进入企微私域的基础入口。"
+       data-no="漏选了。原文 7.1 列了 4 种活码：员工活码（加员工）、客户群活码（进群）、区域活码（按区域规则加附近员工/门店群）、识客码/识客群码（识别来源引导添加/进群）。"
+       data-src="原文：员工活码：客户扫码添加企业微信员工；客户群活码：客户扫码进入客户群；区域活码：根据区域或门店规则添加附近员工或门店群；识客码、识客群码：用于识别客户来源。"
+       data-review="回到「06 概念① 活码」复习">
+    <div class="q">2. 【多选】企微管家里的活码有哪些类型？（多选）</div>
     <div class="opts">
-      <button class="opt" data-val="A">A. 订阅号；消息折叠在订阅号文件夹</button>
-      <button class="opt" data-val="B">B. 订阅号；消息显示在聊天列表</button>
-      <button class="opt" data-val="C">C. 服务号；消息显示在聊天列表</button>
-      <button class="opt" data-val="D">D. 服务号；消息折叠在订阅号文件夹</button>
+      <button class="opt" data-val="A">A. 员工活码（扫码加员工）</button>
+      <button class="opt" data-val="B">B. 客户群活码（扫码进客户群，群满可切换）</button>
+      <button class="opt" data-val="C">C. 区域活码（按区域/门店规则加附近员工或门店群）</button>
+      <button class="opt" data-val="D">D. 识客码 / 识客群码（识别客户来源，引导添加或进群）</button>
     </div>
     <button class="check">检查</button>
     <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
   </div>
 
-  <!-- 题3 单选：小程序定位 -->
+  <!-- 题3 单选：公众号文章≠企微客户 -->
   <div class="task" data-task="t3" data-answer="C"
-       data-ok="对。小程序的核心是'无需下载安装、即用即走'，依托微信运行，不是'小的 App'。"
-       data-no="错。小程序不等于'小的 App'，它必须依托微信运行；它的理念是'用完即走'，降低使用门槛。"
-       data-src="原文：小程序是一种不需要下载安装即可使用的应用，用户扫一扫或搜一下即可打开应用，体现了'用完即走'的理念。"
-       data-review="回到「05 判断 2」+「06 概念②」复习">
-    <div class="q">3. 【单选】下面哪句最准确地描述了小程序的定位？</div>
+       data-ok="对。阅读公众号文章不等于进入企微私域。必须通过素材、活动、小程序、活码、员工跟进，与企业微信客户关系发生连接，后续运营才有抓手。"
+       data-no="错。阅读量 ≠ 私域客户。原文 5.3 明确：关注公众号不等于添加员工，阅读文章也不等于进入私域，必须经素材/活动/小程序/活码/员工跟进才发生连接。"
+       data-src="原文：关注公众号不等于添加企业微信员工，阅读公众号文章也不等于进入企微私域。公众号内容需要通过素材、活动、小程序、活码、员工跟进等能力，与企业微信客户关系发生连接。"
+       data-review="回到「05 判断 2」+「09 误解 1」复习">
+    <div class="q">3. 【单选】客户看了员工发的公众号文章，等于？</div>
     <div class="opts">
-      <button class="opt" data-val="A">A. 一种体积更小、功能更少的 App</button>
-      <button class="opt" data-val="B">B. 公众号的升级版，能发图文也能交易</button>
-      <button class="opt" data-val="C">C. 无需下载安装、即用即走，依托微信运行的轻量应用</button>
-      <button class="opt" data-val="D">D. 微信内的网页浏览器，打开 H5 链接</button>
+      <button class="opt" data-val="A">A. 已经加了企业微信客户，可以开始群发营销</button>
+      <button class="opt" data-val="B">B. 已经进入客户群，可以群里运营</button>
+      <button class="opt" data-val="C">C. 不等于加了企微客户，还需经素材/活动/活码/员工跟进才发生连接</button>
+      <button class="opt" data-val="D">D. 等于在系统里形成了可识别的客户行为记录</button>
     </div>
     <button class="check">检查</button>
     <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
   </div>
 
-  <!-- 题4 单选：企业微信与微信互通 -->
-  <div class="task" data-task="t4" data-answer="B"
-       data-ok="对。微信用户无需安装企业微信，就能与企业员工沟通——这条互通是企业微信做私域的命门。"
-       data-no="错。关键恰恰相反：微信用户不需要装企业微信，这正是企业微信能触达 13 亿微信用户的根本。"
-       data-src="原文：企业微信员工可添加微信用户为客户……微信用户无需安装企业微信即可与企业员工沟通。"
-       data-review="回到「05 判断 4」+「06 概念④」复习">
-    <div class="q">4. 【单选】企业微信员工想和微信用户客户沟通，微信用户需要做什么？</div>
+  <!-- 题4 单选：商家账号绑哪个开放平台 -->
+  <div class="task" data-task="t4" data-answer="A"
+       data-ok="对。商家账号应绑到商家自己的开放平台，用于商家自身身份打通。服务商第三方平台只负责授权接入，不是身份归属。"
+       data-no="错。绑服务商开放平台恰恰是原文警告的做法。身份归商家自己——绑商家自己的开放平台；服务商通过第三方平台获得授权做代开发/代运营，不能把所有商家账号绑到服务商开放平台下做身份打通。"
+       data-src="原文：商家的公众号和小程序应绑定到商家自己的开放平台账号下，用于实现商家自身的用户身份打通。服务商第三方平台的作用是获得授权并提供代开发、代运营或能力接入，不是把所有商家的账号都绑定到服务商开放平台下进行身份打通。"
+       data-review="回到「05 判断 3」+「06 概念④」复习">
+    <div class="q">4. 【单选】商家的公众号和小程序，应该绑到哪个开放平台账号下？</div>
     <div class="opts">
-      <button class="opt" data-val="A">A. 必须先下载并注册企业微信</button>
-      <button class="opt" data-val="B">B. 什么都不用做，直接用微信就能聊</button>
-      <button class="opt" data-val="C">C. 必须先关注企业的公众号</button>
-      <button class="opt" data-val="D">D. 必须先扫企业的小程序码</button>
+      <button class="opt" data-val="A">A. 商家自己的开放平台账号（用于商家自身身份打通）</button>
+      <button class="opt" data-val="B">B. 服务商的开放平台账号（让服务商统一打通身份）</button>
+      <button class="opt" data-val="C">C. 不需要绑开放平台，直接用就行</button>
+      <button class="opt" data-val="D">D. 绑到第三方平台账号下即可</button>
     </div>
     <button class="check">检查</button>
     <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
   </div>
 
-  <!-- 题5 多选：企业微信价值 -->
-  <div class="task" data-task="t5" data-multi="true" data-answer="A,B,C"
-       data-ok="对！这三条是企业微信区别于普通办公 IM 的核心价值，也是微盛押注它的原因。"
-       data-no="漏了或多选。逐条对照：A 客户资产企业化（离职继承）；B 可加微信客户做私域；C 客户画像/标签/轨迹/SOP 运营。D 错——'客户资产属于员工个人'恰恰是企业微信要消灭的痛点。"
-       data-src="原文：客户资产管理：客户资产属于企业，员工离职客户可继承……企业微信员工可添加微信用户为客户……客户运营：客户画像、客户标签、客户轨迹、SOP 等。"
-       data-review="回到「05 判断 3/4」+「06 概念④」复习">
-    <div class="q">5. 【多选】下面哪些是企业微信区别于普通办公 IM 的核心价值？（多选）</div>
+  <!-- 题5 多选：小程序4个承载角色 -->
+  <div class="task" data-task="t5" data-multi="true" data-answer="A,B,C,D"
+       data-ok="对！4 个角色全选——小程序在企微管家承载活码短链链路、获客拉新活动、商城交易、还能作为素材类型被员工发送。"
+       data-no="漏选了。原文 4.1~4.4 列了小程序的 4 个承载角色：①活码短链链路 ②获客拉新活动（抽奖/红包/群裂变/任务裂变）③商城和交易 ④作为素材类型。小程序不只是'即用即走'。"
+       data-src="原文：4.1 小程序承载活码短链链路……4.2 小程序承载获客拉新活动……4.3 小程序承载商城和交易……4.4 小程序作为素材类型。"
+       data-review="回到「05 判断 4」+「06 概念体系」复习">
+    <div class="q">5. 【多选】小程序在企微管家里承载哪些角色？（多选）</div>
     <div class="opts">
-      <button class="opt" data-val="A">A. 客户资产属于企业，员工离职客户可继承</button>
-      <button class="opt" data-val="B">B. 员工可添加微信用户为客户，做私域运营</button>
-      <button class="opt" data-val="C">C. 提供客户画像、标签、轨迹、SOP 等运营能力</button>
-      <button class="opt" data-val="D">D. 客户资产属于员工个人，企业不干涉</button>
+      <button class="opt" data-val="A">A. 活码短链链路（外链拉起小程序展示员工活码）</button>
+      <button class="opt" data-val="B">B. 获客拉新活动（抽奖 / 红包裂变 / 群裂变 / 任务裂变）</button>
+      <button class="opt" data-val="C">C. 商城和交易（商品 / 订单 / 支付 / 售后）</button>
+      <button class="opt" data-val="D">D. 作为素材类型（员工在工具栏/欢迎语/群发里发小程序卡片）</button>
     </div>
     <button class="check">检查</button>
     <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
   </div>
 
-  <!-- 题6 多选：生态协同关系 -->
-  <div class="task" data-task="t6" data-multi="true" data-answer="A,B,C"
-       data-ok="对！这三条都是原文明确写的协同关系，构成完整的获客—服务—成交链路。"
-       data-no="D 是错的——企业微信员工加的是微信用户为客户，不是反过来让微信用户去装企业微信办公。原文明确'微信用户无需安装企业微信'。"
-       data-src="原文：视频号可关联公众号、小程序、企业微信……小程序可嵌入公众号文章、视频号直播……企业微信员工可添加微信用户为客户……微信用户无需安装企业微信。"
-       data-review="回到「04 结构地图 · 价值链」+「09 误解」复习">
-    <div class="q">6. 【多选】下面哪些是原文明确写过的"微信生态协同关系"？（多选）</div>
-    <div class="opts">
-      <button class="opt" data-val="A">A. 视频号直播可挂载小程序商城实现带货</button>
-      <button class="opt" data-val="B">B. 公众号关注者可被引导添加企业微信员工、加入客户群</button>
-      <button class="opt" data-val="C">C. 小程序可与微信卡包、微信会员体系打通</button>
-      <button class="opt" data-val="D">D. 企业微信员工加客户，需要客户先下载企业微信办公版</button>
-    </div>
-    <button class="check">检查</button>
-    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
-  </div>
-
-  <!-- 题7 判断：开放平台 vs 公众平台 -->
-  <div class="task" data-task="t7" data-answer="B"
-       data-ok="对——这句话本身就是错的。开放平台面向第三方开发者，提供登录/分享/支付接口；公众号后台（公众平台）才是给运营者管理公众号/小程序的。两者完全不同。所以本题正确选项是「错」。"
-       data-no="你选了「对」，但这是错的。开放平台 ≠ 公众平台：开放平台给开发者接入第三方 App/网站；公众平台给运营者管公众号/小程序。本题应选「错」。回到原文看 §7 开放平台定位。"
-       data-src="原文：微信开放平台是微信面向第三方开发者的开放能力集合……支持移动应用、网站应用、第三方平台开发接入。"
-       data-review="回到「06 概念⑤」+「09 误解」复习">
-    <div class="q">7. 【判断】开放平台和公众平台是一回事，都是给运营者管理公众号用的。</div>
+  <!-- 题6 判断：轨迹素材 vs 普通素材 -->
+  <div class="task" data-task="t6" data-answer="B"
+       data-ok="对——这句话是错的。轨迹素材和普通素材不是一回事：轨迹素材记录查看次数/时长，用于判断客户兴趣；普通素材偏向快捷发送和标准化，不强调浏览轨迹。本题应选「错」。"
+       data-no="你选了「对」，但这是错的。原文 6.1/6.2 区分了两类：普通素材不强调浏览轨迹，轨迹素材重点是记录查看行为（查看次数/时长）。本题应选「错」。"
+       data-src="原文：普通素材更偏向'快捷发送'和'内容标准化'，通常不强调客户浏览轨迹。轨迹素材包含文章、网页、视频、文件等类型，重点是记录客户查看行为。"
+       data-review="回到「06 概念②」复习">
+    <div class="q">6. 【判断】轨迹素材和普通素材是一回事，都只是员工发给客户的内容，没有本质区别。</div>
     <div class="opts">
       <button class="opt" data-val="A">A. 对</button>
       <button class="opt" data-val="B">B. 错</button>
@@ -884,51 +899,68 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
     <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
   </div>
 
-  <!-- 题8 匹配：能力与定位 -->
+  <!-- 题7 单选：接入流程第一步 -->
+  <div class="task" data-task="t7" data-answer="A"
+       data-ok="对。接入流程第一步是准备账号和主体（企业微信/小程序/公众号/支付商户号/开放平台账号主体），很多能力要求主体一致。"
+       data-no="错。第一步是准备账号和主体，不是绑定开放平台或授权第三方平台。原文 9.1 在最前面：明确企业微信主体、小程序主体、公众号主体、支付商户号主体、开放平台账号主体。"
+       data-src="原文：9.1 准备账号和主体……需要明确：企业微信主体、微信小程序主体、公众号或服务号主体、微信支付商户号主体、微信开放平台账号主体。"
+       data-review="回到「08 题8 接入流程」+「学习目标 4」复习">
+    <div class="q">7. 【单选】微信生态接入流程的第一步是？</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. 准备账号和主体（明确各账号主体一致或关联）</button>
+      <button class="opt" data-val="B">B. 绑定开放平台（获取 UnionID）</button>
+      <button class="opt" data-val="C">C. 授权第三方平台（让服务商代开发）</button>
+      <button class="opt" data-val="D">D. 配置业务入口（活码/小程序/活动二维码）</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题8 匹配：开发接入点4层 -->
   <div class="task" data-task="t8" data-type="selects"
-       data-ok="全部对！这 4 组定位背牢，整个生态的角色就清楚了。"
-       data-no="有错。逐组对照：视频号=公域短视频/直播获客；小程序=无需下载即用即走的服务载体；企业微信=沉淀客户资产的私域阵地；微信支付=贯穿生态的交易闭环核心。"
-       data-src="原文：视频号……短视频内容平台……内容获客……小程序……不需要下载安装即可使用的应用……企业微信……企业连接微信用户、运营客户关系的私域阵地……微信支付是微信生态交易闭环的核心。"
-       data-review="回到「06 关键概念拆解」整章复习">
-    <div class="q">8. 【匹配】把能力和它的核心定位配对。</div>
+       data-ok="全部对！开发接入点 4 层定位背牢：开放平台=授权与身份底座；公众号=网页授权与 H5 行为回收；小程序=业务承载与客户操作页面；企业微信衔接=客户承接与运营动作。"
+       data-no="有错。逐组对照：开放平台=账号授权与用户身份打通（component_access_token 等）；公众号=网页授权/JS-SDK/H5 行为回收；小程序=登录/身份打通/页面路径/小程序码/承载页；企业微信衔接=聊天工具栏/客户联系/客户群/行为数据回收。"
+       data-src="原文：微信生态的开发接入可以按'开放平台、公众号、小程序、企业微信衔接'四个层次理解……不同产品能力对应的开发深度不同，但背后的接入点基本围绕账号授权、用户身份、页面承载、接口调用和数据回收展开。"
+       data-review="回到「04 结构地图 · 能力簇」+「10 背景知识缺口」复习">
+    <div class="q">8. 【匹配】把开发接入点 4 层和它的核心定位配对。</div>
     <div class="match-row">
-      <span style="min-width:8em">① 视频号</span>
+      <span style="min-width:8em">① 开放平台</span>
       <select class="match" data-correct="A">
         <option value="">— 请选 —</option>
-        <option value="A">A. 公域短视频/直播，内容获客入口</option>
-        <option value="B">B. 无需下载即用即走的服务承载</option>
-        <option value="C">C. 沉淀客户资产、离职继承的私域阵地</option>
-        <option value="D">D. 贯穿生态、完成交易闭环的支付能力</option>
+        <option value="A">A. 账号授权与用户身份打通的底座（component_access_token / UnionID）</option>
+        <option value="B">B. 网页授权 / JS-SDK / H5 行为回收</option>
+        <option value="C">C. 登录 / 身份打通 / 页面路径 / 小程序码 / 承载页</option>
+        <option value="D">D. 聊天工具栏 / 客户联系 / 客户群 / 行为数据回收</option>
       </select>
     </div>
     <div class="match-row">
-      <span style="min-width:8em">② 小程序</span>
+      <span style="min-width:8em">② 公众号</span>
       <select class="match" data-correct="B">
         <option value="">— 请选 —</option>
-        <option value="A">A. 公域短视频/直播，内容获客入口</option>
-        <option value="B">B. 无需下载即用即走的服务承载</option>
-        <option value="C">C. 沉淀客户资产、离职继承的私域阵地</option>
-        <option value="D">D. 贯穿生态、完成交易闭环的支付能力</option>
+        <option value="A">A. 账号授权与用户身份打通的底座（component_access_token / UnionID）</option>
+        <option value="B">B. 网页授权 / JS-SDK / H5 行为回收</option>
+        <option value="C">C. 登录 / 身份打通 / 页面路径 / 小程序码 / 承载页</option>
+        <option value="D">D. 聊天工具栏 / 客户联系 / 客户群 / 行为数据回收</option>
       </select>
     </div>
     <div class="match-row">
-      <span style="min-width:8em">③ 企业微信</span>
+      <span style="min-width:8em">③ 小程序</span>
       <select class="match" data-correct="C">
         <option value="">— 请选 —</option>
-        <option value="A">A. 公域短视频/直播，内容获客入口</option>
-        <option value="B">B. 无需下载即用即走的服务承载</option>
-        <option value="C">C. 沉淀客户资产、离职继承的私域阵地</option>
-        <option value="D">D. 贯穿生态、完成交易闭环的支付能力</option>
+        <option value="A">A. 账号授权与用户身份打通的底座（component_access_token / UnionID）</option>
+        <option value="B">B. 网页授权 / JS-SDK / H5 行为回收</option>
+        <option value="C">C. 登录 / 身份打通 / 页面路径 / 小程序码 / 承载页</option>
+        <option value="D">D. 聊天工具栏 / 客户联系 / 客户群 / 行为数据回收</option>
       </select>
     </div>
     <div class="match-row">
-      <span style="min-width:8em">④ 微信支付</span>
+      <span style="min-width:8em">④ 企业微信衔接</span>
       <select class="match" data-correct="D">
         <option value="">— 请选 —</option>
-        <option value="A">A. 公域短视频/直播，内容获客入口</option>
-        <option value="B">B. 无需下载即用即走的服务承载</option>
-        <option value="C">C. 沉淀客户资产、离职继承的私域阵地</option>
-        <option value="D">D. 贯穿生态、完成交易闭环的支付能力</option>
+        <option value="A">A. 账号授权与用户身份打通的底座（component_access_token / UnionID）</option>
+        <option value="B">B. 网页授权 / JS-SDK / H5 行为回收</option>
+        <option value="C">C. 登录 / 身份打通 / 页面路径 / 小程序码 / 承载页</option>
+        <option value="D">D. 聊天工具栏 / 客户联系 / 客户群 / 行为数据回收</option>
       </select>
     </div>
     <button class="check">检查</button>
@@ -942,42 +974,40 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
   <h2>误解与边界 <button class="voice-btn" data-voice-id="m9">🎧 听这章</button></h2>
 
   <div class="myth">
-    <div class="myth-head">误解 1 · "小程序就是小的 App"</div>
-    <div class="row"><span class="key">为什么容易误解</span>名字里有个"小"字，又是"程序"。</div>
-    <div class="row"><span class="key">原文真正说了</span>小程序是"不需要下载安装、即用即走"的应用，依托微信运行，理念是用完即走。</div>
-    <div class="row"><span class="key">原文没有说</span>"它是 App 的轻量版"——它必须依附微信，不能脱离微信独立分发。</div>
-    <div class="row"><span class="key">如何避免</span>把小程序理解成"微信运行时里的轻量程序"，类似按需加载的函数，而不是常驻进程。</div>
+    <div class="myth-head">误解 1 · "公众号关注者/文章阅读量 = 企微私域客户"</div>
+    <div class="row"><span class="key">为什么容易误解</span>公众号看起来也是"经营客户"，阅读量高显得"客户多"。</div>
+    <div class="row"><span class="key">原文真正说了</span>关注公众号 ≠ 添加企业微信员工，阅读文章 ≠ 进入企微私域。必须通过素材、活动、小程序、活码、员工跟进，与企业微信客户关系发生连接，后续运营才有抓手。</div>
+    <div class="row"><span class="key">原文没有说</span>"阅读量就是私域客户资产"——阅读量只是内容触达，不是客户沉淀。</div>
+    <div class="row"><span class="key">如何避免</span>区分"内容触达"和"客户沉淀"。公众号文章进内容中心做成<strong>轨迹素材</strong>，记录查看行为回写画像，再经活码/员工跟进完成沉淀。</div>
   </div>
 
   <div class="myth">
-    <div class="myth-head">误解 2 · "开放平台 = 公众平台"</div>
-    <div class="row"><span class="key">为什么容易误解</span>都叫"平台"，都和微信开发沾边。</div>
-    <div class="row"><span class="key">原文真正说了</span>开放平台面向第三方开发者，提供登录/分享/支付接口，支持移动应用、网站应用接入。</div>
-    <div class="row"><span class="key">原文没有说</span>它是给运营者管理公众号的——那是公众平台（mp.weixin.qq.com）的活。</div>
-    <div class="row"><span class="key">如何避免</span>记一句话：开放平台给开发者"接入微信"，公众平台给运营者"管公众号/小程序"。</div>
+    <div class="myth-head">误解 2 · "小程序就是即用即走的轻应用，跟企微关系不大"</div>
+    <div class="row"><span class="key">为什么容易误解</span>小程序在普通微信里确实是"用完即走"。</div>
+    <div class="row"><span class="key">原文真正说了</span>在企微管家产品链路里，小程序有 4 个承载角色：活码短链链路、获客拉新活动（抽奖/红包/群裂变/任务裂变）、商城和交易、作为素材类型。</div>
+    <div class="row"><span class="key">原文没有说</span>"小程序只是商城入口"——它承载大量获客拉新和营销转化能力。</div>
+    <div class="row"><span class="key">如何避免</span>把小程序理解成企微管家的"客户侧业务承载入口"，而不是"用完即走的轻应用"。</div>
   </div>
 
   <div class="myth">
-    <div class="myth-head">误解 3 · "企业微信就是微信的办公版"</div>
-    <div class="row"><span class="key">为什么容易误解</span>界面像微信，又是企业用的。</div>
-    <div class="row"><span class="key">原文真正说了</span>企业微信不仅是办公 IM，更是"企业连接微信用户、运营客户关系的私域阵地"，核心价值是客户资产企业化、离职继承、与微信互通。</div>
-    <div class="row"><span class="key">原文没有说</span>"它只是个内部沟通工具"——它的命门是对外触达微信客户。</div>
-    <div class="row"><span class="key">如何避免</span>把企业微信理解成"打通内外"的容器：对内协作，对外加微信客户做私域。这是微盛 SCRM 押注它的根本。</div>
+    <div class="myth-head">误解 3 · "商家账号应该绑到服务商开放平台下，方便统一管理"</div>
+    <div class="row"><span class="key">为什么容易误解</span>服务商在帮商家做集成，看起来"绑服务商那里更省事"。</div>
+    <div class="row"><span class="key">原文真正说了</span>商家账号应绑到商家自己的开放平台下，用于商家自身身份打通；服务商第三方平台的作用是获得授权并提供代开发/代运营/能力接入，<strong>不是</strong>把所有商家账号都绑到服务商开放平台下进行身份打通。</div>
+    <div class="row"><span class="key">如何避免</span>记一句话：身份归商家（绑商家开放平台），授权归服务商（第三方平台）。两者各管一摊。</div>
   </div>
 
   <div class="myth">
-    <div class="myth-head">误解 4 · "服务号比订阅号高级，所以企业都该选服务号"</div>
-    <div class="row"><span class="key">为什么容易误解</span>服务号消息进聊天列表、更显眼，看起来"权重更高"。</div>
-    <div class="row"><span class="key">原文真正说了</span>两者是不同场景：订阅号适合媒体/自媒体/资讯（高频内容），服务号适合企业/商家/机构提供服务（低频强提醒）。</div>
-    <div class="row"><span class="key">原文没有说</span>"服务号优于订阅号"——它们是并列定位，不是高低配。</div>
-    <div class="row"><span class="key">如何避免</span>按业务选：做内容资讯选订阅号，做业务服务选服务号。</div>
+    <div class="myth-head">误解 4 · "活码就是一种加员工的二维码"</div>
+    <div class="row"><span class="key">为什么容易误解</span>最常见的活码确实是"加员工"。</div>
+    <div class="row"><span class="key">原文真正说了</span>活码有 4 种：员工活码（加员工）、客户群活码（进群，群满/失效可切换）、区域活码（按区域/门店规则加附近员工或门店群）、识客码/识客群码（识别来源引导添加或进群）。</div>
+    <div class="row"><span class="key">如何避免</span>把活码理解成"客户进入企微私域的基础入口"，背后是动态路由分发，不是单一二维码。</div>
   </div>
 
   <div class="myth">
-    <div class="myth-head">误解 5 · "Weixin 和 WeChat 是同一个东西的中英文名"</div>
-    <div class="row"><span class="key">为什么容易误解</span>字面看就是"微信"的两种写法。</div>
-    <div class="row"><span class="key">原文真正说了</span>Weixin 面向中国大陆，WeChat 面向境外，两者在功能、合规、账号体系、支付币种上存在差异。</div>
-    <div class="row"><span class="key">如何避免</span>涉及跨境业务时，要确认对方用的是 Weixin 还是 WeChat，别假设功能完全一致。</div>
+    <div class="myth-head">误解 5 · "微信生态是独立的一套系统"</div>
+    <div class="row"><span class="key">为什么容易误解</span>开放平台、公众号、小程序、微信支付、视频号等能力各自成体系，看起来像独立系统。</div>
+    <div class="row"><span class="key">原文真正说了</span>微信生态"不是单独存在的一套系统，而是客户进入、浏览、参与、留资、下单的前端入口"，和企业微信结合形成完整链路。</div>
+    <div class="row"><span class="key">如何避免</span>读每个能力时都问一句：它挂在"获客→转化→运营"主链路的哪一环？挂在哪一环，它就属于那一环。</div>
   </div>
 </section>
 
@@ -985,31 +1015,31 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
 <section class="module" id="m10">
   <span class="sec-id">10</span>
   <h2>背景知识缺口 <button class="voice-btn" data-voice-id="m10">🎧 听这章</button></h2>
-  <p class="lead">要彻底吃透这一章，建议补这 4 个背景。现在不补也行，遇到不懂的再回头看。</p>
+  <p class="lead">原文提到但没展开的几个点，标注"原文默认你知道"。要彻底吃透，建议补这 4 个背景。现在不补也行，遇到不懂的再回头看。</p>
 
   <div class="card sky">
-    <div class="card-title">缺口 1 · SCRM 与传统 CRM 的区别</div>
-    <p style="margin:0">原文反复出现"客户运营""客户资产"，这些都属于 SCRM 范畴。传统 CRM（如 Salesforce）管客户资料字段；SCRM 叠加社交关系链，能加好友、发朋友圈、建客户群。微盛做的就是企业微信生态的 SCRM。<strong>为什么重要</strong>：理解微盛的商业模式，必须先懂 SCRM。</p>
+    <div class="card-title">缺口 1 · UnionID 机制的底层原理（原文默认你知道）</div>
+    <p style="margin:0">原文只说"绑定到同一开放平台账号下，同一微信用户可获得相同 UnionID"。<strong>没展开</strong>的是：UnionID 怎么生成、开放平台如何把多个 AppID 关联起来、解绑后 UnionID 是否变化、跨开放平台迁移会发生什么。<strong>下一步追问</strong>：微盛多产品线如何用 UnionID 合并同一客户？解绑/换绑时客户画像会不会断？</p>
   </div>
 
   <div class="card sky">
-    <div class="card-title">缺口 2 · 公域 vs 私域流量的运营逻辑</div>
-    <p style="margin:0">视频号、搜一搜是公域（要靠内容/算法抢流量）；企业微信、公众号订阅是私域（可反复触达）。<strong>为什么重要</strong>：原文的"私域引流"就是把公域流量沉淀进私域，这是企业做微信生态运营的核心打法。</p>
+    <div class="card-title">缺口 2 · access_token 三种凭证的差异与刷新（原文默认你知道）</div>
+    <p style="margin:0">原文列出自研 access_token、component_access_token、authorizer_access_token，但<strong>没展开</strong>各自的有效期、刷新机制（refresh_token）、权限范围差异、取消授权后 authorizer_access_token 怎么处理。<strong>为什么重要</strong>：服务商做代开发绕不开凭证管理，否则线上会因 token 过期大面积失败。</p>
   </div>
 
   <div class="card sky">
-    <div class="card-title">缺口 3 · OpenID vs UnionID</div>
-    <p style="margin:0">OpenID 是用户在单个公众号/小程序内的唯一 ID；UnionID 是同一开发者账号下跨端的唯一 ID。<strong>为什么重要</strong>：开放平台"身份打通"靠 UnionID，企业做全域用户画像绕不开它。<strong>下一步追问</strong>：微盛的多产品线如何用 UnionID 合并同一个客户？</p>
+    <div class="card-title">缺口 3 · 裂变活动的具体机制（原文默认你知道）</div>
+    <p style="margin:0">原文点了"任务裂变/群裂变/红包裂变/好友裂变"四种类型，但<strong>没展开</strong>各自的任务规则、奖励发放、防刷机制、入群/兑奖流程。<strong>为什么重要</strong>：这是获客拉新的核心玩法，做活动小程序时会大量涉及。</p>
   </div>
 
   <div class="card sky">
-    <div class="card-title">缺口 4 · 微信支付的资金流与分账</div>
-    <p style="margin:0">原文提到微信支付支持"企业收款、分账、退款"。背后涉及商户号、资金流向、对账。<strong>为什么重要</strong>：微盛若做交易类能力，必须理解商户体系和资金合规，否则会踩监管红线。</p>
+    <div class="card-title">缺口 4 · 商城小程序"主体一致"背后的技术原因（原文默认你知道）</div>
+    <p style="margin:0">原文只说"商城小程序通常要求主体与企业主体一致，并绑定微信支付商户号"。<strong>没展开</strong>的是：为什么要主体一致（资金合规、风控、对账）、主体不一致会触发什么、商户号与小程序的绑定关系如何配置。<strong>为什么重要</strong>：交易类能力踩监管红线就是大事故。</p>
   </div>
 
   <div class="card marker">
     <div class="card-title">可以暂时不补的</div>
-    <p style="margin:0">小游戏、微信卡包、微信运动、搜一搜的具体接入 API——这些是辅助能力，不影响你理解生态主价值链。等你负责相关业务再看。</p>
+    <p style="margin:0">JS-SDK 各接口签名算法、小程序发布审核细节、网页授权 OAuth2 各步骤——这些是开发实现细节，不影响你理解企微管家的产品集成链路。等你负责具体开发再看。</p>
   </div>
 </section>
 
@@ -1021,12 +1051,12 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
 
   <div class="card">
     <div class="card-title">能复述的三件事</div>
-    <p style="margin:0">① 订阅号 vs 服务号的三条区别（群发频率、消息位置、适合场景）；<br>② 小程序、企业微信、微信支付各自在生态价值链里扮演什么角色；<br>③ 企业微信为什么是微盛 SCRM 的核心载体（客户资产企业化 + 与微信互通）。</p>
+    <p style="margin:0">① 主链路：外部渠道 → 微信侧入口与承载（小程序/公众号/H5/活动/商城）→ 客户参与浏览留资下单 → 沉淀到企微客户/客户群/标签/素材/活动/订单 → 企微侧运营；<br>② 小程序 4 个承载角色（活码链路 / 获客拉新活动 / 商城交易 / 素材类型）+ 活码 4 种类型（员工 / 客户群 / 区域 / 识客）；<br>③ 接入流程 6 步（准备账号主体 → 绑定开放平台 → 授权第三方平台 → 关联企业微信 → 配置业务入口 → 员工使用与数据回收），且商家账号绑商家自己的开放平台。</p>
   </div>
 
   <div class="card marker">
     <div class="card-title">还能问的追问（示例）</div>
-    <p style="margin:0">"原文说视频号能挂载小程序商城实现带货，企业微信能承接公众号/视频号引流的客户——那微盛作为 SCRM 厂商，为什么把研发主力压在企业微信这条线，而不是也做视频号 SaaS？背后的商业判断是什么？"</p>
+    <p style="margin:0">"原文说公众号文章不等于企微客户、必须经素材/活码/员工跟进才发生连接——那企微管家在'内容触达→客户沉淀'这一跳上，到底靠哪些产品能力把阅读量转化成可运营的客户？这条转化漏斗的每一步数据是怎么回流到客户画像的？"</p>
   </div>
 
   <h3>错题回流区</h3>
@@ -1044,7 +1074,7 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
 
 <footer>
   <div>由 <a href="https://lyzbcy.github.io/" target="_blank" rel="noopener">捞鱼</a> 制作 · 工具能帮你预习难啃的干货，但不能代替完整学习。学习愉快 🐟</div>
-  <div style="margin-top:.4rem;font-size:.78rem;opacity:.7">微盛研发岗管培生培训 · 微信生态入门 · 理解地图</div>
+  <div style="margin-top:.4rem;font-size:.78rem;opacity:.7">微盛研发岗管培生培训 · 微信生态入门（企微管家产品集成视角）· 理解地图</div>
 </footer>
 
 </main>
@@ -1115,9 +1145,9 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
     if(wrong.length){lines.push('我答错的题（建议复习）：');wrong.forEach(function(t){lines.push('- '+(t.getAttribute('data-task')||'')+'：'+(t.getAttribute('data-review')||''));});}
     else{lines.push('暂无错题。');}
     lines.push('','三件复述清单：');
-    lines.push('① 订阅号 vs 服务号：群发频率（每天1次/每月4次）、消息位置（订阅号文件夹/聊天列表）、场景（内容资讯/业务服务）');
-    lines.push('② 价值链角色：公众号/视频号（获客）→ 小程序（服务）→ 企业微信（资产）→ 微信支付（交易）');
-    lines.push('③ 企业微信是微盛 SCRM 核心载体：客户资产企业化（离职继承）+ 与微信互通（无需安装即可沟通）');
+    lines.push('① 主链路：外部渠道 → 微信侧入口与承载（小程序/公众号/H5/活动/商城）→ 客户参与浏览留资下单 → 沉淀到企微客户/客户群/标签/素材/活动/订单');
+    lines.push('② 小程序 4 个承载角色（活码链路/获客拉新活动/商城交易/素材类型）+ 活码 4 种（员工/客户群/区域/识客）');
+    lines.push('③ 接入流程 6 步（准备账号主体→绑定开放平台→授权第三方平台→关联企业微信→配置业务入口→员工使用与数据回收），商家账号绑商家自己的开放平台');
     box.textContent=lines.join('\n');
   }
   document.addEventListener('click',function(e){
@@ -1348,7 +1378,7 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
 <script>
 // 版本检测：内联版本号 vs version.json，不一致就刷新（解决CDN缓存旧HTML）
 (function(){
-  var PAGE_V = 2;
+  var PAGE_V = 3;
   fetch("../../version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.json();}).then(function(d){
     if(PAGE_V!==d.v){
       var last=0; try{last=parseInt(sessionStorage.getItem("ck_refreshed")||"0");}catch(e){}

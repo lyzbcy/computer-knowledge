@@ -1009,6 +1009,35 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
     <div class="card-title">可以暂时不补的</div>
     <p style="margin:0">GitLab CI 的 .gitlab-ci.yml 细节、Kuboard 的具体操作按钮、PostgreSQL 的 SQL 语法——这些是工具操作层，不影响理解研发流程的整体骨架。</p>
   </div>
+
+  <div class="card brick">
+    <div class="card-title">🛠 工具速查表（原文实操硬信息，上手第一天用）</div>
+    <p style="margin:0 0 .6rem">这一章概念讲完了，但原文里那些"登录地址、账号密码"才是你第一天进公司真正要用的。下面把原文里散落的硬信息汇总成一张表。<strong>注意：这些地址只能在公司内网/连了 VPN 后访问。</strong></p>
+    <table class="t">
+      <thead><tr><th>系统</th><th>用途</th><th>登录地址</th><th>账号密码</th></tr></thead>
+      <tbody>
+        <tr><td>GitLab</td><td>源码仓库（git clone 拉代码、看分支）</td><td>http://gitlab.oa.com/</td><td>输入用户名密码登录</td></tr>
+        <tr><td>任意门</td><td>需求/版本/发布管理 + 云监控入口</td><td>http://renyimen.oa.com/</td><td>输入用户名密码登录</td></tr>
+        <tr><td>XXL-JOB</td><td>定时任务调度中心</td><td>http://test.job-new.oa.com/</td><td><strong>默认 admin / 123456</strong></td></tr>
+        <tr><td>RocketMQ 控制台</td><td>消息队列（查 topic/消费者/消息）</td><td>http://test.rocketmq.oa.com/</td><td>见《新测试环境资源信息》</td></tr>
+        <tr><td>K8s / Kuboard</td><td>容器平台（看应用 Pod 信息）</td><td>http://test.kuboard.oa.com/</td><td>token 在《新测试环境资源信息》</td></tr>
+      </tbody>
+    </table>
+    <div class="src-quote" style="margin:.6rem 0 0">连接信息总入口：数据库连接、RocketMQ 连接、Redis 连接、K8s 登录 token——<strong>全部记录在《新测试环境资源信息》这份文档里</strong>，找不到连接信息先翻它。</div>
+  </div>
+
+  <div class="card sky">
+    <div class="card-title">📝 表单字段填写规范（原文易踩坑点）</div>
+    <p style="margin:0 0 .4rem">在任意门新建需求/版本时，"版本标识"这个字段容易填错，原文专门说了规则：</p>
+    <table class="t">
+      <thead><tr><th>在哪填</th><th>版本标识规则</th><th>为什么这么填</th></tr></thead>
+      <tbody>
+        <tr><td>新建需求时</td><td><strong>只能填数字</strong>，建议填 TAPD 需求 ID</td><td>这个标识<strong>会成为开发分支名</strong>（feature 分支），填 TAPD ID 便于追溯</td></tr>
+        <tr><td>版本管理新建版本时</td><td><strong>只能填数字</strong>，建议填上线日期</td><td>便于识别这个版本是哪天上线的</td></tr>
+      </tbody>
+    </table>
+    <div class="why" style="margin-top:.4rem">为什么现在需要知道：新手常把版本标识填成中文或字母，结果分支名乱套、后续合并找不到对应需求。记住"只填数字"这一条，能省很多来回。</div>
+  </div>
 </section>
 
 <!-- ===== 11 复盘与学习报告 ===== -->

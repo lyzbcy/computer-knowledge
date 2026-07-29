@@ -496,7 +496,7 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
   </div>
   <div class="goal-item">
     <span class="g-num">4</span>
-    <div><strong>能解释</strong>三层架构（接入层/服务层/数据层）各干什么，以及 DMZ 区在网络拓扑里的位置和作用。</div>
+    <div><strong>能解释</strong>三层架构（接入层 Nginx / 逻辑层 CGI+hikit / 存储层 DFS+KV+MySQL）各干什么，以及双接入模式（外网/内网接入机 + 客户端自动探测）怎么实现内网闭环。</div>
   </div>
   <div class="goal-item">
     <span class="g-num">5</span>
@@ -584,12 +584,12 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
     <div class="tree-node">&nbsp;&nbsp;├─ 分支 2 凭什么选它 → <strong>四大优势</strong>并列（数据可控/合规安全/定制扩展/网络隔离，第6~10页）</div>
     <div class="tree-node">&nbsp;&nbsp;├─ 分支 3 谁该选 → <strong>适合 vs 不适合</strong>对比（第11~12页）</div>
     <div class="tree-node">&nbsp;&nbsp;├─ 分支 4 和 SaaS 差在哪 → 功能差异 / 额外授权 / 运维升级（第13~17页）</div>
-    <div class="tree-node">&nbsp;&nbsp;├─ 分支 5 技术上怎么搭 → 三层架构 + 网络分区（第18~19页）</div>
-    <div class="tree-node">&nbsp;&nbsp;└─ 分支 6 怎么落地 → 六步实施流程（第20页）</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ 分支 5 技术上怎么搭 → 三层架构 + 双接入模式 + 部署拓扑（第19~21页）</div>
+    <div class="tree-node">&nbsp;&nbsp;└─ 分支 6 怎么落地 → 四阶段六步实施流程（第22页）</div>
     <div class="tree-node" style="margin-top:.6rem"><span class="label">主题簇（并列，相互呼应）</span> <span class="rel">（非因果）</span></div>
     <div class="tree-node">&nbsp;&nbsp;├─ 四大优势之间是<strong>并列</strong>，不是因果</div>
     <div class="tree-node">&nbsp;&nbsp;├─ 优势 → 客户画像 是<strong>例证</strong>关系（金融客户证明"合规"优势）</div>
-    <div class="tree-node">&nbsp;&nbsp;└─ 三层架构 ↔ 网络分区 是<strong>同一系统两个视角</strong>（纵向分层 vs 横向分区）</div>
+    <div class="tree-node">&nbsp;&nbsp;└─ 三层架构 ↔ 双接入模式 是<strong>同一系统两个视角</strong>（纵向按职责分 vs 横向按网络链路分）</div>
   </div>
 
   <div class="card sky">
@@ -631,6 +631,12 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
     <p style="margin:.4rem 0 0;font-size:.9rem"><strong>易误读</strong>：别跟客户承诺"私有化功能跟 SaaS 一模一样"，第三方应用是真有缺的。</p>
   </div>
 
+  <div class="card sky">
+    <div class="card-title">补充 · 需额外授权的 6 个模块（原文第16~17页）</div>
+    <p style="margin:0 0 .4rem">私有化基础包不含以下模块，客户要用需<strong>单独购买授权</strong>：<strong>会议、邮件、文档微盘、会话存档、客户端定制、安全网关</strong>。</p>
+    <p style="margin:.2rem 0 0;font-size:.88rem"><strong>特别注意</strong>：<strong>客户端定制</strong>在 SaaS 上是<strong>根本不支持</strong>的（不是授权问题，是 SaaS 就没这个能力），只有私有化才有——所以"客户端定制"反而是私有化的差异化卖点，但需额外授权。</p>
+  </div>
+
   <div class="card">
     <div class="card-title">判断 5 · 私有化更安全，但前提是客户自己运维到位</div>
     <p style="margin:0 0 .4rem">数据本地 + 网络可隔离，安全性显著优于 SaaS；但"更安全"不是自动的，依赖客户运维团队的能力。<span class="type-tag infer">推论（基于原文事实+反问）</span></p>
@@ -642,7 +648,7 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
 <section class="module" id="m06">
   <span class="sec-id">06</span>
   <h2>关键概念拆解 <button class="voice-btn" data-voice-id="m6">🎧 听这章</button></h2>
-  <p class="lead">6 个概念，环环相扣：<strong>SaaS ⇄ 私有化</strong>（一对部署模式）→ 引出 <strong>数据自主可控</strong>（价值）→ 由 <strong>等保三级合规</strong>（硬门槛）+ <strong>DMZ 网络隔离</strong>（技术手段）共同支撑 → 落到 <strong>三层架构</strong>（系统怎么搭）。</p>
+  <p class="lead">7 个概念，环环相扣：<strong>SaaS ⇄ 私有化</strong>（一对部署模式）→ 引出 <strong>数据自主可控</strong>（价值）→ 由 <strong>等保三级合规</strong>（硬门槛）+ <strong>双接入模式与内网闭环</strong>（网络手段）共同支撑 → 落到 <strong>三层架构</strong>（系统怎么搭）→ 最终落到 <strong>标准部署拓扑</strong>（物理机怎么配）。</p>
 
   <div class="concept">
     <div class="c-name">① SaaS（软件即服务）</div>
@@ -680,28 +686,45 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
     <div class="c-row"><span class="ck">人话</span>国家给信息系统发的"安全等级证"，三级是银行、政府这类机构的最低门槛，没这个证连投标资格都没有。</div>
     <div class="analogy">类比 C：像代码上线前必须过的安全审计 checklist（权限、加密、日志、备份），等保三级就是国家版的强制 checklist。</div>
     <div class="c-row"><span class="ck">关系</span>它是<strong>"合规与安全"优势的硬依据</strong>，也是判断客户是否必须选私有化的关键信号——要等保三级的客户，基本绕不开私有化。</div>
-    <div class="src-quote">通过等保三级认证，满足金融、政企、军工等强监管行业的合规要求……强监管行业将等保三级作为招标的硬性条件。</div>
+    <div class="src-quote">通过等保三级认证，满足金融、政企、军工等强监管行业的合规要求……强监管行业将等保三级作为招标的硬性条件。支持国密算法 SM2/SM3/SM4，信创兼容。</div>
     <div class="c-row"><span class="ck">不要误解成</span>等保三级 ≠ 只是张证书。它是一整套技术+管理要求，私有化只是"能帮你满足"的必要条件，不是充分条件。</div>
   </div>
 
   <div class="concept">
-    <div class="c-name">⑤ DMZ 网络隔离</div>
-    <div class="c-row"><span class="ck">定义</span>部署拓扑里把网络划分成多个区域（DMZ 区/业务区/数据区/运维管理区/办公区），各区之间用防火墙策略隔离，只开必要端口。DMZ 区放对外接入的网关和负载均衡。</div>
-    <div class="c-row"><span class="ck">人话</span>用防火墙把网络切成几个"房间"，外面的请求只能进走廊（DMZ），进不到卧室（数据区）。</div>
-    <div class="analogy">类比 C：DMZ 像代码里的 input validation 边界层，外部输入先进它做校验和转发，不准直接碰核心数据结构。防火墙策略像一组 iptables 规则，只放行白名单端口。</div>
-    <div class="c-row"><span class="ck">关系</span>它是<strong>"网络隔离"优势的落地手段</strong>，也是满足等保三级"物理/逻辑隔离"要求的技术实现。</div>
-    <div class="src-quote">部署拓扑分为多个网络区域，各区之间通过防火墙策略隔离，仅开放必要端口……DMZ 区负责外部接入，业务区承载应用，数据区负责存储。</div>
-    <div class="c-row"><span class="ck">不要误解成</span>DMZ ≠ 整个外网。DMZ 是受控的缓冲区，不是把数据直接暴露给公网。</div>
+    <div class="c-name">⑤ 双接入模式与内网闭环</div>
+    <div class="c-row"><span class="ck">定义</span>网络链路分三段：<strong>用户终端</strong>（手机/PC）→ <strong>接入机</strong>（外网接入机/内网接入机）→ <strong>后台服务区</strong>（逻辑机/存储机/DFS）。接入机分两组：<strong>外网接入机</strong>处理互联网请求，<strong>内网接入机</strong>处理内网用户请求；客户端<strong>自动探测</strong>选择可达链路（内网直连或 VPN）。端口上 <strong>80/443 走短连接、8080 走长连接</strong>。</div>
+    <div class="c-row"><span class="ck">人话</span>企业里的电脑自动挑一条能走通的路连进系统：在公司就直连内网，在外面就走外网或 VPN。无论走哪条，数据都最终落在企业自己机房里，不出网。</div>
+    <div class="analogy">类比 C：像客户端里写的 failover 重试逻辑——先 try 内网地址，超时再 fallback 到外网地址，挑一条能通的走；安全网关 3.0 是入口处的统一加密隧道（支持 websocket），相当于把所有进来的连接都强制套一层 TLS。</div>
+    <div class="c-row"><span class="ck">关系</span>它是<strong>"网络隔离"优势的真正落地手段</strong>——核心服务全部内网运行，数据不流出企业网络；<strong>纯内网可用，断网不影响日常办公</strong>。安全网关 3.0 从原来的逻辑服务升级为接入服务，把文档/微盘/邮箱统一融合成加密通道。</div>
+    <div class="src-quote">用户终端（手机/PC）→ 接入机（外网接入机/内网接入机）→ 后台服务区（逻辑机/存储机/DFS）。80/443 短连接，8080 长连接。双接入模式：外网接入机处理互联网请求，内网接入机处理内网用户请求，客户端自动探测选择可达链路。核心服务全部内网运行，数据不流出企业网络，纯内网可用，断网不影响日常办公。安全网关 3.0 统一融合文档/微盘/邮箱为加密通道，支持 websocket。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>"网络隔离" ≠ 拔网线断外网。原文里它指的是双接入机分治 + 客户端自动探测 + 内网闭环这套机制，外网接入机照样可以处理互联网请求，只是数据最终落本地。原文也<strong>没有</strong>"DMZ 区/业务区/数据区/运维管理区/办公区"这种分区措辞，别套通用拓扑书。</div>
   </div>
 
   <div class="concept">
     <div class="c-name">⑥ 三层架构</div>
-    <div class="c-row"><span class="ck">定义</span>系统纵向分成接入层（负载均衡/网关/CDN/客户端接入）、服务层（IM/应用/API/会议服务）、数据层（数据库/缓存/对象存储）。三层都部署在客户机房。</div>
-    <div class="c-row"><span class="ck">人话</span>把系统按职责切成三段：前台接客的、中台干活的、后台存东西的。</div>
-    <div class="analogy">类比 C：典型分层架构——接入层像 main 里的参数解析和路由分发；服务层像业务函数（处理 IM、应用逻辑）；数据层像底层的 DB 访问模块（CRUD）。三层各自独立、通过明确接口调用。</div>
-    <div class="c-row"><span class="ck">关系</span>它是<strong>系统的纵向视角</strong>，与 DMZ 网络分区的<strong>横向视角</strong>互补：一个按职责分，一个按安全等级分。</div>
-    <div class="src-quote">接入层：负载均衡、网关、CDN……服务层：即时通讯服务、应用服务、API 服务、会议服务……数据层：关系型数据库、缓存集群、对象存储。三层均部署在客户机房。</div>
-    <div class="c-row"><span class="ck">不要误解成</span>三层架构 ≠ 三台机器。每一层可能是一组服务器集群，"层"是逻辑职责划分。</div>
+    <div class="c-row"><span class="ck">定义</span>系统纵向分成三层（都部署在客户机房，底层是物理服务器/虚拟机 + 内网网络 + 防火墙/安全策略）：<br>
+    &nbsp;&nbsp;<strong>接入层</strong>：Nginx 正向代理 / 反向代理，手机 App / PC 客户端 / Web 端都从这进，支持内网直连与 VPN 接入，负责请求路由与 SSL 卸载。<br>
+    &nbsp;&nbsp;<strong>逻辑层（核心）</strong>：CGI 层（C++ HTTP 服务层，统一处理前端 HTTP 交互、汇聚后端微服务逻辑）+ 腾讯自研 RPC 框架 <strong>hikit</strong>。承载 IM 服务、通讯录、应用引擎、OA 审批、消息推送。<br>
+    &nbsp;&nbsp;<strong>存储层</strong>：DFS 分布式文件系统（聊天文件/图片/视频，双副本冗余、3 台一组高可用）+ <strong>OSSPKV / PKV / MsgKV</strong>（分布式数据存储，存非 IM 核心数据 / 运营统计）+ MySQL。</div>
+    <div class="c-row"><span class="ck">人话</span>把系统按职责切成三段：前台 Nginx 接客 + 卸 SSL，中台 CGI + hikit 干业务，后台 DFS + KV + MySQL 存东西。</div>
+    <div class="analogy">类比 C：接入层像 main 里的参数解析 + 反向代理路由分发；逻辑层像业务函数（CGI 是 C++ 写的 HTTP 入口，hikit 像 gRPC 那样的内部 RPC 调远程微服务）；存储层像底层存储模块（DFS = 分布式文件、KV = 键值存储、MySQL = 关系型）。三层各自独立、通过明确接口调用。</div>
+    <div class="c-row"><span class="ck">关系</span>它是<strong>系统的纵向视角</strong>，与概念⑤的<strong>接入机/后台服务区链路视角</strong>互补：一个按职责分（接入层/逻辑层/存储层），一个按网络链路分（终端/接入机/后台服务区）。</div>
+    <div class="src-quote">接入层：Nginx 反向代理/正向代理，支持内网直连与 VPN 接入，负责请求路由与 SSL 卸载。逻辑层（核心）：CGI 层（C++ HTTP 服务层）+ 腾讯自研 RPC 框架 hikit，承载 IM 服务、通讯录、应用引擎、OA 审批、消息推送。存储层：DFS 分布式文件系统（双副本冗余）+ OSSPKV/PKV/MsgKV + MySQL。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>三层架构 ≠ 三台机器，"层"是逻辑职责划分，每一层是一组机器集群。也别套通用云架构词——原文<strong>没有</strong>"CDN/对象存储/缓存集群"这些组件，存储层是 DFS + KV + MySQL，不是 S3 + Redis。</div>
+  </div>
+
+  <div class="concept">
+    <div class="c-name">⑦ 标准部署拓扑（物理机怎么配）</div>
+    <div class="c-row"><span class="ck">定义</span>原文把服务器分成四类角色，全链路高可用：<br>
+    &nbsp;&nbsp;<strong>接入机</strong>：部署 Nginx 正向/反向代理，处理客户端接入。无状态，横向扩容。分外网接入机和内网接入机，<strong>每组至少 2 台高可用</strong>。<br>
+    &nbsp;&nbsp;<strong>逻辑机</strong>：部署 CGI 层和逻辑层微服务（hikit）。无状态，横向扩容。<strong>生产环境至少 3 台一组</strong>，文档/微盘/邮箱合并部署于此。<br>
+    &nbsp;&nbsp;<strong>存储机</strong>：运行 PKV/MsgKV 分布式存储 + MySQL。<strong>3 台为一组，可容忍 1 台故障</strong>。<span style="color:var(--brick);font-weight:600">易考点：扩容只能 3→3N（如 3→6→9），不支持二次扩容（如 6→9 不可行）。</span><br>
+    &nbsp;&nbsp;<strong>DFS 存储机</strong>：分布式文件存储，双副本冗余。支持 <strong>1→N 台任意扩容</strong>，可合并部署在逻辑机上也可独立部署，生产环境至少 3 台。</div>
+    <div class="c-row"><span class="ck">人话</span>四类机器各司其职：接入机管进门、逻辑机管干活、存储机管存数据（且必须 3 的倍数扩容）、DFS 管存文件（随便加）。</div>
+    <div class="analogy">类比 C：存储机像一组用一致性哈希分片的 KV 节点，扩容时哈希环上的虚拟节点数必须是 3 的倍数才能保证均衡，所以只能 3→6→9 整组加；DFS 像无状态的文件块副本（双副本），加机器就是加存储空间，没有分片整数约束。</div>
+    <div class="c-row"><span class="ck">关系</span>它是概念⑥三层架构的<strong>物理落地</strong>——三层职责映射到四类机器角色：接入层=接入机，逻辑层=逻辑机，存储层=存储机 + DFS 存储机。全链路高可用靠：逻辑机 ≥3 台、存储机 3 台一组、DFS ≥3 台。</div>
+    <div class="src-quote">接入机：部署 Nginx，无状态横向扩容，分外网/内网，每组至少 2 台高可用。逻辑机：CGI + hikit，生产至少 3 台一组。存储机：PKV/MsgKV + MySQL，3 台一组可容忍 1 台故障，扩容只能 3→3N 不支持二次扩容（如 6→9 不可行）。DFS 存储机：双副本冗余，1→N 任意扩容，生产至少 3 台。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>"扩容随便加机器"——<strong>存储机有 3 的整数倍约束</strong>，这是和普通云存储最大的区别，也是客户最常踩的坑：规划阶段没按 3N 预留，后期想 6→9 直接扩不了。DFS 则没有这个约束，1→N 随便加。</div>
   </div>
 </section>
 
@@ -734,8 +757,8 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
   </details>
 
   <details class="q-item">
-    <summary><span class="q-no">Q5 · 进阶</span>三层架构（接入/服务/数据）和 DMZ 网络分区（DMZ/业务/数据区）是什么关系？是一回事吗？</summary>
-    <div class="q-text"><strong>不是一回事，是同一系统的两个视角</strong>。三层架构是<strong>纵向按职责分</strong>（谁负责接流量/谁负责业务/谁负责存）；网络分区是<strong>横向按安全等级分</strong>（哪个区能被外部碰到/哪个区绝对不能）。两者交叉：数据层通常落在"数据区"，服务层落在"业务区"，接入层落在"DMZ 区"。</div>
+    <summary><span class="q-no">Q5 · 进阶</span>三层架构（接入层/逻辑层/存储层）和双接入模式（终端→接入机→后台服务区）是什么关系？是一回事吗？</summary>
+    <div class="q-text"><strong>不是一回事，是同一系统的两个视角</strong>。三层架构是<strong>纵向按职责分</strong>（谁负责接流量路由/谁负责跑业务逻辑/谁负责存数据）；双接入模式是<strong>横向按网络链路分</strong>（请求从哪进来、经过哪些节点、数据最终落哪）。两者交叉：接入层的 Nginx 部署在"接入机"上，逻辑层的 CGI+hikit 部署在"逻辑机"上，存储层的 DFS+KV+MySQL 部署在"存储机/DFS 存储机"上。原文没有"DMZ 区/业务区/数据区"这种分区说法，别套通用拓扑书。</div>
   </details>
 
   <details class="q-item">
@@ -754,7 +777,7 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
 <section class="module" id="m08">
   <span class="sec-id">08</span>
   <h2>闯关式任务 <button class="voice-btn" data-voice-id="m8">🎧 听这章</button></h2>
-  <p class="lead">8 道闭环题，覆盖 SaaS vs 私有化、四大优势、适用场景、三层架构、DMZ 网络隔离、功能差异。选完点"检查"，答对贴 OK 贴纸，答错贴 NO 贴纸并指出错在哪。错题自动进 11 节的错题回流区。</p>
+  <p class="lead">8 道闭环题，覆盖 SaaS vs 私有化、四大优势、适用场景、三层架构、存储机扩容规则、功能差异。选完点"检查"，答对贴 OK 贴纸，答错贴 NO 贴纸并指出错在哪。错题自动进 11 节的错题回流区。</p>
 
   <!-- 题1 单选：SaaS vs 私有化本质区别 -->
   <div class="task" data-task="q1" data-answer="C"
@@ -809,9 +832,9 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
 
   <!-- 题4 多选：不适合私有化的客户 -->
   <div class="task" data-task="q4" data-multi="true" data-answer="A,B,C"
-       data-ok="对！这三类原文明确列为不适合：SMB 中小企业、追求最新功能的客户、无需强合规的普通企业。"
-       data-no="D 是错的——大型央企能源集团恰恰是典型适合客户（强监管 + 业务连续性）。原文第12页不适合的三类：SMB、追求最新功能、无需强合规。"
-       data-src="原文：SMB 中小企业……追求最新功能的客户……无需强合规的普通企业……成本高、功能滞后、运维门槛高。"
+       data-ok="对！这三类分别对应原文不适合的三类：A=无独立运维团队、B=追求最新功能（功能滞后于 SaaS）、C=预算有限/无强合规。"
+       data-no="D 是错的——大型央企能源集团恰恰是典型适合客户（强监管 + 业务连续性）。原文明确不适合的三类：无独立运维团队 / 中小企业（少于500人）/ 预算有限。"
+       data-src="原文第15页不适合私有化的三类：无独立运维团队、中小企业（少于500人）、预算有限。"
        data-review="回到「04 结构地图 · 分支3」+「09 误解」复习">
     <div class="q">4. 【多选】下列哪些客户通常不适合选私有化？（多选）</div>
     <div class="opts">
@@ -824,56 +847,56 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
     <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
   </div>
 
-  <!-- 题5 匹配：三层架构 -->
+  <!-- 题5 匹配：三层架构（按原文 Nginx/CGI+hikit/DFS+KV+MySQL） -->
   <div class="task" data-task="q5" data-type="selects"
-       data-ok="全部对！三层架构记牢：接入层接流量、服务层跑业务、数据层存东西。三层都在客户机房，数据不出局。"
-       data-no="有错。逐组对照：接入层=负载均衡/网关/CDN；服务层=IM/应用/API/会议服务；数据层=数据库/缓存/对象存储。注意'即时通讯服务'属于服务层不是数据层。"
-       data-src="原文：接入层：负载均衡、网关、CDN、客户端接入……服务层：即时通讯服务、应用服务、API 服务、会议服务……数据层：关系型数据库、缓存集群、对象存储。"
+       data-ok="全部对！三层架构记牢：接入层 Nginx 接流量 + 卸 SSL；逻辑层 CGI + hikit 跑业务；存储层 DFS + KV + MySQL 存数据。三层都在客户机房，数据不出局。"
+       data-no="有错。逐组对照：接入层=Nginx 正向/反向代理（请求路由 + SSL 卸载）；逻辑层=CGI 层（C++ HTTP）+ 腾讯自研 RPC 框架 hikit（承载 IM/通讯录/应用引擎/OA 审批/消息推送）；存储层=DFS 分布式文件 + OSSPKV/PKV/MsgKV + MySQL。注意别套通用云架构词——原文没有 CDN/对象存储/缓存集群。"
+       data-src="原文：接入层 Nginx 反向/正向代理，负责请求路由与 SSL 卸载；逻辑层 CGI 层（C++ HTTP 服务层）+ 腾讯自研 RPC 框架 hikit；存储层 DFS 分布式文件系统 + OSSPKV/PKV/MsgKV + MySQL。"
        data-review="回到「06 概念⑥ 三层架构」整章复习">
-    <div class="q">5. 【匹配】把三层架构的每一层和它承载的组件配对。</div>
+    <div class="q">5. 【匹配】把三层架构的每一层和它承载的组件配对（按原文技术栈）。</div>
     <div class="match-row">
       <span style="min-width:6em">① 接入层</span>
       <select class="match" data-correct="A">
         <option value="">— 请选 —</option>
-        <option value="A">A. 负载均衡、网关、CDN、客户端接入</option>
-        <option value="B">B. 即时通讯服务、应用服务、API 服务、会议服务</option>
-        <option value="C">C. 关系型数据库、缓存集群、对象存储</option>
+        <option value="A">A. Nginx 正向/反向代理（请求路由 + SSL 卸载，支持内网直连/VPN）</option>
+        <option value="B">B. CGI 层（C++ HTTP 服务）+ 腾讯自研 RPC 框架 hikit</option>
+        <option value="C">C. DFS 分布式文件系统 + OSSPKV/PKV/MsgKV + MySQL</option>
       </select>
     </div>
     <div class="match-row">
-      <span style="min-width:6em">② 服务层</span>
+      <span style="min-width:6em">② 逻辑层</span>
       <select class="match" data-correct="B">
         <option value="">— 请选 —</option>
-        <option value="A">A. 负载均衡、网关、CDN、客户端接入</option>
-        <option value="B">B. 即时通讯服务、应用服务、API 服务、会议服务</option>
-        <option value="C">C. 关系型数据库、缓存集群、对象存储</option>
+        <option value="A">A. Nginx 正向/反向代理（请求路由 + SSL 卸载，支持内网直连/VPN）</option>
+        <option value="B">B. CGI 层（C++ HTTP 服务）+ 腾讯自研 RPC 框架 hikit</option>
+        <option value="C">C. DFS 分布式文件系统 + OSSPKV/PKV/MsgKV + MySQL</option>
       </select>
     </div>
     <div class="match-row">
-      <span style="min-width:6em">③ 数据层</span>
+      <span style="min-width:6em">③ 存储层</span>
       <select class="match" data-correct="C">
         <option value="">— 请选 —</option>
-        <option value="A">A. 负载均衡、网关、CDN、客户端接入</option>
-        <option value="B">B. 即时通讯服务、应用服务、API 服务、会议服务</option>
-        <option value="C">C. 关系型数据库、缓存集群、对象存储</option>
+        <option value="A">A. Nginx 正向/反向代理（请求路由 + SSL 卸载，支持内网直连/VPN）</option>
+        <option value="B">B. CGI 层（C++ HTTP 服务）+ 腾讯自研 RPC 框架 hikit</option>
+        <option value="C">C. DFS 分布式文件系统 + OSSPKV/PKV/MsgKV + MySQL</option>
       </select>
     </div>
     <button class="check">检查</button>
     <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
   </div>
 
-  <!-- 题6 单选：DMZ 区 -->
-  <div class="task" data-task="q6" data-answer="B"
-       data-ok="对！DMZ 是受控缓冲区，放对外接入的网关和负载均衡，外部请求先进它，进不到数据区。"
-       data-no="错。A 把 DMZ 和数据区搞反了（数据库在数据区）；C 错（监控日志在运维管理区）；D 错（DMZ 不是用户终端，用户终端在办公区）。"
-       data-src="原文：DMZ 区：接入网关、负载均衡……业务区：应用服务器……数据区：数据库、缓存、存储……运维管理区：监控、日志……办公区：用户终端。"
-       data-review="回到「06 概念⑤ DMZ 网络隔离」复习">
-    <div class="q">6. 【单选】在私有化部署拓扑中，DMZ 区通常承载什么？</div>
+  <!-- 题6 单选：存储机扩容规则（原文最硬的易考点） -->
+  <div class="task" data-task="q6" data-answer="C"
+       data-ok="对！存储机（PKV/MsgKV + MySQL）3 台一组、可容忍 1 台故障，扩容只能 3→3N（如 3→6→9），不支持二次扩容 6→9。这是和普通云存储最大的区别，客户最常踩的坑。"
+       data-no="错。逐项看：A 错（存储机有 3 的整数倍约束，不是任意加，那是 DFS 的特性）；B 错（原文明确'不支持二次扩容 6→9'，这正是要避免的做法）；D 错（DFS 才是 1→N 任意扩容，存储机不是）。正确答案是 C。"
+       data-src="原文：存储机运行 PKV/MsgKV + MySQL，3 台为一组可容忍 1 台故障；扩容只能 3→3N，不支持二次扩容（如 6→9 不可行）。DFS 存储机才是 1→N 任意扩容。"
+       data-review="回到「06 概念⑦ 标准部署拓扑」复习">
+    <div class="q">6. 【单选】关于存储机（PKV/MsgKV + MySQL）的扩容规则，下列哪项符合原文？</div>
     <div class="opts">
-      <button class="opt" data-val="A">A. 核心数据库和缓存集群</button>
-      <button class="opt" data-val="B">B. 接入网关、负载均衡（外部请求的受控入口）</button>
-      <button class="opt" data-val="C">C. 监控、日志、运维平台</button>
-      <button class="opt" data-val="D">D. 用户终端（PC/移动）</button>
+      <button class="opt" data-val="A">A. 任意台数自由扩容，加 1 台也行</button>
+      <button class="opt" data-val="B">B. 从 6 台扩到 9 台，直接加 3 台即可</button>
+      <button class="opt" data-val="C">C. 3 台为一组可容忍 1 台故障，扩容只能 3→3N（如 3→6→9），不支持二次扩容 6→9</button>
+      <button class="opt" data-val="D">D. 和 DFS 一样，1→N 任意扩容</button>
     </div>
     <button class="check">检查</button>
     <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
@@ -960,8 +983,8 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
   <div class="myth">
     <div class="myth-head">误解 6 · "三层架构 = 三台服务器"</div>
     <div class="row"><span class="key">为什么容易误解</span>C 写多了，习惯把"层"映射成"一个进程/一台机器"。</div>
-    <div class="row"><span class="key">原文真正说了</span>"层"是<strong>逻辑职责划分</strong>，每一层可能是一组服务器集群（如数据层 = 数据库 + 缓存集群 + 对象存储）。</div>
-    <div class="row"><span class="key">如何避免</span>把"层"理解成"职责边界"，不是"机器台数"。三层都部署在客户机房，但物理上可能跑在几十台机器上。</div>
+    <div class="row"><span class="key">原文真正说了</span>"层"是<strong>逻辑职责划分</strong>，每一层对应一组机器角色：接入层跑在<strong>接入机</strong>（每组≥2 台高可用），逻辑层跑在<strong>逻辑机</strong>（生产≥3 台一组），存储层跑在<strong>存储机</strong>（3 台一组）+ <strong>DFS 存储机</strong>（≥3 台）。生产环境加起来远不止三台。</div>
+    <div class="row"><span class="key">如何避免</span>把"层"理解成"职责边界"，不是"机器台数"。三层都部署在客户机房，但物理上跑在十几台甚至几十台机器上。</div>
   </div>
 </section>
 
@@ -969,26 +992,36 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
 <section class="module" id="m10">
   <span class="sec-id">10</span>
   <h2>背景知识缺口 <button class="voice-btn" data-voice-id="m10">🎧 听这章</button></h2>
-  <p class="lead">要彻底吃透这一章，建议补这 4 个背景。现在不补也行，遇到不懂的再回头看。</p>
+  <p class="lead">要彻底吃透这一章，建议补这 6 个背景。现在不补也行，遇到不懂的再回头看。</p>
 
   <div class="card sky">
-    <div class="card-title">缺口 1 · 等保 2.0 的具体条款</div>
-    <p style="margin:0">原文只说"满足等保三级"，没展开具体要求。等保 2.0 三级要求覆盖物理安全、网络安全、主机安全、应用安全、数据安全、管理安全六大类。<strong>为什么重要</strong>：客户问"私有化到底帮我们过了等保哪几条"，你能接住话。</p>
+    <div class="card-title">缺口 1 · 等保 2.0 的具体条款 + 国密合规</div>
+    <p style="margin:0">原文只说"满足等保三级""支持国密 SM2/SM3/SM4"，没展开具体要求。等保 2.0 三级要求覆盖物理安全、网络安全、主机安全、应用安全、数据安全、管理安全六大类；国密 SM2（非对称）/SM3（哈希）/SM4（对称）是金融、政务、军工信创改造的硬要求。<strong>为什么重要</strong>：客户问"私有化到底帮我们过了等保哪几条、国密用的是哪个算法"，你能接住话。</p>
   </div>
 
   <div class="card sky">
-    <div class="card-title">缺口 2 · 负载均衡 / 网关 / CDN 的基础概念</div>
-    <p style="margin:0">接入层的三个组件。负载均衡（如 Nginx/LB）把流量分到多台机器；网关做路由和鉴权；CDN 加速静态资源。<strong>为什么重要</strong>：看懂三层架构和 DMZ 区的职责分工。</p>
+    <div class="card-title">缺口 2 · Nginx 正向代理 / 反向代理 / SSL 卸载</div>
+    <p style="margin:0">接入层的核心组件。反向代理 = 客户端访问 Nginx，Nginx 再把请求转发给后端 CGI（隐藏后端、做负载）；正向代理 = 客户端通过代理出去访问（这里是处理外部接入链路）；SSL 卸载 = Nginx 在边缘把 HTTPS 解成 HTTP，后端不用再算加密。<strong>为什么重要</strong>：看懂三层架构接入层的职责，和双接入机（外网/内网）的分工。</p>
   </div>
 
   <div class="card sky">
-    <div class="card-title">缺口 3 · 防火墙策略 / VLAN / 物理隔离</div>
-    <p style="margin:0">网络分区的底层技术。防火墙策略 = 端口/IP 白名单规则；VLAN = 二层网络隔离；物理隔离 = 真的拉两套网线。<strong>为什么重要</strong>：理解 DMZ 和"逻辑隔离 vs 物理隔离"的区别。</p>
+    <div class="card-title">缺口 3 · CGI 层 + RPC 框架 hikit</div>
+    <p style="margin:0">逻辑层的两块。CGI 层是 C++ 写的 HTTP 服务层，统一处理前端 HTTP 交互、汇聚后端微服务逻辑（类似一个 BFF/聚合网关）；hikit 是腾讯自研的 RPC 框架，类似内部 gRPC，让 CGI 层调用各微服务（IM、通讯录、应用引擎、OA 审批、消息推送）。<strong>为什么重要</strong>：理解"前端请求 → CGI → hikit → 微服务"这条调用链，是看懂逻辑层的关键。</p>
   </div>
 
   <div class="card sky">
-    <div class="card-title">缺口 4 · 容灾 / 备份 / 高可用（HA）</div>
-    <p style="margin:0">原文提到"业务连续性"，背后是容灾备份体系（主备/双活/异地容灾）。<strong>为什么重要</strong>：央企/金融客户最看重这个，私有化方案要能讲清数据备份和故障切换。<strong>下一步追问</strong>：私有化的容灾方案和 SaaS 的多可用区有什么本质区别？</p>
+    <div class="card-title">缺口 4 · DFS / KV / MySQL 三套存储分工</div>
+    <p style="margin:0">存储层三套：DFS 分布式文件系统存聊天文件/图片/视频（双副本冗余）；OSSPKV/PKV/MsgKV 是分布式键值存储，存非 IM 核心数据和运营统计；MySQL 存结构化关系数据。<strong>为什么重要</strong>：理解为什么存储机有 3→3N 扩容约束（KV 分片整数倍）、DFS 反而 1→N 任意扩容（无状态副本）。</p>
+  </div>
+
+  <div class="card sky">
+    <div class="card-title">缺口 5 · 双接入机 + 客户端自动探测</div>
+    <p style="margin:0">网络架构的关键机制。外网接入机处理互联网请求、内网接入机处理内网用户请求，客户端会自动探测两条链路哪条可达（类似 failover），优先内网直连，回退 VPN/外网；端口上 80/443 走短连接、8080 走长连接。安全网关 3.0 从逻辑服务升级为接入服务，统一把文档/微盘/邮箱融合成 websocket 加密通道。<strong>为什么重要</strong>：这是"内网闭环、断网不影响日常办公"的真正实现原理。</p>
+  </div>
+
+  <div class="card sky">
+    <div class="card-title">缺口 6 · 四阶段六步实施流程 + 容灾备份</div>
+    <p style="margin:0">原文第 22 页实施流程分四阶段：<strong>需求评估</strong>（用户规模/功能/硬件→出部署方案）→ <strong>环境部署</strong>（服务器准备/系统安装/中控机初始化/集群部署）→ <strong>配置调试</strong>（组织架构导入/应用配置/系统对接/安全策略）→ <strong>验证上线</strong>（功能测试/性能验证/用户验收/正式上线）。容灾备份体系（主备/双活/异地容灾）是央企/金融客户最看重的。<strong>为什么重要</strong>：客户问"上线要多久、怎么排期、出问题怎么切换"，你能讲清四阶段和容灾方案。<strong>下一步追问</strong>：私有化的容灾方案和 SaaS 的多可用区有什么本质区别？</p>
   </div>
 
   <div class="card marker">
@@ -1005,7 +1038,7 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
 
   <div class="card">
     <div class="card-title">能复述的三件事</div>
-    <p style="margin:0">① SaaS 和私有化的本质区别（数据在谁手里 + 谁来运维）；<br>② 四大核心优势各自的一句话表现（数据可控 / 合规安全 / 定制扩展 / 网络隔离）；<br>③ 三层架构的职责分工 + DMZ 区在网络拓扑里的位置。</p>
+    <p style="margin:0">① SaaS 和私有化的本质区别（数据在谁手里 + 谁来运维）；<br>② 四大核心优势各自的一句话表现（数据可控 / 合规安全 / 定制扩展 / 网络隔离）；<br>③ 三层架构的职责分工（Nginx 接入 / CGI+hikit 逻辑 / DFS+KV+MySQL 存储）+ 双接入模式怎么实现内网闭环。</p>
   </div>
 
   <div class="card marker">
@@ -1105,7 +1138,7 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
     lines.push('','三件复述清单：');
     lines.push('① SaaS vs 私有化本质区别（数据在谁手里 + 谁来运维）');
     lines.push('② 四大核心优势（数据自主可控 / 合规与安全 / 定制与扩展 / 网络隔离）');
-    lines.push('③ 三层架构（接入/服务/数据）职责分工 + DMZ 区位置');
+    lines.push('③ 三层架构（Nginx接入 / CGI+hikit逻辑 / DFS+KV+MySQL存储）职责分工 + 双接入模式内网闭环');
     box.textContent=lines.join('\n');
   }
   document.addEventListener('click',function(e){

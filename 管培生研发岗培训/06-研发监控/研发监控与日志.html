@@ -486,32 +486,32 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
 <section class="module" id="m01">
   <span class="hero-mark">理解地图</span>
   <h2>01 学习目标与阅读路径 <button class="voice-btn" data-voice-id="m1">🎧 听这章</button></h2>
-  <p class="lead">这是一份写给"只会写 C 语言、刚进公司、还没碰过日志和监控体系"的同学的拆解地图。它要讲清两件事：线上出了 bug 怎么去查日志，以及服务跑着的时候怎么知道它"健康不健康"。读完这一章，你能做到下面五件事。</p>
+  <p class="lead">这是一份写给"只会写 C 语言、刚进公司、还没碰过公司日志和监控"的同学的操作手册拆解图。它要讲清三件事：线上出 bug 怎么去 CLS 查日志、服务跑着的时候怎么在任意门上看监控、以及公司内网资源要先连 VPN 才能访问。读完这一章,你能做到下面五件事。</p>
 
   <div class="goal-item">
     <span class="g-num">1</span>
-    <div><strong>能背出 CLS 查日志的三种方式</strong>：搜日志主题名、用云资源标签筛选、在实例详情页的"日志 tab"直接看，并说出各自适用场景。</div>
+    <div><strong>能背出 CLS 查日志的完整步骤</strong>:登录腾讯云 → 控制台 → 搜"日志服务" → 检索分析菜单 → 选上海、选 test 或 prod 主题 → 输入搜索条件、选时间 → 点搜索。</div>
   </div>
   <div class="goal-item">
     <span class="g-num">2</span>
-    <div><strong>能分清"监控项"和"监控指标"</strong>这两个最常被混着说的词——监控项是"看什么"，监控指标是"用多少数值来衡量"。</div>
+    <div><strong>能说出测试环境 vs 生产环境的区别</strong>:查日志步骤完全一样,只是<strong>账号来源不同</strong>——测试环境账密看《新测试环境资源信息》文档,生产环境账号密码找沐阳扫码。</div>
   </div>
   <div class="goal-item">
     <span class="g-num">3</span>
-    <div><strong>能背出告警体系的四个关键零件</strong>：告警规则（什么时候响）、告警等级 P0~P3（响得多急）、告警接收人（通知谁）、告警渠道（用什么方式通知）。</div>
+    <div><strong>能列举云监控大盘的至少 5 个维度</strong>:应用监控、接口监控、节点监控、pod 监控、数据库监控、redis 监控、es 监控、慢接口监控、redis 大 key 监控、大接口监控、慢 SQL。</div>
   </div>
   <div class="goal-item">
     <span class="g-num">4</span>
-    <div><strong>能指出至少 3 个</strong>新手最常踩的坑（如把"监控项"当成"指标"、以为告警渠道和接收人是一回事、以为 P0 比 P3 小事）。</div>
+    <div><strong>能记住几个硬阈值/入口</strong>:慢接口的判定标准是耗时超过 1s;监控入口是<strong>任意门 → 云监控</strong>(不是腾讯云);查日志入口是<strong>腾讯云 CLS</strong>。</div>
   </div>
   <div class="goal-item">
     <span class="g-num">5</span>
-    <div><strong>能提出 1 个追问</strong>：例如"原文只给了 P0~P3 四个等级名，却没说每个等级对应什么响应时效——这个边界为什么没写？"</div>
+    <div><strong>能说出 VPN 的两件事</strong>:客户端是 OpenVPN,账号密码找瓜瓜申请;并且知道"公司内部资源都要先连 VPN 才能访问"。</div>
   </div>
 
   <div class="card marker">
-    <div class="card-title">阅读路径（按顺序）</div>
-    <p style="margin:0">先在 02 补 5 个零件 → 在 03/04 看清"作者在解决什么问题、文章怎么搭" → 在 05/06 抓住 5 条核心判断和 6 个关键概念 → 在 07 自己提问 → 在 08 闯 8 道闭环题 → 在 09/10 看边界 → 在 11 出报告。</p>
+    <div class="card-title">阅读路径(按顺序)</div>
+    <p style="margin:0">先在 02 补 6 个零件(CLS、日志、监控、k8s、QPS、VPN)→ 在 03/04 看清"作者在解决什么问题、文章怎么搭"→ 在 05/06 抓住 5 条核心判断和 11 个关键概念 → 在 07 自己提问 → 在 08 闯 8 道闭环题 → 在 09/10 看边界 → 在 11 出报告。</p>
   </div>
 </section>
 
@@ -519,41 +519,48 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
 <section class="module" id="m02">
   <span class="sec-id">02</span>
   <h2>零基础背景包 <button class="voice-btn" data-voice-id="m2">🎧 听这章</button></h2>
-  <p class="lead">在拆原文前，先装 5 个最基本的零件。每个都标了"背景补充"——它帮你读懂原文，但<strong>不是作者的论点</strong>。原文对监控常识着墨很少，这里补的是行内人默认知道、但新手需要先建立的常识。</p>
+  <p class="lead">在拆原文前,先装 6 个最基本的零件。每个都标了"背景补充"——它帮你读懂原文,但<strong>不是作者的论点</strong>。原文是操作手册,行内人默认知道的概念(k8s、QPS、CLS)它都没展开,这里补的就是这些。</p>
 
   <div class="bg-block">
-    <div class="bg-label">背景补充 1 · 日志（Log）</div>
-    <p style="margin:0 0 .4rem">程序运行时打印出来的、按时间排好的事件记录。一条日志通常包含时间戳、级别（INFO/WARN/ERROR）、来源和消息正文。本地跑 C 程序时它就是你 printf 到屏幕上的输出；但在服务器上，几千个进程同时在跑，必须把日志统一收集、存起来才查得到。</p>
-    <div class="analogy">类比 C：日志 ≈ 你在代码里写的 printf，但不是打到屏幕上闪一下就没了，而是被持久化存进一个"云端仓库"，随时能搜回来。</div>
-    <div class="why">为什么现在需要知道：原文整章第一句就说"查找 bug 少不了要查看日志"——不懂日志是什么，就理解不了为什么要专门搞个 CLS。</div>
+    <div class="bg-label">背景补充 1 · 日志(Log)</div>
+    <p style="margin:0 0 .4rem">程序运行时打印出来的、按时间排好的事件记录。一条日志通常包含时间戳、级别、来源和消息正文。本地跑 C 程序时它就是你 printf 到屏幕上的输出;但在服务器上,几十上百个服务同时在跑,必须把日志统一收集、存起来才查得到。</p>
+    <div class="analogy">类比 C:日志 ≈ 你在代码里写的 printf,但不是打到屏幕上闪一下就没了,而是被持久化存进一个"云端仓库",随时能搜回来。</div>
+    <div class="why">为什么现在需要知道:原文整章第一句就说"查找 bug 少不了要查看日志"——不懂日志是什么,就理解不了为什么要专门搞个 CLS。</div>
   </div>
 
   <div class="bg-block">
-    <div class="bg-label">背景补充 2 · CLS（腾讯云日志服务）</div>
-    <p style="margin:0 0 .4rem">CLS = <em>Cloud Log Service</em>，腾讯云提供的日志服务。它干三件事：把服务器上散落的日志集中收集起来、建索引让你能像搜索引擎一样查、长期保存。微盛的测试环境日志就都存在 CLS 上。</p>
-    <div class="analogy">类比 C：CLS ≈ 日志的云端仓库 + grep 工具，你不用 ssh 到每台机器上 tail 文件，在一个网页里就能搜全所有服务器的日志。</div>
-    <div class="why">为什么现在需要知道：原文三种查日志方式都是在 CLS 里操作，不认识 CLS 这三步就只是"按按钮"。</div>
+    <div class="bg-label">背景补充 2 · CLS(腾讯云日志服务)</div>
+    <p style="margin:0 0 .4rem">CLS = <em>Cloud Log Service</em>,腾讯云提供的日志服务。它把服务器上散落的日志集中收集起来、建好索引、长期保存,让你能像用搜索引擎一样查。微盛的测试环境日志(在 test 主题)和生产环境日志(在 prod 主题)都存在 CLS 上。</p>
+    <div class="analogy">类比 C:CLS ≈ 日志的云端仓库 + grep 工具,你不用 ssh 到每台机器上 tail 文件,在一个网页里就能搜全所有服务器的日志。</div>
+    <div class="why">为什么现在需要知道:原文查日志那一整段都是在 CLS 里操作,不认识 CLS 这套操作就只是"按按钮"。</div>
   </div>
 
   <div class="bg-block">
-    <div class="bg-label">背景补充 3 · 监控（Monitoring）</div>
-    <p style="margin:0 0 .4rem">持续、自动地观察服务的运行状态（CPU 多高、内存剩多少、接口报错几次），目的是在用户投诉之前自己先发现问题。监控不是"出事了再看"，而是"一直盯着"。</p>
-    <div class="analogy">类比 C：监控 ≈ 你在调试时给变量加的 watch，只不过这里观察的不是单个变量，而是整台服务器和整个服务的健康度。</div>
-    <div class="why">为什么现在需要知道：原文监控章节的 7 个术语，都建立在"为什么要监控"这个动机上。</div>
+    <div class="bg-label">背景补充 3 · 监控(Monitoring)</div>
+    <p style="margin:0 0 .4rem">持续、自动地观察服务的运行状态(内存多高、QPS 多少、接口报错几次),目的是在用户投诉之前自己先发现问题。监控不是"出事了再看",而是"一直盯着"。在微盛,监控统一从<strong>任意门</strong>这个入口进,叫"云监控"应用。</p>
+    <div class="analogy">类比 C:监控 ≈ 你在调试时给变量加的 watch,只不过这里观察的不是单个变量,而是整台机器、整个服务、每个接口的健康度。</div>
+    <div class="why">为什么现在需要知道:原文监控章节列了 11 个维度,都建立在"为什么要监控"这个动机上。</div>
   </div>
 
   <div class="bg-block">
-    <div class="bg-label">背景补充 4 · 阈值（Threshold）</div>
-    <p style="margin:0 0 .4rem">一个事先约定的"警戒线"数值。当某个监控指标跨过这条线，就认为出状况了，要触发告警。比如"CPU 使用率超过 80%"，80% 就是阈值。</p>
-    <div class="analogy">类比 C：阈值 ≈ <code>if (cpu &gt; 80)</code> 里的那个 80。监控指标是被判断的变量，阈值是 if 里的常量，告警就是 if 成立时执行的代码块。</div>
-    <div class="why">为什么现在需要知道：原文说"指标超过阈值时触发告警"——阈值是连接"指标"和"告警"的桥梁。</div>
+    <div class="bg-label">背景补充 4 · k8s(Kubernetes,节点与 pod)</div>
+    <p style="margin:0 0 .4rem">k8s 是管容器(可以理解成"打包好的程序运行环境")的编排系统。原文监控里反复出现两个词:<strong>节点(node)</strong>是 k8s 集群里的<strong>一台机器</strong>(看它的磁盘、CPU、内存);<strong>pod</strong>是 k8s 里跑应用的<strong>最小单位</strong>,一个应用通常对应一组 pod。</p>
+    <div class="analogy">类比 C:节点 ≈ 一台物理机/虚拟机本身;pod ≈ 你在这个机器上跑起来的一个进程实例。一台节点上可以跑很多个 pod。</div>
+    <div class="why">为什么现在需要知道:原文有"节点监控"和"pod 监控"两个独立维度,不搞清这两层就分不清它们在监控什么。</div>
   </div>
 
   <div class="bg-block">
-    <div class="bg-label">背景补充 5 · P0~P3 故障等级</div>
-    <p style="margin:0 0 .4rem">业界通用的故障严重程度划分。P0 最严重（通常指核心服务整体不可用、大面积用户受影响），P3 最轻（局部小问题、影响有限）。P 越小，事越大、响应越要快。原文采用了这套命名。</p>
-    <div class="analogy">类比 C：P0~P3 ≈ 你给 bug 标的优先级标签，P0 像段错误崩溃必须立刻修，P3 像有个警告日志可以慢慢看。</div>
-    <div class="why">为什么现在需要知道：原文只列了 P0/P1/P2/P3 四个名字，没解释含义，不补这段就看不懂"为什么 P0 最急"。</div>
+    <div class="bg-label">背景补充 5 · QPS(Queries Per Second)</div>
+    <p style="margin:0 0 .4rem">每秒请求数,衡量一个接口/服务被调用了多少次。原文接口监控、应用监控里反复出现 QPS,还有成功数、失败数、耗时,这些都是看一个接口"忙不忙、好不好"的核心数字。</p>
+    <div class="analogy">类比 C:QPS ≈ 你的函数每秒被调用了几次。QPS 高 = 这函数很忙;配合"失败数/成功数"就能看出它忙得健不健康。</div>
+    <div class="why">为什么现在需要知道:原文接口监控、应用监控都用 QPS 描述,不懂这个词就看不懂监控大盘上的曲线。</div>
+  </div>
+
+  <div class="bg-block">
+    <div class="bg-label">背景补充 6 · VPN(Virtual Private Network)</div>
+    <p style="margin:0 0 .4rem">虚拟专用网络。简单说就是一条"加密隧道",让你在咖啡店、家里这种公司外面的网络环境下,也能像在公司内部一样访问公司内网资源(测试环境、CLS、内网代码库等)。微盛用的是 OpenVPN 客户端。</p>
+    <div class="analogy">类比 C:VPN ≈ 你给程序加了一把"远程钥匙",在公司外也能开进公司内网这台机器。</div>
+    <div class="why">为什么现在需要知道:原文说"公司内部的资源都需要连上 VPN 后才能访问"——不先连 VPN,CLS、任意门都打不开。</div>
   </div>
 </section>
 
@@ -563,19 +570,19 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
   <h2>原文问题定位 <button class="voice-btn" data-voice-id="m3">🎧 听这章</button></h2>
 
   <div class="card brick">
-    <div class="card-title">表面在讲什么？</div>
-    <p style="margin:0">两份操作清单：①测试环境怎么在 CLS 上查日志（三种方法）；②监控体系里有哪些名词（监控项、监控指标、告警、告警规则、告警等级、告警通知、告警接收人、告警渠道）。<span class="type-tag fact">事实</span></p>
+    <div class="card-title">表面在讲什么?</div>
+    <p style="margin:0">三块操作清单:①怎么在 CLS 上查测试环境/生产环境的日志;②怎么在任意门→云监控里看各种监控大盘;③怎么连 VPN 访问公司内网。<span class="type-tag fact">事实</span></p>
   </div>
 
   <div class="card brick">
-    <div class="card-title">深层在回答什么问题？</div>
-    <p style="margin:0 0 .5rem"><strong>线上出问题了，我一个新来的研发，怎么自己定位？</strong>日志解决"事后查证据"，监控解决"事前被发现"。这两件事，是研发除了写代码之外，最先要会的生存技能。<span class="type-tag judge">判断</span></p>
-    <div class="src-quote">查找 bug 少不了要查看日志……监控的作用是为了实时了解服务的运行状态，能够帮助我们发现、定位、解决线上问题。</div>
+    <div class="card-title">深层在回答什么问题?</div>
+    <p style="margin:0 0 .5rem"><strong>线上出 bug 或异常了,我一个新来的研发,怎么自己去定位、去观察?</strong>日志解决"事后查证据",监控解决"实时看状态"。这两件事,是研发除了写代码之外,最先要会的生存技能。<span class="type-tag judge">判断</span></p>
+    <div class="src-quote">查找 bug 少不了要查看日志,我们服务的日志在 cls 上……相关监控可以在任意门上查看。</div>
   </div>
 
   <div class="card">
-    <div class="card-title">读者如果只记一个问题，应该记哪个？</div>
-    <p style="margin:0"><strong>出了 bug，我的日志和告警，到底是怎么串起来帮我的？</strong>日志是"已经发生的"，告警是"正在发生的"，两者一起把线上问题的"过去"和"现在"接上。<span class="type-tag infer">推论</span></p>
+    <div class="card-title">读者如果只记一个问题,应该记哪个?</div>
+    <p style="margin:0"><strong>出 bug 了,我去哪查日志?想知道服务现在健康不健康,我去哪看?</strong>日志在腾讯云 CLS(test/prod 主题),监控在任意门云监控大盘。两个入口、两件事,别记混。<span class="type-tag infer">推论</span></p>
   </div>
 </section>
 
@@ -583,30 +590,37 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
 <section class="module" id="m04">
   <span class="sec-id">04</span>
   <h2>原文结构地图 <button class="voice-btn" data-voice-id="m4">🎧 听这章</button></h2>
-  <p class="lead">判断结构类型：<strong>主题簇（两个并列大簇）</strong>。第一簇是"日志（CLS）"，讲三种查找方式；第二簇是"监控"，讲一条从"监控项→指标→告警规则→告警→通知→接收人→渠道"的概念链。两簇并列，互为补充，不是因果。</p>
+  <p class="lead">判断结构类型:<strong>主题簇(三个并列大簇)</strong>。第一簇是"CLS 日志",讲测试/生产两套查日志步骤;第二簇是"监控",讲从任意门进云监控大盘后的 11 个监控维度;第三簇是"VPN",讲连内网的客户端和找谁申请。三簇并列,各自独立,不是因果。</p>
 
   <div class="tree">
-    <div class="tree-node"><span class="label">第一簇 · CLS 日志查找（操作手册）</span> <span class="rel">（并列主题 1）</span></div>
-    <div class="tree-node">&nbsp;&nbsp;├─ 入口：登录腾讯云 → 控制台 → 搜索"日志服务"进入 CLS</div>
-    <div class="tree-node">&nbsp;&nbsp;├─ 方法一：在 CLS 直接搜索"日志主题名"</div>
-    <div class="tree-node">&nbsp;&nbsp;├─ 方法二：用"云资源标签"筛选定位日志主题</div>
-    <div class="tree-node">&nbsp;&nbsp;└─ 方法三：进实例详情页（如 CKafka）→ 点"日志"tab 查看</div>
-    <div class="tree-node" style="margin-top:.6rem"><span class="label">第二簇 · 监控概念链（术语解释）</span> <span class="rel">（并列主题 2）</span></div>
-    <div class="tree-node">&nbsp;&nbsp;├─ 监控项：要监控的内容（CPU、内存、磁盘 IO）</div>
-    <div class="tree-node">&nbsp;&nbsp;└─ 监控指标：监控项的衡量标准（具体数值 + 阈值）</div>
-    <div class="tree-node">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ 告警：指标达到阈值后触发</div>
-    <div class="tree-node">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ 告警规则：满足什么条件触发</div>
-    <div class="tree-node">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ 告警等级：P0/P1/P2/P3 区分严重程度</div>
-    <div class="tree-node">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ 告警通知：告知相关人员的方式</div>
-    <div class="tree-node">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ 告警接收人：谁来收（服务负责人、运维、开发）</div>
-    <div class="tree-node">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ 告警渠道：用什么渠道（企微、电话、短信、邮件）</div>
-    <div class="tree-node" style="margin-top:.6rem"><span class="label">第三簇 · VPN</span> <span class="rel">（原文未覆盖，空缺）</span></div>
-    <div class="tree-node">&nbsp;&nbsp;└─ 目录列了"三、VPN"，但正文未出现，本图不展开。</div>
+    <div class="tree-node"><span class="label">第一簇 · CLS 查日志(操作手册)</span> <span class="rel">(并列主题 1)</span></div>
+    <div class="tree-node">&nbsp;&nbsp;├─ 入口:登录腾讯云 → 控制台 → 搜"日志服务"进入 CLS</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ 测试环境:检索分析菜单 → 上海 → test 主题 → 搜日志</div>
+    <div class="tree-node">&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ 账密在《新测试环境资源信息》文档</div>
+    <div class="tree-node">&nbsp;&nbsp;└─ 生产环境:同样的步骤,但主题选 prod</div>
+    <div class="tree-node">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ 账密找沐阳扫码</div>
+    <div class="tree-node" style="margin-top:.6rem"><span class="label">第二簇 · 监控大盘(11 个维度)</span> <span class="rel">(并列主题 2)</span></div>
+    <div class="tree-node">&nbsp;&nbsp;├─ 入口:任意门 → 云监控应用 → 监控大盘菜单</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ 应用监控:k8s 每个应用的 内存/QPS/线程/CPU</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ 接口监控:所有接口的 耗时/QPS/成功数/失败数</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ 节点监控:k8s 机器节点(磁盘/CPU/内存)</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ pod 监控:k8s 每个应用对应 pod 的指标</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ 数据库监控:各数据库实例相关指标</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ redis 监控:各 redis 实例的监控</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ es 监控:es 相关监控</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ 慢接口监控:耗时超过 1s 的接口</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ redis 大 key 监控:redis 中 key 比较大的指标</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ 大接口监控:返回比较大的接口</div>
+    <div class="tree-node">&nbsp;&nbsp;└─ 慢 SQL:服务中的慢 sql 监控</div>
+    <div class="tree-node" style="margin-top:.6rem"><span class="label">第三簇 · VPN(连内网)</span> <span class="rel">(并列主题 3)</span></div>
+    <div class="tree-node">&nbsp;&nbsp;├─ 客户端:OpenVPN</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ 账密:找瓜瓜申请</div>
+    <div class="tree-node">&nbsp;&nbsp;└─ 作用:公司内部资源都要先连 VPN 才能访问</div>
   </div>
 
   <div class="card sky">
     <div class="card-title">节点关系说明</div>
-    <p style="margin:0">第一簇与第二簇是<strong>并列</strong>关系：日志和监控一起构成"线上可观测性"。第二簇内部是<strong>嵌套递进</strong>关系：监控项 ⊃ 指标 ⊃ 告警 ⊃ 通知 ⊃ {接收人，渠道}，一层套一层。不能把它读成单一因果链。</p>
+    <p style="margin:0">三簇是<strong>并列</strong>关系,各自解决一个独立问题:CLS 解决"查日志",监控解决"看状态",VPN 解决"进得来"。注意第一簇(CLSC)在<strong>腾讯云</strong>上,第二簇(监控)在<strong>任意门</strong>上——两个入口不要记混。</p>
   </div>
 </section>
 
@@ -614,42 +628,42 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
 <section class="module" id="m05">
   <span class="sec-id">05</span>
   <h2>核心判断与依据 <button class="voice-btn" data-voice-id="m5">🎧 听这章</button></h2>
-  <p class="lead">挑出 5 条最硬的判断。每条都附原文依据和类型标签。原文偏术语罗列，这里把每条"为什么重要"和"容易误读"补全。</p>
+  <p class="lead">挑出 5 条最硬的判断。每条都附原文依据和类型标签。原文是操作手册,没明说"为什么",这里把每条"为什么重要"和"容易误读"补全。</p>
 
   <div class="card">
-    <div class="card-title">判断 1 · 查日志有三种独立入口，对应不同场景</div>
-    <p style="margin:0 0 .4rem">CLS 查日志不是只有一条路：知道主题名就直接搜；只知道是哪台资源就用云资源标签筛；干脆就在实例详情页里看日志 tab。<span class="type-tag fact">事实</span></p>
-    <div class="src-quote">方法一：在 cls 搜索日志主题名……方法二：通过云资源标签的方式……方法三：在实例详情页的日志 tab 查看。</div>
-    <p style="margin:.4rem 0 0;font-size:.9rem"><strong>为什么重要</strong>：线上着火时你未必记得主题名，但一定知道是哪个服务/实例——方法二、三就是为"记不住名字"准备的兜底。</p>
+    <div class="card-title">判断 1 · 日志是"事后查证据",监控是"实时看状态"</div>
+    <p style="margin:0 0 .4rem">两件事职责不同:日志是 bug 已经发生后,你去翻历史记录找原因;监控是服务一直在跑,你(或大盘)盯着它的实时指标看健不健康。<span class="type-tag fact">事实</span> + <span class="type-tag infer">推论</span></p>
+    <div class="src-quote">查找 bug 少不了要查看日志,我们服务的日志在 cls 上……相关监控可以在任意门上查看。</div>
+    <p style="margin:.4rem 0 0;font-size:.9rem"><strong>为什么重要</strong>:理解了这层分工,你才知道"出 bug 翻 CLS,想知道服务健康不健康看任意门"。</p>
   </div>
 
   <div class="card">
-    <div class="card-title">判断 2 · "监控项"和"监控指标"是两个层次，不是一回事</div>
-    <p style="margin:0 0 .4rem">监控项 = 要监控的"对象"（如 CPU、内存、磁盘 IO）；监控指标 = 衡量这个对象的"具体数值"（如 CPU 使用率、剩余内存大小、磁盘使用率）。<span class="type-tag fact">事实</span></p>
-    <div class="src-quote">监控项是指我们要监控的内容……监控指标是监控项的衡量标准，指标可以是一个具体数值。</div>
-    <p style="margin:.4rem 0 0;font-size:.9rem"><strong>易误读</strong>：别把"CPU"和"CPU 使用率 80%"混为一谈——前者是项，后者是指标。指标才有"数值"，项没有。</p>
+    <div class="card-title">判断 2 · 测试环境和生产环境查日志步骤一样,只是账号来源不同</div>
+    <p style="margin:0 0 .4rem">原文生产环境那段开宗明义:"也是一样的,只是账号密码不同"。测试账密看《新测试环境资源信息》文档,生产账密找沐阳扫码。<span class="type-tag fact">事实</span></p>
+    <div class="src-quote">生产环境的日志怎么看呢,也是一样的,只是账号密码不同。至于生产环境的用户名和密码可以找沐阳扫码。</div>
+    <p style="margin:.4rem 0 0;font-size:.9rem"><strong>易误读</strong>:别以为生产环境也用测试账号——生产是真实用户在跑的,账号严格管控,只能找沐阳扫码进。</p>
   </div>
 
   <div class="card">
-    <div class="card-title">判断 3 · 告警由"指标 × 阈值 × 持续时间"的规则触发</div>
-    <p style="margin:0 0 .4rem">告警不是"指标一变就响"，而是要满足一条"告警规则"。规则规定了：什么指标、跨过什么阈值、持续多久，才触发告警。<span class="type-tag fact">事实</span></p>
-    <div class="src-quote">告警规则是指：当监控指标满足什么条件时触发告警。例如：CPU 使用率 &gt; 80% 持续 5 分钟触发告警。</div>
-    <div class="formula">告警规则 = 监控指标 + 阈值 + 持续条件<br>例：CPU 使用率 &gt; 80% 持续 5 分钟 → 触发告警</div>
-    <p style="margin:.4rem 0 0;font-size:.9rem"><strong>为什么重要</strong>：没有规则，告警要么不响要么响个不停。规则就是"什么时候才算真出事"的判定逻辑。</p>
+    <div class="card-title">判断 3 · 慢接口的判定标准是耗时超过 1s</div>
+    <p style="margin:0 0 .4rem">原文给了一个明确的硬阈值:"所有的接口,只要接口耗时超过 1s 的就算慢接口"。1s 这个数字是原文写死的考点。<span class="type-tag fact">事实</span></p>
+    <div class="formula">慢接口 = 接口耗时 &gt; 1s<br>(原文:"只要接口耗时超过 1s 的就算慢接口")</div>
+    <div class="src-quote">慢接口监控:所有的接口,只要接口耗时超过 1s 的就算慢接口。</div>
+    <p style="margin:.4rem 0 0;font-size:.9rem"><strong>为什么重要</strong>:这是全文里少有的明确数值,面试/考试常考。记住:1s,不是 500ms、不是 3s。</p>
   </div>
 
   <div class="card">
-    <div class="card-title">判断 4 · 告警等级 P0~P3 用来区分严重程度，P0 最重</div>
-    <p style="margin:0 0 .4rem">告警一旦触发，还要按严重程度分级。原文给了 P0/P1/P2/P3 四档，越小越严重。<span class="type-tag fact">事实</span> + <span class="type-tag infer">"越小越严重"是行业惯例推论</span></p>
-    <div class="src-quote">告警等级是用来区分告警的严重程度。例如：P0 级、P1 级、P2 级、P3 级。</div>
-    <p style="margin:.4rem 0 0;font-size:.9rem"><strong>注意</strong>：原文只列了四个名字，没给每个等级的定义和响应时效——这是<strong>背景缺口</strong>，不要脑补成原文说过。</p>
+    <div class="card-title">判断 4 · 监控入口是任意门 → 云监控,不是腾讯云</div>
+    <p style="margin:0 0 .4rem">CLS 日志在腾讯云上,但监控不在腾讯云,而在公司自己的"任意门"平台上(进任意门 → 点"云监控"应用 → 监控大盘)。两个入口完全不同。<span class="type-tag fact">事实</span></p>
+    <div class="src-quote">相关监控可以在任意门上查看,登录任意门后,点击云监控这个应用,可以看到应用监控。</div>
+    <p style="margin:.4rem 0 0;font-size:.9rem"><strong>易误读</strong>:新手最容易把"查日志"和"看监控"都记成腾讯云——其实日志在腾讯云 CLS,监控在任意门。</p>
   </div>
 
   <div class="card">
-    <div class="card-title">判断 5 · "告警接收人"和"告警渠道"是两个维度</div>
-    <p style="margin:0 0 .4rem">告警要"通知到人"，由两件事决定：通知<strong>谁</strong>（接收人：服务负责人、运维、开发），用什么<strong>方式</strong>通知（渠道：企微、电话、短信、邮件）。<span class="type-tag fact">事实</span></p>
-    <div class="src-quote">告警接收人是指接收告警通知的人员……告警渠道是指告警通知发送的渠道。例如：企业微信、电话、短信、邮件等。</div>
-    <p style="margin:.4rem 0 0;font-size:.9rem"><strong>易误读</strong>：原文里"告警通知"和"告警渠道"的例子一模一样（都是企微/电话/短信/邮件），容易让人以为它俩是同一回事——其实"通知"是目的，"渠道"是手段。</p>
+    <div class="card-title">判断 5 · 公司内部资源都要先连 VPN 才能访问</div>
+    <p style="margin:0 0 .4rem">VPN 是访问内网的前置条件。原文一句话定了调:"公司内部的资源都需要连上 VPN 后才能访问"。客户端用 OpenVPN,账号找瓜瓜申请。<span class="type-tag fact">事实</span></p>
+    <div class="src-quote">公司内部的资源都需要连上 VPN 后才能访问。VPN 安装使用文档如下:OpenVPN 客户端使用文档。VPN 的用户名密码找同事瓜瓜申请。</div>
+    <p style="margin:.4rem 0 0;font-size:.9rem"><strong>易误读</strong>:别以为在公司外、不连 VPN 也能打开任意门或 CLS——它们都是内部资源,没 VPN 就连不上。</p>
   </div>
 </section>
 
@@ -657,66 +671,92 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
 <section class="module" id="m06">
   <span class="sec-id">06</span>
   <h2>关键概念拆解 <button class="voice-btn" data-voice-id="m6">🎧 听这章</button></h2>
-  <p class="lead">6 个概念，环环相扣：<strong>CLS（装日志） → 监控项（看什么） → 监控指标（数值多少） → 告警（数值越界） → 告警规则（越界条件） → 告警等级（多严重）</strong>。这条链覆盖了从"观测"到"响应"的完整闭环。</p>
+  <p class="lead">11 个概念,覆盖原文三簇核心:<strong>①CLS ②检索分析 ③test/prod 主题(查日志用)→ ④任意门 ⑤云监控 ⑥监控大盘(看监控用)→ ⑦k8s 节点 vs pod ⑧QPS ⑨慢接口(>1s) ⑩慢SQL/redis大key ⑪OpenVPN</strong>。每个都讲清"是什么、原文怎么说"。</p>
 
   <div class="concept">
-    <div class="c-name">① CLS（日志服务 / Cloud Log Service）</div>
-    <div class="c-row"><span class="ck">定义</span>腾讯云提供的日志服务，微盛服务的日志都存在上面，支持检索和长期保存。</div>
-    <div class="c-row"><span class="ck">人话</span>日志的"云端仓库 + 搜索引擎"，不用 ssh 到每台机器上 tail 文件。</div>
-    <div class="analogy">类比 C：CLS ≈ 把所有进程的 printf 输出集中收集、建好索引，你想搜哪句就搜哪句，还能回看历史。</div>
-    <div class="c-row"><span class="ck">关系</span>CLS 是"事后查证据"的工具；监控是"事前被发现"的工具，两者互补。</div>
-    <div class="src-quote">查找 bug 少不了要查看日志，我们服务的日志在 cls 上。</div>
-    <div class="c-row"><span class="ck">不要误解成</span>CLS ≠ 监控系统。CLS 存的是"日志文本"，监控看的是"数值曲线"。</div>
+    <div class="c-name">① CLS(腾讯云日志服务)</div>
+    <div class="c-row"><span class="ck">是什么</span>腾讯云提供的日志服务,微盛测试/生产环境的日志都存在上面。</div>
+    <div class="c-row"><span class="ck">原文怎么说</span>"查找 bug 少不了要查看日志,我们服务的日志在 cls 上。"</div>
+    <div class="analogy">类比 C:CLS ≈ 把所有进程的 printf 输出集中收集、建好索引,你想搜哪句搜哪句,还能回看历史。</div>
+    <div class="c-row"><span class="ck">怎么进</span>登录腾讯云 → 控制台 → 搜"日志服务"。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>CLS ≠ 监控系统。CLS 存的是"日志文本",监控看的是"数值曲线"。</div>
   </div>
 
   <div class="concept">
-    <div class="c-name">② 监控项（Metric Item / 观测对象）</div>
-    <div class="c-row"><span class="ck">定义</span>我们要监控的内容，即"看什么"。例如 CPU、内存、磁盘 IO。</div>
-    <div class="c-row"><span class="ck">人话</span>你要盯的那个"东西"，是个名词，不是个数字。</div>
-    <div class="analogy">类比 C：监控项 ≈ 你想在 debugger 里 watch 的那个变量名（变量本身，不是它此刻的值）。</div>
-    <div class="c-row"><span class="ck">关系</span>监控项 ⊃ 监控指标。一个项可以对应多个指标（如"内存"这个项，对应"剩余内存大小""内存使用率"等多个指标）。</div>
-    <div class="src-quote">监控项是指我们要监控的内容。例如我们要监控某台服务器的 CPU、内存、磁盘 IO 等。</div>
-    <div class="c-row"><span class="ck">不要误解成</span>监控项 ≠ 监控指标。项是"对象"，指标是"数值"。说"监控 CPU"是项，说"CPU 80%"是指标。</div>
+    <div class="c-name">② 检索分析菜单(CLS 里的搜索入口)</div>
+    <div class="c-row"><span class="ck">是什么</span>CLS 左侧的一个菜单,进 CLS 后点它、选地区(上海)、选主题,才能开始搜日志。</div>
+    <div class="c-row"><span class="ck">原文怎么说</span>"点击左侧 检索分析菜单,选择上海,test 主题,即可看到测试环境日志。"</div>
+    <div class="analogy">类比 C:检索分析菜单 ≈ 你打开 grep 工具的那个入口界面,选好"在哪个文件里(主题)"再写搜索词。</div>
+    <div class="c-row"><span class="ck">搜索语法</span>输入框搜索的语法规则见文档《日志服务 语法规则_腾讯云》。</div>
   </div>
 
   <div class="concept">
-    <div class="c-name">③ 监控指标（Metric / 衡量标准）</div>
-    <div class="c-row"><span class="ck">定义</span>监控项的衡量标准，是一个会随时间变化的具体数值。</div>
-    <div class="c-row"><span class="ck">人话</span>给监控项打的"分数"，比如 CPU 使用率 80%、剩余内存 2GB。</div>
-    <div class="analogy">类比 C：监控指标 ≈ 被 watch 的变量在某一时刻的具体取值，它会随程序运行动态变化。</div>
-    <div class="c-row"><span class="ck">关系</span>指标 → 设阈值 → 越界触发告警。指标是"数值"，阈值是"红线"，告警是"踩线报警"。</div>
-    <div class="src-quote">监控指标是监控项的衡量标准，指标可以是一个具体数值……我们一般会为指标设定阈值，当指标超过阈值时触发告警。</div>
-    <div class="c-row"><span class="ck">不要误解成</span>指标 ≠ 告警。指标只是"现在的数值"，告警是"数值越界后的动作"。</div>
+    <div class="c-name">③ test 主题 / prod 主题</div>
+    <div class="c-row"><span class="ck">是什么</span>CLS 里日志按"主题(topic)"分桶。test 主题 = 测试环境日志;prod 主题 = 生产环境日志。同在上海地区。</div>
+    <div class="c-row"><span class="ck">原文怎么说</span>测试环境"选择上海,test 主题";生产环境"选择上海,prod 这个主题"。</div>
+    <div class="analogy">类比 C:主题 ≈ 你给日志文件分的"目录",test 和 prod 是两个不同的目录,装不同环境的日志。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>步骤一样不等于账号一样——测试看《新测试环境资源信息》,生产找沐阳扫码。</div>
   </div>
 
   <div class="concept">
-    <div class="c-name">④ 告警（Alert）</div>
-    <div class="c-row"><span class="ck">定义</span>监控指标的阈值达到后触发的通知动作，用于通知相关人员处理问题。</div>
-    <div class="c-row"><span class="ck">人话</span>指标踩了红线，系统主动喊人来看一眼。</div>
-    <div class="analogy">类比 C：告警 ≈ <code>if (指标 &gt; 阈值) { notify(); }</code> 里 if 成立后执行的那个 notify 函数。</div>
-    <div class="c-row"><span class="ck">关系</span>告警由告警规则触发；触发后要走告警等级判定；再通过告警渠道发给告警接收人。</div>
-    <div class="src-quote">告警是监控指标的阈值达到后触发，用于通知相关人员处理问题。</div>
-    <div class="c-row"><span class="ck">不要误解成</span>告警 ≠ 报错日志。告警是"主动通知人"，报错日志只是"留在文件里等人来查"。</div>
+    <div class="c-name">④ 任意门(公司内部统一入口)</div>
+    <div class="c-row"><span class="ck">是什么</span>公司内部的一个统一平台入口,登录之后可以打开各种内部应用,云监控就是其中之一。</div>
+    <div class="c-row"><span class="ck">原文怎么说</span>"相关监控可以在任意门上查看,登录任意门后,点击云监控这个应用。"</div>
+    <div class="analogy">类比 C:任意门 ≈ 公司自己做的"应用商店/启动器",云监控、其他内部工具都从这里点开。</div>
+    <div class="c-row"><span class="ck">注意</span>查日志在腾讯云 CLS,看监控在任意门——两个不同的门。</div>
   </div>
 
   <div class="concept">
-    <div class="c-name">⑤ 告警规则（Alert Rule）</div>
-    <div class="c-row"><span class="ck">定义</span>规定"监控指标满足什么条件时触发告警"的判定逻辑。</div>
-    <div class="c-row"><span class="ck">人话</span>一张写满 if 条件的清单，决定哪条告警该响。</div>
-    <div class="analogy">类比 C：告警规则 ≈ <code>if (cpu_usage &gt; 80 &amp;&amp; duration &gt;= 5min)</code> 这整个判断表达式。</div>
-    <div class="c-row"><span class="ck">关系</span>规则 = 指标 + 阈值 + 持续条件。规则命中 → 产生告警 → 进等级判定。</div>
-    <div class="src-quote">告警规则是指：当监控指标满足什么条件时触发告警。例如：CPU 使用率 &gt; 80% 持续 5 分钟触发告警。</div>
-    <div class="c-row"><span class="ck">不要误解成</span>规则 ≠ 阈值。阈值只是一个数，规则是"指标+阈值+持续时间"的完整判定。</div>
+    <div class="c-name">⑤ 云监控(任意门里的应用)</div>
+    <div class="c-row"><span class="ck">是什么</span>任意门里的一个应用,点进去能看到"应用监控"等观察服务运行状态的看板。</div>
+    <div class="c-row"><span class="ck">原文怎么说</span>"点击云监控这个应用,可以看到应用监控。"</div>
+    <div class="analogy">类比 C:云监控 ≈ 一个集中的仪表盘界面,把所有服务的健康指标摆在一块大屏上。</div>
   </div>
 
   <div class="concept">
-    <div class="c-name">⑥ 告警等级（P0~P3 / Severity）</div>
-    <div class="c-row"><span class="ck">定义</span>用来区分告警严重程度的标签，原文给出 P0/P1/P2/P3 四档。</div>
-    <div class="c-row"><span class="ck">人话</span>给告警贴的"紧急程度"标签，决定它要叫醒多少人、多快响应。</div>
-    <div class="analogy">类比 C：告警等级 ≈ 你给 bug 标的优先级，P0 像段错误崩溃必须立刻修，P3 像个可忽略的 warning。</div>
-    <div class="c-row"><span class="ck">关系</span>等级越高（P0）→ 通知范围越大、响应时效越短（行业惯例，原文未明说）。</div>
-    <div class="src-quote">告警等级是用来区分告警的严重程度。例如：P0 级、P1 级、P2 级、P3 级。</div>
-    <div class="c-row"><span class="ck">不要误解成</span>P0 ≠ "小问题"。P 后面的数字越小，事情越大。原文没给每级定义，别脑补。</div>
+    <div class="c-name">⑥ 监控大盘(11 个维度的总览)</div>
+    <div class="c-row"><span class="ck">是什么</span>云监控下的一个菜单,点开就是各个维度的监控看板,原文一口气列了 11 个维度。</div>
+    <div class="c-row"><span class="ck">原文怎么说</span>"监控大盘这个菜单下,有各个维度的监控。"</div>
+    <div class="c-row"><span class="ck">11 个维度</span>应用/接口/节点/pod/数据库/redis/es/慢接口/redis大key/大接口/慢SQL。</div>
+    <div class="analogy">类比 C:监控大盘 ≈ 你的 IDE 调试面板,左边一列不同的 watch 视图(应用、接口、节点…),点哪个看哪个。</div>
+  </div>
+
+  <div class="concept">
+    <div class="c-name">⑦ k8s 节点(node)vs pod(应用实例)</div>
+    <div class="c-row"><span class="ck">是什么</span>k8s 里两个层级。节点 = 一台机器(看磁盘/CPU/内存);pod = 跑应用的最小单位(一个应用对应一组 pod)。</div>
+    <div class="c-row"><span class="ck">原文怎么说</span>节点监控看"k8s 上机器节点";pod 监控看"k8s 上每一个应用对应的 pod"。</div>
+    <div class="analogy">类比 C:节点 ≈ 一台物理机本身;pod ≈ 你在这台机器上启动的一个进程实例。一台节点上跑很多 pod。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>节点监控 ≠ pod 监控。一个是看机器,一个是看应用实例,两个维度。</div>
+  </div>
+
+  <div class="concept">
+    <div class="c-name">⑧ QPS(每秒请求数)</div>
+    <div class="c-row"><span class="ck">是什么</span>Queries Per Second,一个接口/应用每秒被调用的次数,衡量"忙不忙"。</div>
+    <div class="c-row"><span class="ck">原文怎么说</span>应用监控看"qps",接口监控看"所有的接口的耗时,qps,成功数,失败数"。</div>
+    <div class="analogy">类比 C:QPS ≈ 你的函数每秒被调用了几次。配合成功数/失败数能看出它忙得健不健康。</div>
+  </div>
+
+  <div class="concept">
+    <div class="c-name">⑨ 慢接口(耗时 &gt; 1s)</div>
+    <div class="c-row"><span class="ck">是什么</span>接口响应耗时超过 1 秒就算慢接口,慢接口监控专门盯这些接口。</div>
+    <div class="c-row"><span class="ck">原文怎么说</span>"所有的接口,只要接口耗时超过 1s 的就算慢接口。"</div>
+    <div class="formula">慢接口判定 = 接口耗时 &gt; 1s(原文写死的阈值)</div>
+    <div class="c-row"><span class="ck">不要误解成</span>阈值是 1s,不是 500ms、不是 3s。这是原文里少有的明确数值。</div>
+  </div>
+
+  <div class="concept">
+    <div class="c-name">⑩ 慢SQL / redis 大 key / 大接口(三种"大/慢"监控)</div>
+    <div class="c-row"><span class="ck">是什么</span>三个抓"性能异常"的维度。慢SQL = 跑得慢的 SQL;redis 大 key = redis 里体积过大的 key;大接口 = 返回数据量过大的接口。</div>
+    <div class="c-row"><span class="ck">原文怎么说</span>"redis 大 key 监控:redis 中 key 比较大的指标监控""大接口监控:服务接口返回比较大的接口""慢 SQL:服务中的慢 sql 监控"。</div>
+    <div class="analogy">类比 C:慢SQL ≈ 你写的查询循环次数太多;redis 大 key ≈ 一个全局变量塞了个超大结构体;大接口 ≈ 函数返回了一个超大数组。都该优化。</div>
+  </div>
+
+  <div class="concept">
+    <div class="c-name">⑪ OpenVPN(连公司内网的客户端)</div>
+    <div class="c-row"><span class="ck">是什么</span>公司用来连内网的 VPN 客户端。在公司外想访问任意门、CLS 等内部资源,都得先开 OpenVPN。</div>
+    <div class="c-row"><span class="ck">原文怎么说</span>"VPN 安装使用文档如下:OpenVPN 客户端使用文档。VPN 的用户名密码找同事瓜瓜申请。"</div>
+    <div class="analogy">类比 C:OpenVPN ≈ 一把"远程钥匙",在公司外也能开进公司内网这台机器。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>VPN 不是可有可无——"公司内部的资源都需要连上 VPN 后才能访问"。</div>
   </div>
 </section>
 
@@ -724,43 +764,43 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
 <section class="module" id="m07">
   <span class="sec-id">07</span>
   <h2>苏格拉底式阅读关卡 <button class="voice-btn" data-voice-id="m7">🎧 听这章</button></h2>
-  <p class="lead">不直接给答案，自己想。参考答案在每题下方，但请先停 30 秒再展开。</p>
+  <p class="lead">不直接给答案,自己想。参考答案在每题下方,但请先停 30 秒再展开。</p>
 
   <details class="q-item">
-    <summary><span class="q-no">Q1 · 入门</span>原文说"日志主题名""云资源标签""实例详情页日志 tab"——这三种查找方式，是事实、判断，还是推论？</summary>
-    <div class="q-text">这是<strong>事实</strong>——它只是客观告诉你"在 CLS 里可以这样查"，没表达任何立场或主张。</div>
+    <summary><span class="q-no">Q1 · 入门</span>为什么测试环境和生产环境要分开?查日志的步骤一样吗?</summary>
+    <div class="q-text"><strong>步骤完全一样,只是账号不同。</strong>分开是因为生产环境跑的是真实用户的数据和流量,不能随便进、不能乱改;测试环境随便你折腾。原文:"也是一样的,只是账号密码不同。"</div>
+    <div class="q-hint">提示:回到 05 判断 2 看账号来源差异。</div>
   </details>
 
   <details class="q-item">
-    <summary><span class="q-no">Q2 · 入门</span>"监控项"和"监控指标"这对词，作者为什么要分开造两个术语？合在一起说"监控 CPU 80%"不行吗？</summary>
-    <div class="q-text">因为<strong>层次不同</strong>。"CPU"是观测对象（项），"80%"是它的一个具体衡量值（指标）。一个项可以对应多个指标（CPU 可对应使用率、负载、温度…）。合在一起说会丢掉"一个项有多个指标"这层关系。</div>
-    <div class="q-hint">提示：回到 05 判断 2 和 06 概念②③看定义。</div>
+    <summary><span class="q-no">Q2 · 入门</span>慢接口的阈值为什么定 1s?这个数字是原文说的还是你脑补的?</summary>
+    <div class="q-text"><strong>是原文写死的。</strong>原文:"只要接口耗时超过 1s 的就算慢接口。"为什么是 1s——这是行业里对"用户感知卡顿"的常见经验值(超过 1 秒用户会觉得"卡"),但原文没解释理由,只给了数字。</div>
   </details>
 
   <details class="q-item">
-    <summary><span class="q-no">Q3 · 进阶</span>如果把"告警规则里的持续时间"这个条件删掉（比如改成"CPU &gt; 80% 立即告警"），会发生什么？</summary>
-    <div class="q-text">CPU 瞬时飙高是常态（GC、定时任务都可能短时拉满），没有持续时间过滤，告警会<strong>频繁误报</strong>，最终大家把告警群免打扰——这就是"狼来了"。持续时间是为了过滤毛刺。</div>
+    <summary><span class="q-no">Q3 · 进阶</span>节点监控和 pod 监控有什么区别?为什么不能合成一个?</summary>
+    <div class="q-text">因为<strong>层级不同</strong>。节点是 k8s 集群里的<strong>一台机器</strong>(看磁盘/CPU/内存);pod 是这台机器上跑的<strong>应用实例</strong>(一个应用对应一组 pod)。一台节点可以跑很多个不同应用的 pod。节点坏了影响上面所有 pod,pod 坏了只影响它对应的应用——所以得分开看。</div>
   </details>
 
   <details class="q-item">
-    <summary><span class="q-no">Q4 · 进阶</span>原文里"告警通知"和"告警渠道"举的例子一模一样（都是企微/电话/短信/邮件），作者为什么要分两个词？</summary>
-    <div class="q-text"><strong>"通知"是目的，"渠道"是手段。</strong>告警通知 = "要把这件事告诉人"这个动作；告警渠道 = "用什么管道告诉"。目的相同，渠道可以换（今天企微、明天电话）。混为一谈就理解不了"多渠道兜底"的设计。</div>
+    <summary><span class="q-no">Q4 · 进阶</span>查日志要去腾讯云 CLS,看监控要去任意门——为什么不放在一个地方?</summary>
+    <div class="q-text">这是历史和工具分工的结果。CLS 是腾讯云提供的<strong>通用日志仓库</strong>,任何公司都能用,所以日志存那;任意门是公司自建的<strong>内部统一入口</strong>,云监控是接进任意门的应用。两者职责不同(事后取证 vs 实时看状态),也常用不同底层,所以没合一起。</div>
   </details>
 
   <details class="q-item">
-    <summary><span class="q-no">Q5 · 进阶</span>P0 比 P3 数字小，为什么反而更严重？这种命名有什么好处？</summary>
-    <div class="q-text">这是<strong>行业惯例</strong>：Priority 0 表示"最高优先级、零号位"。好处是排序直观（P0 排在最前要最先处理），且留了向上扩展的空间（理论上还能有 P-1 级灾难）。坏处是新人容易反着记。</div>
+    <summary><span class="q-no">Q5 · 进阶</span>原文说"公司内部的资源都需要连上 VPN",为什么?不连会怎样?</summary>
+    <div class="q-text">因为内部资源(任意门、CLS、内网代码库等)不暴露在公网上,否则任何人都能攻击。VPN 是一条加密隧道,验证了身份才让你"进得来"。不连 VPN,你在公司外的网络上根本解析不到、连不上这些内部地址。</div>
   </details>
 
   <details class="q-item">
-    <summary><span class="q-no">Q6 · 深度</span>原文只列了 P0~P3 四个等级名字，没写每个等级的"响应时效"和"通知范围"。这是作者的疏漏，还是刻意？</summary>
-    <div class="q-text">更可能是<strong>文档定位使然</strong>——这是一份术语科普，不是 SLA 规范。响应时效属于 SLA（服务等级协议）范畴，通常另一份文档定。读者应意识到：原文给了"词汇表"，没给"执行标准"，这是要追问的背景缺口。</div>
-    <div class="q-hint">提示：注意原文语气是"解释术语"，不是"规定流程"。</div>
+    <summary><span class="q-no">Q6 · 深度</span>原文列了 redis 监控、redis 大 key 监控两个维度,它们是什么关系?为什么不只用一个?</summary>
+    <div class="q-text"><strong>层级不同。</strong>redis 监控 = 各 redis 实例的整体指标(QPS、内存、连接数);redis 大 key 监控 = 专门盯单个体积过大的 key(大 key 会拖慢整体、引发阻塞)。整体健康 + 局部异常,得分别看。</div>
   </details>
 
   <details class="q-item">
-    <summary><span class="q-no">Q7 · 深度</span>CLS（日志）和监控，为什么必须两套系统并存？只用其中一个不行吗？</summary>
-    <div class="q-text"><strong>它们职责互补。</strong>日志记录"发生过什么"（事后取证、排查根因），监控盯着"正在发生什么"（事前发现、实时告警）。只有日志 = 出事了你才知道；只有监控 = 知道不正常但不知道为什么。两者一起才构成"线上可观测性"。</div>
+    <summary><span class="q-no">Q7 · 深度</span>原文只给了操作步骤,没说"什么情况下去查日志、什么情况下去看监控"。你能从原文语气推断出来吗?</summary>
+    <div class="q-text">能。<strong>已经知道出事了(用户反馈、报错)→ 去 CLS 查日志找根因</strong>;<strong>还没出事、想主动确认服务健康 → 去任意门看监控</strong>。原文日志段开头"查找 bug 少不了要查看日志"已经暗示了"日志=事后排查"这层用途。</div>
+    <div class="q-hint">提示:注意原文日志段第一句和监控段的并列关系。</div>
   </details>
 </section>
 
@@ -768,174 +808,140 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
 <section class="module" id="m08">
   <span class="sec-id">08</span>
   <h2>闯关式任务 <button class="voice-btn" data-voice-id="m8">🎧 听这章</button></h2>
-  <p class="lead">8 道闭环题，覆盖核心知识点。选完点"检查"，答对贴 OK 贴纸，答错贴 NO 贴纸并指出错在哪。错题自动进 11 节的错题回流区。</p>
+  <p class="lead">8 道闭环题,覆盖原文考点。选完点"检查",答对贴 OK 贴纸,答错贴 NO 贴纸并指出错在哪。错题自动进 11 节的错题回流区。</p>
 
-  <!-- 题1 单选：CLS 三种查找方式 -->
-  <div class="task" data-task="t1" data-answer="C"
-       data-ok="对！方法三就是「在实例详情页的日志 tab 查看」，原文以 CKafka 为例。适合你已经知道是哪个资源、懒得记主题名的场景。"
-       data-no="错。A 是方法一（搜主题名），B 是方法二（云资源标签筛选）。C 才是方法三——进实例详情页点日志 tab。"
-       data-src="原文：方法三：在实例详情页的日志 tab 查看。1.登录腾讯云，找到实例所在页面（以 CKafka 为例）2.进入实例详情页，点击日志 tab。"
-       data-review="回到「04 结构地图 · 第一簇」+「06 概念①CLS」复习">
-    <div class="q">1. 【单选】你已经知道是某台 CKafka 实例出了问题，想最快看到它的日志，应该用 CLS 的哪种方式？</div>
+  <!-- 题1 单选:查日志去哪个平台 -->
+  <div class="task" data-task="t1" data-answer="A"
+       data-ok="对!原文说「查找 bug 少不了要查看日志,我们服务的日志在 cls 上」——CLS 是腾讯云日志服务,所以查日志要去腾讯云。"
+       data-no="错。B 是看监控的入口,不是查日志。原文明确日志在腾讯云 CLS 上(进腾讯云后台搜「日志服务」)。"
+       data-src="原文:查找 bug 少不了要查看日志,我们服务的日志在 cls 上……登录腾讯云,登录地址……登录进来之后,点击控制台。"
+       data-review="回到「03 问题定位」+「06 概念①CLS」复习">
+    <div class="q">1. 【单选】线上出 bug 了,你要查服务日志,应该去哪个平台?</div>
     <div class="opts">
-      <button class="opt" data-val="A">A. 在 CLS 直接搜索日志主题名</button>
-      <button class="opt" data-val="B">B. 用云资源标签筛选日志主题</button>
-      <button class="opt" data-val="C">C. 进该实例详情页，点"日志"tab 直接看</button>
-      <button class="opt" data-val="D">D. 给运维打电话让他截图发你</button>
+      <button class="opt" data-val="A">A. 腾讯云 CLS(日志服务)</button>
+      <button class="opt" data-val="B">B. 任意门 云监控</button>
+      <button class="opt" data-val="C">C. 公司内网代码库</button>
+      <button class="opt" data-val="D">D. OpenVPN 客户端</button>
     </div>
     <button class="check">检查</button>
-    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+    <div class="feedback" aria-live="polite">选择后点击检查,这里会显示反馈。</div>
   </div>
 
-  <!-- 题2 单选：监控项 vs 监控指标 -->
+  <!-- 题2 单选:看监控去哪个平台 -->
   <div class="task" data-task="t2" data-answer="B"
-       data-ok="对！「内存」是观测对象（监控项），「剩余内存 2GB」才是它的具体数值（监控指标）。"
-       data-no="错。题干里「内存使用率 80%」整体是一个具体数值，属于监控指标；监控项是「内存」这个对象本身。区分关键：有没有「数值」。"
-       data-src="原文：监控项是指我们要监控的内容……监控指标是监控项的衡量标准，指标可以是一个具体数值。"
-       data-review="回到「05 判断 2」+「06 概念②③」复习">
-    <div class="q">2. 【单选】下面这句话里，哪个词是"监控项"？「内存使用率已经 80% 了。」</div>
+       data-ok="对!原文说「相关监控可以在任意门上查看,登录任意门后,点击云监控这个应用」——监控在任意门,不在腾讯云。"
+       data-no="错。腾讯云 CLS 是查日志的地方,不是看监控的。监控入口是任意门→云监控。这是新手最容易记混的一点。"
+       data-src="原文:相关监控可以在任意门上查看,登录任意门后,点击云监控这个应用,可以看到应用监控。"
+       data-review="回到「05 判断 4」+「06 概念④任意门」复习">
+    <div class="q">2. 【单选】你想看服务现在健康不健康(QPS、CPU 等),应该去哪个平台?</div>
     <div class="opts">
-      <button class="opt" data-val="A">A. 内存使用率</button>
-      <button class="opt" data-val="B">B. 内存</button>
-      <button class="opt" data-val="C">C. 80%</button>
-      <button class="opt" data-val="D">D. 整句话</button>
+      <button class="opt" data-val="A">A. 腾讯云 CLS</button>
+      <button class="opt" data-val="B">B. 任意门 云监控</button>
+      <button class="opt" data-val="C">C. OpenVPN 客户端</button>
+      <button class="opt" data-val="D">D. 邮箱</button>
     </div>
     <button class="check">检查</button>
-    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+    <div class="feedback" aria-live="polite">选择后点击检查,这里会显示反馈。</div>
   </div>
 
-  <!-- 题3 单选：告警规则 -->
-  <div class="task" data-task="t3" data-answer="C"
-       data-ok="对！告警规则 = 指标 + 阈值 + 持续条件，缺一不可。"
-       data-no="错。A 只有指标+阈值，少了「持续时间」；B 只有一个阈值，连指标都没说清。原文例子是「CPU 使用率 > 80% 持续 5 分钟」——指标、阈值、持续三件齐备。"
-       data-src="原文：告警规则是指：当监控指标满足什么条件时触发告警。例如：CPU 使用率 > 80% 持续 5 分钟触发告警。"
-       data-review="回到「05 判断 3」+「06 概念⑤」复习">
-    <div class="q">3. 【单选】下列哪一条，最符合原文"告警规则"的完整定义？</div>
+  <!-- 题3 单选:测试环境日志账密在哪 -->
+  <div class="task" data-task="t3" data-answer="B"
+       data-ok="对!测试环境的账密在《新测试环境资源信息》文档里,自己查就行。"
+       data-no="错。A(找沐阳扫码)是生产环境的账密来源。测试环境账密原文说在《新测试环境资源信息》文档里。"
+       data-src="原文:登录的用户名密码在文档:新测试环境资源信息。"
+       data-review="回到「05 判断 2」+「06 概念③」复习">
+    <div class="q">3. 【单选】测试环境的腾讯云账号密码,去哪里找?</div>
     <div class="opts">
-      <button class="opt" data-val="A">A. CPU 使用率超过 80%</button>
-      <button class="opt" data-val="B">B. 阈值设为 80%</button>
-      <button class="opt" data-val="C">C. CPU 使用率 &gt; 80% 且持续 5 分钟，则触发告警</button>
-      <button class="opt" data-val="D">D. 出现 ERROR 级别日志就告警</button>
+      <button class="opt" data-val="A">A. 找同事沐阳扫码</button>
+      <button class="opt" data-val="B">B. 看《新测试环境资源信息》文档</button>
+      <button class="opt" data-val="C">C. 找同事瓜瓜申请</button>
+      <button class="opt" data-val="D">D. 自己注册一个</button>
     </div>
     <button class="check">检查</button>
-    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+    <div class="feedback" aria-live="polite">选择后点击检查,这里会显示反馈。</div>
   </div>
 
-  <!-- 题4 单选：告警等级 P0~P3 -->
+  <!-- 题4 单选:生产环境日志怎么登录 -->
   <div class="task" data-task="t4" data-answer="A"
-       data-ok="对！按行业惯例，P 后数字越小越严重，P0 是最高等级。"
-       data-no="错。P0~P3 里 P0 最严重（数字小=优先级高），P3 最轻。这是业界 Priority 命名惯例，原文也用了这套。"
-       data-src="原文：告警等级是用来区分告警的严重程度。例如：P0 级、P1 级、P2 级、P3 级。背景补充：P0 最严重（核心服务整体不可用），P3 最轻。"
-       data-review="回到「02 背景包 5」+「06 概念⑥」复习">
-    <div class="q">4. 【单选】在 P0/P1/P2/P3 这套告警等级里，哪个最严重？</div>
+       data-ok="对!生产环境账号严格管控,原文明确说「生产环境的用户名和密码可以找沐阳扫码」。"
+       data-no="错。B 是测试环境的账密来源。生产环境账密原文说找沐阳扫码,不能用测试账号。"
+       data-src="原文:至于生产环境的用户名和密码可以找沐阳扫码。"
+       data-review="回到「05 判断 2」+「09 误解 3」复习">
+    <div class="q">4. 【单选】要看生产环境(prod 主题)的日志,怎么拿到账号?</div>
     <div class="opts">
-      <button class="opt" data-val="A">A. P0</button>
-      <button class="opt" data-val="B">B. P1</button>
-      <button class="opt" data-val="C">C. P2</button>
-      <button class="opt" data-val="D">D. P3</button>
+      <button class="opt" data-val="A">A. 找同事沐阳扫码</button>
+      <button class="opt" data-val="B">B. 用测试环境那套账号密码</button>
+      <button class="opt" data-val="C">C. 找同事瓜瓜申请</button>
+      <button class="opt" data-val="D">D. 在 CLS 注册一个新账号</button>
     </div>
     <button class="check">检查</button>
-    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+    <div class="feedback" aria-live="polite">选择后点击检查,这里会显示反馈。</div>
   </div>
 
-  <!-- 题5 多选：哪些是告警渠道 -->
-  <div class="task" data-task="t5" data-multi="true" data-answer="A,B,C,D"
-       data-ok="全对！原文明确把企业微信、电话、短信、邮件都列为告警渠道（也是告警通知的方式）。"
-       data-no="漏选了。原文原文一句话全列了：企业微信、电话、短信、邮件等。四个都是合法告警渠道。"
-       data-src="原文：告警渠道是指告警通知发送的渠道。例如：企业微信、电话、短信、邮件等。"
-       data-review="回到「05 判断 5」+「06 概念」复习">
-    <div class="q">5. 【多选】根据原文，下列哪些属于"告警渠道"？（多选）</div>
+  <!-- 题5 单选:慢接口判定标准 -->
+  <div class="task" data-task="t5" data-answer="C"
+       data-ok="对!原文写死的阈值:耗时超过 1s 就算慢接口。"
+       data-no="错。原文明确说「只要接口耗时超过 1s 的就算慢接口」,不是 500ms、也不是 3s。这是全文少有的明确数值,务必记牢。"
+       data-src="原文:慢接口监控:所有的接口,只要接口耗时超过 1s 的就算慢接口。"
+       data-review="回到「05 判断 3」+「06 概念⑨慢接口」复习">
+    <div class="q">5. 【单选】原文里,慢接口的判定标准是什么?</div>
     <div class="opts">
-      <button class="opt" data-val="A">A. 企业微信</button>
-      <button class="opt" data-val="B">B. 电话</button>
-      <button class="opt" data-val="C">C. 短信</button>
-      <button class="opt" data-val="D">D. 邮件</button>
+      <button class="opt" data-val="A">A. 接口耗时超过 500ms</button>
+      <button class="opt" data-val="B">B. 接口耗时超过 100ms</button>
+      <button class="opt" data-val="C">C. 接口耗时超过 1s</button>
+      <button class="opt" data-val="D">D. 接口耗时超过 3s</button>
     </div>
     <button class="check">检查</button>
-    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+    <div class="feedback" aria-live="polite">选择后点击检查,这里会显示反馈。</div>
   </div>
 
-  <!-- 题6 多选：告警接收人 -->
-  <div class="task" data-task="t6" data-multi="true" data-answer="A,B,C"
-       data-ok="对！服务负责人、运维人员、开发人员都是原文列出的告警接收人。"
-       data-no="D 是错的——「告警系统」是发告警的，不是收告警的；它不会自己通知自己。原文接收人举例是：服务负责人、运维人员、开发人员等。"
-       data-src="原文：告警接收人是指接收告警通知的人员。例如：服务负责人、运维人员、开发人员等。"
-       data-review="回到「04 结构地图 · 第二簇」复习">
-    <div class="q">6. 【多选】根据原文，下列哪些可以是"告警接收人"？（多选）</div>
+  <!-- 题6 多选:云监控大盘的维度 -->
+  <div class="task" data-task="t6" data-multi="true" data-answer="A,B,C,D"
+       data-ok="全对!这四个都是云监控大盘下的维度。原文一口气列了 11 个:应用/接口/节点/pod/数据库/redis/es/慢接口/redis大key/大接口/慢SQL。"
+       data-no="漏选或错选了。原文监控大盘下有 11 个维度,这四个(应用监控、接口监控、节点监控、慢SQL)都是原文明确列出的。"
+       data-src="原文:监控大盘这个菜单下,有各个维度的监控。应用监控……接口监控……节点监控……慢 SQL:服务中的慢 sql 监控。"
+       data-review="回到「04 结构地图 · 第二簇」+「06 概念⑥监控大盘」复习">
+    <div class="q">6. 【多选】根据原文,下列哪些属于云监控大盘下的维度?(多选)</div>
     <div class="opts">
-      <button class="opt" data-val="A">A. 服务负责人</button>
-      <button class="opt" data-val="B">B. 运维人员</button>
-      <button class="opt" data-val="C">C. 开发人员</button>
-      <button class="opt" data-val="D">D. 告警系统自己</button>
+      <button class="opt" data-val="A">A. 应用监控</button>
+      <button class="opt" data-val="B">B. 接口监控</button>
+      <button class="opt" data-val="C">C. 节点监控</button>
+      <button class="opt" data-val="D">D. 慢 SQL</button>
     </div>
     <button class="check">检查</button>
-    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+    <div class="feedback" aria-live="polite">选择后点击检查,这里会显示反馈。</div>
   </div>
 
-  <!-- 题7 判断 -->
-  <div class="task" data-task="t7" data-answer="B"
-       data-ok="对，本题正确选项是「错」。原文明说告警由「监控指标的阈值达到后」触发，跟日志没有直接关系。"
-       data-no="你选了「对」，但这是错的。原文：告警是监控指标的阈值达到后触发。它来自监控数值越界，不是来自「查到 ERROR 日志」。日志和监控是两套系统。回到 05 判断 1 看关系。"
-       data-src="原文：告警是监控指标的阈值达到后触发，用于通知相关人员处理问题。"
-       data-review="回到「05 判断 1 / 3」+「09 误解 1」复习">
-    <div class="q">7. 【判断】告警是在 CLS 里查到 ERROR 级别日志后自动触发的。</div>
+  <!-- 题7 单选:VPN 客户端和申请 -->
+  <div class="task" data-task="t7" data-answer="C"
+       data-ok="对!原文:VPN 用 OpenVPN 客户端,用户名密码找瓜瓜申请。"
+       data-no="错。VPN 客户端是 OpenVPN(不是腾讯云/任意门),账密找瓜瓜(不是沐阳,沐阳管的是生产环境日志账密)。"
+       data-src="原文:VPN 安装使用文档如下:OpenVPN 客户端使用文档。VPN 的用户名密码找同事瓜瓜申请。"
+       data-review="回到「06 概念⑪OpenVPN」复习">
+    <div class="q">7. 【单选】连公司 VPN 用什么客户端?账号密码找谁申请?</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. 腾讯云 / 找沐阳</button>
+      <button class="opt" data-val="B">B. 任意门 / 找沐阳</button>
+      <button class="opt" data-val="C">C. OpenVPN / 找瓜瓜</button>
+      <button class="opt" data-val="D">D. OpenVPN / 找沐阳</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查,这里会显示反馈。</div>
+  </div>
+
+  <!-- 题8 判断:节点 vs pod -->
+  <div class="task" data-task="t8" data-answer="B"
+       data-ok="对,本题正确选项是「错」。节点监控看的是 k8s 上的机器节点(磁盘/CPU/内存),pod 监控看的是每个应用对应的 pod。一个是机器,一个是应用实例,层级不同。"
+       data-no="你选了「对」,但这是错的。原文「节点监控:k8s 上机器节点的相关指标」「pod 监控:k8s 上每一个应用对应的 pod 的指标监控」——节点是机器,pod 是应用实例,两个维度。"
+       data-src="原文:节点监控:k8s 上机器节点的相关指标,包括磁盘,cpu,内存等。pod 监控:k8s 上每一个应用对应的 pod 的指标监控。"
+       data-review="回到「06 概念⑦节点 vs pod」+「09 误解 2」复习">
+    <div class="q">8. 【判断】节点监控和 pod 监控是同一回事,都是看 k8s 的。</div>
     <div class="opts">
       <button class="opt" data-val="A">A. 对</button>
       <button class="opt" data-val="B">B. 错</button>
     </div>
     <button class="check">检查</button>
-    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
-  </div>
-
-  <!-- 题8 匹配：概念对应 -->
-  <div class="task" data-task="t8" data-type="selects"
-       data-ok="全部对！这 4 组关系背牢，整章概念链就通了。"
-       data-no="有错。逐组对照：监控项=要监控的内容（对象）；监控指标=具体数值；告警规则=满足什么条件触发；告警渠道=用什么方式发送通知。"
-       data-src="原文：监控项是指我们要监控的内容……监控指标是监控项的衡量标准……告警规则是指：当监控指标满足什么条件时触发告警……告警渠道是指告警通知发送的渠道。"
-       data-review="回到「06 关键概念拆解」整章复习">
-    <div class="q">8. 【匹配】把概念和它的定义配对。</div>
-    <div class="match-row">
-      <span style="min-width:7em">① 监控项</span>
-      <select class="match" data-correct="A">
-        <option value="">— 请选 —</option>
-        <option value="A">A. 要监控的内容（如 CPU、内存、磁盘 IO）</option>
-        <option value="B">B. 监控项的衡量标准，是一个具体数值</option>
-        <option value="C">C. 规定指标满足什么条件时触发告警</option>
-        <option value="D">D. 告警通知发送的管道（企微、电话、短信、邮件）</option>
-      </select>
-    </div>
-    <div class="match-row">
-      <span style="min-width:7em">② 监控指标</span>
-      <select class="match" data-correct="B">
-        <option value="">— 请选 —</option>
-        <option value="A">A. 要监控的内容（如 CPU、内存、磁盘 IO）</option>
-        <option value="B">B. 监控项的衡量标准，是一个具体数值</option>
-        <option value="C">C. 规定指标满足什么条件时触发告警</option>
-        <option value="D">D. 告警通知发送的管道（企微、电话、短信、邮件）</option>
-      </select>
-    </div>
-    <div class="match-row">
-      <span style="min-width:7em">③ 告警规则</span>
-      <select class="match" data-correct="C">
-        <option value="">— 请选 —</option>
-        <option value="A">A. 要监控的内容（如 CPU、内存、磁盘 IO）</option>
-        <option value="B">B. 监控项的衡量标准，是一个具体数值</option>
-        <option value="C">C. 规定指标满足什么条件时触发告警</option>
-        <option value="D">D. 告警通知发送的管道（企微、电话、短信、邮件）</option>
-      </select>
-    </div>
-    <div class="match-row">
-      <span style="min-width:7em">④ 告警渠道</span>
-      <select class="match" data-correct="D">
-        <option value="">— 请选 —</option>
-        <option value="A">A. 要监控的内容（如 CPU、内存、磁盘 IO）</option>
-        <option value="B">B. 监控项的衡量标准，是一个具体数值</option>
-        <option value="C">C. 规定指标满足什么条件时触发告警</option>
-        <option value="D">D. 告警通知发送的管道（企微、电话、短信、邮件）</option>
-      </select>
-    </div>
-    <button class="check">检查</button>
-    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+    <div class="feedback" aria-live="polite">选择后点击检查,这里会显示反馈。</div>
   </div>
 </section>
 
@@ -945,39 +951,38 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
   <h2>误解与边界 <button class="voice-btn" data-voice-id="m9">🎧 听这章</button></h2>
 
   <div class="myth">
-    <div class="myth-head">误解 1 · "告警就是日志里出现 ERROR 自动响"</div>
-    <div class="row"><span class="key">为什么容易误解</span>新手直觉把"报错"和"告警"划等号。</div>
-    <div class="row"><span class="key">原文真正说了</span>告警是"监控指标的阈值达到后触发"，跟日志没有直接关系。</div>
-    <div class="row"><span class="key">原文没有说</span>"ERROR 日志会触发告警"——日志和监控是两套独立系统。</div>
-    <div class="row"><span class="key">如何避免</span>记住：日志是事后取证（你去 CLS 查），告警是事前主动喊你（监控指标越界触发）。两者互补，不互相触发。</div>
+    <div class="myth-head">误解 1 · "查日志和看监控是同一个平台"</div>
+    <div class="row"><span class="key">为什么容易误解</span>都是腾讯系/公司内部工具,新手容易记成"都在一个地方"。</div>
+    <div class="row"><span class="key">原文真正说了</span>查日志在<strong>腾讯云 CLS</strong>(进腾讯云后台搜日志服务);看监控在<strong>任意门云监控</strong>(进任意门点云监控应用)。两个不同的门。</div>
+    <div class="row"><span class="key">如何避免</span>记一句话:"出 bug 翻腾讯云 CLS,看健康上任意门云监控。"</div>
   </div>
 
   <div class="myth">
-    <div class="myth-head">误解 2 · "监控项和监控指标是一回事，叫法不同而已"</div>
-    <div class="row"><span class="key">为什么容易误解</span>日常说话常说"监控一下 CPU"，把项和指标混着用。</div>
-    <div class="row"><span class="key">原文真正说了</span>监控项 = 要监控的内容（对象）；监控指标 = 衡量标准（具体数值）。两个层次。</div>
-    <div class="row"><span class="key">如何避免</span>看有没有"数值"。有数值（80%、2GB）的是指标，只是个名词（CPU、内存）的是项。</div>
+    <div class="myth-head">误解 2 · "节点监控和 pod 监控是同一回事"</div>
+    <div class="row"><span class="key">为什么容易误解</span>都带"k8s",都看 CPU/内存,容易糊成一个。</div>
+    <div class="row"><span class="key">原文真正说了</span>节点监控看的是 k8s 上的<strong>机器节点</strong>(磁盘/CPU/内存);pod 监控看的是每个应用对应的 <strong>pod</strong>(应用实例)。机器 vs 应用实例,两个层级。</div>
+    <div class="row"><span class="key">如何避免</span>记住:节点 = 一台机器;pod = 机器上跑的一个应用实例。一台节点跑很多 pod。</div>
   </div>
 
   <div class="myth">
-    <div class="myth-head">误解 3 · "告警渠道和告警接收人是一回事"</div>
-    <div class="row"><span class="key">为什么容易误解</span>两者都跟"通知到人"有关，容易糊在一起。</div>
-    <div class="row"><span class="key">原文真正说了</span>接收人 = 通知<strong>谁</strong>（服务负责人、运维、开发）；渠道 = 用<strong>什么方式</strong>通知（企微、电话、短信、邮件）。两个维度。</div>
-    <div class="row"><span class="key">如何避免</span>"人"是接收人，"管道"是渠道。一个人可以接多个渠道，一个渠道也能发多个人。</div>
+    <div class="myth-head">误解 3 · "生产环境也能用测试账号"</div>
+    <div class="row"><span class="key">为什么容易误解</span>原文说测试和生产"步骤一样",新手以为账号也一样。</div>
+    <div class="row"><span class="key">原文真正说了</span>步骤一样,但<strong>账号不同</strong>:测试看《新测试环境资源信息》,生产找沐阳扫码。</div>
+    <div class="row"><span class="key">如何避免</span>生产是真实用户在跑的,账号严格管控。原文:"只是账号密码不同……可以找沐阳扫码。"</div>
   </div>
 
   <div class="myth">
-    <div class="myth-head">误解 4 · "P0 是小问题，P3 是大问题（数字越大越严重）"</div>
-    <div class="row"><span class="key">为什么容易误解</span>直觉上"3 &gt; 0"，以为数字大更严重。</div>
-    <div class="row"><span class="key">原文+惯例</span>原文列了 P0/P1/P2/P3；行业惯例是数字越小优先级越高，P0 最严重。</div>
-    <div class="row"><span class="key">如何避免</span>把 P0 记成"零号位、最高优先级"。原文没给每级定义，但命名遵循 Priority 惯例。</div>
+    <div class="myth-head">误解 4 · "不连 VPN 也能访问任意门/CLS"</div>
+    <div class="row"><span class="key">为什么容易误解</span>平时在公司网络里用着没问题,以为到哪都行。</div>
+    <div class="row"><span class="key">原文真正说了</span>"公司内部的资源都需要连上 VPN 后才能访问。"任意门、CLS 都属于内部资源。</div>
+    <div class="row"><span class="key">如何避免</span>在公司外(家里、咖啡店)先开 OpenVPN,再访问任意门/CLS,否则连不上。</div>
   </div>
 
   <div class="myth">
-    <div class="myth-head">误解 5 · "原文讲了 VPN 怎么用"</div>
-    <div class="row"><span class="key">为什么容易误解</span>目录里有"三、VPN"这一章。</div>
-    <div class="row"><span class="key">原文真正说了</span>原文明确标注：左侧大纲列有 VPN 目录项，但所提供截图范围内正文未出现。</div>
-    <div class="row"><span class="key">如何避免</span>VPN 是<strong>背景缺口</strong>，本地图不展开。需要时单独找资料补。</div>
+    <div class="myth-head">误解 5 · "慢接口阈值是 500ms 或 3s"</div>
+    <div class="row"><span class="key">为什么容易误解</span>行业里不同公司阈值不同,新手凭印象记错。</div>
+    <div class="row"><span class="key">原文真正说了</span>"只要接口耗时超过 1s 的就算慢接口。"原文写死的就是 1s。</div>
+    <div class="row"><span class="key">如何避免</span>这是原文少有的明确数值,考点高频。记住:1s,就这一个。</div>
   </div>
 </section>
 
@@ -985,31 +990,31 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
 <section class="module" id="m10">
   <span class="sec-id">10</span>
   <h2>背景知识缺口 <button class="voice-btn" data-voice-id="m10">🎧 听这章</button></h2>
-  <p class="lead">原文是一份术语科普，很多"行内人默认懂"的东西它没展开。要彻底吃透，建议补这 4 个缺口。现在不补也行，遇到不懂的再回头看。</p>
+  <p class="lead">原文是操作手册,很多"行内人默认懂"的东西它提了但没展开。要彻底吃透,建议补这 4 个缺口。现在不补也行,遇到不懂的再回头看。<strong>下面这些原文默认你知道。</strong></p>
 
   <div class="card sky">
-    <div class="card-title">缺口 1 · P0~P3 各等级的具体定义和响应时效</div>
-    <p style="margin:0">原文只列了 P0/P1/P2/P3 四个名字，没说每个等级对应什么故障范围、要多久响应、通知到哪一级。这些通常写在公司的<strong>SLA（服务等级协议）</strong>或<strong>故障响应规范</strong>里。<strong>为什么重要</strong>：知道等级名 ≠ 知道怎么响应。<strong>下一步追问</strong>：去找本团队的故障响应文档，看 P0 的响应时效是几分钟。</p>
+    <div class="card-title">缺口 1 · k8s 到底是什么(节点/pod/应用的关系)</div>
+    <p style="margin:0">原文反复说"k8s 上每一个应用""k8s 上机器节点""k8s 上每一个应用对应的 pod",但完全没解释 k8s 是什么、节点和 pod 怎么套。<strong>为什么重要</strong>:不补这层,节点监控和 pod 监控的区别就是死记硬背。<strong>下一步追问</strong>:k8s 怎么把一个应用部署到一组 pod 上,pod 又跑在哪个节点上?搜"k8s 节点 pod 关系"看一张架构图。</p>
   </div>
 
   <div class="card sky">
-    <div class="card-title">缺口 2 · VPN（原文未覆盖）</div>
-    <p style="margin:0">目录列了"三、VPN"但正文缺失。VPN 通常用于在公司外网络安全地访问内网资源（如测试环境、CLS、内网 Git）。<strong>为什么重要</strong>：不在公司网络时，查 CLS、连测试环境都可能要先挂 VPN。<strong>下一步追问</strong>：微盛用什么 VPN 客户端？接入地址和账号找谁要？</p>
+    <div class="card-title">缺口 2 · QPS / 成功数 / 失败数 / 耗时具体含义</div>
+    <p style="margin:0">原文接口监控列了"耗时、qps、成功数、失败数",但没说这些数字怎么看、多少算正常。<strong>为什么重要</strong>:进了监控大盘,看到一条曲线你得知道它代表什么、要不要紧。<strong>下一步追问</strong>:QPS 多少算高?失败率到多少要报警?找本团队的接口监控看板,对着真实曲线问一次。</p>
   </div>
 
   <div class="card sky">
-    <div class="card-title">缺口 3 · 腾讯云控制台的基础操作</div>
-    <p style="margin:0">原文默认你会"登录腾讯云 → 控制台 → 搜索产品 → 进实例详情页"。如果你从没进过腾讯云，这些步骤要补。<strong>为什么重要</strong>：CLS 三种查找方式都建立在"会逛腾讯云控制台"之上。<strong>下一步追问</strong>：找同事要一个测试环境的腾讯云只读账号，自己点一遍。</p>
+    <div class="card-title">缺口 3 · redis 大 key 为什么是问题、慢 SQL 为什么慢</div>
+    <p style="margin:0">原文只列了"redis 大 key 监控""慢 SQL"这两个维度名,没说它们为什么会拖垮服务。<strong>为什么重要</strong>:知道名字 ≠ 知道危害。<strong>下一步追问</strong>:redis 一个大 key 在读取/过期时为什么会阻塞其他请求?慢 SQL 为什么会让接口变慢(锁、全表扫描)?各搜一篇入门文章。</p>
   </div>
 
   <div class="card sky">
-    <div class="card-title">缺口 4 · 日志检索语法（CLS 检索语句）</div>
-    <p style="margin:0">原文只说"进 CLS 查日志"，没讲怎么写检索语句（按时间、关键词、字段过滤）。类比 C：就像会打开 grep，但不知道怎么写正则。<strong>为什么重要</strong>：进了日志页不会写检索，等于进了图书馆不会查目录。</p>
+    <div class="card-title">缺口 4 · CLS 日志检索语法</div>
+    <p style="margin:0">原文只说"可以在输入框中输入搜索信息",并指向《日志服务 语法规则_腾讯云》,但没在本章展开。<strong>为什么重要</strong>:进了 CLS 不会写检索语句,等于进了图书馆不会查目录。<strong>下一步追问</strong>:打开那份语法规则文档,练几条按关键词、按字段、按时间过滤的检索。</p>
   </div>
 
   <div class="card marker">
     <div class="card-title">可以暂时不补的</div>
-    <p style="margin:0">日志采集 Agent 的部署、监控系统的底层架构（Prometheus/Grafana）、告警引擎的实现——这些是运维/SRE 的深水区，不影响研发日常用 CLS 查日志和响应告警。</p>
+    <p style="margin:0">CLS 底层采集/存储架构、各监控维度背后的统计实现、OpenVPN 的加密原理——这些是 SRE/运维的深水区,不影响你日常"查日志、看监控、连 VPN"这三件事。先用起来,再慢慢补。</p>
   </div>
 </section>
 
@@ -1017,16 +1022,16 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
 <section class="module" id="m11">
   <span class="sec-id">11</span>
   <h2>复盘与学习报告 <button class="voice-btn" data-voice-id="m11">🎧 听这章</button></h2>
-  <p class="lead">学完这一章，你应该能用自己的话复述下面三件事；如果你还能问出一个连老员工都要想一想的追问，那你就真的学透了。</p>
+  <p class="lead">学完这一章,你应该能用自己的话复述下面三件事;如果你还能问出一个连老员工都要想一想的追问,那你就真的学透了。</p>
 
   <div class="card">
     <div class="card-title">能复述的三件事</div>
-    <p style="margin:0">① CLS 查日志的三种方式（搜主题名 / 云资源标签 / 实例详情页日志 tab）；<br>② 监控项 vs 监控指标的层次区别（对象 vs 数值）；<br>③ 一条告警从触发到送达的完整链路：指标越界 → 告警规则命中 → 等级判定 → 通过告警渠道发给告警接收人。</p>
+    <p style="margin:0">① CLS 查日志的完整步骤(登录腾讯云 → 控制台 → 搜日志服务 → 检索分析 → 上海 → test/prod 主题 → 搜索);测试环境账密看《新测试环境资源信息》,生产环境找沐阳扫码;<br>② 看监控在任意门 → 云监控 → 监控大盘,有应用/接口/节点/pod/数据库/redis/es/慢接口/redis大key/大接口/慢SQL 等 11 个维度;<br>③ VPN 用 OpenVPN,账密找瓜瓜申请;公司内部资源都要先连 VPN 才能访问。慢接口判定标准是耗时超过 1s。</p>
   </div>
 
   <div class="card marker">
-    <div class="card-title">还能问的追问（示例）</div>
-    <p style="margin:0">"原文把 P0~P3 列了出来，但没写每个等级的响应时效和通知范围——如果半夜收到一条 P0 告警，公司到底要求我几分钟内响应、不响应会怎样？这个执行标准藏在哪份文档里？"</p>
+    <div class="card-title">还能问的追问(示例)</div>
+    <p style="margin:0">"原文列了 11 个监控维度,但没说每个维度看哪些具体指标、什么数值算异常——例如节点监控的 CPU 到多少要介入?慢 SQL 的'慢'阈值是几秒?这些判定标准藏在哪份文档里?"</p>
   </div>
 
   <h3>错题回流区</h3>
@@ -1039,7 +1044,7 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
     <button id="genReport">生成学习报告</button>
     <button id="copyReport">复制报告</button>
   </div>
-  <div id="report">点「生成学习报告」按钮，根据你的答题情况生成存档。</div>
+  <div id="report">点「生成学习报告」按钮,根据你的答题情况生成存档。</div>
 </section>
 
 <footer>
@@ -1115,9 +1120,9 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
     if(wrong.length){lines.push('我答错的题（建议复习）：');wrong.forEach(function(t){lines.push('- '+(t.getAttribute('data-task')||'')+'：'+(t.getAttribute('data-review')||''));});}
     else{lines.push('暂无错题。');}
     lines.push('','三件复述清单：');
-    lines.push('① CLS 查日志三方式：搜主题名 / 云资源标签 / 实例详情页日志 tab');
-    lines.push('② 监控项（对象）≠ 监控指标（数值），看有没有数字区分');
-    lines.push('③ 告警链路：指标越界 → 规则命中 → 等级判定 → 渠道发给接收人');
+    lines.push('① CLS 查日志：腾讯云→控制台→日志服务→检索分析→上海→test/prod主题→搜索;测试账密看《新测试环境资源信息》,生产找沐阳扫码');
+    lines.push('② 看监控：任意门→云监控→监控大盘,有应用/接口/节点/pod/数据库/redis/es/慢接口/redis大key/大接口/慢SQL 等维度');
+    lines.push('③ VPN 用 OpenVPN,账密找瓜瓜;慢接口判定 = 耗时 > 1s');
     box.textContent=lines.join('\n');
   }
   document.addEventListener('click',function(e){

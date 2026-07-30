@@ -1,0 +1,878 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>通识综合考试 · 研发岗管培生</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FAF6EB;
+    --forest:#1E3A24;
+    --forest-2:#2C5236;
+    --marker:#F5E08A;
+    --marker-deep:#E7C94A;
+    --brick:#B5482A;
+    --brick-soft:#E07A55;
+    --ink:#26302A;
+    --muted:#6B7563;
+    --line:rgba(30,58,36,.14);
+    --paper:#FFFDF4;
+    --card:#FFFFFF;
+    --ok:#2F7A4D;
+    --ok-soft:#DCEFE0;
+    --no:#B5482A;
+    --no-soft:#F8DCD2;
+    --shadow:0 18px 42px rgba(43,35,23,.12);
+    --shadow-sm:0 6px 16px rgba(43,35,23,.08);
+    --radius-xl:28px;
+    --radius-lg:20px;
+    --radius-md:14px;
+    --radius-sm:999px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    color:var(--ink);
+    background:
+      radial-gradient(circle at 8% -4%, rgba(245,224,138,.45), transparent 22%),
+      radial-gradient(circle at 96% 4%, rgba(181,72,42,.10), transparent 26%),
+      linear-gradient(180deg,#FAF6EB 0%,#F3ECD8 100%);
+    font-family:"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
+    line-height:1.7;
+    padding-bottom:120px;
+  }
+  .wrap{max-width:880px;margin:0 auto;padding:0 20px}
+
+  /* ===== progress bar ===== */
+  .topbar{
+    position:sticky;top:0;z-index:60;
+    background:rgba(250,246,235,.92);
+    backdrop-filter:blur(10px);
+    border-bottom:2px dashed var(--line);
+  }
+  .topbar-inner{
+    max-width:880px;margin:0 auto;padding:10px 20px;
+    display:flex;align-items:center;gap:14px;
+  }
+  .topbar .home{
+    display:inline-flex;align-items:center;gap:6px;
+    text-decoration:none;color:var(--forest);
+    background:#fff;border:1.5px solid var(--line);
+    padding:6px 14px;border-radius:var(--radius-sm);
+    font-weight:600;font-size:13px;
+    transition:.15s;
+  }
+  .topbar .home:hover{background:var(--marker);transform:translateX(-2px)}
+  .progress-wrap{flex:1}
+  .progress-meta{font-size:12px;color:var(--muted);margin-bottom:4px;font-weight:600}
+  .progress-meta b{color:var(--forest)}
+  .progress-track{height:10px;background:#ECE3C8;border-radius:999px;overflow:hidden;border:1px solid var(--line)}
+  .progress-fill{height:100%;width:0;background:linear-gradient(90deg,var(--forest),#3F7A4D);border-radius:999px;transition:width .3s}
+
+  /* ===== header ===== */
+  .hero{
+    margin-top:18px;
+    background:linear-gradient(135deg,rgba(255,255,255,.96),rgba(252,247,232,.94)),linear-gradient(90deg,rgba(30,58,36,.08),transparent 60%);
+    border:1px solid var(--line);
+    border-radius:var(--radius-xl);
+    box-shadow:var(--shadow);
+    padding:34px 36px;
+    display:flex;align-items:center;gap:22px;
+    position:relative;overflow:hidden;
+  }
+  .hero::after{
+    content:"";position:absolute;right:-30px;top:-30px;width:160px;height:160px;
+    background:var(--marker);border-radius:50%;opacity:.4;filter:blur(4px);
+  }
+  .mascot{width:84px;height:84px;flex:0 0 auto;object-fit:contain;filter:drop-shadow(0 6px 8px rgba(0,0,0,.12));position:relative;z-index:1}
+  .hero-text{position:relative;z-index:1}
+  .hero h1{
+    margin:0;font-family:"Fredoka","Noto Sans SC",sans-serif;
+    font-size:30px;color:var(--forest);letter-spacing:.5px;
+  }
+  .hero .sub{margin:6px 0 0;color:var(--muted);font-size:14px;font-weight:500}
+  .hero .sub .tag{
+    display:inline-block;background:var(--forest);color:var(--marker);
+    padding:2px 10px;border-radius:999px;font-size:12px;margin-right:6px;font-weight:700;
+  }
+
+  /* ===== notice strip ===== */
+  .notice{
+    margin-top:18px;
+    background:linear-gradient(90deg,#FFF7C8,#FCEFB0);
+    border:2px solid var(--marker-deep);
+    border-radius:var(--radius-lg);
+    padding:16px 22px;
+    box-shadow:var(--shadow-sm);
+  }
+  .notice h3{margin:0 0 8px;color:var(--forest);font-size:15px;display:flex;align-items:center;gap:6px}
+  .notice-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px 18px;font-size:13px;color:var(--ink)}
+  .notice-grid div{background:rgba(255,255,255,.6);padding:6px 10px;border-radius:10px}
+  .notice-grid b{color:var(--brick)}
+  .notice-tip{margin-top:10px;font-size:13px;color:var(--brick);font-weight:600}
+
+  /* ===== result banner (hidden until submitted) ===== */
+  .result-banner{
+    display:none;margin-top:18px;
+    background:linear-gradient(135deg,var(--forest),var(--forest-2));
+    color:#FFF;border-radius:var(--radius-xl);
+    padding:24px 28px;box-shadow:var(--shadow);
+    align-items:center;gap:18px;
+  }
+  .result-banner.show{display:flex}
+  .result-score{
+    font-family:"Fredoka",sans-serif;font-size:48px;line-height:1;
+    color:var(--marker);min-width:110px;text-align:center;
+  }
+  .result-score small{display:block;font-size:12px;color:rgba(255,255,255,.7);font-family:"Noto Sans SC";font-weight:400;margin-top:6px}
+  .result-comment{font-size:16px;font-weight:600}
+
+  /* ===== section ===== */
+  .section{margin-top:34px}
+  .section-title{
+    display:flex;align-items:center;gap:10px;
+    font-size:18px;color:var(--forest);font-weight:700;
+    margin-bottom:14px;
+  }
+  .section-title .badge{
+    background:var(--marker);color:var(--forest);
+    padding:3px 12px;border-radius:999px;font-size:13px;font-weight:800;
+    border:1.5px solid var(--marker-deep);
+  }
+
+  /* ===== question card ===== */
+  .q{
+    background:var(--card);
+    border:1.5px solid var(--line);
+    border-radius:var(--radius-lg);
+    padding:20px 22px;margin-bottom:16px;
+    box-shadow:var(--shadow-sm);
+    transition:.2s;
+  }
+  .q.correct{border-color:var(--ok);background:linear-gradient(0deg,var(--ok-soft),#fff 30%)}
+  .q.wrong{border-color:var(--brick);background:linear-gradient(0deg,var(--no-soft),#fff 30%)}
+  .q-head{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+  .q-num{
+    font-family:"Fredoka",sans-serif;font-weight:700;font-size:15px;
+    color:#fff;background:var(--forest);
+    width:30px;height:30px;border-radius:50%;
+    display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;
+  }
+  .q-type{font-size:11px;font-weight:700;background:#EAF1E5;color:var(--forest);padding:2px 8px;border-radius:999px}
+  .q-points{font-size:11px;font-weight:700;background:var(--marker);color:var(--forest);padding:2px 8px;border-radius:999px;border:1px solid var(--marker-deep)}
+  .q-chap{font-size:11px;font-weight:600;background:#F1E9D2;color:var(--brick);padding:2px 8px;border-radius:999px}
+  .q-verdict{margin-left:auto;font-weight:800;font-size:18px;display:none}
+  .q.correct .q-verdict.correct-v{display:inline;color:var(--ok)}
+  .q.wrong .q-verdict.wrong-v{display:inline;color:var(--brick)}
+  .q.partial .q-verdict.partial-v{display:inline;color:#C98A1E}
+  .q-stem{font-size:15.5px;color:var(--ink);margin:0 0 12px;font-weight:500}
+  .q-stem .pre{font-weight:700;color:var(--forest)}
+
+  /* options */
+  .opts{display:flex;flex-direction:column;gap:8px}
+  .opt{
+    display:flex;align-items:flex-start;gap:10px;
+    padding:10px 14px;border:1.5px solid var(--line);
+    border-radius:var(--radius-md);cursor:pointer;
+    background:#FBFAF3;transition:.15s;font-size:14.5px;
+  }
+  .opt:hover{background:#FFF7DA;border-color:var(--marker-deep)}
+  .opt .marker{
+    flex:0 0 auto;width:24px;height:24px;border-radius:50%;
+    border:2px solid var(--line);display:inline-flex;align-items:center;justify-content:center;
+    font-weight:700;font-size:13px;color:var(--muted);background:#fff;
+  }
+  .opt.selected{background:#EAF1E5;border-color:var(--forest)}
+  .opt.selected .marker{background:var(--forest);color:var(--marker);border-color:var(--forest)}
+  /* multi uses square */
+  .opt.multi .marker{border-radius:6px}
+  /* answer states after submit */
+  .opt.is-answer{background:#DCEFE0;border-color:var(--ok)}
+  .opt.is-answer .marker{background:var(--ok);color:#fff;border-color:var(--ok)}
+  .opt.selected.bad-pick{background:var(--no-soft);border-color:var(--brick)}
+  .opt.selected.bad-pick .marker{background:var(--brick);color:#fff;border-color:var(--brick)}
+  .q.locked .opt{cursor:default}
+  .q.locked .opt:hover{transform:none}
+
+  /* true/false buttons */
+  .tf{display:flex;gap:10px}
+  .tf-btn{
+    flex:1;padding:14px;border:1.5px solid var(--line);border-radius:var(--radius-md);
+    background:#FBFAF3;cursor:pointer;font-size:15px;font-weight:600;
+    display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:.15s;
+  }
+  .tf-btn:hover{background:#FFF7DA;border-color:var(--marker-deep)}
+  .tf-btn.selected{background:#EAF1E5;border-color:var(--forest);color:var(--forest)}
+  .tf-btn.is-answer{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+  .tf-btn.selected.bad-pick{background:var(--no-soft);border-color:var(--brick);color:var(--brick)}
+  .q.locked .tf-btn{cursor:default}
+
+  /* matching */
+  .match-list{display:flex;flex-direction:column;gap:10px}
+  .match-row{
+    display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+    padding:10px 14px;background:#FBFAF3;border:1.5px solid var(--line);border-radius:var(--radius-md);
+  }
+  .match-left{font-weight:700;color:var(--forest);min-width:30px}
+  .match-text{flex:1;font-size:14.5px;min-width:200px}
+  .match-select{
+    padding:7px 12px;border:1.5px solid var(--line);border-radius:10px;
+    font-size:14px;background:#fff;font-weight:600;color:var(--forest);cursor:pointer;
+  }
+  .match-select:disabled{cursor:default;opacity:.85}
+  .match-row.correct-row{background:var(--ok-soft);border-color:var(--ok)}
+  .match-row.wrong-row{background:var(--no-soft);border-color:var(--brick)}
+  .match-options{font-size:13px;color:var(--muted);margin:8px 0 4px;line-height:1.9}
+  .match-options b{color:var(--forest)}
+
+  /* short answer */
+  .ta{
+    width:100%;min-height:90px;padding:12px 14px;
+    border:1.5px solid var(--line);border-radius:var(--radius-md);
+    font-family:inherit;font-size:14px;line-height:1.7;resize:vertical;background:#FBFAF3;
+  }
+  .ta:focus{outline:none;border-color:var(--forest);background:#fff}
+  .ta:disabled{background:#F4F0E0;color:var(--muted)}
+  .ref-toggle{
+    margin-top:10px;background:var(--marker);border:1.5px solid var(--marker-deep);
+    color:var(--forest);padding:6px 14px;border-radius:999px;font-weight:700;font-size:13px;cursor:pointer;
+  }
+  .ref-toggle:hover{background:var(--marker-deep)}
+  .ref-box{
+    display:none;margin-top:10px;padding:14px 16px;
+    background:#FFF7DA;border:1.5px dashed var(--marker-deep);border-radius:var(--radius-md);
+    font-size:14px;white-space:pre-wrap;color:var(--ink);
+  }
+  .ref-box.open{display:block}
+  .ref-box .ans-label{display:inline-block;background:var(--brick);color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;margin-bottom:8px}
+  .self-eval{margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .self-eval span{font-size:13px;font-weight:600;color:var(--muted)}
+  .se-btn{
+    padding:7px 16px;border-radius:999px;border:1.5px solid var(--line);background:#fff;
+    cursor:pointer;font-size:13px;font-weight:700;transition:.15s;
+  }
+  .se-btn:hover{border-color:var(--forest)}
+  .se-btn.yes{color:var(--ok);border-color:var(--ok)}
+  .se-btn.yes.active{background:var(--ok);color:#fff}
+  .se-btn.no{color:var(--brick);border-color:var(--brick)}
+  .se-btn.no.active{background:var(--brick);color:#fff}
+  .self-pts{font-size:13px;color:var(--forest);font-weight:700}
+
+  /* explanation */
+  .explain{
+    display:none;margin-top:12px;padding:12px 14px;
+    background:#F4F8EF;border-left:4px solid var(--forest);border-radius:8px;
+    font-size:13.5px;color:var(--ink);
+  }
+  .explain .ex-label{font-weight:800;color:var(--forest);margin-right:4px}
+  .explain .ans{font-weight:700;color:var(--ok)}
+  .q.show-explain .explain{display:block}
+  .pts-line{margin-top:8px;font-size:13px;font-weight:700}
+  .pts-line.gain{color:var(--ok)}
+  .pts-line.zero{color:var(--brick)}
+
+  /* submit area */
+  .submit-area{
+    margin-top:30px;text-align:center;
+    background:var(--card);border:1.5px solid var(--line);
+    border-radius:var(--radius-xl);padding:28px 22px;box-shadow:var(--shadow);
+  }
+  .submit-btn{
+    font-family:"Fredoka","Noto Sans SC",sans-serif;
+    font-size:20px;font-weight:700;
+    background:linear-gradient(180deg,var(--brick),#9A3D24);
+    color:#fff;border:none;padding:16px 50px;border-radius:999px;cursor:pointer;
+    box-shadow:0 8px 0 #7E3320, 0 14px 24px rgba(181,72,42,.3);
+    transition:.12s;letter-spacing:2px;
+  }
+  .submit-btn:hover{transform:translateY(-2px);box-shadow:0 10px 0 #7E3320, 0 16px 28px rgba(181,72,42,.35)}
+  .submit-btn:active{transform:translateY(4px);box-shadow:0 4px 0 #7E3320}
+  .submit-btn.hidden{display:none}
+  .reset-btn{
+    font-size:15px;font-weight:700;background:var(--forest);color:var(--marker);
+    border:none;padding:14px 38px;border-radius:999px;cursor:pointer;box-shadow:0 6px 0 #142319;
+    transition:.12s;letter-spacing:1px;
+  }
+  .reset-btn:hover{transform:translateY(-2px)}
+  .reset-btn:active{transform:translateY(3px);box-shadow:0 3px 0 #142319}
+  .reset-btn.hidden{display:none}
+  .submit-hint{margin-top:12px;color:var(--muted);font-size:13px}
+
+  footer{margin-top:30px;text-align:center;color:var(--muted);font-size:12px;padding:20px}
+
+  @media(max-width:640px){
+    .hero{padding:24px 18px;flex-direction:column;text-align:center;gap:12px}
+    .mascot{width:64px;height:64px}
+    .hero h1{font-size:24px}
+    .topbar .home span{display:none}
+    .result-banner{flex-direction:column;text-align:center}
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== sticky progress bar ===== -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <a class="home" href="../index.html">← <span>返回目录</span></a>
+    <div class="progress-wrap">
+      <div class="progress-meta">已答题 <b id="answeredCount">0</b> / <b>27</b></div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- ===== hero ===== -->
+  <div class="hero">
+    <img class="mascot" src="../../Vue3/img/sticker/mascot.png" alt="mascot">
+    <div class="hero-text">
+      <h1>通识综合考试</h1>
+      <div class="sub"><span class="tag">8 月</span>研发岗管培生 · 知识考试 · 共 27 题</div>
+    </div>
+  </div>
+
+  <!-- ===== notice strip ===== -->
+  <div class="notice">
+    <h3>📋 考试说明</h3>
+    <div class="notice-grid">
+      <div>总分 <b>100 分</b></div>
+      <div>建议时长 <b>90 分钟</b></div>
+      <div>单选 <b>3 分/题</b>×10</div>
+      <div>多选 <b>4 分/题</b>×6（漏选得1分，错选不得分）</div>
+      <div>判断 <b>2 分/题</b>×5</div>
+      <div>匹配 <b>4 分/题</b>×2</div>
+      <div>简答 <b>6 分/题</b>×3（自评）</div>
+      <div>综合应用 <b>10 分</b>×1（自评）</div>
+    </div>
+    <div class="notice-tip">💡 做完后点击页面底部「交卷判分」自动判分；简答/综合题点击「参考答案」后自评。</div>
+  </div>
+
+  <!-- ===== result banner ===== -->
+  <div class="result-banner" id="resultBanner">
+    <div class="result-score"><span id="finalScore">0</span><small>总分 / 100</small></div>
+    <div>
+      <div class="result-comment" id="finalComment">—</div>
+      <div style="font-size:13px;opacity:.85;margin-top:6px" id="finalDetail"></div>
+    </div>
+  </div>
+
+  <!-- ===== exam container ===== -->
+  <div id="exam"></div>
+
+  <!-- ===== submit / reset ===== -->
+  <div class="submit-area" id="submitArea">
+    <button class="submit-btn" id="submitBtn">交卷判分</button>
+    <button class="reset-btn hidden" id="resetBtn">重新考试</button>
+    <div class="submit-hint" id="submitHint">交卷后将自动判分并显示解析，输入会被锁定。</div>
+  </div>
+
+  <footer>研发岗管培生通识培训 · 6 章综合测评 · v1.0</footer>
+</div>
+
+<script>
+/* ============================================================
+   DATA: 27 questions
+   types: single | multi | judge | match | short
+   ============================================================ */
+const QUESTIONS = [
+  // ---------- 一、单选 1-10 ----------
+  { id:1, type:"single", chap:"TAPD", points:3, q:"工单系统与 TAPD 之间，是通过什么字段做关联的？",
+    opts:[{k:"A",t:"工单号"},{k:"B",t:"工单项目 ID"},{k:"C",t:"TAPD 迭代号"},{k:"D",t:"父需求 ID"}],
+    answer:["B"], explain:"⚠️云蕾明示考点1。通过<b>工单项目 ID</b> 关联；工单管金额合同，TAPD 管需求工时。工单号是关联在子需求上的（考点6），别混。"
+  },
+  { id:2, type:"single", chap:"TAPD", points:3, q:"关于 TAPD 中需求的层级结构，下列说法正确的是？",
+    opts:[{k:"A",t:"父需求可以有多个，子需求只能有一个"},{k:"B",t:"每个项目有且仅有一个父需求，子需求可以有多个"},{k:"C",t:"子需求下面还可以再拆子需求，层层嵌套"},{k:"D",t:"父需求和子需求是一对一关系"}],
+    answer:["B"], explain:"⚠️云蕾明示考点2「<b>父需求有且只能有一个</b>」。C 是新手最常犯的错——子需求不能再拆。"
+  },
+  { id:3, type:"single", chap:"仓库管理", points:3, q:"一个需求从「待提测」流转到「已提测」，必须经过哪个动作？",
+    opts:[{k:"A",t:"关联迭代"},{k:"B",t:"在子需求上关联工单号"},{k:"C",t:"创建一个 release 测试分支"},{k:"D",t:"填写预估工时"}],
+    answer:["C"], explain:"任意门文档原文：状态从「待提测」流转到「已提测」需要<b>创建 release 测试分支</b>。A 是人效前提，B 是需求关联工单，别混。"
+  },
+  { id:4, type:"single", chap:"仓库管理", points:3, q:"在任意门新建需求时，feature 开发分支是从哪里拉出来的？",
+    opts:[{k:"A",t:"从 release 测试分支拉"},{k:"B",t:"从 master 分支拉"},{k:"C",t:"从其他 feature 分支拉"},{k:"D",t:"手动在 GitLab 新建"}],
+    answer:["B"], explain:"原文：feature 开发分支<b>从 master 拉出</b>，不要手动新建。版本标识只能填数字（建议 TAPD 需求 ID）。"
+  },
+  { id:5, type:"single", chap:"仓库管理", points:3, q:"测试提了 bug 需要修复，开发人员应该在哪个分支上改代码？",
+    opts:[{k:"A",t:"release 分支"},{k:"B",t:"master 分支"},{k:"C",t:"feature 分支"},{k:"D",t:"任意分支都行"}],
+    answer:["C"], explain:"原文：<b>严禁在 release 分支改代码</b>。移除需求时默认删除 release 分支，在上面改的代码会丢。改 bug 要回到 feature 分支。"
+  },
+  { id:6, type:"single", chap:"企微生态", points:3, q:"企业微信的「自建应用」和「第三方应用」最本质的区别是？",
+    opts:[{k:"A",t:"功能强弱不同"},{k:"B",t:"归属不同（谁拥有这个应用、服务谁）"},{k:"C",t:"是否收费"},{k:"D",t:"能不能连客户"}],
+    answer:["B"], explain:"原文：三种模式最关键区别是<b>归属</b>——谁拥有应用、为谁服务。"
+  },
+  { id:7, type:"single", chap:"企微私有化", points:3, q:"下列哪一项是私有化「三层架构」中，逻辑层使用的 RPC 框架？",
+    opts:[{k:"A",t:"Spring Cloud"},{k:"B",t:"gRPC"},{k:"C",t:"hikit（腾讯自研）"},{k:"D",t:"Dubbo"}],
+    answer:["C"], explain:"原文幻灯片19：逻辑层用 CGI 层 + 腾讯自研 RPC 框架 <b>hikit</b>。"
+  },
+  { id:8, type:"single", chap:"企微私有化", points:3, q:"标准部署拓扑中，存储机（PKV/MsgKV + MySQL）的扩容规则是？",
+    opts:[{k:"A",t:"可任意台数扩容"},{k:"B",t:"只能 3→3N，不支持二次扩容（如 6→9 不可行）"},{k:"C",t:"只能 2 台一组"},{k:"D",t:"必须和 DFS 一起扩容"}],
+    answer:["B"], explain:"原文幻灯片20：存储机 <b>3 台一组</b>、可容忍 1 台故障、扩容只能 3→3N、不支持二次扩容。"
+  },
+  { id:9, type:"single", chap:"微信生态", points:3, q:"客户在微信里阅读了员工发的公众号文章，这等同于？",
+    opts:[{k:"A",t:"已经成为企微私域客户"},{k:"B",t:"已经进入企业微信客户列表"},{k:"C",t:"只是看了内容，不等于加了企微客户——必须经素材/活动/活码/员工跟进才发生连接"},{k:"D",t:"自动同步到客户画像"}],
+    answer:["C"], explain:"⚠️原文核心判断：<b>公众号文章 ≠ 企微客户关系</b>。"
+  },
+  { id:10, type:"single", chap:"Debug", points:3, q:"线上服务出了 bug，你想查日志定位原因，应该去哪个平台？",
+    opts:[{k:"A",t:"任意门"},{k:"B",t:"腾讯云 CLS（日志服务）"},{k:"C",t:"TAPD"},{k:"D",t:"GitLab"}],
+    answer:["B"], explain:"查日志去<b>腾讯云 CLS</b>；看监控才去任意门。新手最易混这两个入口。"
+  },
+
+  // ---------- 二、多选 11-16 ----------
+  { id:11, type:"multi", chap:"TAPD", points:4, q:"下列哪些情况会导致工时「缩水」或「无法计入人效」？（多选）",
+    opts:[{k:"A",t:"任务没有关联迭代"},{k:"B",t:"子需求下面再建子需求，导致工单号挂不上"},{k:"C",t:"一条任务跨多天填写工时"},{k:"D",t:"某天填写工时超过 8 小时"},{k:"E",t:"任务关联到了父需求而非子需求"}],
+    answer:["A","B","C","D","E"], explain:"⚠️云蕾考点3+4+易错点。<b>全选</b>：未关联迭代=没工时；子需求嵌套=工单挂不上；跨天填=工时缩水；超 8h 不被认可；关联父需求=工单挂错。"
+  },
+  { id:12, type:"multi", chap:"TAPD", points:4, q:"关于「KA 售后 SLA 响应时效」，下列哪些符合原文？（多选）",
+    opts:[{k:"A",t:"运营人员需要尽快响应"},{k:"B",t:"技术保障团队需在 1 小时内给出规划"},{k:"C",t:"问题上抛链路：技术人员 → TPM/研发 TL"},{k:"D",t:"所有问题都必须 15 分钟内解决"}],
+    answer:["A","B","C"], explain:"D 原文没说「15 分钟内解决」，错。ABC 对：运营尽快响应、技术1小时内给规划、上抛到 TPM/研发TL。"
+  },
+  { id:13, type:"multi", chap:"仓库管理", points:4, q:"关于任意门的分支管理规则，下列哪些是正确的？（多选）",
+    opts:[{k:"A",t:"feature 分支从 master 拉出，在上面开发代码"},{k:"B",t:"release 分支从 master 拉出，用于测试"},{k:"C",t:"严禁在 release 分支上修改代码"},{k:"D",t:"移除需求时默认勾选「删除 release 分支」，防止代码被带到生产"},{k:"E",t:"正式上线时，只需把 release 合并到 master 即可"}],
+    answer:["A","B","C","D"], explain:"E 错：正式上线是<b>双向合并</b>（先 master→release，再 release→master）。ABCD 对。"
+  },
+  { id:14, type:"multi", chap:"企微生态", points:4, q:"下列哪些情况会导致「access_token 有效，但接口仍拿不到/拿不全数据」？（多选）",
+    opts:[{k:"A",t:"应用可见范围没配置该成员"},{k:"B",t:"通讯录权限不足"},{k:"C",t:"客户联系未配置"},{k:"D",t:"access_token 过期"},{k:"E",t:"成员不在应用的可见范围内"}],
+    answer:["A","B","C","E"], explain:"D 错：token 过期是「调不通」不是「拿不到数据」，且题干说 token 有效。ABCE 对：可见范围/通讯录/客户联系/成员不在可见范围都会导致拿不到数据。"
+  },
+  { id:15, type:"multi", chap:"微信生态", points:4, q:"企微管家里的「活码」包含以下哪些类型？（多选）",
+    opts:[{k:"A",t:"员工活码"},{k:"B",t:"客户群活码"},{k:"C",t:"区域活码"},{k:"D",t:"识客码（识客群码）"},{k:"E",t:"朋友圈活码"}],
+    answer:["A","B","C","D"], explain:"E 错：<b>没有朋友圈活码</b>这种类型。ABCD 对：员工/客户群/区域/识客码。"
+  },
+  { id:16, type:"multi", chap:"Debug", points:4, q:"任意门「云监控→监控大盘」包含以下哪些监控维度？（多选）",
+    opts:[{k:"A",t:"应用监控（CPU/QPS/线程/内存）"},{k:"B",t:"慢接口监控（耗时超过 1s）"},{k:"C",t:"慢 SQL 监控"},{k:"D",t:"redis 大 key 监控"},{k:"E",t:"节点监控（k8s 机器节点）"},{k:"F",t:"告警规则配置"}],
+    answer:["A","B","C","D","E"], explain:"F 错：告警规则配置<b>不在监控大盘维度</b>里。ABCDE 对：应用/慢接口/慢SQL/redis大key/节点监控。"
+  },
+
+  // ---------- 三、判断 17-21 ----------
+  { id:17, type:"judge", chap:"TAPD", points:2, q:"工时是按「天」为单位填写的，一天可以填 12 小时甚至 16 小时。",
+    answer:false, explain:"⚠️云蕾考点3。工时<b>按小时计</b>，每天有效工时上限 8 小时，填多了反而不被认可。"
+  },
+  { id:18, type:"judge", chap:"仓库管理", points:2, q:"Nacos 既能改配置，也能存业务数据（如用户订单），它本质上是个数据库。",
+    answer:false, explain:"Nacos 是<b>配置中心</b>，不是数据库。redis 连接信息存在 Nacos 的 redis-info.yaml，但 Nacos 本身不存业务数据。"
+  },
+  { id:19, type:"judge", chap:"企微私有化", points:2, q:"私有化部署的功能和企业微信 SaaS 完全一致，没有任何差异。",
+    answer:false, explain:"基础授权含 IM/通讯录/OA，但<b>会议/邮件/文档微盘/会话存档/客户端定制/安全网关需额外授权</b>；客户端定制在 SaaS 根本不支持。"
+  },
+  { id:20, type:"judge", chap:"微信生态", points:2, q:"商家的公众号和小程序，应该绑定到服务商的开放平台账号下，方便统一管理。",
+    answer:false, explain:"⚠️原文关键规则：<b>商家账号应绑到商家自己的开放平台</b>，而非服务商的。"
+  },
+  { id:21, type:"judge", chap:"Debug", points:2, q:"公司内部的所有资源（GitLab、任意门、TAPD 等），不连 VPN 也能直接访问。",
+    answer:false, explain:"原文：公司内部资源都<b>需要连 VPN 后才能访问</b>。用 OpenVPN，账号找同事瓜瓜申请。"
+  },
+
+  // ---------- 四、匹配 22-23 ----------
+  { id:22, type:"match", chap:"仓库管理", points:4, q:"把分支/平台和它的角色配对。",
+    left:[{k:"①",t:"feature 分支"},{k:"②",t:"release 分支"},{k:"③",t:"master 分支"},{k:"④",t:"任意门"}],
+    right:[{k:"A",t:"正式生产环境代码，所有正式上线最终都合并到这"},{k:"B",t:"开发人员写代码的分支，从 master 拉出"},{k:"C",t:"测试分支，从 master 拉出，严禁在上面改代码"},{k:"D",t:"需求/版本/发布管理的平台，分支从这里创建而非手动新建"}],
+    answer:{"①":"B","②":"C","③":"A","④":"D"},
+    explain:"feature=开发分支；release=测试分支（严禁改码）；master=生产正式代码；任意门=管理平台。"
+  },
+  { id:23, type:"match", chap:"企微生态", points:4, q:"把概念和它的角色配对。",
+    left:[{k:"①",t:"access_token"},{k:"②",t:"应用可见范围"},{k:"③",t:"回调(callback)"},{k:"④",t:"corpid"}],
+    right:[{k:"A",t:"企业的唯一标识，每个企业一个"},{k:"B",t:"后端调用企微接口的凭证，有它≠有权限"},{k:"C",t:"企微主动把事件 POST 给业务系统，方向与 API 相反，需验签解密"},{k:"D",t:"决定成员能否看到应用、接口能拿到哪些数据的边界（不只是 UI 配置）"}],
+    answer:{"①":"B","②":"D","③":"C","④":"A"},
+    explain:"access_token=凭证；可见范围=权限边界；回调=企微主动POST；corpid=企业标识。"
+  },
+
+  // ---------- 五、简答 24-26 ----------
+  { id:24, type:"short", chap:"TAPD·重点", points:6, q:"云蕾明确说「缺陷(Bug)流程图有一个考点」。请写出缺陷处理的标准流程（状态流转），并写出 Bug Review 时重点关注的三个关键字段。",
+    ref:"【状态流转】待处理 → 开发中 → 测试验证 → 运营确认中 → 结束（共5个状态）\n\n【三个关键字段】\n① Root Cause（根本原因）\n② Solution（解决方案）\n③ 避免再发生策略\n\n采分点：流程5状态全对 3 分；三字段全对 3 分。"
+  },
+  { id:25, type:"short", chap:"仓库管理", points:6, q:"请简述「正式上线」时的合并分支顺序，并解释为什么要按这个顺序合并。",
+    ref:"【顺序】先把 master 合并到 release，再把 release 合并到 master（双向合并）\n\n【原因】需求并行开发，master 上可能有其他需求先上线了、带着当前 release 上没有的代码。直接 release→master 会覆盖 master 已有功能。先 master→release 拉入最新正式代码，再 release→master 合并本次需求，才不会覆盖。\n\n采分点：顺序对 2 分；原因讲到并行/master有新代码/防覆盖 3 分；表述 1 分。"
+  },
+  { id:26, type:"short", chap:"企微私有化", points:6, q:"请简述私有化相比 SaaS 的「四大核心优势」，并各用一句话说明。",
+    ref:"1. 数据自主可控：数据存客户自有服务器，不经腾讯，企业完全掌控\n2. 合规安全：满足等保三级、支持国密 SM2/SM3/SM4，金融/政务/军工硬准入\n3. 定制扩展：可定制客户端、第五Tab、H5工作台、系统深度对接\n4. 网络隔离：核心服务内网闭环，数据不出企业网，纯内网可用\n\n采分点：四点各 1.5 分。"
+  },
+
+  // ---------- 六、综合应用 27 ----------
+  { id:27, type:"short", chap:"跨模块·通识", points:10, q:"场景：你是新入职的研发，接到一个为客户定制的需求，需要从零走完研发流程。请按顺序回答（共3小题）：\n\n(1) 在 TAPD 里，你应该在哪种层级的需求下创建任务？任务必须关联什么才能统计人效？工时怎么填才合规？（3分）\n(2) 代码写完后，在任意门里你创建的分支叫什么？测试阶段用它？为什么不能在测试分支上直接改 bug？（3分）\n(3) 上线后客户反馈线上有问题，你要查日志定位，去哪个平台？如果要看服务实时健康状态（CPU/QPS），又去哪个平台？（4分）",
+    ref:"【(1)】在<b>子需求</b>（交付需求/STORY）下创建任务（不是父需求）。任务必须<b>关联迭代</b>（⚠️考点4，否则没工时）。工时按小时填、每天≤8h、按天建任务避免跨多天（⚠️考点3）。\n\n【(2)】代码写在 <b>feature 分支</b>；测试阶段用 <b>release 分支</b>。不能在 release 改 bug，因为：①移除需求时默认删除 release 分支，改的代码会丢；②防止未经验证代码被带到生产。所有修改在 feature 上做再合并到 release 测试。\n\n【(3)】查日志→<b>腾讯云 CLS</b>（登录腾讯云→控制台→日志服务→检索分析→选上海→test/prod主题）；看实时健康→<b>任意门→云监控→监控大盘</b>。测试CLS账号看《新测试环境资源信息》，生产找沐阳扫码；内网资源都要先连VPN（找瓜瓜申请OpenVPN）。"
+  }
+];
+
+/* section grouping */
+const SECTIONS = [
+  { title:"一、单选题",   badge:"3分/题", ids:[1,2,3,4,5,6,7,8,9,10] },
+  { title:"二、多选题",   badge:"4分/题", ids:[11,12,13,14,15,16] },
+  { title:"三、判断题",   badge:"2分/题", ids:[17,18,19,20,21] },
+  { title:"四、匹配题",   badge:"4分/题", ids:[22,23] },
+  { title:"五、简答题",   badge:"6分/题", ids:[24,25,26] },
+  { title:"六、综合应用题", badge:"10分",   ids:[27] }
+];
+
+const TYPE_LABEL = {single:"单选",multi:"多选",judge:"判断",match:"匹配",short:"简答/综合"};
+
+/* state */
+let state = {}; // {id: userAnswer}
+let submitted = false;
+
+/* ============================================================
+   RENDER
+   ============================================================ */
+function render(){
+  const root = document.getElementById("exam");
+  root.innerHTML = "";
+  SECTIONS.forEach(sec=>{
+    const sEl = document.createElement("div");
+    sEl.className = "section";
+    sEl.innerHTML = `<div class="section-title"><span class="badge">${sec.badge}</span>${sec.title}</div>`;
+    sec.ids.forEach(id=>{
+      const q = QUESTIONS.find(x=>x.id===id);
+      sEl.appendChild(renderQ(q));
+    });
+    root.appendChild(sEl);
+  });
+}
+
+function renderQ(q){
+  const el = document.createElement("div");
+  el.className = "q";
+  el.dataset.id = q.id;
+
+  const head = `
+    <div class="q-head">
+      <span class="q-num">${q.id}</span>
+      <span class="q-type">${TYPE_LABEL[q.type]}</span>
+      <span class="q-points">${q.points} 分</span>
+      <span class="q-chap">${q.chap}</span>
+      <span class="q-verdict correct-v">✓ 正确</span>
+      <span class="q-verdict wrong-v">✗ 错误</span>
+      <span class="q-verdict partial-v">▲ 部分对</span>
+    </div>`;
+
+  const stem = `<div class="q-stem">${formatStem(q.q)}</div>`;
+  let body = "";
+
+  if(q.type==="single" || q.type==="multi"){
+    body = `<div class="opts">` + q.opts.map(o=>`
+      <div class="opt ${q.type==='multi'?'multi':''}" data-q="${q.id}" data-k="${o.k}">
+        <span class="marker">${q.type==='multi'?'✓':o.k}</span>
+        <span>${o.k}. ${o.t}</span>
+      </div>`).join("") + `</div>`;
+  }
+  else if(q.type==="judge"){
+    body = `<div class="tf">
+      <button class="tf-btn" data-q="${q.id}" data-v="true">✓ 正确</button>
+      <button class="tf-btn" data-q="${q.id}" data-v="false">✗ 错误</button>
+    </div>`;
+  }
+  else if(q.type==="match"){
+    const optsHTML = q.right.map(r=>`<span><b>${r.k}.</b> ${r.t}</span>`).join(" &nbsp;&nbsp; ");
+    body = `<div class="match-options">选项：${optsHTML}</div>
+    <div class="match-list">` + q.left.map(l=>`
+      <div class="match-row" data-q="${q.id}" data-left="${l.k}">
+        <span class="match-left">${l.k}</span>
+        <span class="match-text">${l.t}</span>
+        <select class="match-select" data-q="${q.id}" data-left="${l.k}">
+          <option value="">选择 →</option>
+          ${q.right.map(r=>`<option value="${r.k}">${r.k}. ${r.t.length>14?r.t.slice(0,12)+"…":r.t}</option>`).join("")}
+        </select>
+      </div>`).join("") + `</div>`;
+  }
+  else if(q.type==="short"){
+    body = `<textarea class="ta" data-q="${q.id}" placeholder="请在此输入你的答案…（判分后请展开「参考答案」对照自评）"></textarea>
+    <div style="margin-top:10px">
+      <button class="ref-toggle" data-q="${q.id}">📖 查看参考答案</button>
+    </div>
+    <div class="ref-box" id="ref-${q.id}">
+      <span class="ans-label">参考答案</span>
+      ${q.ref}
+    </div>
+    <div class="self-eval" id="se-${q.id}" style="display:none">
+      <span>自评：</span>
+      <button class="se-btn yes" data-q="${q.id}" data-se="yes">✓ 我答对了（${q.points}分）</button>
+      <button class="se-btn no" data-q="${q.id}" data-se="no">✗ 部分对/没答对（0分）</button>
+      <span class="self-pts" id="pts-${q.id}"></span>
+    </div>`;
+  }
+
+  const explain = q.type!=="short"
+    ? `<div class="explain"><span class="ex-label">解析：</span>${q.explain}<br><span class="ex-label">正确答案：</span><span class="ans">${formatAnswer(q)}</span></div>`
+    : "";
+
+  el.innerHTML = head + stem + body + explain;
+  return el;
+}
+
+function formatStem(s){ return s.replace(/\n/g,"<br>"); }
+function formatAnswer(q){
+  if(q.type==="single"||q.type==="multi") return q.answer.join("、");
+  if(q.type==="judge") return q.answer ? "✓ 正确" : "✗ 错误";
+  if(q.type==="match") return Object.entries(q.answer).map(([k,v])=>`${k}-${v}`).join("　");
+  return "";
+}
+
+/* ============================================================
+   INTERACTION
+   ============================================================ */
+function bind(){
+  document.addEventListener("click", e=>{
+    const t = e.target.closest("[data-q]");
+    if(!t || submitted) return;
+    const qid = +t.dataset.q;
+    const q = QUESTIONS.find(x=>x.id===qid);
+
+    if(t.classList.contains("opt")){
+      toggleOpt(q, t);
+    } else if(t.classList.contains("tf-btn")){
+      pickJudge(q, t);
+    } else if(t.classList.contains("ref-toggle")){
+      document.getElementById("ref-"+qid).classList.toggle("open");
+    } else if(t.classList.contains("se-btn")){
+      pickSelfEval(q, t);
+    }
+  });
+
+  document.addEventListener("change", e=>{
+    if(submitted) return;
+    const sel = e.target.closest(".match-select");
+    if(sel){
+      const qid = +sel.dataset.q;
+      const q = QUESTIONS.find(x=>x.id===qid);
+      if(!state[qid]) state[qid] = {};
+      state[qid][sel.dataset.left] = sel.value;
+      updateProgress();
+    }
+  });
+
+  document.getElementById("submitBtn").addEventListener("click", submit);
+  document.getElementById("resetBtn").addEventListener("click", reset);
+}
+
+function toggleOpt(q, el){
+  const k = el.dataset.k;
+  if(q.type==="single"){
+    state[q.id] = [k];
+    // visual
+    el.parentElement.querySelectorAll(".opt").forEach(o=>o.classList.remove("selected"));
+    el.classList.add("selected");
+  } else { // multi
+    if(!state[q.id]) state[q.id] = [];
+    const idx = state[q.id].indexOf(k);
+    if(idx>=0){ state[q.id].splice(idx,1); el.classList.remove("selected"); el.querySelector(".marker").textContent=""; }
+    else { state[q.id].push(k); el.classList.add("selected"); el.querySelector(".marker").textContent="✓"; }
+    state[q.id].sort();
+  }
+  updateProgress();
+}
+
+function pickJudge(q, el){
+  const v = el.dataset.v === "true";
+  state[q.id] = v;
+  el.parentElement.querySelectorAll(".tf-btn").forEach(b=>b.classList.remove("selected"));
+  el.classList.add("selected");
+  updateProgress();
+}
+
+function pickSelfEval(q, el){
+  const se = el.dataset.se; // yes / no
+  state[q.id] = (se==="yes") ? q.points : 0;
+  const wrap = document.getElementById("se-"+q.id);
+  wrap.querySelectorAll(".se-btn").forEach(b=>b.classList.remove("active"));
+  el.classList.add("active");
+  document.getElementById("pts-"+q.id).textContent = se==="yes" ? `已计入 ${q.points} 分` : "计 0 分";
+  if(submitted){ refreshResult(); }
+}
+
+function updateProgress(){
+  if(submitted) return;
+  let answered = 0;
+  QUESTIONS.forEach(q=>{
+    const a = state[q.id];
+    if(a===undefined) return;
+    if(q.type==="multi" && Array.isArray(a) && a.length>0) answered++;
+    else if(q.type==="single" && Array.isArray(a) && a.length>0) answered++;
+    else if(q.type==="judge" && typeof a==="boolean") answered++;
+    else if(q.type==="match" && typeof a==="object" && Object.keys(a).length===q.left.length) answered++;
+    else if(q.type==="short" && (typeof a==="number")) answered++;
+  });
+  document.getElementById("answeredCount").textContent = answered;
+  document.getElementById("progressFill").style.width = (answered/27*100)+"%";
+}
+
+/* ============================================================
+   SCORING
+   ============================================================ */
+function scoreQ(q){
+  /* returns {pts, status:"correct"|"wrong"|"partial", got:N} */
+  const a = state[q.id];
+
+  if(q.type==="single"){
+    const got = Array.isArray(a) && a.length && a[0]===q.answer[0] ? q.points : 0;
+    return {pts:got, status: got>0?"correct":"wrong", got};
+  }
+  if(q.type==="multi"){
+    if(!Array.isArray(a) || a.length===0) return {pts:0, status:"wrong", got:0};
+    const correct = q.answer;
+    const allRight = a.every(x=>correct.includes(x)) && a.length===correct.length;
+    const hasWrong = a.some(x=>!correct.includes(x));
+    if(allRight) return {pts:q.points, status:"correct", got:q.points};
+    if(hasWrong) return {pts:0, status:"wrong", got:0};
+    // partial: only some correct, none wrong
+    return {pts:1, status:"partial", got:1};
+  }
+  if(q.type==="judge"){
+    const got = (a===q.answer) ? q.points : 0;
+    return {pts:got, status: got>0?"correct":"wrong", got};
+  }
+  if(q.type==="match"){
+    if(!a || typeof a!=="object") return {pts:0, status:"wrong", got:0};
+    let rightCount = 0;
+    q.left.forEach(l=>{ if(a[l.k]===q.answer[l.k]) rightCount++; });
+    const got = rightCount===q.left.length ? q.points : 0;
+    return {pts:got, status: got>0?"correct":"wrong", got, rightCount, total:q.left.length};
+  }
+  if(q.type==="short"){
+    const got = (typeof a==="number") ? a : 0;
+    return {pts:got, status:"self", got};
+  }
+  return {pts:0,status:"wrong",got:0};
+}
+
+function applyVerdict(){
+  let totalAuto = 0; // single+multi+judge+match
+  let totalShort = 0;
+  let shortCount = 0;
+
+  QUESTIONS.forEach(q=>{
+    const r = scoreQ(q);
+    const card = document.querySelector(`.q[data-id="${q.id}"]`);
+    card.classList.add("locked","show-explain");
+
+    if(q.type==="single" || q.type==="multi"){
+      q.opts.forEach(o=>{
+        const optEl = card.querySelector(`.opt[data-k="${o.k}"]`);
+        if(q.answer.includes(o.k)) optEl.classList.add("is-answer");
+        if(optEl.classList.contains("selected") && !q.answer.includes(o.k)) optEl.classList.add("bad-pick");
+      });
+      card.classList.add(r.status);
+      addPtsLine(card, r, q);
+      totalAuto += r.got;
+    }
+    else if(q.type==="judge"){
+      card.querySelectorAll(".tf-btn").forEach(b=>{
+        const v = b.dataset.v==="true";
+        if(v===q.answer) b.classList.add("is-answer");
+        if(b.classList.contains("selected") && v!==q.answer) b.classList.add("bad-pick");
+      });
+      card.classList.add(r.status);
+      addPtsLine(card, r, q);
+      totalAuto += r.got;
+    }
+    else if(q.type==="match"){
+      let rowHtml = "";
+      q.left.forEach(l=>{
+        const sel = card.querySelector(`.match-select[data-left="${l.k}"]`);
+        sel.disabled = true;
+        const rowEl = card.querySelector(`.match-row[data-left="${l.k}"]`);
+        const userV = state[q.id] && state[q.id][l.k];
+        if(userV===q.answer[l.k]){ rowEl.classList.add("correct-row"); }
+        else {
+          rowEl.classList.add("wrong-row");
+          // append correct letter
+          const hint = document.createElement("span");
+          hint.style.cssText="font-size:12px;color:var(--ok);font-weight:700;margin-left:4px";
+          hint.textContent = `→ 正确:${q.answer[l.k]}`;
+          rowEl.appendChild(hint);
+        }
+      });
+      card.classList.add(r.status);
+      addPtsLine(card, r, q);
+      totalAuto += r.got;
+    }
+    else if(q.type==="short"){
+      // disable textarea, show self-eval
+      const ta = card.querySelector(".ta");
+      ta.disabled = true;
+      document.getElementById("se-"+q.id).style.display="flex";
+      totalShort += r.got;
+      shortCount++;
+      const ptsEl = document.getElementById("pts-"+q.id);
+      ptsEl.textContent = r.got>0 ? `已计入 ${r.got} 分` : "计 0 分（请自评）";
+    }
+  });
+
+  return {totalAuto, totalShort};
+}
+
+function addPtsLine(card, r, q){
+  const div = document.createElement("div");
+  if(r.status==="partial"){
+    div.className="pts-line"; div.style.color="#C98A1E";
+    div.innerHTML = `▲ 漏选得 <b>1 分</b> / 满分 ${q.points}`;
+  } else if(r.got>0){
+    div.className="pts-line gain";
+    div.innerHTML = `✓ 得 <b>${r.got}</b> 分 / 满分 ${q.points}`;
+  } else {
+    div.className="pts-line zero";
+    div.innerHTML = `✗ 得 <b>0</b> 分 / 满分 ${q.points}` + (r.total?`（匹配对 ${r.rightCount}/${r.total}）`:"");
+  }
+  card.querySelector(".explain").appendChild(div);
+}
+
+function comment(score){
+  if(score>=90) return "🏆 优秀！通识扎实，8月考试稳了。";
+  if(score>=75) return "👍 不错，重点章节再巩固下细节。";
+  if(score>=60) return "💪 及格线徘徊，建议重做错题、回看对应章节。";
+  return "⚠️ 需要重点复习，尤其是⚠️标记的云蕾考点题。";
+}
+
+function refreshResult(){
+  let totalAuto=0, totalShort=0;
+  QUESTIONS.forEach(q=>{
+    const r = scoreQ(q);
+    if(q.type==="short") totalShort += r.got; else totalAuto += r.got;
+  });
+  const total = totalAuto + totalShort;
+  document.getElementById("finalScore").textContent = total;
+  document.getElementById("finalComment").textContent = comment(total);
+  document.getElementById("finalDetail").textContent =
+    `客观题（单选/多选/判断/匹配）${totalAuto} 分 · 主观自评（简答/综合）${totalShort} 分`;
+}
+
+function submit(){
+  // pre-flight: warn if too few answered
+  const objective = QUESTIONS.filter(q=>q.type!=="short");
+  const unanswered = objective.filter(q=> state[q.id]===undefined ||
+    (q.type==="multi" && (!Array.isArray(state[q.id])||state[q.id].length===0)) ||
+    (q.type==="match" && (!state[q.id] || Object.keys(state[q.id]).length<q.left.length)) ).length;
+  if(unanswered>0){
+    if(!confirm(`还有 ${unanswered} 道客观题未作答，确定要交卷吗？`)) return;
+  }
+  submitted = true;
+  applyVerdict();
+  refreshResult();
+  document.getElementById("resultBanner").classList.add("show");
+  document.getElementById("submitBtn").classList.add("hidden");
+  document.getElementById("resetBtn").classList.remove("hidden");
+  document.getElementById("submitHint").textContent = "已交卷。点击「重新考试」可重置全部作答。";
+  // scroll to top to see result
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+function reset(){
+  if(!confirm("确定要重新考试吗？所有作答和判分将被清空。")) return;
+  state = {}; submitted = false;
+  render();
+  document.getElementById("resultBanner").classList.remove("show");
+  document.getElementById("submitBtn").classList.remove("hidden");
+  document.getElementById("resetBtn").classList.add("hidden");
+  document.getElementById("submitHint").textContent = "交卷后将自动判分并显示解析，输入会被锁定。";
+  document.getElementById("answeredCount").textContent = "0";
+  document.getElementById("progressFill").style.width = "0%";
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+/* boot */
+render();
+bind();
+</script>
+</body>
+</html>

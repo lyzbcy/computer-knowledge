@@ -198,8 +198,8 @@ footer a{color:var(--brick);font-weight:700;text-decoration:underline;}
         <div class="body">
           <span class="tag exam">8 月知识考试</span>
           <h3>通识综合考试</h3>
-          <p>27 题 · 单选/多选/判断/匹配/简答 · 覆盖上述 6 章 · 自动判分。考前必练。</p>
-          <div class="go">开始考试 →</div>
+          <p>多套试卷可选:通识综合卷(27题/100分)+易错专项(15题陷阱题)。自动判分,考前必练。</p>
+          <div class="go">选择试卷 →</div>
         </div>
       </a>
 
@@ -388,7 +388,7 @@ footer a{color:var(--brick);font-weight:700;text-decoration:underline;}
 <script>
 // 版本检测
 (function(){
-  var PAGE_V = 6;
+  var PAGE_V = 7;
   fetch("version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.json();}).then(function(d){
     if(PAGE_V!==d.v){
       var last=0; try{last=parseInt(sessionStorage.getItem("ck_refreshed")||"0");}catch(e){}

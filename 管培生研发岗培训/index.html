@@ -7,30 +7,93 @@
 <link rel="icon" href="../Vue3/img/sticker/mascot.png">
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Poppins:wght@400;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-:root{--cream:#FAF6EB;--paper:#F3EDDD;--forest:#1E3A24;--sky:#BCD8EE;--sage:#AFCDA8;--ink:#1A2018;--marker:#F5E08A;--brick:#B5482A;--font-display:"Archivo Black","Noto Sans SC","PingFang SC",sans-serif;--font-head:"Poppins","Noto Sans SC","PingFang SC",sans-serif;--font-body:-apple-system,"PingFang SC","Noto Sans SC",sans-serif;--radius-card:14px;}
+:root{
+  --cream:#FAF6EB;--paper:#F3EDDD;--forest:#1E3A24;--sky:#BCD8EE;--sage:#AFCDA8;
+  --ink:#1A2018;--marker:#F5E08A;--brick:#B5482A;
+  --font-display:"Archivo Black","Noto Sans SC","PingFang SC",sans-serif;
+  --font-head:"Poppins","Noto Sans SC","PingFang SC",sans-serif;
+  --font-body:-apple-system,"PingFang SC","Noto Sans SC",sans-serif;
+  --radius-card:14px;
+  /* 8 大类主题色 */
+  --c-general:#4A7C59;  /* 通识-森林绿 */
+  --c-frontend:#3D6B8E; /* 前端-海蓝 */
+  --c-backend:#8E5A3D;  /* 后端-赭石 */
+  --c-bigdata:#6B4A8E;  /* 大数据-紫 */
+  --c-ai:#B5482A;       /* AI-砖红 */
+  --c-test:#4A6B8E;     /* 测试-靛蓝 */
+  --c-baseline:#8E7A3D; /* 基线-金棕 */
+}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:var(--font-body);background:var(--cream);color:var(--ink);line-height:1.7;}
-.hero{background:var(--forest);color:var(--cream);padding:3.5rem 1.2rem 2.8rem;text-align:center;}
-.hero .mascot{width:80px;height:80px;border-radius:50%;border:3px solid var(--marker);margin-bottom:.8rem;}
-.hero h1{font-family:var(--font-display);font-size:2rem;margin-bottom:.5rem;}
-.hero p{opacity:.85;max-width:560px;margin:0 auto;font-size:.95rem;}
-.wrap{max-width:960px;margin:0 auto;padding:2.5rem 1.2rem 4rem;}
-.wrap>h2{font-family:var(--font-head);font-size:1.4rem;color:var(--forest);margin-bottom:.4rem;}
-.sub{color:#666;font-size:.9rem;margin-bottom:1.5rem;}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.2rem;}
-.card{background:#fff;border:1px solid #E6DCC2;border-radius:var(--radius-card);overflow:hidden;text-decoration:none;color:var(--ink);transition:transform .2s,box-shadow .2s;display:flex;}
-.card:hover{transform:translateY(-4px);box-shadow:0 8px 20px rgba(30,58,36,.12);}
-.card .thumb{width:64px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;background:var(--paper);flex-shrink:0;}
-.card .body{padding:16px 18px 18px;flex:1;display:flex;flex-direction:column;}
-.card .tag{display:inline-block;background:var(--sage);color:var(--forest);font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:999px;letter-spacing:.05em;margin-bottom:6px;width:fit-content;}
-.card h3{font-family:var(--font-head);color:var(--forest);font-size:1.05rem;margin-bottom:6px;}
-.card p{font-size:.85rem;color:#5A5040;flex:1;}
-.card .go{margin-top:12px;color:var(--brick);font-weight:600;font-size:.84rem;}
-.back{display:inline-flex;align-items:center;gap:6px;color:var(--forest);text-decoration:none;font-weight:600;font-size:.9rem;margin-bottom:1.5rem;font-family:var(--font-head);}
+
+/* ===== 顶部 Hero ===== */
+.hero{background:var(--forest);color:var(--cream);padding:3.2rem 1.2rem 2.4rem;text-align:center;}
+.hero .mascot{width:78px;height:78px;border-radius:50%;border:3px solid var(--marker);margin-bottom:.7rem;}
+.hero h1{font-family:var(--font-display);font-size:2rem;margin-bottom:.4rem;}
+.hero p{opacity:.88;max-width:600px;margin:0 auto;font-size:.95rem;}
+/* 考试节奏标识 */
+.exam-bar{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;margin-top:1.3rem;}
+.exam-chip{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:.55rem 1.1rem;font-size:.85rem;display:inline-flex;align-items:center;gap:.5rem;backdrop-filter:blur(4px);}
+.exam-chip .dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.exam-chip.now{background:var(--marker);color:var(--forest);border-color:var(--marker);font-weight:700;}
+.exam-chip.now .dot{background:var(--brick);}
+.exam-chip.next .dot{background:var(--sky);}
+.exam-chip .when{opacity:.8;font-size:.78rem;}
+
+.wrap{max-width:1000px;margin:0 auto;padding:2.2rem 1.2rem 1rem;}
+.back{display:inline-flex;align-items:center;gap:6px;color:var(--forest);text-decoration:none;font-weight:600;font-size:.9rem;margin-bottom:1.3rem;font-family:var(--font-head);}
 .back:hover{opacity:.7;}
-footer{text-align:center;padding:2rem 1.2rem;color:#7A6E54;font-size:.82rem;border-top:1px solid #E6DCC2;}
+
+/* ===== 分类区块 ===== */
+.cat{margin-bottom:2.4rem;}
+.cat-head{display:flex;align-items:center;gap:.7rem;margin-bottom:1rem;padding-bottom:.5rem;border-bottom:2px solid #E6DCC2;}
+.cat-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#fff;flex-shrink:0;font-family:var(--font-display);}
+.cat-title{font-family:var(--font-head);font-size:1.25rem;color:var(--forest);}
+.cat-title .en{font-size:.78rem;color:#8A7E64;font-weight:400;margin-left:.4rem;}
+.cat-meta{margin-left:auto;font-size:.78rem;color:#8A7E64;white-space:nowrap;}
+.cat-meta .cnt{color:var(--brick);font-weight:700;}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;}
+
+/* 卡片 */
+.card{background:#fff;border:1px solid #E6DCC2;border-radius:var(--radius-card);overflow:hidden;text-decoration:none;color:var(--ink);transition:transform .2s,box-shadow .2s;display:flex;position:relative;}
+.card:hover{transform:translateY(-4px);box-shadow:0 8px 20px rgba(30,58,36,.12);}
+.card .thumb{width:54px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;background:var(--paper);flex-shrink:0;}
+.card .body{padding:13px 15px 15px;flex:1;display:flex;flex-direction:column;min-width:0;}
+.card .tag{display:inline-block;font-size:.66rem;font-weight:700;padding:2px 8px;border-radius:999px;letter-spacing:.04em;margin-bottom:5px;width:fit-content;}
+.tag.live{background:var(--sage);color:var(--forest);}
+.tag.soon{background:#EAD9A8;color:#7A5A1D;}
+.tag.exam{background:var(--brick);color:#fff;}
+.card h3{font-family:var(--font-head);color:var(--forest);font-size:1rem;margin-bottom:4px;}
+.card p{font-size:.8rem;color:#5A5040;flex:1;line-height:1.55;}
+.card .go{margin-top:9px;font-weight:600;font-size:.78rem;}
+.card.live-card .go{color:var(--brick);}
+.card.soon-card{opacity:.92;}
+.card.soon-card .go{color:#9A8E64;}
+.card.exam-card{background:linear-gradient(135deg,#fff 60%,var(--marker) 200%);}
+.card.exam-card .go{color:var(--brick);}
+
+/* 考试入口大卡 */
+.exam-entry{background:linear-gradient(135deg,var(--forest) 0%,#2A4F33 100%);color:var(--cream);border:none;}
+.exam-entry:hover{box-shadow:0 10px 26px rgba(30,58,36,.28);}
+.exam-entry .thumb{background:rgba(255,255,255,.12);}
+.exam-entry h3{color:var(--cream);}
+.exam-entry p{color:rgba(250,246,235,.82);}
+.exam-entry .go{color:var(--marker);}
+
+/* ===== 建设中提示(已实现内容统计) ===== */
+.status-bar{background:var(--paper);border:1px dashed #C9Bd9F;border-radius:12px;padding:1rem 1.2rem;margin:1.5rem 0 0;font-size:.85rem;color:#5A5040;display:flex;gap:1.2rem;flex-wrap:wrap;align-items:center;}
+.status-bar strong{color:var(--forest);}
+.status-bar .sep{color:#C9BD9F;}
+
+footer{text-align:center;padding:2rem 1.2rem;color:#7A6E54;font-size:.82rem;border-top:1px solid #E6DCC2;margin-top:1rem;}
 footer a{color:var(--brick);font-weight:700;text-decoration:underline;}
-@media(max-width:600px){.hero h1{font-size:1.5rem;}}
+
+@media(max-width:600px){
+  .hero h1{font-size:1.5rem;}
+  .cat-title{font-size:1.1rem;}
+  .cat-meta{display:none;}
+}
 </style>
 </head>
 <body>
@@ -38,90 +101,252 @@ footer a{color:var(--brick);font-weight:700;text-decoration:underline;}
 <section class="hero">
   <img class="mascot" src="../Vue3/img/sticker/mascot.png" alt="捞鱼">
   <h1>管培生研发岗培训</h1>
-  <p>微盛研发岗管培生通识课程，做成一张张有原文依据、能交互、能复盘的理解地图。<br>
-  面向基础薄弱的同学（默认擅长 C 语言），含后台语音，边听边学。</p>
+  <p>微盛研发岗管培生全周期学习地图。八大方向 · 知识与实操双轨考核 · 每个方向独立认证。</p>
+  <div class="exam-bar">
+    <span class="exam-chip now"><span class="dot"></span>8 月 · 知识考试<span class="when"> · 笔试，各方向一套</span></span>
+    <span class="exam-chip next"><span class="dot"></span>9 月 · 实操项目考试<span class="when"> · 上手做</span></span>
+  </div>
 </section>
 
 <div class="wrap">
   <a class="back" href="../index.html">← 返回计算机知识</a>
-  <h2>📚 全部课程</h2>
-  <p class="sub">共 6 章，每章含 11 个学习模块 + 8 道互动闯关题 + 后台语音播报。点击卡片进入。</p>
 
-  <div class="grid">
+  <!-- 通识 -->
+  <div class="cat">
+    <div class="cat-head">
+      <div class="cat-icon" style="background:var(--c-general)">通</div>
+      <div class="cat-title">通识<span class="en">General</span></div>
+      <div class="cat-meta">研发岗必修 · <span class="cnt">6 章已上线</span> + 综合考试</div>
+    </div>
+    <div class="grid">
 
-    <a class="card" href="01-工单TAPD/工单和TAPD管理.html">
-      <div class="thumb">📋</div>
-      <div class="body">
-        <span class="tag">已上线</span>
-        <h3>工单和TAPD管理</h3>
-        <p>项目管理规范 8 阶段、交付池工单、TAPD 标准流程（迭代→父需求→子需求）、产研池需求、任务工时、缺陷管理、KA 售后 SLA。</p>
-        <div class="go">进入学习地图 →</div>
-      </div>
-    </a>
+      <a class="card live-card" href="01-工单TAPD/工单和TAPD管理.html">
+        <div class="thumb">📋</div>
+        <div class="body">
+          <span class="tag live">已上线</span>
+          <h3>TAPD 管理</h3>
+          <p>工单与 TAPD 关联、需求父子层级、迭代、工时(≤8h)、缺陷流程、KA 售后 SLA。</p>
+          <div class="go">进入学习 →</div>
+        </div>
+      </a>
 
-    <a class="card" href="02-任意门/任意门研发过程生命周期.html">
-      <div class="thumb">🚪</div>
-      <div class="body">
-        <span class="tag">已上线</span>
-        <h3>任意门研发过程生命周期</h3>
-        <p>GitLab 仓库、任意门平台、分支规则（feature/release/master）、需求状态流转、灰度与正式上线、Nacos、XXL-Job、数据库、RocketMQ、Redis、K8s。</p>
-        <div class="go">进入学习地图 →</div>
-      </div>
-    </a>
+      <a class="card live-card" href="02-任意门/任意门研发过程生命周期.html">
+        <div class="thumb">🚪</div>
+        <div class="body">
+          <span class="tag live">已上线</span>
+          <h3>仓库管理</h3>
+          <p>GitLab 仓库、任意门、分支规则(feature/release/master)、灰度与正式上线、中间件。</p>
+          <div class="go">进入学习 →</div>
+        </div>
+      </a>
 
-    <a class="card" href="03-企微生态/企微生态入门.html">
-      <div class="thumb">🔌</div>
-      <div class="body">
-        <span class="tag">已上线</span>
-        <h3>企微生态入门</h3>
-        <p>三种开发模式（自建/第三方/代开发）、核心业务入口、后端 API、JS-SDK、回调、权限授权体系、access_token、ID 体系、加解密。</p>
-        <div class="go">进入学习地图 →</div>
-      </div>
-    </a>
+      <a class="card live-card" href="03-企微生态/企微生态入门.html">
+        <div class="thumb">🔌</div>
+        <div class="body">
+          <span class="tag live">已上线</span>
+          <h3>企微生态</h3>
+          <p>三种开发模式、access_token、回调加解密、ID 体系、权限授权、JS-SDK。</p>
+          <div class="go">进入学习 →</div>
+        </div>
+      </a>
 
-    <a class="card" href="04-企微私有化/企微私有化产品培训.html">
-      <div class="thumb">🏢</div>
-      <div class="body">
-        <span class="tag">已上线</span>
-        <h3>企微私有化产品培训</h3>
-        <p>SaaS vs 私有化、四大核心优势（数据自主可控/合规安全/定制扩展/网络隔离）、适用场景、三层架构、部署拓扑、实施流程。</p>
-        <div class="go">进入学习地图 →</div>
-      </div>
-    </a>
+      <a class="card live-card" href="04-企微私有化/企微私有化产品培训.html">
+        <div class="thumb">🏢</div>
+        <div class="body">
+          <span class="tag live">已上线</span>
+          <h3>企业微信私有化部署</h3>
+          <p>SaaS vs 私有化、四大优势、三层架构(Nginx/hikit/DFS)、部署拓扑、国密、实施流程。</p>
+          <div class="go">进入学习 →</div>
+        </div>
+      </a>
 
-    <a class="card" href="05-微信生态/微信生态入门.html">
-      <div class="thumb">💬</div>
-      <div class="body">
-        <span class="tag">已上线</span>
-        <h3>微信生态入门</h3>
-        <p>公众号（订阅号/服务号）、视频号、小程序、企业微信、开放平台、微信支付等微信生态全景，各产品定位、价值与协同关系。</p>
-        <div class="go">进入学习地图 →</div>
-      </div>
-    </a>
+      <a class="card live-card" href="05-微信生态/微信生态入门.html">
+        <div class="thumb">💬</div>
+        <div class="body">
+          <span class="tag live">已上线</span>
+          <h3>微信生态</h3>
+          <p>企微管家集成视角:获客转化链路、活码、轨迹素材、内容中心、接入流程 6 步。</p>
+          <div class="go">进入学习 →</div>
+        </div>
+      </a>
 
-    <a class="card" href="06-研发监控/研发监控与日志.html">
-      <div class="thumb">📊</div>
-      <div class="body">
-        <span class="tag">已上线</span>
-        <h3>研发监控与日志</h3>
-        <p>CLS 日志服务（三种查找方式）、监控体系（监控项/监控指标/告警/告警规则/告警等级 P0-P3/告警通知/告警渠道）。</p>
-        <div class="go">进入学习地图 →</div>
-      </div>
-    </a>
+      <a class="card live-card" href="06-研发监控/研发监控与日志.html">
+        <div class="thumb">📊</div>
+        <div class="body">
+          <span class="tag live">已上线</span>
+          <h3>Debug</h3>
+          <p>腾讯云 CLS 查日志(测试/生产)、任意门云监控 11 维度、慢接口(>1s)、VPN。</p>
+          <div class="go">进入学习 →</div>
+        </div>
+      </a>
 
+      <!-- 通识综合考试 -->
+      <a class="card exam-card exam-entry" href="exam/通识综合考试.html">
+        <div class="thumb">📝</div>
+        <div class="body">
+          <span class="tag exam">8 月知识考试</span>
+          <h3>通识综合考试</h3>
+          <p>27 题 · 单选/多选/判断/匹配/简答 · 覆盖上述 6 章 · 自动判分。考前必练。</p>
+          <div class="go">开始考试 →</div>
+        </div>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- 前端 -->
+  <div class="cat">
+    <div class="cat-head">
+      <div class="cat-icon" style="background:var(--c-frontend)">前</div>
+      <div class="cat-title">前端开发<span class="en">Frontend</span></div>
+      <div class="cat-meta">即将上线</div>
+    </div>
+    <div class="grid">
+      <a class="card soon-card" href="exam/building.html?cat=前端开发&sub=开发规范">
+        <div class="thumb">📐</div><div class="body"><span class="tag soon">即将上线</span><h3>开发规范</h3><p>前端代码规范、目录结构、命名约定、代码评审要点。</p><div class="go">建设中 →</div></div>
+      </a>
+      <a class="card soon-card" href="exam/building.html?cat=前端开发&sub=项目与发布">
+        <div class="thumb">🚀</div><div class="body"><span class="tag soon">即将上线</span><h3>项目与发布</h3><p>前端工程化、构建、任意门发布流程、灰度与正式上线。</p><div class="go">建设中 →</div></div>
+      </a>
+      <a class="card soon-card" href="exam/building.html?cat=前端开发&sub=前端问题定位">
+        <div class="thumb">🐞</div><div class="body"><span class="tag soon">即将上线</span><h3>前端问题定位</h3><p>浏览器调试、网络面板、性能分析、常见 Bug 排查思路。</p><div class="go">建设中 →</div></div>
+      </a>
+      <a class="card soon-card" href="exam/building.html?cat=前端开发&sub=AICoding">
+        <div class="thumb">🤖</div><div class="body"><span class="tag soon">即将上线</span><h3>AICoding</h3><p>Codex / Cursor 等 AI 编码工具的前端提效实践。</p><div class="go">建设中 →</div></div>
+      </a>
+      <a class="card soon-card" href="exam/building.html?cat=前端开发&sub=前端学习材料">
+        <div class="thumb">📚</div><div class="body"><span class="tag soon">即将上线</span><h3>前端学习材料</h3><p>Vue3、TypeScript、组件库等进阶学习资源汇总。</p><div class="go">建设中 →</div></div>
+      </a>
+    </div>
+  </div>
+
+  <!-- 后端 -->
+  <div class="cat">
+    <div class="cat-head">
+      <div class="cat-icon" style="background:var(--c-backend)">后</div>
+      <div class="cat-title">后端开发<span class="en">Backend</span></div>
+      <div class="cat-meta">即将上线</div>
+    </div>
+    <div class="grid">
+      <a class="card soon-card" href="exam/building.html?cat=后端开发&sub=开发规范">
+        <div class="thumb">📐</div><div class="body"><span class="tag soon">即将上线</span><h3>开发规范</h3><p>后端代码规范、接口设计、异常处理、日志规范。</p><div class="go">建设中 →</div></div>
+      </a>
+      <a class="card soon-card" href="exam/building.html?cat=后端开发&sub=标品的服务治理">
+        <div class="thumb">🛡️</div><div class="body"><span class="tag soon">即将上线</span><h3>标品的服务治理</h3><p>微服务架构、服务注册发现、限流熔断、链路追踪。</p><div class="go">建设中 →</div></div>
+      </a>
+      <a class="card soon-card" href="exam/building.html?cat=后端开发&sub=云原生的运维">
+        <div class="thumb">☁️</div><div class="body"><span class="tag soon">即将上线</span><h3>云原生的运维</h3><p>K8s、容器、Pod、命名空间、CI/CD、监控告警。</p><div class="go">建设中 →</div></div>
+      </a>
+      <a class="card soon-card" href="exam/building.html?cat=后端开发&sub=脚手架">
+        <div class="thumb">🧰</div><div class="body"><span class="tag soon">即将上线</span><h3>脚手架</h3><p>项目脚手架、模板工程、代码生成、快速起服务。</p><div class="go">建设中 →</div></div>
+      </a>
+    </div>
+  </div>
+
+  <!-- 大数据 -->
+  <div class="cat">
+    <div class="cat-head">
+      <div class="cat-icon" style="background:var(--c-bigdata)">数</div>
+      <div class="cat-title">大数据<span class="en">Big Data</span></div>
+      <div class="cat-meta">即将上线</div>
+    </div>
+    <div class="grid">
+      <a class="card soon-card" href="exam/building.html?cat=大数据&sub=01-大数据基础与演进">
+        <div class="thumb">🏗️</div><div class="body"><span class="tag soon">即将上线</span><h3>01 大数据基础与演进</h3><p>大数据概念、技术演进、Lambda/Kappa 架构、核心组件。</p><div class="go">建设中 →</div></div>
+      </a>
+      <a class="card soon-card" href="exam/building.html?cat=大数据&sub=02-微盛大数据实践">
+        <div class="thumb">⚙️</div><div class="body"><span class="tag soon">即将上线</span><h3>02 微盛大数据实践</h3><p>微盛内部大数据平台、数据链路、典型应用场景。</p><div class="go">建设中 →</div></div>
+      </a>
+      <a class="card soon-card" href="exam/building.html?cat=大数据&sub=03-未来展望">
+        <div class="thumb">🔮</div><div class="body"><span class="tag soon">即将上线</span><h3>03 未来展望</h3><p>实时数仓、Data+AI、湖仓一体等趋势方向。</p><div class="go">建设中 →</div></div>
+      </a>
+    </div>
+  </div>
+
+  <!-- AI -->
+  <div class="cat">
+    <div class="cat-head">
+      <div class="cat-icon" style="background:var(--c-ai)">AI</div>
+      <div class="cat-title">AI 相关<span class="en">AI</span></div>
+      <div class="cat-meta">即将上线</div>
+    </div>
+    <div class="grid">
+      <a class="card soon-card" href="exam/building.html?cat=AI相关&sub=Codex使用">
+        <div class="thumb">💻</div><div class="body"><span class="tag soon">即将上线</span><h3>Codex 使用</h3><p>Codex 命令行 AI 编码助手的使用方法与提效技巧。</p><div class="go">建设中 →</div></div>
+      </a>
+      <a class="card soon-card" href="exam/building.html?cat=AI相关&sub=常用SKILLS介绍">
+        <div class="thumb">🎯</div><div class="body"><span class="tag soon">即将上线</span><h3>常用 SKILLS 介绍</h3><p>ZCode Skills 体系、常用技能、调用方式。</p><div class="go">建设中 →</div></div>
+      </a>
+      <a class="card soon-card" href="exam/building.html?cat=AI相关&sub=SKILLS调优">
+        <div class="thumb">🔧</div><div class="body"><span class="tag soon">即将上线</span><h3>SKILLS 调优</h3><p>SKILL 编写、调优、质量评估、最佳实践。</p><div class="go">建设中 →</div></div>
+      </a>
+    </div>
+  </div>
+
+  <!-- 测试 -->
+  <div class="cat">
+    <div class="cat-head">
+      <div class="cat-icon" style="background:var(--c-test)">测</div>
+      <div class="cat-title">测试相关<span class="en">QA</span></div>
+      <div class="cat-meta">部分已上线</div>
+    </div>
+    <div class="grid">
+      <a class="card live-card" href="../一人开发/自动化测试生成与执行.html">
+        <div class="thumb">🤖</div><div class="body"><span class="tag live">已上线</span><h3>自动化测试生成与执行</h3><p>自动化测试框架、用例生成、执行与报告。</p><div class="go">进入学习 →</div></div>
+      </a>
+      <a class="card live-card" href="../一人开发/测试用例设计方法.html">
+        <div class="thumb">🧪</div><div class="body"><span class="tag live">已上线</span><h3>测试用例设计方法</h3><p>等价类、边界值、场景法等用例设计方法。</p><div class="go">进入学习 →</div></div>
+      </a>
+      <a class="card live-card" href="../一人开发/测试人员如何进行质量评估培训.html">
+        <div class="thumb">📊</div><div class="body"><span class="tag live">已上线</span><h3>质量评估</h3><p>测试质量指标、覆盖率、缺陷分析、风险评估。</p><div class="go">进入学习 →</div></div>
+      </a>
+    </div>
+  </div>
+
+  <!-- 基线 -->
+  <div class="cat">
+    <div class="cat-head">
+      <div class="cat-icon" style="background:var(--c-baseline)">基</div>
+      <div class="cat-title">基线<span class="en">Baseline</span></div>
+      <div class="cat-meta">即将上线</div>
+    </div>
+    <div class="grid">
+      <a class="card soon-card" href="exam/building.html?cat=基线&sub=部署方式">
+        <div class="thumb">📦</div><div class="body"><span class="tag soon">即将上线</span><h3>部署方式</h3><p>SaaS / 私有化 / 基线三种部署模式的区别与选型。</p><div class="go">建设中 →</div></div>
+      </a>
+      <a class="card soon-card" href="exam/building.html?cat=基线&sub=基线和SaaS关系">
+        <div class="thumb">🔗</div><div class="body"><span class="tag soon">即将上线</span><h3>基线和 SaaS 关系</h3><p>基线版本与 SaaS 版本的演进、同步、差异管理。</p><div class="go">建设中 →</div></div>
+      </a>
+      <a class="card soon-card" href="exam/building.html?cat=基线&sub=打基线流程">
+        <div class="thumb">🔨</div><div class="body"><span class="tag soon">即将上线</span><h3>打基线流程</h3><p>基线打包、版本管理、交付物清单。</p><div class="go">建设中 →</div></div>
+      </a>
+      <a class="card soon-card" href="exam/building.html?cat=基线&sub=基线部署SOP">
+        <div class="thumb">📋</div><div class="body"><span class="tag soon">即将上线</span><h3>基线部署 SOP</h3><p>基线标准化部署操作手册、检查清单、验收标准。</p><div class="go">建设中 →</div></div>
+      </a>
+    </div>
+  </div>
+
+  <!-- 总览状态条 -->
+  <div class="status-bar">
+    <span>📦 <strong>已上线</strong>:通识 6 章 + 测试 3 篇</span>
+    <span class="sep">|</span>
+    <span>🚧 <strong>建设中</strong>:前端 · 后端 · 大数据 · AI · 基线</span>
+    <span class="sep">|</span>
+    <span>📝 <strong>8 月知识考试</strong>:每方向一套,通识卷已开放</span>
   </div>
 </div>
 
 <footer>
-  管培生研发岗培训 · 通识课程学习地图<br>
+  管培生研发岗培训 · 学习地图<br>
+  八大方向 · 知识考试(8 月) + 实操项目考试(9 月)<br>
   由 <a href="https://lyzbcy.github.io/" target="_blank" rel="noopener">捞鱼</a> 制作
 </footer>
 
 <script src="comments.js"></script>
 <script>
-// 版本检测：内联版本号 vs version.json，不一致就刷新（解决CDN缓存旧HTML）
+// 版本检测
 (function(){
-  var PAGE_V = 2;
+  var PAGE_V = 3;
   fetch("version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.json();}).then(function(d){
     if(PAGE_V!==d.v){
       var last=0; try{last=parseInt(sessionStorage.getItem("ck_refreshed")||"0");}catch(e){}

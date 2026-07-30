@@ -700,7 +700,7 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
     <div class="c-row"><span class="ck">定义</span>阿里巴巴开源的服务发现与配置管理平台。微盛用它统一存各服务的配置（数据库地址、redis 地址、参数），并登记每个服务实例的注册信息。</div>
     <div class="c-row"><span class="ck">人话</span>一个集中改配置的网站，改一处所有服务都读到新值；同时是"有哪些服务在跑"的花名册。</div>
     <div class="analogy">类比 C：Nacos ≈ 程序运行时的全局变量配置中心 + 已注册函数指针表；改配置不用重新编译，运行时生效。</div>
-    <div class="c-row"><span class="ck">关系</span>可在任意门"应用中心→Nacos"里直接修改测试/生产配置；redis 连接信息也存在 Nacos 的 redis-info.yaml。</div>
+    <div class="c-row"><span class="ck">关系</span>可在任意门"应用中心→Nacos"里直接修改测试/生产配置；redis 连接信息也存在 Nacos 的 redisw-info.yaml。</div>
     <div class="src-quote">可以在任意门上修改、查看 nacos 配置，以及查看服务注册。</div>
     <div class="c-row"><span class="ck">不要误解成</span>Nacos ≠ 数据库。它存的是"配置"（小量、键值型），不是业务数据。</div>
   </div>
@@ -872,8 +872,8 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
   <!-- 题7 判断：nacos -->
   <div class="task" data-task="t7" data-answer="B"
        data-ok="对——这句话错在把 nacos 当数据库。nacos 是配置中心，存的是配置（如 redis 连接信息），业务数据仍在数据库里。"
-       data-no="你选了"对"，但这是错的。nacos 存的是配置（redis-info.yaml 这种），不是业务数据；业务数据在 PostgreSQL 等数据库里。回到 06 概念⑤。"
-       data-src="原文：可以在任意门上修改、查看 nacos 配置……redis 相关的配置可以在任意门上查看（redis-info.yaml）。"
+       data-no="你选了"对"，但这是错的。nacos 存的是配置（redisw-info.yaml 这种），不是业务数据；业务数据在 PostgreSQL 等数据库里。回到 06 概念⑤。"
+       data-src="原文：可以在任意门上修改、查看 nacos 配置……redis 相关的配置可以在任意门上查看（redisw-info.yaml）。"
        data-review="回到「06 概念⑤ Nacos」+「09 误解 4」复习">
     <div class="q">7. 【判断】Nacos 既能改配置、也能存业务数据（如用户订单），是个数据库。</div>
     <div class="opts">
@@ -967,7 +967,7 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
   <div class="myth">
     <div class="myth-head">误解 4 · "Nacos 是个数据库，能存业务数据"</div>
     <div class="row"><span class="key">为什么容易误解</span>看到 nacos 里能"查看/修改"东西，以为是数据存储。</div>
-    <div class="row"><span class="key">原文真正说了</span>Nacos 用于"修改、查看配置"和"查看服务注册"，存的是 yaml 配置（如 redis-info.yaml），不是业务数据。</div>
+    <div class="row"><span class="key">原文真正说了</span>Nacos 用于"修改、查看配置"和"查看服务注册"，存的是 yaml 配置（如 redisw-info.yaml），不是业务数据。</div>
     <div class="row"><span class="key">如何避免</span>业务数据在 PostgreSQL（数据库），Nacos 只管配置和服务发现。</div>
   </div>
 
@@ -1375,7 +1375,7 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
 <script>
 // 版本检测：内联版本号 vs version.json，不一致就刷新（解决CDN缓存旧HTML）
 (function(){
-  var PAGE_V = 5;
+  var PAGE_V = 6;
   fetch("../../version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.json();}).then(function(d){
     if(PAGE_V!==d.v){
       var last=0; try{last=parseInt(sessionStorage.getItem("ck_refreshed")||"0");}catch(e){}

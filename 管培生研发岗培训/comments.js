@@ -41,6 +41,12 @@
   }
 
   function init() {
+    // 优先：页面如果提供了 #page-comments 容器（想把整页评论放前面的页面），渲染进去
+    var pc = document.getElementById("page-comments");
+    if (pc && !pc.querySelector("iframe")) {
+      pc.appendChild(makeUtterances(location.pathname));
+    }
+
     // 章节页：每个 .module 的 h2 加定位讨论按钮
     var modules = document.querySelectorAll(".module");
     if (modules.length) {
@@ -61,7 +67,8 @@
         });
       });
     } else {
-      // 栏目 index：页脚前放整页评论区
+      // 栏目 index：页脚前放整页评论区（若已用 #page-comments 放到前面，则跳过）
+      if (document.getElementById("page-comments")) return;
       var footer = document.querySelector("footer");
       if (footer && !document.querySelector(".page-comments")) {
         var wrap = document.createElement("div");

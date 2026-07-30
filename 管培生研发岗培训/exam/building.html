@@ -26,26 +26,31 @@ p{color:#5A5040;font-size:.95rem;line-height:1.8;margin-bottom:1.5rem;}
 <body>
 <div class="wrap">
   <img class="mascot" src="../../Vue3/img/sticker/mascot.png" alt="捞鱼">
-  <h1>🚧 内容建设中</h1>
+  <h1 id="h1">🚧 内容建设中</h1>
   <div id="catTag" class="cat-name">分类</div>
   <div id="subName" class="sub-name">章节</div>
-  <p>这一章的学习内容正在筹备中，还未上线。<br>
-  完成后会更新到这里，并开放对应的 8 月知识考试。</p>
-  <div class="progress">
+  <p id="desc">这一章的学习内容正在筹备中，还未上线。<br>完成后会更新到这里，并开放对应的 8 月知识考试。</p>
+  <div class="progress" id="prog">
     📦 <strong>当前进度</strong>：通识 6 章已全部上线，<strong>通识综合考试</strong>已开放。<br>
     其它方向（前端 / 后端 / 大数据 / AI / 基线）的内容正在按计划推进，敬请期待。
   </div>
   <a class="back" href="../index.html">← 返回学习地图</a>
-  <div class="hint">提示：8 月知识考试每方向一套，9 月为实操项目考试</div>
+  <div class="hint">提示：8 月为学习考试阶段，七大方向各一套知识考试，9 月为实操项目考试</div>
 </div>
 <script>
-// 从 URL 参数读取分类和章节
+// 从 URL 参数读取分类、章节、类型
 var p = new URLSearchParams(location.search);
 var cat = p.get('cat') || '该方向';
 var sub = p.get('sub') || '该章节';
+var type = p.get('type'); // exam = 考试筹备中；否则 = 学习内容建设中
 document.getElementById('catTag').textContent = cat;
 document.getElementById('subName').textContent = sub;
 document.title = sub + ' · 建设中';
+if(type === 'exam'){
+  document.getElementById('h1').textContent = '📝 考试筹备中';
+  document.getElementById('desc').innerHTML = '该方向的 <strong>8 月知识考试</strong> 正在筹备中，题目与复习范围整理好后会在这里开放。<br>现阶段请先学好对应章节的学习内容。';
+  document.getElementById('prog').innerHTML = '📦 <strong>当前进度</strong>：<strong>通识综合考试</strong>已开放（27 题，自动判分）。<br>前端 / 后端 / 大数据 / AI / 测试 / 基线 六个方向的考试将陆续开放，敬请期待。';
+}
 </script>
 </body>
 </html>

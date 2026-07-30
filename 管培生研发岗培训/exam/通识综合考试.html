@@ -419,6 +419,7 @@
         <div>简答 <b>6 分/题</b>×3（自评）</div>
         <div>综合应用 <b>10 分</b>×1（自评）</div>
       </div>
+      <div class="notice-tip" id="noticeTip">💡 正式考试（7.31 闭卷 40 分钟）题型为 <b>单选/多选/判断/简答</b>；本卷的「匹配题」为额外练习题型，正式考试不出，可做可不做。</div>
       <div class="notice-tip" id="noticeTip">💡 做完后点击页面底部「交卷判分」自动判分；简答/综合题点击「参考答案」后自评。</div>
     </div>
 
@@ -1118,6 +1119,20 @@ function reset(){
 /* boot: render picker first; engine binds once (delegation auto-tracks current QUESTIONS) */
 renderPicker();
 bind();
+</script>
+<script>
+// 版本检测:内联版本号 vs version.json,不一致就刷新(解决CDN缓存)
+(function(){
+  var PAGE_V = 6;
+  fetch("../version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.json();}).then(function(d){
+    if(PAGE_V!==d.v){
+      var last=0; try{last=parseInt(sessionStorage.getItem("ck_refreshed")||"0");}catch(e){}
+      if(Date.now()-last<3000) return;
+      try{sessionStorage.setItem("ck_refreshed",String(Date.now()));}catch(e){}
+      setTimeout(function(){location.reload(true);},800);
+    }
+  }).catch(function(){});
+})();
 </script>
 </body>
 </html>

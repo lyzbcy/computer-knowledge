@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>通识综合考试 · 研发岗管培生</title>
+<title>通识考试 · 多卷选择 · 研发岗管培生</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
@@ -302,6 +302,57 @@
   .reset-btn.hidden{display:none}
   .submit-hint{margin-top:12px;color:var(--muted);font-size:13px}
 
+  /* ===== back to picker button ===== */
+  .back-to-picker{
+    display:inline-flex;align-items:center;gap:6px;
+    background:#fff;border:1.5px solid var(--line);color:var(--forest);
+    padding:8px 16px;border-radius:999px;font-weight:700;font-size:13px;
+    cursor:pointer;margin:14px 0 0;transition:.15s;
+  }
+  .back-to-picker:hover{background:var(--marker);transform:translateX(-2px)}
+
+  /* ===== paper picker ===== */
+  #paperPicker .picker-sub{margin:10px 0 0;color:var(--muted);font-size:14px;font-weight:500;position:relative;z-index:1}
+  .paper-list{
+    margin-top:22px;
+    display:grid;grid-template-columns:repeat(2,1fr);gap:20px;
+  }
+  .paper-card{
+    background:var(--card);border:1.5px solid var(--line);
+    border-radius:var(--radius-xl);padding:28px 26px;
+    box-shadow:var(--shadow);cursor:pointer;
+    display:flex;flex-direction:column;gap:10px;
+    transition:.2s;position:relative;overflow:hidden;
+  }
+  .paper-card:hover{
+    transform:translateY(-6px);
+    box-shadow:0 26px 54px rgba(43,35,23,.18);
+    border-color:var(--marker-deep);
+  }
+  .paper-card::after{
+    content:"";position:absolute;right:-44px;top:-44px;width:150px;height:150px;
+    background:var(--marker);border-radius:50%;opacity:.28;filter:blur(6px);
+    transition:.25s;
+  }
+  .paper-card:hover::after{opacity:.5;transform:scale(1.08)}
+  .p-icon{font-size:46px;line-height:1;position:relative;z-index:1}
+  .p-title{
+    margin:0;font-family:"Fredoka","Noto Sans SC",sans-serif;
+    font-size:23px;color:var(--forest);font-weight:700;position:relative;z-index:1;
+  }
+  .p-sub{font-size:13px;color:var(--muted);font-weight:600;position:relative;z-index:1}
+  .p-desc{font-size:14px;color:var(--ink);line-height:1.7;flex:1;position:relative;z-index:1}
+  .p-meta{
+    font-size:12px;color:var(--brick);font-weight:700;
+    background:#FFF7DA;border:1px solid var(--marker-deep);
+    padding:5px 13px;border-radius:999px;align-self:flex-start;position:relative;z-index:1;
+  }
+  .p-go{
+    margin-top:6px;font-weight:800;color:var(--forest);font-size:15px;
+    display:inline-flex;align-items:center;gap:6px;position:relative;z-index:1;transition:.15s;
+  }
+  .paper-card:hover .p-go{color:var(--brick);gap:10px}
+
   footer{margin-top:30px;text-align:center;color:var(--muted);font-size:12px;padding:20px}
 
   @media(max-width:640px){
@@ -310,6 +361,7 @@
     .hero h1{font-size:24px}
     .topbar .home span{display:none}
     .result-banner{flex-direction:column;text-align:center}
+    .paper-list{grid-template-columns:1fr}
   }
 </style>
 </head>
@@ -320,7 +372,7 @@
   <div class="topbar-inner">
     <a class="home" href="../index.html">← <span>返回目录</span></a>
     <div class="progress-wrap">
-      <div class="progress-meta">已答题 <b id="answeredCount">0</b> / <b>27</b></div>
+      <div class="progress-meta">已答题 <b id="answeredCount">0</b> / <b id="progressTotal">27</b></div>
       <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
     </div>
   </div>
@@ -328,184 +380,311 @@
 
 <div class="wrap">
 
-  <!-- ===== hero ===== -->
-  <div class="hero">
-    <img class="mascot" src="../../Vue3/img/sticker/mascot.png" alt="mascot">
-    <div class="hero-text">
-      <h1>通识综合考试</h1>
-      <div class="sub"><span class="tag">8 月</span>研发岗管培生 · 知识考试 · 共 27 题</div>
+  <!-- ===== paper picker (default visible) ===== -->
+  <div id="paperPicker">
+    <div class="hero">
+      <img class="mascot" src="../../Vue3/img/sticker/mascot.png" alt="mascot">
+      <div class="hero-text">
+        <h1>选择一套试卷</h1>
+        <p class="picker-sub"><span class="tag">多卷</span>通识考试有多套卷子,选择一套开始。做完可返回选另一套。</p>
+      </div>
     </div>
+    <div class="paper-list" id="paperList"><!-- JS renders paper cards here --></div>
+    <footer>研发岗管培生通识培训 · 多卷选择 · v2.0</footer>
   </div>
 
-  <!-- ===== notice strip ===== -->
-  <div class="notice">
-    <h3>📋 考试说明</h3>
-    <div class="notice-grid">
-      <div>总分 <b>100 分</b></div>
-      <div>建议时长 <b>90 分钟</b></div>
-      <div>单选 <b>3 分/题</b>×10</div>
-      <div>多选 <b>4 分/题</b>×6（漏选得1分，错选不得分）</div>
-      <div>判断 <b>2 分/题</b>×5</div>
-      <div>匹配 <b>4 分/题</b>×2</div>
-      <div>简答 <b>6 分/题</b>×3（自评）</div>
-      <div>综合应用 <b>10 分</b>×1（自评）</div>
+  <!-- ===== exam area (hidden until a paper is picked) ===== -->
+  <div id="examArea" style="display:none">
+    <button class="back-to-picker" id="backToPicker">← 返回选卷</button>
+
+    <!-- hero -->
+    <div class="hero">
+      <img class="mascot" src="../../Vue3/img/sticker/mascot.png" alt="mascot">
+      <div class="hero-text">
+        <h1 id="heroTitle">通识综合考试</h1>
+        <div class="sub" id="heroSub"><span class="tag">8 月</span>研发岗管培生 · 知识考试 · 共 27 题</div>
+      </div>
     </div>
-    <div class="notice-tip">💡 做完后点击页面底部「交卷判分」自动判分；简答/综合题点击「参考答案」后自评。</div>
-  </div>
 
-  <!-- ===== result banner ===== -->
-  <div class="result-banner" id="resultBanner">
-    <div class="result-score"><span id="finalScore">0</span><small>总分 / 100</small></div>
-    <div>
-      <div class="result-comment" id="finalComment">—</div>
-      <div style="font-size:13px;opacity:.85;margin-top:6px" id="finalDetail"></div>
+    <!-- notice strip -->
+    <div class="notice">
+      <h3>📋 考试说明</h3>
+      <div class="notice-grid" id="noticeGrid">
+        <div>总分 <b>100 分</b></div>
+        <div>建议时长 <b>90 分钟</b></div>
+        <div>单选 <b>3 分/题</b>×10</div>
+        <div>多选 <b>4 分/题</b>×6（漏选得1分，错选不得分）</div>
+        <div>判断 <b>2 分/题</b>×5</div>
+        <div>匹配 <b>4 分/题</b>×2</div>
+        <div>简答 <b>6 分/题</b>×3（自评）</div>
+        <div>综合应用 <b>10 分</b>×1（自评）</div>
+      </div>
+      <div class="notice-tip" id="noticeTip">💡 做完后点击页面底部「交卷判分」自动判分；简答/综合题点击「参考答案」后自评。</div>
     </div>
+
+    <!-- result banner -->
+    <div class="result-banner" id="resultBanner">
+      <div class="result-score"><span id="finalScore">0</span><small id="finalScoreTotal">总分 / 100</small></div>
+      <div>
+        <div class="result-comment" id="finalComment">—</div>
+        <div style="font-size:13px;opacity:.85;margin-top:6px" id="finalDetail"></div>
+      </div>
+    </div>
+
+    <!-- exam container -->
+    <div id="exam"></div>
+
+    <!-- submit / reset -->
+    <div class="submit-area" id="submitArea">
+      <button class="submit-btn" id="submitBtn">交卷判分</button>
+      <button class="reset-btn hidden" id="resetBtn">重新考试</button>
+      <div class="submit-hint" id="submitHint">交卷后将自动判分并显示解析，输入会被锁定。</div>
+    </div>
+
+    <footer>研发岗管培生通识培训 · 多卷选择 · v2.0</footer>
   </div>
 
-  <!-- ===== exam container ===== -->
-  <div id="exam"></div>
-
-  <!-- ===== submit / reset ===== -->
-  <div class="submit-area" id="submitArea">
-    <button class="submit-btn" id="submitBtn">交卷判分</button>
-    <button class="reset-btn hidden" id="resetBtn">重新考试</button>
-    <div class="submit-hint" id="submitHint">交卷后将自动判分并显示解析，输入会被锁定。</div>
-  </div>
-
-  <footer>研发岗管培生通识培训 · 6 章综合测评 · v1.0</footer>
 </div>
 
 <script>
 /* ============================================================
-   DATA: 27 questions
+   DATA: multiple papers
    types: single | multi | judge | match | short
    ============================================================ */
-const QUESTIONS = [
-  // ---------- 一、单选 1-10 ----------
-  { id:1, type:"single", chap:"TAPD", points:3, q:"工单系统与 TAPD 之间，是通过什么字段做关联的？",
-    opts:[{k:"A",t:"工单号"},{k:"B",t:"工单项目 ID"},{k:"C",t:"TAPD 迭代号"},{k:"D",t:"父需求 ID"}],
-    answer:["B"], explain:"⚠️云蕾明示考点1。通过<b>工单项目 ID</b> 关联；工单管金额合同，TAPD 管需求工时。工单号是关联在子需求上的（考点6），别混。"
-  },
-  { id:2, type:"single", chap:"TAPD", points:3, q:"关于 TAPD 中需求的层级结构，下列说法正确的是？",
-    opts:[{k:"A",t:"父需求可以有多个，子需求只能有一个"},{k:"B",t:"每个项目有且仅有一个父需求，子需求可以有多个"},{k:"C",t:"子需求下面还可以再拆子需求，层层嵌套"},{k:"D",t:"父需求和子需求是一对一关系"}],
-    answer:["B"], explain:"⚠️云蕾明示考点2「<b>父需求有且只能有一个</b>」。C 是新手最常犯的错——子需求不能再拆。"
-  },
-  { id:3, type:"single", chap:"仓库管理", points:3, q:"一个需求从「待提测」流转到「已提测」，必须经过哪个动作？",
-    opts:[{k:"A",t:"关联迭代"},{k:"B",t:"在子需求上关联工单号"},{k:"C",t:"创建一个 release 测试分支"},{k:"D",t:"填写预估工时"}],
-    answer:["C"], explain:"任意门文档原文：状态从「待提测」流转到「已提测」需要<b>创建 release 测试分支</b>。A 是人效前提，B 是需求关联工单，别混。"
-  },
-  { id:4, type:"single", chap:"仓库管理", points:3, q:"在任意门新建需求时，feature 开发分支是从哪里拉出来的？",
-    opts:[{k:"A",t:"从 release 测试分支拉"},{k:"B",t:"从 master 分支拉"},{k:"C",t:"从其他 feature 分支拉"},{k:"D",t:"手动在 GitLab 新建"}],
-    answer:["B"], explain:"原文：feature 开发分支<b>从 master 拉出</b>，不要手动新建。版本标识只能填数字（建议 TAPD 需求 ID）。"
-  },
-  { id:5, type:"single", chap:"仓库管理", points:3, q:"测试提了 bug 需要修复，开发人员应该在哪个分支上改代码？",
-    opts:[{k:"A",t:"release 分支"},{k:"B",t:"master 分支"},{k:"C",t:"feature 分支"},{k:"D",t:"任意分支都行"}],
-    answer:["C"], explain:"原文：<b>严禁在 release 分支改代码</b>。移除需求时默认删除 release 分支，在上面改的代码会丢。改 bug 要回到 feature 分支。"
-  },
-  { id:6, type:"single", chap:"企微生态", points:3, q:"企业微信的「自建应用」和「第三方应用」最本质的区别是？",
-    opts:[{k:"A",t:"功能强弱不同"},{k:"B",t:"归属不同（谁拥有这个应用、服务谁）"},{k:"C",t:"是否收费"},{k:"D",t:"能不能连客户"}],
-    answer:["B"], explain:"原文：三种模式最关键区别是<b>归属</b>——谁拥有应用、为谁服务。"
-  },
-  { id:7, type:"single", chap:"企微私有化", points:3, q:"下列哪一项是私有化「三层架构」中，逻辑层使用的 RPC 框架？",
-    opts:[{k:"A",t:"Spring Cloud"},{k:"B",t:"gRPC"},{k:"C",t:"hikit（腾讯自研）"},{k:"D",t:"Dubbo"}],
-    answer:["C"], explain:"原文幻灯片19：逻辑层用 CGI 层 + 腾讯自研 RPC 框架 <b>hikit</b>。"
-  },
-  { id:8, type:"single", chap:"企微私有化", points:3, q:"标准部署拓扑中，存储机（PKV/MsgKV + MySQL）的扩容规则是？",
-    opts:[{k:"A",t:"可任意台数扩容"},{k:"B",t:"只能 3→3N，不支持二次扩容（如 6→9 不可行）"},{k:"C",t:"只能 2 台一组"},{k:"D",t:"必须和 DFS 一起扩容"}],
-    answer:["B"], explain:"原文幻灯片20：存储机 <b>3 台一组</b>、可容忍 1 台故障、扩容只能 3→3N、不支持二次扩容。"
-  },
-  { id:9, type:"single", chap:"微信生态", points:3, q:"客户在微信里阅读了员工发的公众号文章，这等同于？",
-    opts:[{k:"A",t:"已经成为企微私域客户"},{k:"B",t:"已经进入企业微信客户列表"},{k:"C",t:"只是看了内容，不等于加了企微客户——必须经素材/活动/活码/员工跟进才发生连接"},{k:"D",t:"自动同步到客户画像"}],
-    answer:["C"], explain:"⚠️原文核心判断：<b>公众号文章 ≠ 企微客户关系</b>。"
-  },
-  { id:10, type:"single", chap:"Debug", points:3, q:"线上服务出了 bug，你想查日志定位原因，应该去哪个平台？",
-    opts:[{k:"A",t:"任意门"},{k:"B",t:"腾讯云 CLS（日志服务）"},{k:"C",t:"TAPD"},{k:"D",t:"GitLab"}],
-    answer:["B"], explain:"查日志去<b>腾讯云 CLS</b>；看监控才去任意门。新手最易混这两个入口。"
+const PAPERS = {
+  A: {
+    title: "通识综合考试",
+    icon: "📋",
+    sub: "27 题 · 100 分 · 覆盖通识 6 章 · 自动判分",
+    desc: "完整一套通识卷,单选/多选/判断/匹配/简答/综合全覆盖,考前模拟用。",
+    meta: "27题 · 100分 · 约90分钟",
+    heroSub: '<span class="tag">8 月</span>研发岗管培生 · 知识考试 · 共 27 题',
+    noticeHTML:
+      '<div>总分 <b>100 分</b></div>'+
+      '<div>建议时长 <b>90 分钟</b></div>'+
+      '<div>单选 <b>3 分/题</b>×10</div>'+
+      '<div>多选 <b>4 分/题</b>×6（漏选得1分，错选不得分）</div>'+
+      '<div>判断 <b>2 分/题</b>×5</div>'+
+      '<div>匹配 <b>4 分/题</b>×2</div>'+
+      '<div>简答 <b>6 分/题</b>×3（自评）</div>'+
+      '<div>综合应用 <b>10 分</b>×1（自评）</div>',
+    noticeTip: "💡 做完后点击页面底部「交卷判分」自动判分；简答/综合题点击「参考答案」后自评。",
+    fullScore: 100,
+    questions: [
+      // ---------- 一、单选 1-10 ----------
+      { id:1, type:"single", chap:"TAPD", points:3, q:"工单系统与 TAPD 之间，是通过什么字段做关联的？",
+        opts:[{k:"A",t:"工单号"},{k:"B",t:"工单项目 ID"},{k:"C",t:"TAPD 迭代号"},{k:"D",t:"父需求 ID"}],
+        answer:["B"], explain:"⚠️云蕾明示考点1。通过<b>工单项目 ID</b> 关联；工单管金额合同，TAPD 管需求工时。工单号是关联在子需求上的（考点6），别混。"
+      },
+      { id:2, type:"single", chap:"TAPD", points:3, q:"关于 TAPD 中需求的层级结构，下列说法正确的是？",
+        opts:[{k:"A",t:"父需求可以有多个，子需求只能有一个"},{k:"B",t:"每个项目有且仅有一个父需求，子需求可以有多个"},{k:"C",t:"子需求下面还可以再拆子需求，层层嵌套"},{k:"D",t:"父需求和子需求是一对一关系"}],
+        answer:["B"], explain:"⚠️云蕾明示考点2「<b>父需求有且只能有一个</b>」。C 是新手最常犯的错——子需求不能再拆。"
+      },
+      { id:3, type:"single", chap:"仓库管理", points:3, q:"一个需求从「待提测」流转到「已提测」，必须经过哪个动作？",
+        opts:[{k:"A",t:"关联迭代"},{k:"B",t:"在子需求上关联工单号"},{k:"C",t:"创建一个 release 测试分支"},{k:"D",t:"填写预估工时"}],
+        answer:["C"], explain:"任意门文档原文：状态从「待提测」流转到「已提测」需要<b>创建 release 测试分支</b>。A 是人效前提，B 是需求关联工单，别混。"
+      },
+      { id:4, type:"single", chap:"仓库管理", points:3, q:"在任意门新建需求时，feature 开发分支是从哪里拉出来的？",
+        opts:[{k:"A",t:"从 release 测试分支拉"},{k:"B",t:"从 master 分支拉"},{k:"C",t:"从其他 feature 分支拉"},{k:"D",t:"手动在 GitLab 新建"}],
+        answer:["B"], explain:"原文：feature 开发分支<b>从 master 拉出</b>，不要手动新建。版本标识只能填数字（建议 TAPD 需求 ID）。"
+      },
+      { id:5, type:"single", chap:"仓库管理", points:3, q:"测试提了 bug 需要修复，开发人员应该在哪个分支上改代码？",
+        opts:[{k:"A",t:"release 分支"},{k:"B",t:"master 分支"},{k:"C",t:"feature 分支"},{k:"D",t:"任意分支都行"}],
+        answer:["C"], explain:"原文：<b>严禁在 release 分支改代码</b>。移除需求时默认删除 release 分支，在上面改的代码会丢。改 bug 要回到 feature 分支。"
+      },
+      { id:6, type:"single", chap:"企微生态", points:3, q:"企业微信的「自建应用」和「第三方应用」最本质的区别是？",
+        opts:[{k:"A",t:"功能强弱不同"},{k:"B",t:"归属不同（谁拥有这个应用、服务谁）"},{k:"C",t:"是否收费"},{k:"D",t:"能不能连客户"}],
+        answer:["B"], explain:"原文：三种模式最关键区别是<b>归属</b>——谁拥有应用、为谁服务。"
+      },
+      { id:7, type:"single", chap:"企微私有化", points:3, q:"下列哪一项是私有化「三层架构」中，逻辑层使用的 RPC 框架？",
+        opts:[{k:"A",t:"Spring Cloud"},{k:"B",t:"gRPC"},{k:"C",t:"hikit（腾讯自研）"},{k:"D",t:"Dubbo"}],
+        answer:["C"], explain:"原文幻灯片19：逻辑层用 CGI 层 + 腾讯自研 RPC 框架 <b>hikit</b>。"
+      },
+      { id:8, type:"single", chap:"企微私有化", points:3, q:"标准部署拓扑中，存储机（PKV/MsgKV + MySQL）的扩容规则是？",
+        opts:[{k:"A",t:"可任意台数扩容"},{k:"B",t:"只能 3→3N，不支持二次扩容（如 6→9 不可行）"},{k:"C",t:"只能 2 台一组"},{k:"D",t:"必须和 DFS 一起扩容"}],
+        answer:["B"], explain:"原文幻灯片20：存储机 <b>3 台一组</b>、可容忍 1 台故障、扩容只能 3→3N、不支持二次扩容。"
+      },
+      { id:9, type:"single", chap:"微信生态", points:3, q:"客户在微信里阅读了员工发的公众号文章，这等同于？",
+        opts:[{k:"A",t:"已经成为企微私域客户"},{k:"B",t:"已经进入企业微信客户列表"},{k:"C",t:"只是看了内容，不等于加了企微客户——必须经素材/活动/活码/员工跟进才发生连接"},{k:"D",t:"自动同步到客户画像"}],
+        answer:["C"], explain:"⚠️原文核心判断：<b>公众号文章 ≠ 企微客户关系</b>。"
+      },
+      { id:10, type:"single", chap:"Debug", points:3, q:"线上服务出了 bug，你想查日志定位原因，应该去哪个平台？",
+        opts:[{k:"A",t:"任意门"},{k:"B",t:"腾讯云 CLS（日志服务）"},{k:"C",t:"TAPD"},{k:"D",t:"GitLab"}],
+        answer:["B"], explain:"查日志去<b>腾讯云 CLS</b>；看监控才去任意门。新手最易混这两个入口。"
+      },
+
+      // ---------- 二、多选 11-16 ----------
+      { id:11, type:"multi", chap:"TAPD", points:4, q:"下列哪些情况会导致工时「缩水」或「无法计入人效」？（多选）",
+        opts:[{k:"A",t:"任务没有关联迭代"},{k:"B",t:"子需求下面再建子需求，导致工单号挂不上"},{k:"C",t:"一条任务跨多天填写工时"},{k:"D",t:"某天填写工时超过 8 小时"},{k:"E",t:"任务关联到了父需求而非子需求"}],
+        answer:["A","B","C","D","E"], explain:"⚠️云蕾考点3+4+易错点。<b>全选</b>：未关联迭代=没工时；子需求嵌套=工单挂不上；跨天填=工时缩水；超 8h 不被认可；关联父需求=工单挂错。"
+      },
+      { id:12, type:"multi", chap:"TAPD", points:4, q:"关于「KA 售后 SLA 响应时效」，下列哪些符合原文？（多选）",
+        opts:[{k:"A",t:"运营人员需要尽快响应"},{k:"B",t:"技术保障团队需在 1 小时内给出规划"},{k:"C",t:"问题上抛链路：技术人员 → TPM/研发 TL"},{k:"D",t:"所有问题都必须 15 分钟内解决"}],
+        answer:["A","B","C"], explain:"D 原文没说「15 分钟内解决」，错。ABC 对：运营尽快响应、技术1小时内给规划、上抛到 TPM/研发TL。"
+      },
+      { id:13, type:"multi", chap:"仓库管理", points:4, q:"关于任意门的分支管理规则，下列哪些是正确的？（多选）",
+        opts:[{k:"A",t:"feature 分支从 master 拉出，在上面开发代码"},{k:"B",t:"release 分支从 master 拉出，用于测试"},{k:"C",t:"严禁在 release 分支上修改代码"},{k:"D",t:"移除需求时默认勾选「删除 release 分支」，防止代码被带到生产"},{k:"E",t:"正式上线时，只需把 release 合并到 master 即可"}],
+        answer:["A","B","C","D"], explain:"E 错：正式上线是<b>双向合并</b>（先 master→release，再 release→master）。ABCD 对。"
+      },
+      { id:14, type:"multi", chap:"企微生态", points:4, q:"下列哪些情况会导致「access_token 有效，但接口仍拿不到/拿不全数据」？（多选）",
+        opts:[{k:"A",t:"应用可见范围没配置该成员"},{k:"B",t:"通讯录权限不足"},{k:"C",t:"客户联系未配置"},{k:"D",t:"access_token 过期"},{k:"E",t:"成员不在应用的可见范围内"}],
+        answer:["A","B","C","E"], explain:"D 错：token 过期是「调不通」不是「拿不到数据」，且题干说 token 有效。ABCE 对：可见范围/通讯录/客户联系/成员不在可见范围都会导致拿不到数据。"
+      },
+      { id:15, type:"multi", chap:"微信生态", points:4, q:"企微管家里的「活码」包含以下哪些类型？（多选）",
+        opts:[{k:"A",t:"员工活码"},{k:"B",t:"客户群活码"},{k:"C",t:"区域活码"},{k:"D",t:"识客码（识客群码）"},{k:"E",t:"朋友圈活码"}],
+        answer:["A","B","C","D"], explain:"E 错：<b>没有朋友圈活码</b>这种类型。ABCD 对：员工/客户群/区域/识客码。"
+      },
+      { id:16, type:"multi", chap:"Debug", points:4, q:"任意门「云监控→监控大盘」包含以下哪些监控维度？（多选）",
+        opts:[{k:"A",t:"应用监控（CPU/QPS/线程/内存）"},{k:"B",t:"慢接口监控（耗时超过 1s）"},{k:"C",t:"慢 SQL 监控"},{k:"D",t:"redis 大 key 监控"},{k:"E",t:"节点监控（k8s 机器节点）"},{k:"F",t:"告警规则配置"}],
+        answer:["A","B","C","D","E"], explain:"F 错：告警规则配置<b>不在监控大盘维度</b>里。ABCDE 对：应用/慢接口/慢SQL/redis大key/节点监控。"
+      },
+
+      // ---------- 三、判断 17-21 ----------
+      { id:17, type:"judge", chap:"TAPD", points:2, q:"工时是按「天」为单位填写的，一天可以填 12 小时甚至 16 小时。",
+        answer:false, explain:"⚠️云蕾考点3。工时<b>按小时计</b>，每天有效工时上限 8 小时，填多了反而不被认可。"
+      },
+      { id:18, type:"judge", chap:"仓库管理", points:2, q:"Nacos 既能改配置，也能存业务数据（如用户订单），它本质上是个数据库。",
+        answer:false, explain:"Nacos 是<b>配置中心</b>，不是数据库。redis 连接信息存在 Nacos 的 redis-info.yaml，但 Nacos 本身不存业务数据。"
+      },
+      { id:19, type:"judge", chap:"企微私有化", points:2, q:"私有化部署的功能和企业微信 SaaS 完全一致，没有任何差异。",
+        answer:false, explain:"基础授权含 IM/通讯录/OA，但<b>会议/邮件/文档微盘/会话存档/客户端定制/安全网关需额外授权</b>；客户端定制在 SaaS 根本不支持。"
+      },
+      { id:20, type:"judge", chap:"微信生态", points:2, q:"商家的公众号和小程序，应该绑定到服务商的开放平台账号下，方便统一管理。",
+        answer:false, explain:"⚠️原文关键规则：<b>商家账号应绑到商家自己的开放平台</b>，而非服务商的。"
+      },
+      { id:21, type:"judge", chap:"Debug", points:2, q:"公司内部的所有资源（GitLab、任意门、TAPD 等），不连 VPN 也能直接访问。",
+        answer:false, explain:"原文：公司内部资源都<b>需要连 VPN 后才能访问</b>。用 OpenVPN，账号找同事瓜瓜申请。"
+      },
+
+      // ---------- 四、匹配 22-23 ----------
+      { id:22, type:"match", chap:"仓库管理", points:4, q:"把分支/平台和它的角色配对。",
+        left:[{k:"①",t:"feature 分支"},{k:"②",t:"release 分支"},{k:"③",t:"master 分支"},{k:"④",t:"任意门"}],
+        right:[{k:"A",t:"正式生产环境代码，所有正式上线最终都合并到这"},{k:"B",t:"开发人员写代码的分支，从 master 拉出"},{k:"C",t:"测试分支，从 master 拉出，严禁在上面改代码"},{k:"D",t:"需求/版本/发布管理的平台，分支从这里创建而非手动新建"}],
+        answer:{"①":"B","②":"C","③":"A","④":"D"},
+        explain:"feature=开发分支；release=测试分支（严禁改码）；master=生产正式代码；任意门=管理平台。"
+      },
+      { id:23, type:"match", chap:"企微生态", points:4, q:"把概念和它的角色配对。",
+        left:[{k:"①",t:"access_token"},{k:"②",t:"应用可见范围"},{k:"③",t:"回调(callback)"},{k:"④",t:"corpid"}],
+        right:[{k:"A",t:"企业的唯一标识，每个企业一个"},{k:"B",t:"后端调用企微接口的凭证，有它≠有权限"},{k:"C",t:"企微主动把事件 POST 给业务系统，方向与 API 相反，需验签解密"},{k:"D",t:"决定成员能否看到应用、接口能拿到哪些数据的边界（不只是 UI 配置）"}],
+        answer:{"①":"B","②":"D","③":"C","④":"A"},
+        explain:"access_token=凭证；可见范围=权限边界；回调=企微主动POST；corpid=企业标识。"
+      },
+
+      // ---------- 五、简答 24-26 ----------
+      { id:24, type:"short", chap:"TAPD·重点", points:6, q:"云蕾明确说「缺陷(Bug)流程图有一个考点」。请写出缺陷处理的标准流程（状态流转），并写出 Bug Review 时重点关注的三个关键字段。",
+        ref:"【状态流转】待处理 → 开发中 → 测试验证 → 运营确认中 → 结束（共5个状态）\n\n【三个关键字段】\n① Root Cause（根本原因）\n② Solution（解决方案）\n③ 避免再发生策略\n\n采分点：流程5状态全对 3 分；三字段全对 3 分。"
+      },
+      { id:25, type:"short", chap:"仓库管理", points:6, q:"请简述「正式上线」时的合并分支顺序，并解释为什么要按这个顺序合并。",
+        ref:"【顺序】先把 master 合并到 release，再把 release 合并到 master（双向合并）\n\n【原因】需求并行开发，master 上可能有其他需求先上线了、带着当前 release 上没有的代码。直接 release→master 会覆盖 master 已有功能。先 master→release 拉入最新正式代码，再 release→master 合并本次需求，才不会覆盖。\n\n采分点：顺序对 2 分；原因讲到并行/master有新代码/防覆盖 3 分；表述 1 分。"
+      },
+      { id:26, type:"short", chap:"企微私有化", points:6, q:"请简述私有化相比 SaaS 的「四大核心优势」，并各用一句话说明。",
+        ref:"1. 数据自主可控：数据存客户自有服务器，不经腾讯，企业完全掌控\n2. 合规安全：满足等保三级、支持国密 SM2/SM3/SM4，金融/政务/军工硬准入\n3. 定制扩展：可定制客户端、第五Tab、H5工作台、系统深度对接\n4. 网络隔离：核心服务内网闭环，数据不出企业网，纯内网可用\n\n采分点：四点各 1.5 分。"
+      },
+
+      // ---------- 六、综合应用 27 ----------
+      { id:27, type:"short", chap:"跨模块·通识", points:10, q:"场景：你是新入职的研发，接到一个为客户定制的需求，需要从零走完研发流程。请按顺序回答（共3小题）：\n\n(1) 在 TAPD 里，你应该在哪种层级的需求下创建任务？任务必须关联什么才能统计人效？工时怎么填才合规？（3分）\n(2) 代码写完后，在任意门里你创建的分支叫什么？测试阶段用它？为什么不能在测试分支上直接改 bug？（3分）\n(3) 上线后客户反馈线上有问题，你要查日志定位，去哪个平台？如果要看服务实时健康状态（CPU/QPS），又去哪个平台？（4分）",
+        ref:"【(1)】在<b>子需求</b>（交付需求/STORY）下创建任务（不是父需求）。任务必须<b>关联迭代</b>（⚠️考点4，否则没工时）。工时按小时填、每天≤8h、按天建任务避免跨多天（⚠️考点3）。\n\n【(2)】代码写在 <b>feature 分支</b>；测试阶段用 <b>release 分支</b>。不能在 release 改 bug，因为：①移除需求时默认删除 release 分支，改的代码会丢；②防止未经验证代码被带到生产。所有修改在 feature 上做再合并到 release 测试。\n\n【(3)】查日志→<b>腾讯云 CLS</b>（登录腾讯云→控制台→日志服务→检索分析→选上海→test/prod主题）；看实时健康→<b>任意门→云监控→监控大盘</b>。测试CLS账号看《新测试环境资源信息》，生产找沐阳扫码；内网资源都要先连VPN（找瓜瓜申请OpenVPN）。"
+      }
+    ],
+    sections: [
+      { title:"一、单选题",   badge:"3分/题", ids:[1,2,3,4,5,6,7,8,9,10] },
+      { title:"二、多选题",   badge:"4分/题", ids:[11,12,13,14,15,16] },
+      { title:"三、判断题",   badge:"2分/题", ids:[17,18,19,20,21] },
+      { title:"四、匹配题",   badge:"4分/题", ids:[22,23] },
+      { title:"五、简答题",   badge:"6分/题", ids:[24,25,26] },
+      { title:"六、综合应用题", badge:"10分",   ids:[27] }
+    ]
   },
 
-  // ---------- 二、多选 11-16 ----------
-  { id:11, type:"multi", chap:"TAPD", points:4, q:"下列哪些情况会导致工时「缩水」或「无法计入人效」？（多选）",
-    opts:[{k:"A",t:"任务没有关联迭代"},{k:"B",t:"子需求下面再建子需求，导致工单号挂不上"},{k:"C",t:"一条任务跨多天填写工时"},{k:"D",t:"某天填写工时超过 8 小时"},{k:"E",t:"任务关联到了父需求而非子需求"}],
-    answer:["A","B","C","D","E"], explain:"⚠️云蕾考点3+4+易错点。<b>全选</b>：未关联迭代=没工时；子需求嵌套=工单挂不上；跨天填=工时缩水；超 8h 不被认可；关联父需求=工单挂错。"
-  },
-  { id:12, type:"multi", chap:"TAPD", points:4, q:"关于「KA 售后 SLA 响应时效」，下列哪些符合原文？（多选）",
-    opts:[{k:"A",t:"运营人员需要尽快响应"},{k:"B",t:"技术保障团队需在 1 小时内给出规划"},{k:"C",t:"问题上抛链路：技术人员 → TPM/研发 TL"},{k:"D",t:"所有问题都必须 15 分钟内解决"}],
-    answer:["A","B","C"], explain:"D 原文没说「15 分钟内解决」，错。ABC 对：运营尽快响应、技术1小时内给规划、上抛到 TPM/研发TL。"
-  },
-  { id:13, type:"multi", chap:"仓库管理", points:4, q:"关于任意门的分支管理规则，下列哪些是正确的？（多选）",
-    opts:[{k:"A",t:"feature 分支从 master 拉出，在上面开发代码"},{k:"B",t:"release 分支从 master 拉出，用于测试"},{k:"C",t:"严禁在 release 分支上修改代码"},{k:"D",t:"移除需求时默认勾选「删除 release 分支」，防止代码被带到生产"},{k:"E",t:"正式上线时，只需把 release 合并到 master 即可"}],
-    answer:["A","B","C","D"], explain:"E 错：正式上线是<b>双向合并</b>（先 master→release，再 release→master）。ABCD 对。"
-  },
-  { id:14, type:"multi", chap:"企微生态", points:4, q:"下列哪些情况会导致「access_token 有效，但接口仍拿不到/拿不全数据」？（多选）",
-    opts:[{k:"A",t:"应用可见范围没配置该成员"},{k:"B",t:"通讯录权限不足"},{k:"C",t:"客户联系未配置"},{k:"D",t:"access_token 过期"},{k:"E",t:"成员不在应用的可见范围内"}],
-    answer:["A","B","C","E"], explain:"D 错：token 过期是「调不通」不是「拿不到数据」，且题干说 token 有效。ABCE 对：可见范围/通讯录/客户联系/成员不在可见范围都会导致拿不到数据。"
-  },
-  { id:15, type:"multi", chap:"微信生态", points:4, q:"企微管家里的「活码」包含以下哪些类型？（多选）",
-    opts:[{k:"A",t:"员工活码"},{k:"B",t:"客户群活码"},{k:"C",t:"区域活码"},{k:"D",t:"识客码（识客群码）"},{k:"E",t:"朋友圈活码"}],
-    answer:["A","B","C","D"], explain:"E 错：<b>没有朋友圈活码</b>这种类型。ABCD 对：员工/客户群/区域/识客码。"
-  },
-  { id:16, type:"multi", chap:"Debug", points:4, q:"任意门「云监控→监控大盘」包含以下哪些监控维度？（多选）",
-    opts:[{k:"A",t:"应用监控（CPU/QPS/线程/内存）"},{k:"B",t:"慢接口监控（耗时超过 1s）"},{k:"C",t:"慢 SQL 监控"},{k:"D",t:"redis 大 key 监控"},{k:"E",t:"节点监控（k8s 机器节点）"},{k:"F",t:"告警规则配置"}],
-    answer:["A","B","C","D","E"], explain:"F 错：告警规则配置<b>不在监控大盘维度</b>里。ABCDE 对：应用/慢接口/慢SQL/redis大key/节点监控。"
-  },
+  B: {
+    title: "易错专项",
+    icon: "⚡",
+    sub: "15 题 · 专挑直觉会错的陷阱题",
+    desc: "每题都是“看着对其实错”的坑。做完这套,考试不易丢分。",
+    meta: "15题 · 44分 · 约30分钟",
+    heroSub: '<span class="tag">强化</span>易错专项 · 15 题陷阱题 · 直觉会错的考点',
+    noticeHTML:
+      '<div>总分 <b>44 分</b></div>'+
+      '<div>建议时长 <b>30 分钟</b></div>'+
+      '<div>单选 <b>3 分/题</b>×6</div>'+
+      '<div>多选 <b>4 分/题</b>×4（漏选得1分，错选不得分）</div>'+
+      '<div>判断 <b>2 分/题</b>×5</div>',
+    noticeTip: "💡 这套题专挑“看着对其实错”的陷阱,做完后对照解析,考试不易丢分。",
+    fullScore: 44,
+    questions: [
+      // ---------- 一、单选 1-6 ----------
+      { id:1, type:"single", chap:"TAPD", points:3, q:"小王今天上午改 bug 用了 4 小时、下午写新需求 6 小时,他在 TAPD 里怎么填最合规?",
+        opts:[{k:"A",t:"两条任务,一条 4h 一条 6h,合计填 10h"},{k:"B",t:"合并成一条任务填 10h"},{k:"C",t:"两条任务分别填 4h 和 6h,但当天合计不能超过 8h,6h 那条最多填 4h"},{k:"D",t:"只填 8h,剩下的不算"}],
+        answer:["C"], explain:"⚠️云蕾考点3。每天有效工时上限 8h。上午已用 4h,下午那条最多记 4h。如实填 10h 反而不被认可、显得效率低。"
+      },
+      { id:2, type:"single", chap:"仓库管理", points:3, q:"关于 release 测试分支,下面哪种说法是对的?",
+        opts:[{k:"A",t:"release 是测试分支,bug 应该直接在上面改,最快"},{k:"B",t:"release 分支从 feature 拉出,用于测试"},{k:"C",t:"release 分支从 master 拉出,严禁在上面改代码,所有修改在 feature 上做"},{k:"D",t:"release 分支和 master 是同一个,只是叫法不同"}],
+        answer:["C"], explain:"release 严禁改代码——移除需求时默认删除 release 分支,改的会丢;且防止未验证代码带到生产。B 错:release 从 master 拉,不是 feature。"
+      },
+      { id:3, type:"single", chap:"仓库管理", points:3, q:"灰度发布时,应用发布到哪个 K8s 空间?",
+        opts:[{k:"A",t:"wshoto 空间(正式)"},{k:"B",t:"wshoto-gray 空间(灰度)"},{k:"C",t:"wshoto-test 空间(测试)"},{k:"D",t:"wshoto-gray 是正式,wshoto 是灰度"}],
+        answer:["B"], explain:"记死:灰度=wshoto-gray,正式=wshoto。A 是正式,D 把两者搞反了。"
+      },
+      { id:4, type:"single", chap:"企微私有化", points:3, q:"标准部署拓扑中,存储机从 3 台扩到 6 台后,想再扩到 9 台,可行吗?",
+        opts:[{k:"A",t:"可行,9 也是 3 的倍数"},{k:"B",t:"不可行,二次扩容(6→9)不支持,扩容只能一次性 3→3N"},{k:"C",t:"可行,存储机可任意扩容"},{k:"D",t:"不可行,存储机扩容必须 2 的倍数"}],
+        answer:["B"], explain:"⚠️原文最坑规则。扩容只能一次性 3→3N,不支持二次扩容。3→6 可以,但 6→9 不行。"
+      },
+      { id:5, type:"single", chap:"Debug", points:3, q:"你想看某个数据库实例的运行指标(连接数、慢查询等),去哪个平台的哪个维度?",
+        opts:[{k:"A",t:"腾讯云 CLS → 数据库主题"},{k:"B",t:"任意门 → 云监控 → 监控大盘 → 数据库监控"},{k:"C",t:"TAPD → 数据库实例"},{k:"D",t:"GitLab → 数据库配置"}],
+        answer:["B"], explain:"看实时指标去任意门云监控的“数据库监控”维度。CLS 是事后查日志文本用的,不是看指标。"
+      },
+      { id:6, type:"single", chap:"微信生态", points:3, q:"客户在公众号文章里点了员工留的“识客码”并添加了企业微信员工,这算不算进入私域?",
+        opts:[{k:"A",t:"不算,只是看了内容"},{k:"B",t:"算,通过活码/识客码添加企微员工,已经发生连接,进入私域"},{k:"C",t:"不算,要等他在小程序下单才算"},{k:"D",t:"算一半,要看停留时长"}],
+        answer:["B"], explain:"和“看文章≠加客户”区分:看文章不算,但通过识客码添加了企微员工=发生连接=进入私域。关键看有没有“连接动作”。"
+      },
 
-  // ---------- 三、判断 17-21 ----------
-  { id:17, type:"judge", chap:"TAPD", points:2, q:"工时是按「天」为单位填写的，一天可以填 12 小时甚至 16 小时。",
-    answer:false, explain:"⚠️云蕾考点3。工时<b>按小时计</b>，每天有效工时上限 8 小时，填多了反而不被认可。"
-  },
-  { id:18, type:"judge", chap:"仓库管理", points:2, q:"Nacos 既能改配置，也能存业务数据（如用户订单），它本质上是个数据库。",
-    answer:false, explain:"Nacos 是<b>配置中心</b>，不是数据库。redis 连接信息存在 Nacos 的 redis-info.yaml，但 Nacos 本身不存业务数据。"
-  },
-  { id:19, type:"judge", chap:"企微私有化", points:2, q:"私有化部署的功能和企业微信 SaaS 完全一致，没有任何差异。",
-    answer:false, explain:"基础授权含 IM/通讯录/OA，但<b>会议/邮件/文档微盘/会话存档/客户端定制/安全网关需额外授权</b>；客户端定制在 SaaS 根本不支持。"
-  },
-  { id:20, type:"judge", chap:"微信生态", points:2, q:"商家的公众号和小程序，应该绑定到服务商的开放平台账号下，方便统一管理。",
-    answer:false, explain:"⚠️原文关键规则：<b>商家账号应绑到商家自己的开放平台</b>，而非服务商的。"
-  },
-  { id:21, type:"judge", chap:"Debug", points:2, q:"公司内部的所有资源（GitLab、任意门、TAPD 等），不连 VPN 也能直接访问。",
-    answer:false, explain:"原文：公司内部资源都<b>需要连 VPN 后才能访问</b>。用 OpenVPN，账号找同事瓜瓜申请。"
-  },
+      // ---------- 二、多选 7-10 ----------
+      { id:7, type:"multi", chap:"TAPD", points:4, q:"下列关于“父需求”的说法,哪些是正确的?(多选)",
+        opts:[{k:"A",t:"每个项目有且仅有一个父需求(项目管理需求)"},{k:"B",t:"父需求可以有多个,按模块分"},{k:"C",t:"父需求相当于项目的“户口本”"},{k:"D",t:"工时应该挂在父需求上,因为它是项目级"},{k:"E",t:"工单号关联在父需求上"}],
+        answer:["A","C"], explain:"⚠️父需求=项目管理需求,有且仅有一个,像户口本。工时和工单号都挂在【子需求】上,不是父需求!B/D/E 都是坑。"
+      },
+      { id:8, type:"multi", chap:"仓库管理", points:4, q:"正式上线时的合并分支,正确的操作有哪些?(多选)",
+        opts:[{k:"A",t:"先把 master 合并到 release(拉入最新正式代码)"},{k:"B",t:"再把 release 合并到 master(把本次需求代码并入正式)"},{k:"C",t:"直接把 release 合并到 master 即可"},{k:"D",t:"直接把 master 合并到 release 即可"},{k:"E",t:"因为需求并行开发,master 可能有 release 上没有的代码,所以必须先 master→release"}],
+        answer:["A","B","E"], explain:"⚠️正式上线是双向合并。C 是大坑:直接 release→master 会覆盖 master 上其他需求先上线的代码。"
+      },
+      { id:9, type:"multi", chap:"企微生态", points:4, q:"下列哪些情况,access_token 是有效的,但调用接口仍然拿不到数据?(多选)",
+        opts:[{k:"A",t:"成员不在应用的可见范围内"},{k:"B",t:"通讯录权限不足"},{k:"C",t:"客户联系功能未配置"},{k:"D",t:"access_token 还没过期"},{k:"E",t:"应用可见范围没配置该成员"}],
+        answer:["A","B","C","E"], explain:"“有 token≠有权限”。D 是干扰项:token 没过期是能用前提,不是拿不到数据的原因。"
+      },
+      { id:10, type:"multi", chap:"企微私有化", points:4, q:"下列哪些功能,私有化部署需要“额外授权”才能用?(多选)",
+        opts:[{k:"A",t:"即时通讯 IM(基础功能)"},{k:"B",t:"会议"},{k:"C",t:"邮件"},{k:"D",t:"文档微盘"},{k:"E",t:"会话存档"},{k:"F",t:"通讯录(基础功能)"},{k:"G",t:"客户端定制"},{k:"H",t:"安全网关"}],
+        answer:["B","C","D","E","G","H"], explain:"6 个需额外授权:会议/邮件/文档微盘/会话存档/客户端定制/安全网关。IM 和通讯录是基础授权就包含的。"
+      },
 
-  // ---------- 四、匹配 22-23 ----------
-  { id:22, type:"match", chap:"仓库管理", points:4, q:"把分支/平台和它的角色配对。",
-    left:[{k:"①",t:"feature 分支"},{k:"②",t:"release 分支"},{k:"③",t:"master 分支"},{k:"④",t:"任意门"}],
-    right:[{k:"A",t:"正式生产环境代码，所有正式上线最终都合并到这"},{k:"B",t:"开发人员写代码的分支，从 master 拉出"},{k:"C",t:"测试分支，从 master 拉出，严禁在上面改代码"},{k:"D",t:"需求/版本/发布管理的平台，分支从这里创建而非手动新建"}],
-    answer:{"①":"B","②":"C","③":"A","④":"D"},
-    explain:"feature=开发分支；release=测试分支（严禁改码）；master=生产正式代码；任意门=管理平台。"
-  },
-  { id:23, type:"match", chap:"企微生态", points:4, q:"把概念和它的角色配对。",
-    left:[{k:"①",t:"access_token"},{k:"②",t:"应用可见范围"},{k:"③",t:"回调(callback)"},{k:"④",t:"corpid"}],
-    right:[{k:"A",t:"企业的唯一标识，每个企业一个"},{k:"B",t:"后端调用企微接口的凭证，有它≠有权限"},{k:"C",t:"企微主动把事件 POST 给业务系统，方向与 API 相反，需验签解密"},{k:"D",t:"决定成员能否看到应用、接口能拿到哪些数据的边界（不只是 UI 配置）"}],
-    answer:{"①":"B","②":"D","③":"C","④":"A"},
-    explain:"access_token=凭证；可见范围=权限边界；回调=企微主动POST；corpid=企业标识。"
-  },
-
-  // ---------- 五、简答 24-26 ----------
-  { id:24, type:"short", chap:"TAPD·重点", points:6, q:"云蕾明确说「缺陷(Bug)流程图有一个考点」。请写出缺陷处理的标准流程（状态流转），并写出 Bug Review 时重点关注的三个关键字段。",
-    ref:"【状态流转】待处理 → 开发中 → 测试验证 → 运营确认中 → 结束（共5个状态）\n\n【三个关键字段】\n① Root Cause（根本原因）\n② Solution（解决方案）\n③ 避免再发生策略\n\n采分点：流程5状态全对 3 分；三字段全对 3 分。"
-  },
-  { id:25, type:"short", chap:"仓库管理", points:6, q:"请简述「正式上线」时的合并分支顺序，并解释为什么要按这个顺序合并。",
-    ref:"【顺序】先把 master 合并到 release，再把 release 合并到 master（双向合并）\n\n【原因】需求并行开发，master 上可能有其他需求先上线了、带着当前 release 上没有的代码。直接 release→master 会覆盖 master 已有功能。先 master→release 拉入最新正式代码，再 release→master 合并本次需求，才不会覆盖。\n\n采分点：顺序对 2 分；原因讲到并行/master有新代码/防覆盖 3 分；表述 1 分。"
-  },
-  { id:26, type:"short", chap:"企微私有化", points:6, q:"请简述私有化相比 SaaS 的「四大核心优势」，并各用一句话说明。",
-    ref:"1. 数据自主可控：数据存客户自有服务器，不经腾讯，企业完全掌控\n2. 合规安全：满足等保三级、支持国密 SM2/SM3/SM4，金融/政务/军工硬准入\n3. 定制扩展：可定制客户端、第五Tab、H5工作台、系统深度对接\n4. 网络隔离：核心服务内网闭环，数据不出企业网，纯内网可用\n\n采分点：四点各 1.5 分。"
-  },
-
-  // ---------- 六、综合应用 27 ----------
-  { id:27, type:"short", chap:"跨模块·通识", points:10, q:"场景：你是新入职的研发，接到一个为客户定制的需求，需要从零走完研发流程。请按顺序回答（共3小题）：\n\n(1) 在 TAPD 里，你应该在哪种层级的需求下创建任务？任务必须关联什么才能统计人效？工时怎么填才合规？（3分）\n(2) 代码写完后，在任意门里你创建的分支叫什么？测试阶段用它？为什么不能在测试分支上直接改 bug？（3分）\n(3) 上线后客户反馈线上有问题，你要查日志定位，去哪个平台？如果要看服务实时健康状态（CPU/QPS），又去哪个平台？（4分）",
-    ref:"【(1)】在<b>子需求</b>（交付需求/STORY）下创建任务（不是父需求）。任务必须<b>关联迭代</b>（⚠️考点4，否则没工时）。工时按小时填、每天≤8h、按天建任务避免跨多天（⚠️考点3）。\n\n【(2)】代码写在 <b>feature 分支</b>；测试阶段用 <b>release 分支</b>。不能在 release 改 bug，因为：①移除需求时默认删除 release 分支，改的代码会丢；②防止未经验证代码被带到生产。所有修改在 feature 上做再合并到 release 测试。\n\n【(3)】查日志→<b>腾讯云 CLS</b>（登录腾讯云→控制台→日志服务→检索分析→选上海→test/prod主题）；看实时健康→<b>任意门→云监控→监控大盘</b>。测试CLS账号看《新测试环境资源信息》，生产找沐阳扫码；内网资源都要先连VPN（找瓜瓜申请OpenVPN）。"
+      // ---------- 三、判断 11-15 ----------
+      { id:11, type:"judge", chap:"TAPD", points:2, q:"一条任务,开发用了 3 天才完成,我可以在 TAPD 里建一条任务、一次性填 3 天的工时(比如 24h),这样最省事。",
+        answer:false, explain:"✗ 跨多天填一条任务,工时会被系统剔除。正确:按天创建任务,每天单独填(且≤8h)。"
+      },
+      { id:12, type:"judge", chap:"仓库管理", points:2, q:"release 分支之所以严禁改代码,是因为 release 是测试分支,改了会影响测试。",
+        answer:false, explain:"✗ 真实原因不是“影响测试”,而是:①移除需求时默认删除 release 分支,改的代码会丢;②防止未验证代码带到生产。"
+      },
+      { id:13, type:"judge", chap:"企微生态", points:2, q:"自建应用和第三方应用的区别,主要在于功能强弱——第三方应用功能更强。",
+        answer:false, explain:"✗ 区别是归属(谁拥有、服务谁),不是功能强弱。第三方凭证链路更复杂但不是更强。"
+      },
+      { id:14, type:"judge", chap:"微信生态", points:2, q:"商家为了方便管理,应该把公众号和小程序都绑定到服务商的开放平台账号下。",
+        answer:false, explain:"✗ 商家账号应绑到商家自己的开放平台,身份打通归商家。绑服务商的身份归属混乱。"
+      },
+      { id:15, type:"judge", chap:"Debug", points:2, q:"公司内网的 GitLab、任意门,我在家不连 VPN 也能访问,因为是网页。",
+        answer:false, explain:"✗ 内部资源都要连 VPN。用 OpenVPN,账号找同事瓜瓜申请。"
+      }
+    ],
+    sections: [
+      { title:"一、单选题",   badge:"3分/题", ids:[1,2,3,4,5,6] },
+      { title:"二、多选题",   badge:"4分/题", ids:[7,8,9,10] },
+      { title:"三、判断题",   badge:"2分/题", ids:[11,12,13,14,15] }
+    ]
   }
-];
+};
 
-/* section grouping */
-const SECTIONS = [
-  { title:"一、单选题",   badge:"3分/题", ids:[1,2,3,4,5,6,7,8,9,10] },
-  { title:"二、多选题",   badge:"4分/题", ids:[11,12,13,14,15,16] },
-  { title:"三、判断题",   badge:"2分/题", ids:[17,18,19,20,21] },
-  { title:"四、匹配题",   badge:"4分/题", ids:[22,23] },
-  { title:"五、简答题",   badge:"6分/题", ids:[24,25,26] },
-  { title:"六、综合应用题", badge:"10分",   ids:[27] }
-];
+/* current paper's question/section refs (reassigned on pick) */
+let currentPaper = null;
+let QUESTIONS = [];
+let SECTIONS = [];
 
 const TYPE_LABEL = {single:"单选",multi:"多选",judge:"判断",match:"匹配",short:"简答/综合"};
 
@@ -514,7 +693,70 @@ let state = {}; // {id: userAnswer}
 let submitted = false;
 
 /* ============================================================
-   RENDER
+   PAPER PICKER
+   ============================================================ */
+function renderPicker(){
+  const list = document.getElementById("paperList");
+  list.innerHTML = "";
+  Object.keys(PAPERS).forEach(key=>{
+    const p = PAPERS[key];
+    const card = document.createElement("div");
+    card.className = "paper-card";
+    card.innerHTML =
+      '<div class="p-icon">'+p.icon+'</div>'+
+      '<h3 class="p-title">'+p.title+'</h3>'+
+      '<div class="p-sub">'+p.sub+'</div>'+
+      '<div class="p-desc">'+p.desc+'</div>'+
+      '<div class="p-meta">'+p.meta+'</div>'+
+      '<div class="p-go">开始 →</div>';
+    card.addEventListener("click", ()=>startPaper(key));
+    list.appendChild(card);
+  });
+}
+
+function startPaper(key){
+  currentPaper = PAPERS[key];
+  QUESTIONS = currentPaper.questions;
+  SECTIONS = currentPaper.sections;
+
+  /* update hero / notice / progress denominator to current paper */
+  document.getElementById("heroTitle").textContent = currentPaper.title;
+  document.getElementById("heroSub").innerHTML = currentPaper.heroSub;
+  document.getElementById("noticeGrid").innerHTML = currentPaper.noticeHTML;
+  document.getElementById("noticeTip").innerHTML = currentPaper.noticeTip;
+  document.getElementById("progressTotal").textContent = QUESTIONS.length;
+  document.getElementById("finalScoreTotal").textContent = "总分 / "+currentPaper.fullScore;
+
+  /* swap views */
+  document.getElementById("paperPicker").style.display = "none";
+  document.getElementById("examArea").style.display = "block";
+
+  /* reset runtime state + UI */
+  state = {};
+  submitted = false;
+  document.getElementById("resultBanner").classList.remove("show");
+  document.getElementById("submitBtn").classList.remove("hidden");
+  document.getElementById("resetBtn").classList.add("hidden");
+  document.getElementById("submitHint").textContent = "交卷后将自动判分并显示解析，输入会被锁定。";
+
+  render();
+  updateProgress();
+  window.scrollTo({top:0});
+}
+
+function backToPicker(){
+  if(submitted || Object.keys(state).length>0){
+    if(!confirm("返回选卷将丢失当前作答,确定吗?")) return;
+  }
+  document.getElementById("examArea").style.display = "none";
+  document.getElementById("paperPicker").style.display = "block";
+  state = {};
+  submitted = false;
+  window.scrollTo({top:0});
+}
+
+/* ============================================================
+   RENDER  (engine — unchanged)
    ============================================================ */
 function render(){
   const root = document.getElementById("exam");
@@ -610,23 +852,24 @@ function formatAnswer(q){
 }
 
 /* ============================================================
-   INTERACTION
+   INTERACTION  (engine — unchanged, document-level delegation)
    ============================================================ */
 function bind(){
   document.addEventListener("click", e=>{
     const t = e.target.closest("[data-q]");
-    if(!t || submitted) return;
-    const qid = +t.dataset.q;
-    const q = QUESTIONS.find(x=>x.id===qid);
+    if(t && !submitted){
+      const qid = +t.dataset.q;
+      const q = QUESTIONS.find(x=>x.id===qid);
 
-    if(t.classList.contains("opt")){
-      toggleOpt(q, t);
-    } else if(t.classList.contains("tf-btn")){
-      pickJudge(q, t);
-    } else if(t.classList.contains("ref-toggle")){
-      document.getElementById("ref-"+qid).classList.toggle("open");
-    } else if(t.classList.contains("se-btn")){
-      pickSelfEval(q, t);
+      if(t.classList.contains("opt")){
+        toggleOpt(q, t);
+      } else if(t.classList.contains("tf-btn")){
+        pickJudge(q, t);
+      } else if(t.classList.contains("ref-toggle")){
+        document.getElementById("ref-"+qid).classList.toggle("open");
+      } else if(t.classList.contains("se-btn")){
+        pickSelfEval(q, t);
+      }
     }
   });
 
@@ -644,6 +887,7 @@ function bind(){
 
   document.getElementById("submitBtn").addEventListener("click", submit);
   document.getElementById("resetBtn").addEventListener("click", reset);
+  document.getElementById("backToPicker").addEventListener("click", backToPicker);
 }
 
 function toggleOpt(q, el){
@@ -693,12 +937,13 @@ function updateProgress(){
     else if(q.type==="match" && typeof a==="object" && Object.keys(a).length===q.left.length) answered++;
     else if(q.type==="short" && (typeof a==="number")) answered++;
   });
+  const total = QUESTIONS.length || 1;
   document.getElementById("answeredCount").textContent = answered;
-  document.getElementById("progressFill").style.width = (answered/27*100)+"%";
+  document.getElementById("progressFill").style.width = (answered/total*100)+"%";
 }
 
 /* ============================================================
-   SCORING
+   SCORING  (engine — unchanged)
    ============================================================ */
 function scoreQ(q){
   /* returns {pts, status:"correct"|"wrong"|"partial", got:N} */
@@ -870,8 +1115,8 @@ function reset(){
   window.scrollTo({top:0, behavior:"smooth"});
 }
 
-/* boot */
-render();
+/* boot: render picker first; engine binds once (delegation auto-tracks current QUESTIONS) */
+renderPicker();
 bind();
 </script>
 </body>

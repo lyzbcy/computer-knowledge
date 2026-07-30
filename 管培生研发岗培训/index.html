@@ -73,13 +73,18 @@ body{font-family:var(--font-body);background:var(--cream);color:var(--ink);line-
 .card.exam-card{background:linear-gradient(135deg,#fff 60%,var(--marker) 200%);}
 .card.exam-card .go{color:var(--brick);}
 
-/* 考试入口大卡 */
-.exam-entry{background:linear-gradient(135deg,var(--forest) 0%,#2A4F33 100%);color:var(--cream);border:none;}
-.exam-entry:hover{box-shadow:0 10px 26px rgba(30,58,36,.28);}
-.exam-entry .thumb{background:rgba(255,255,255,.12);}
-.exam-entry h3{color:var(--cream);}
-.exam-entry p{color:rgba(250,246,235,.82);}
-.exam-entry .go{color:var(--marker);}
+/* 考试入口卡 —— 与其它卡字色一致，仅用 thumb 底色 + 红标签区分 */
+.exam-entry{border-color:var(--brick);}
+.exam-entry .thumb{background:var(--brick);}
+.exam-entry h3{color:var(--forest);}
+.exam-entry p{color:#5A5040;}
+.exam-entry .go{color:var(--brick);}
+
+/* 全站评论区(放最前) */
+.comment-box{background:#fff;border:1px solid #E6DCC2;border-radius:14px;padding:1.1rem 1.3rem;margin:1.4rem 0 1.8rem;}
+.comment-box .cb-title{font-family:var(--font-head);font-size:.95rem;color:var(--forest);margin-bottom:.3rem;display:flex;align-items:center;gap:.4rem;}
+.comment-box .cb-sub{font-size:.78rem;color:#8A7E64;margin-bottom:.8rem;}
+.comment-box .sec-comments{margin-top:.5rem;}
 
 /* ===== 建设中提示(已实现内容统计) ===== */
 .status-bar{background:var(--paper);border:1px dashed #C9Bd9F;border-radius:12px;padding:1rem 1.2rem;margin:1.5rem 0 0;font-size:.85rem;color:#5A5040;display:flex;gap:1.2rem;flex-wrap:wrap;align-items:center;}
@@ -110,6 +115,13 @@ footer a{color:var(--brick);font-weight:700;text-decoration:underline;}
 
 <div class="wrap">
   <a class="back" href="../index.html">← 返回计算机知识</a>
+
+  <!-- 全站交流讨论（零后端，基于 GitHub Issues）放最前 -->
+  <div class="comment-box">
+    <div class="cb-title">💬 交流讨论</div>
+    <div class="cb-sub">学习疑问、考试讨论、内容建议都欢迎在这里留言（基于 GitHub Issues，无需登录即可查看，登录后可回复）。</div>
+    <div id="page-comments"></div>
+  </div>
 
   <!-- 通识 -->
   <div class="cat">
@@ -376,7 +388,7 @@ footer a{color:var(--brick);font-weight:700;text-decoration:underline;}
 <script>
 // 版本检测
 (function(){
-  var PAGE_V = 5;
+  var PAGE_V = 6;
   fetch("version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.json();}).then(function(d){
     if(PAGE_V!==d.v){
       var last=0; try{last=parseInt(sessionStorage.getItem("ck_refreshed")||"0");}catch(e){}

@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>设计稿转前端代码 · 理解地图</title>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Poppins:wght@500;600;700&family=Roboto+Mono:wght@400;600&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#FAF6EB;
+  --paper:#F3EDDD;
+  --forest:#1E3A24;
+  --sky:#BCD8EE;
+  --sage:#AFCDA8;
+  --ink:#1A2018;
+  --marker:#F5E08A;
+  --brick:#B5482A;
+  --correct:#2F7D46;
+  --wrong:#B5482A;
+  --font-display:"Archivo Black","Noto Sans SC","PingFang SC",sans-serif;
+  --font-head:"Poppins","Noto Sans SC","PingFang SC",sans-serif;
+  --font-body:-apple-system,"PingFang SC","Noto Sans SC",sans-serif;
+  --font-mono:"Roboto Mono","JetBrains Mono",monospace;
+  --radius-pill:999px;
+  --radius-card:14px;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0; background:var(--cream); color:var(--ink);
+  font-family:var(--font-body); font-size:16px; line-height:1.7;
+  display:flex;
+}
+/* ===== 左侧固定侧边栏 ===== */
+aside.sidebar{
+  position:fixed; top:0; left:0; width:280px; height:100vh;
+  background:var(--forest); color:var(--cream);
+  padding:1.5rem 1.25rem 2rem; overflow-y:auto;
+  z-index:50; flex-shrink:0;
+}
+aside.sidebar h1{
+  font-family:var(--font-display); font-size:1.3rem; line-height:1.25;
+  margin:0 0 .3rem; letter-spacing:-.01em;
+}
+aside.sidebar .sub{
+  font-size:.78rem; opacity:.75; margin-bottom:1.2rem;
+  padding-bottom:1.2rem; border-bottom:1px solid rgba(250,246,235,.18);
+}
+aside.sidebar .progress-wrap{margin-bottom:1.2rem;}
+aside.sidebar .progress-label{
+  display:flex; justify-content:space-between; align-items:center;
+  font-size:.78rem; opacity:.8; margin-bottom:.4rem;
+  font-family:var(--font-head); letter-spacing:.02em;
+}
+aside.sidebar .progress-bar{
+  height:8px; background:rgba(250,246,235,.15); border-radius:var(--radius-pill);
+  overflow:hidden;
+}
+aside.sidebar .progress-bar .fill{
+  height:100%; width:0%; background:var(--marker); border-radius:var(--radius-pill);
+  transition:width .35s ease;
+}
+aside.sidebar nav a{
+  display:block; padding:.55rem .8rem; margin-bottom:.2rem;
+  color:var(--cream); text-decoration:none; opacity:.78;
+  font-family:var(--font-head); font-weight:500; font-size:.85rem;
+  border-radius:8px; transition:all .18s; border-left:3px solid transparent;
+}
+aside.sidebar nav a:hover{ opacity:1; background:rgba(250,246,235,.08); }
+aside.sidebar nav a .no{
+  display:inline-block; width:1.8em; font-family:var(--font-mono); opacity:.7;
+  font-size:.78rem;
+}
+aside.sidebar nav a.active{ opacity:1; background:rgba(245,224,138,.18); border-left-color:var(--marker); }
+aside.sidebar .mascot{
+  margin-top:1.5rem; text-align:center; opacity:.9;
+}
+aside.sidebar .mascot img{ width:88px; height:88px; object-fit:contain; }
+aside.sidebar .mascot .mascot-text{ font-size:.72rem; opacity:.7; margin-top:.3rem; }
+
+/* ===== 右侧主区（单列纵向堆叠） ===== */
+main{
+  margin-left:280px; padding:3rem 2rem 5rem;
+  max-width:820px; width:100%; min-width:0;
+}
+section.module{
+  margin-bottom:3.5rem; scroll-margin-top:1.5rem;
+  border-top:3px solid var(--forest); padding-top:1.5rem;
+}
+section.module:first-of-type{ border-top:none; padding-top:0; }
+.sec-id{
+  display:inline-block; font-family:var(--font-mono); font-weight:600;
+  font-size:.78rem; background:var(--forest); color:var(--cream);
+  padding:.2em .7em; border-radius:var(--radius-pill); letter-spacing:.05em;
+  margin-bottom:.6rem;
+}
+h2{
+  font-family:var(--font-head); font-weight:700;
+  font-size:1.6rem; line-height:1.3; margin:0 0 1rem; color:var(--forest);
+}
+h3{
+  font-family:var(--font-head); font-weight:600;
+  font-size:1.1rem; margin:1.4rem 0 .6rem; color:var(--forest);
+}
+p{ margin:0 0 .85rem; }
+.lead{ font-size:1.05rem; color:var(--ink); }
+
+/* 单列卡片 */
+.card{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1.25rem 1.35rem; margin-bottom:1rem;
+  border-left:4px solid var(--sage);
+}
+.card.brick{ border-left-color:var(--brick); }
+.card.marker{ border-left-color:var(--marker); background:rgba(245,224,138,.18); }
+.card.sky{ border-left-color:var(--sky); }
+.card-title{
+  font-family:var(--font-head); font-weight:600; font-size:1rem;
+  margin:0 0 .4rem; color:var(--forest);
+}
+
+/* 原文依据块 */
+.src-quote{
+  background:var(--cream); border-left:3px solid var(--brick);
+  padding:.6rem .9rem; margin:.5rem 0; font-size:.9rem;
+  border-radius:0 8px 8px 0;
+}
+.src-quote::before{
+  content:"原文依据 · "; font-family:var(--font-mono); font-size:.74rem;
+  font-weight:600; color:var(--brick); letter-spacing:.05em;
+}
+
+/* 类型标签 */
+.type-tag{
+  display:inline-block; font-size:.72rem; font-family:var(--font-mono);
+  padding:.15em .6em; border-radius:var(--radius-pill); margin-right:.3em;
+  font-weight:600;
+}
+.type-tag.fact{ background:var(--sage); color:var(--forest); }
+.type-tag.judge{ background:var(--marker); color:var(--ink); }
+.type-tag.infer{ background:var(--sky); color:var(--ink); }
+.type-tag.eg{ background:var(--brick); color:var(--cream); }
+
+/* 背景补充块 */
+.bg-block{
+  background:rgba(175,205,168,.22); border-radius:var(--radius-card);
+  padding:1.1rem 1.25rem; margin-bottom:1rem;
+  border-left:4px solid var(--sage);
+}
+.bg-block .bg-label{
+  font-family:var(--font-mono); font-size:.74rem; font-weight:600;
+  color:var(--forest); letter-spacing:.06em; margin-bottom:.5rem;
+}
+.bg-block .why{ font-size:.86rem; opacity:.78; margin-top:.5rem; font-style:italic; }
+
+/* 类比块 */
+.analogy{
+  background:rgba(188,216,238,.25); border-radius:8px;
+  padding:.7rem .9rem; margin:.6rem 0; font-size:.92rem;
+  border-left:3px solid var(--sky);
+}
+.analogy::before{
+  content:"类比 · "; font-family:var(--font-mono); font-size:.74rem;
+  font-weight:600; color:var(--forest); letter-spacing:.05em;
+}
+
+/* 目标项（纵向堆叠） */
+.goal-item{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:.9rem 1.1rem; margin-bottom:.8rem;
+  display:flex; align-items:flex-start; gap:.7rem;
+  border-left:4px solid var(--forest);
+}
+.goal-item .g-num{
+  font-family:var(--font-display); font-size:1.4rem; color:var(--brick);
+  line-height:1; flex-shrink:0;
+}
+
+/* 结构地图（树形/纵向） */
+.tree{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1.1rem 1.25rem; font-family:var(--font-mono); font-size:.83rem;
+  line-height:1.9;
+}
+.tree-node{ margin:.2rem 0; }
+.tree-node .label{ color:var(--forest); font-weight:600; }
+.tree-node .rel{ color:var(--brick); font-size:.76rem; }
+
+/* 关卡题 */
+.q-item{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1rem 1.15rem .9rem; margin-bottom:1rem;
+  border-left:4px solid var(--sky);
+}
+.q-item summary{ cursor:pointer; font-weight:500; }
+.q-item .q-no{
+  font-family:var(--font-mono); font-size:.74rem; font-weight:600;
+  color:var(--brick); letter-spacing:.05em; margin-bottom:.3rem;
+}
+.q-item .q-text{ font-weight:500; margin-bottom:.7rem; }
+.q-item .q-hint{ font-size:.84rem; opacity:.7; font-style:italic; margin-top:.6rem; }
+
+/* 任务（data-* 题目） */
+.task{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1rem 1.15rem 1.1rem; margin-bottom:1.1rem;
+  border-left:4px solid var(--brick);
+}
+.task .q{ font-weight:500; margin-bottom:.7rem; }
+.task .opts{ display:flex; flex-direction:column; gap:.45rem; margin-bottom:.7rem; }
+.task button.opt{
+  background:var(--cream); border:1.5px solid var(--forest);
+  border-radius:8px; padding:.55rem .8rem;
+  font-family:var(--font-body); font-size:.94rem; text-align:left;
+  cursor:pointer; transition:all .15s; color:var(--ink);
+}
+.task button.opt:hover{ background:var(--sage); }
+.task button.opt.selected{ background:var(--forest); color:var(--cream); border-color:var(--forest); }
+.task button.check{
+  background:var(--forest); color:var(--cream); border:none;
+  border-radius:var(--radius-pill); padding:.45rem 1.2rem;
+  font-family:var(--font-head); font-weight:600; font-size:.88rem;
+  cursor:pointer; margin-bottom:.6rem;
+}
+.task button.check:hover{ background:#142710; }
+.task .feedback{
+  background:var(--cream); border-radius:8px; padding:.6rem .8rem;
+  font-size:.88rem; margin-top:.4rem;
+  border-left:3px solid var(--ink);
+}
+.task .feedback.ok{ border-left-color:var(--correct); background:rgba(175,205,168,.22); }
+.task .feedback.no{ border-left-color:var(--wrong); background:rgba(181,72,42,.1); }
+.task .feedback .src{
+  display:block; margin-top:.4rem; font-size:.82rem; opacity:.8;
+  font-style:italic;
+}
+.task .match-row{
+  display:flex; align-items:center; gap:.6rem; margin-bottom:.5rem;
+  flex-wrap:wrap;
+}
+.task select.match{
+  flex:1; min-width:140px; padding:.4rem .5rem;
+  border:1.5px solid var(--forest); border-radius:6px;
+  font-family:var(--font-body); background:var(--cream);
+}
+
+/* 错题回流 */
+.wrong-box{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1rem 1.15rem; border-left:4px solid var(--wrong);
+}
+.wrong-box ul{ margin:.5rem 0 0; padding-left:1.2rem; }
+.wrong-box li{ margin-bottom:.4rem; font-size:.9rem; }
+
+/* 误解卡 */
+.myth{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1.1rem 1.25rem; margin-bottom:1rem;
+  border-left:4px solid var(--brick);
+}
+.myth .myth-head{
+  font-family:var(--font-head); font-weight:600; color:var(--brick);
+  font-size:1rem; margin-bottom:.5rem;
+}
+.myth .row{ margin:.4rem 0; font-size:.92rem; }
+.myth .row .key{
+  font-family:var(--font-mono); font-size:.74rem; font-weight:600;
+  color:var(--forest); margin-right:.4em;
+}
+
+/* 概念卡 */
+.concept{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1.25rem 1.35rem; margin-bottom:1.1rem;
+  border-left:4px solid var(--marker);
+}
+.concept .c-name{
+  font-family:var(--font-head); font-weight:700; font-size:1.15rem;
+  color:var(--forest); margin-bottom:.6rem;
+}
+.concept .c-row{ margin:.5rem 0; font-size:.92rem; }
+.concept .c-row .ck{
+  font-family:var(--font-mono); font-size:.74rem; font-weight:600;
+  color:var(--brick); margin-right:.4em; letter-spacing:.04em;
+}
+
+/* 公式块 */
+.formula{
+  background:var(--forest); color:var(--marker);
+  border-radius:8px; padding:.8rem 1rem; margin:.6rem 0;
+  font-family:var(--font-mono); font-size:.85rem; text-align:center;
+  overflow-x:auto;
+}
+
+/* 表格 */
+table.t{
+  width:100%; border-collapse:collapse; margin:.6rem 0;
+  font-size:.86rem; background:var(--cream);
+  border-radius:8px; overflow:hidden;
+}
+table.t th, table.t td{
+  padding:.5rem .7rem; text-align:left; border:1px solid var(--paper);
+}
+table.t th{ background:var(--forest); color:var(--cream); font-family:var(--font-head); font-weight:500; }
+
+/* 表情贴纸 */
+.sticker{ display:inline-block; vertical-align:middle; width:24px; height:24px; margin:0 .3em; }
+
+/* 页脚 */
+footer{
+  margin-top:3rem; padding:1.5rem 0 1rem; border-top:2px solid var(--forest);
+  font-size:.86rem; color:var(--ink); text-align:center;
+}
+footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
+
+.hero-mark{
+  font-family:var(--font-display); font-size:.74rem;
+  color:var(--marker); background:var(--forest);
+  padding:.2em .7em; border-radius:var(--radius-pill);
+  letter-spacing:.05em; display:inline-block; margin-bottom:.6rem;
+}
+
+/* ===== 语音：右侧书签脊 ===== */
+#voiceFab{
+  position:fixed; right:0; top:50%; transform:translateY(-50%); z-index:9998;
+  display:flex; align-items:center; flex-direction:row;
+  background:var(--forest); color:var(--cream); border:none; cursor:pointer;
+  height:5em; padding:0 .55em;
+  border-radius:16px 0 0 16px;
+  box-shadow:-4px 0 14px rgba(0,0,0,.18);
+  font-family:var(--font-head); font-size:.85rem;
+  overflow:hidden;
+  transition:width .42s cubic-bezier(.4,0,.2,1), box-shadow .3s ease;
+  width:1.9em;
+}
+#voiceFab .fab-icon{
+  font-size:1.15rem; writing-mode:vertical-rl; text-orientation:upright;
+  letter-spacing:.1em; white-space:nowrap; flex-shrink:0;
+}
+#voiceFab .fab-text{
+  white-space:nowrap; opacity:0; margin-left:.6em;
+  transition:opacity .28s ease .12s;
+}
+#voiceFab:hover{
+  width:8.6em; box-shadow:-6px 0 22px rgba(0,0,0,.25);
+}
+#voiceFab:hover .fab-text{ opacity:1; }
+#voiceFab.beat{ animation:voiceBeat 1.6s ease-in-out infinite; }
+@keyframes voiceBeat{ 0%,100%{box-shadow:-4px 0 14px rgba(0,0,0,.18)} 50%{box-shadow:-4px 0 20px rgba(181,72,42,.5)} }
+
+/* ===== 语音：圆润玩具风播放器 ===== */
+#voicePlayer{
+  position:fixed; left:50%; bottom:1rem; transform:translateX(-50%) translateY(140%);
+  width:min(92vw,380px); padding:1rem 1.1rem 1.1rem; background:var(--cream);
+  border:2px solid var(--forest); border-radius:26px;
+  box-shadow:0 8px 28px rgba(0,0,0,.16); z-index:9999; transition:transform .28s ease;
+  text-align:center; font-family:var(--font-body);
+}
+#voicePlayer.show{ transform:translateX(-50%) translateY(0); }
+#voicePlayer .vp-head{ font-size:.75rem; color:var(--forest); opacity:.8; letter-spacing:.05em; }
+#voicePlayer .vp-title{ font:700 1rem/1.35 var(--font-body); color:var(--ink);
+  margin:.25rem 0 .7rem; padding:0 .2rem; word-break:break-word; }
+#voicePlayer .vp-play{
+  width:3.6rem; height:3.6rem; border:none; border-radius:50%;
+  background:var(--forest); color:var(--cream); font-size:1.3rem; cursor:pointer;
+  margin:0 auto .7rem; display:flex; align-items:center; justify-content:center;
+  box-shadow:0 3px 0 #142710; transition:transform .1s, box-shadow .1s;
+}
+#voicePlayer .vp-play:active{ transform:translateY(2px); box-shadow:0 1px 0 #142710; }
+#voicePlayer .vp-prev,#voicePlayer .vp-next{
+  width:2.3rem; height:2.3rem; border:1.5px solid var(--forest); border-radius:50%;
+  background:var(--cream); color:var(--forest); font-size:.9rem; cursor:pointer;
+}
+#voicePlayer .vp-controls{ display:flex; align-items:center; justify-content:center; gap:1.2rem; margin-bottom:.7rem; }
+#voicePlayer .vp-seek{ width:100%; margin:.2rem 0; cursor:pointer; accent-color:var(--forest); }
+#voicePlayer .vp-time{ display:flex; justify-content:space-between; font:600 .72rem/1 var(--font-mono); color:var(--ink); opacity:.75; }
+#voicePlayer .vp-close{ position:absolute; top:.5rem; right:.6rem; width:1.5rem; height:1.5rem;
+  border:none; background:transparent; color:var(--ink); font-size:1rem; cursor:pointer; opacity:.5; }
+#voicePlayer .vp-sub{
+  min-height:2.6em; max-height:3.9em; overflow:hidden;
+  font:.85rem/1.5 var(--font-body); color:var(--ink); opacity:.55;
+  margin:.2rem 0 .5rem; padding:0 .3rem;
+  transition:opacity .2s; text-align:center;
+}
+#voicePlayer .vp-sub.active{ opacity:1; }
+#voicePlayer .vp-sub .cur{ color:var(--forest); font-weight:600; }
+
+/* 「听这章」小按钮 */
+.voice-btn{
+  display:inline-block; vertical-align:middle; margin-left:.6em;
+  padding:.25em .8em; border:1px solid var(--forest); border-radius:var(--radius-pill);
+  background:var(--cream); color:var(--forest); font:600 .8rem/1.2 var(--font-body);
+  cursor:pointer; transition:background .15s;
+}
+.voice-btn:hover{ background:var(--sage); }
+.voice-btn.active{ background:var(--forest); color:var(--cream); }
+
+/* 学习报告按钮 */
+.report-actions{ margin:.8rem 0; display:flex; gap:.6rem; flex-wrap:wrap; }
+.report-actions button{
+  background:var(--forest); color:var(--cream); border:none;
+  border-radius:var(--radius-pill); padding:.5rem 1.1rem;
+  font-family:var(--font-head); font-weight:600; font-size:.88rem; cursor:pointer;
+}
+.report-actions button:hover{ background:#142710; }
+#report{
+  background:var(--cream); border-radius:8px; padding:1rem 1.1rem;
+  font-family:var(--font-mono); font-size:.82rem; white-space:pre-wrap;
+  border-left:3px solid var(--forest); min-height:3rem; line-height:1.7;
+}
+
+/* 移动端 */
+@media (max-width: 880px){
+  body{ flex-direction:column; }
+  aside.sidebar{
+    position:static; width:100%; height:auto; max-height:none;
+    padding:1.2rem 1rem;
+  }
+  main{ margin-left:0; padding:1.5rem 1rem 4rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- 语音播放列表（连续播放用） -->
+<script type="application/json" id="voicePlaylist">
+[
+  {"id":"m1","title":"01 学习目标与阅读路径","src":"audio/m1.mp3"},
+  {"id":"m2","title":"02 零基础背景包","src":"audio/m2.mp3"},
+  {"id":"m3","title":"03 原文问题定位","src":"audio/m3.mp3"},
+  {"id":"m4","title":"04 原文结构地图","src":"audio/m4.mp3"},
+  {"id":"m5","title":"05 核心判断与依据","src":"audio/m5.mp3"},
+  {"id":"m6","title":"06 关键概念拆解","src":"audio/m6.mp3"},
+  {"id":"m7","title":"07 苏格拉底式阅读关卡","src":"audio/m7.mp3"},
+  {"id":"m8","title":"08 闯关式任务","src":"audio/m8.mp3"},
+  {"id":"m9","title":"09 误解与边界","src":"audio/m9.mp3"},
+  {"id":"m10","title":"10 背景知识缺口","src":"audio/m10.mp3"},
+  {"id":"m11","title":"11 复盘与学习报告","src":"audio/m11.mp3"}
+]
+</script>
+
+<!-- ===== 左侧固定侧边栏 ===== -->
+<aside class="sidebar">
+  <h1>设计稿转前端代码</h1>
+  <div class="sub">微盛研发岗管培生培训 · AICoding 方向 · 理解地图</div>
+
+  <div class="progress-wrap">
+    <div class="progress-label">
+      <span>任务进度</span>
+      <span><span id="barNum">0 / 0</span></span>
+    </div>
+    <div class="progress-bar"><div class="fill" id="barFill"></div></div>
+  </div>
+
+  <nav>
+    <a href="#m01"><span class="no">01</span>学习目标与阅读路径</a>
+    <a href="#m02"><span class="no">02</span>零基础背景包</a>
+    <a href="#m03"><span class="no">03</span>原文问题定位</a>
+    <a href="#m04"><span class="no">04</span>原文结构地图</a>
+    <a href="#m05"><span class="no">05</span>核心判断与依据</a>
+    <a href="#m06"><span class="no">06</span>关键概念拆解</a>
+    <a href="#m07"><span class="no">07</span>苏格拉底式阅读关卡</a>
+    <a href="#m08"><span class="no">08</span>闯关式任务</a>
+    <a href="#m09"><span class="no">09</span>误解与边界</a>
+    <a href="#m10"><span class="no">10</span>背景知识缺口</a>
+    <a href="#m11"><span class="no">11</span>复盘与学习报告</a>
+  </nav>
+
+  <div class="mascot">
+    <img src="https://lyzbcy.github.io/weshoto-study/img/sticker/mascot.png" alt="吉祥物">
+    <div class="mascot-text">陪你学完整章</div>
+  </div>
+</aside>
+
+<!-- ===== 右侧主区（单列纵向堆叠） ===== -->
+<main>
+
+<!-- ===== 01 学习目标与阅读路径 ===== -->
+<section class="module" id="m01">
+  <span class="hero-mark">理解地图</span>
+  <h2>01 学习目标与阅读路径 <button class="voice-btn" data-voice-id="m1">🎧 听这章</button></h2>
+  <p class="lead">这是一份写给"刚学完前端基础、第一次接触设计稿转代码"的同学的拆解地图。它要讲清一件事：<strong>怎么用一个叫 frontend 的 AI Skill，把 Sketch/Figma 设计稿自动转成微盛的 Vue3 代码</strong>。读完这一章，你能做到下面五件事。</p>
+
+  <div class="goal-item">
+    <span class="g-num">1</span>
+    <div><strong>能说出 frontend Skill 的三大作用</strong>：把 Sketch/Figma 设计稿转成前端代码、过滤 OpenAPI/Swagger 接口文档、管理知识库文档。一句话讲清"它是干嘛的"。</div>
+  </div>
+  <div class="goal-item">
+    <span class="g-num">2</span>
+    <div><strong>能独立配好运行环境</strong>：知道要装 Node.js v22+，能配出 CODEBYAI_API_KEY（必配）和 CODEBYAI_BASE_URL（可选，默认 https://codebyai.com）两个环境变量，Mac 改 ~/.zshrc、Windows 走"系统属性→环境变量"。</div>
+  </div>
+  <div class="goal-item">
+    <span class="g-num">3</span>
+    <div><strong>能背出标准操作流程的六步顺序</strong>：给 AI 设计稿和 Swagger → AI 自动开浏览器 → 选画板/技术框架/尺寸单位 → 框选元素替换成微盛组件 → 补布局重构注意事项 → 确认生成代码。</div>
+  </div>
+  <div class="goal-item">
+    <span class="g-num">4</span>
+    <div><strong>能记住两条硬性技术约束</strong>：微盛管理后台和移动端<strong>统一用 Vue3</strong>；移动端用 <strong>rem 适配且 1rem = 50px</strong>（不是建议，是硬规定）。</div>
+  </div>
+  <div class="goal-item">
+    <span class="g-num">5</span>
+    <div><strong>能独立完成一次转换</strong>：以"客户群欢迎语列表"为例跑通全流程；尤其是遇到画板选不中元素时，知道用"自由设定"功能，靠提示词告诉 AI 这块该怎么实现。</div>
+  </div>
+
+  <div class="card marker">
+    <div class="card-title">阅读路径（按顺序）</div>
+    <p style="margin:0">先在 02 补 5 个零件（Sketch/Swagger/Vue3/rem/Skill）→ 在 03/04 看清"这份材料在解决什么、整体怎么搭" → 在 05/06 抓住 5 条核心判断和 7 个关键概念 → 在 07 自己提问 → 在 08 闯 8 道闭环题 → 在 09/10 看边界和缺口 → 在 11 出报告。</p>
+  </div>
+</section>
+
+<!-- ===== 02 零基础背景包 ===== -->
+<section class="module" id="m02">
+  <span class="sec-id">02</span>
+  <h2>零基础背景包 <button class="voice-btn" data-voice-id="m2">🎧 听这章</button></h2>
+  <p class="lead">在拆原文前，先装 5 个最基本的零件。每个都标了"背景补充"——它帮你读懂材料，但<strong>不是这份操作手册自己的论点</strong>，而是帮你建立"设计稿怎么变成代码"的常识。</p>
+
+  <div class="bg-block">
+    <div class="bg-label">背景补充 1 · Sketch / Figma（设计稿）</div>
+    <p style="margin:0 0 .4rem">设计师画界面用的两款软件，产出的文件叫"设计稿"。Sketch 是 Mac 上的（文件后缀 .sketch），Figma 是浏览器里用的。设计稿里一张张完整的页面图叫"画板（Artboard）"，相当于"这一个页面长这样"。</p>
+    <div class="analogy">类比：设计稿 ≈ 你照着还原成 HTML 的那张效果图；画板 ≈ 其中一个页面（如"客户群欢迎语列表"那张图）。</div>
+    <div class="why">为什么现在需要知道：整个 Skill 的输入就是 Sketch 设计稿，第一步还要"选画板"——不懂画板是啥就选不出来。</div>
+  </div>
+
+  <div class="bg-block">
+    <div class="bg-label">背景补充 2 · Swagger / OpenAPI（接口文档）</div>
+    <p style="margin:0 0 .4rem">后端写给前端看的"接口说明书"，标准格式叫 OpenAPI，文件常叫 Swagger JSON。它写清了每个接口的地址、请求方法（GET/POST）、参数、返回字段。前端拿它才知道"页面数据从哪个接口拿、点删除调哪个接口"。</p>
+    <div class="analogy">类比：Swagger ≈ 一份函数签名表，告诉你函数名、入参、返回值；AI 读了它就知道该调哪个接口。</div>
+    <div class="why">为什么现在需要知道：转代码时除了给设计稿，还要给 Swagger JSON（如 PC_GREETING_API.swagger.json），AI 才能填对接口调用。</div>
+  </div>
+
+  <div class="bg-block">
+    <div class="bg-label">背景补充 3 · Vue3（前端框架）</div>
+    <p style="margin:0 0 .4rem">目前国内主流的前端框架之一，用"组件"拼页面，数据变了页面自动更新。一个 .vue 文件里同时写模板（HTML）、脚本（JS）、样式（CSS）。微盛的管理后台和移动端<strong>统一用 Vue3</strong>。</p>
+    <div class="analogy">类比：Vue3 组件 ≈ 你自定义的一个 HTML 标签（如 &lt;WelcomeList/&gt;），里面封好了结构和逻辑，到处复用。</div>
+    <div class="why">为什么现在需要知道：转代码时必须选技术框架，微盛的答案只有一个——Vue3，选错框架生成的代码用不了。</div>
+  </div>
+
+  <div class="bg-block">
+    <div class="bg-label">背景补充 4 · rem 适配（移动端尺寸方案）</div>
+    <p style="margin:0 0 .4rem">手机屏幕大小不一，写死 px 会在不同手机上变形。rem 是一种相对单位：1rem 等于根元素（html）的字号。只要按屏幕宽度动态改 html 的字号，整个页面就会等比缩放。微盛规定 <strong>1rem = 50px</strong>。</p>
+    <div class="analogy">类比：rem ≈ 一个"会随屏幕大小自动缩放的 px"；1rem=50px 意味着设计稿上量出 100px，就写 2rem。</div>
+    <div class="why">为什么现在需要知道：移动端转代码要选尺寸单位为 rem，且换算基准是 50px，这是硬约束。</div>
+  </div>
+
+  <div class="bg-block">
+    <div class="bg-label">背景补充 5 · Skill（AI 技能）</div>
+    <p style="margin:0 0 .4rem">"Skill"是给 AI 装的一个"技能包"，里面是一套提示词 + 工具 + 知识库，让 AI 在某件事上特别在行。frontend 就是专门做"设计稿转前端代码"的 Skill，配置文件是 frontend.zip。装上它，AI 才知道要开浏览器、选画板、替换微盛组件这一整套流程。</p>
+    <div class="analogy">类比：Skill ≈ 给 AI 装的一个浏览器插件/技能模块；没装它，AI 不知道"设计稿转代码"该按什么套路走。</div>
+    <div class="why">为什么现在需要知道：整篇材料讲的就是"怎么用 frontend 这个 Skill"，不懂 Skill 是啥就不知道这是在干嘛。</div>
+  </div>
+</section>
+
+<!-- ===== 03 原文问题定位 ===== -->
+<section class="module" id="m03">
+  <span class="sec-id">03</span>
+  <h2>原文问题定位 <button class="voice-btn" data-voice-id="m3">🎧 听这章</button></h2>
+
+  <div class="card brick">
+    <div class="card-title">表面在讲什么？</div>
+    <p style="margin:0">一份操作手册：怎么配环境、怎么把 Sketch 设计稿和 Swagger JSON 喂给 AI、怎么选画板/框架/单位、怎么框选元素替换微盛组件、最后生成 Vue3 代码。<span class="type-tag fact">事实</span></p>
+  </div>
+
+  <div class="card brick">
+    <div class="card-title">深层在回答什么问题？</div>
+    <p style="margin:0 0 .5rem"><strong>"照着设计稿一行行手写代码"这件前端最耗时、最机械的体力活，怎么交给 AI 去做，同时还得守住微盛的技术规范（Vue3 + 微盛组件 + rem50px）？"</strong>这套流程的本质是<strong>用 AI 提效</strong>，但关键判断（选什么、框什么、替换成什么）依然由人来做。<span class="type-tag judge">判断</span></p>
+    <div class="src-quote">frontend 是设计稿前端代码的 Skill，作用是将 Sketch/Figma 设计稿转换为前端代码，过滤 OpenAPI/Swagger 接口文档，以及管理知识库文档。</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">读者如果只记一个问题，应该记哪个？</div>
+    <p style="margin:0"><strong>标准操作流程的六步到底是哪六步、每一步人在做什么、AI 在做什么？</strong>把这六步和"人机分工"搞清楚，整份材料就串起来了。<span class="type-tag infer">推论</span></p>
+  </div>
+</section>
+
+<!-- ===== 04 原文结构地图 ===== -->
+<section class="module" id="m04">
+  <span class="sec-id">04</span>
+  <h2>原文结构地图 <button class="voice-btn" data-voice-id="m4">🎧 听这章</button></h2>
+  <p class="lead">判断结构类型：<strong>机制流程</strong>（一条主线从头跑到尾）。整篇是一条"配好环境 → 备好料 → 走标准流程 → 看一个完整例子"的流水线。不要把它读成并列的知识点清单——后面每一步都依赖前面。</p>
+
+  <div class="tree">
+    <div class="tree-node"><span class="label">主线：设计稿转代码完整流程</span> <span class="rel">（机制流程）</span></div>
+    <div class="tree-node">&nbsp;&nbsp;├─ <span class="label">0. 运行环境</span></div>
+    <div class="tree-node">&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;Node.js v22+ + 环境变量（CODEBYAI_API_KEY 必配，CODEBYAI_BASE_URL 可选，默认 codebyai.com）</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ <span class="label">1. 前置准备（备料）</span></div>
+    <div class="tree-node">&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;Sketch 设计稿（如 客户群欢迎语.sketch）+ Swagger JSON（如 PC_GREETING_API.swagger.json）</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ <span class="label">2. 标准操作流程（核心六步）</span></div>
+    <div class="tree-node">&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;① 把设计稿和 Swagger 给 AI，提示词告知实现细节（数据从哪个接口拿、点删除调 xx 接口）</div>
+    <div class="tree-node">&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;② AI 自动打开浏览器 → <span class="rel">人工选画板 / 技术框架 / 尺寸单位</span></div>
+    <div class="tree-node">&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;③ <span class="rel">人工框选元素 → 替换为微盛组件</span>（填组件名；选不中时用"自由设定"）</div>
+    <div class="tree-node">&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;④ 补充布局代码重构注意事项 + 按需选组件知识库文档（"智能选择"自动勾选）</div>
+    <div class="tree-node">&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;⑤ 确认 → 等待代码生成</div>
+    <div class="tree-node">&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;⑥ 自动产出 Vue 代码重构说明文档</div>
+    <div class="tree-node">&nbsp;&nbsp;└─ <span class="label">3. 详细演示：以"客户群欢迎语列表"为例</span> <span class="rel">（把六步跑一遍）</span></div>
+    <div class="tree-node" style="margin-top:.6rem"><span class="label">技术约束（贯穿主线的硬规定）</span> <span class="rel">（不是步骤，是规则）</span></div>
+    <div class="tree-node">&nbsp;&nbsp;├─ 管理后台 + 移动端：<strong>统一 Vue3</strong></div>
+    <div class="tree-node">&nbsp;&nbsp;└─ 移动端：<strong>rem 适配，1rem = 50px</strong></div>
+  </div>
+
+  <div class="card sky">
+    <div class="card-title">节点关系说明</div>
+    <p style="margin:0">主线是<strong>顺序流程</strong>（前一步选错了，后面全错——比如框架选错，生成的代码用不了）。"详细演示"是<strong>实例关系</strong>（用客户群欢迎语把六步演一遍，帮你对照）。"技术约束"是<strong>规则关系</strong>（不参与流程顺序，但流程里第②步选框架/单位时必须遵守）。把这三层分开看，就不会被一堆操作绕晕。</p>
+  </div>
+</section>
+
+<!-- ===== 05 核心判断与依据 ===== -->
+<section class="module" id="m05">
+  <span class="sec-id">05</span>
+  <h2>核心判断与依据 <button class="voice-btn" data-voice-id="m5">🎧 听这章</button></h2>
+  <p class="lead">挑出 5 条最硬的判断。每条都附原文依据和类型标签——这是你想"抓住重点"时最该背的几条。</p>
+
+  <div class="card">
+    <div class="card-title">判断 1 · 这是"AI 辅助提效"，不是"AI 完全替代"</div>
+    <p style="margin:0 0 .4rem">AI 只负责把设计稿"翻译"成代码骨架，但<strong>画板、框架、尺寸单位要人选，元素要人框选并指定替换成哪个微盛组件，布局重构注意事项要人补</strong>。关键决策都在人手上，AI 干的是体力活。<span class="type-tag judge">判断</span></p>
+    <div class="src-quote">发送消息后将会自动打开浏览器进行转换设计稿，需要人工选择画板、技术框架和尺寸单位，框选指定元素替换成微盛组件等。</div>
+    <p style="margin:.4rem 0 0;font-size:.9rem"><strong>为什么重要</strong>：决定了你用这个 Skill 的正确姿势——你不是甩手掌柜，而是"指挥 AI 的那个前端"。</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">判断 2 · Vue3 是微盛管理后台和移动端的统一硬性框架</div>
+    <p style="margin:0 0 .4rem">转代码时技术框架<strong>只有一个选项：Vue3</strong>，管理后台和移动端都是。不是"建议用 Vue3"，而是"微盛就是用 Vue3"。选别的框架生成的代码进不了项目。<span class="type-tag fact">事实</span></p>
+    <div class="src-quote">微盛管理后台、移动端均采用 Vue3 框架，移动端采用 rem 做页面尺寸适配，1rem 等于 50px。</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">判断 3 · 移动端必须用 rem 适配，且 1rem = 50px（硬约束）</div>
+    <p style="margin:0 0 .4rem">移动端转代码时尺寸单位选 rem，换算基准固定写死 <strong>1rem = 50px</strong>。这是微盛的统一规定，不是你随心所欲的——设计稿量出 100px 就写 2rem。管理后台<strong>不用 rem</strong>。<span class="type-tag fact">事实</span></p>
+    <div class="formula">移动端：1rem = 50px　→　设计稿 100px = 2rem<br>管理后台：不使用 rem 适配</div>
+    <p style="margin:.4rem 0 0;font-size:.9rem"><strong>易误读</strong>：别以为 rem 换算比例能自己定——50px 这个数是钉死的。</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">判断 4 · 不能全自动转换，必须人工框选元素替换微盛组件</div>
+    <p style="margin:0 0 .4rem">AI 不会自动把设计稿里的方块认成"微盛的某某组件"，得<strong>你框选某个元素，再选"替换为组件"指令、填上组件名</strong>。这一步是把"长得像组件的图块"换成"真正可复用的微盛组件代码"的关键。<span class="type-tag fact">事实</span></p>
+    <div class="src-quote">框选元素后，选择指令"替换为组件"，填写组件名称。</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">判断 5 · CODEBYAI_API_KEY 必配，BASE_URL 可选</div>
+    <p style="margin:0 0 .4rem">两个环境变量里，<strong>API_KEY 是必须配的</strong>（AI 调用接口的凭证，没它跑不起来）；<strong>BASE_URL 是可选的</strong>，不配就默认用 https://codebyai.com。<span class="type-tag fact">事实</span></p>
+    <div class="src-quote">需要配置 CODEBYAI_API_KEY 和 CODEBYAI_BASE_URL 环境变量，其中 CODEBYAI_BASE_URL 为可选配置，默认值为：https://codebyai.com。</div>
+    <p style="margin:.4rem 0 0;font-size:.9rem"><strong>易误读</strong>：别把两个都当"可选"，API_KEY 漏配 Skill 直接起不来。</p>
+  </div>
+</section>
+
+<!-- ===== 06 关键概念拆解 ===== -->
+<section class="module" id="m06">
+  <span class="sec-id">06</span>
+  <h2>关键概念拆解 <button class="voice-btn" data-voice-id="m6">🎧 听这章</button></h2>
+  <p class="lead">7 个概念，环环相扣：<strong>frontend（Skill）靠 CODEBYAI_API_KEY 跑起来 → 读 Sketch 里的画板 → 你选 Vue3 框架和 rem 尺寸单位 → 框选元素替换成微盛组件 → 选不中时用"自由设定"补救 → 最后生成代码</strong>。</p>
+
+  <div class="concept">
+    <div class="c-name">① frontend Skill</div>
+    <div class="c-row"><span class="ck">定义</span>一个 AI 技能包（配置文件 frontend.zip），让 AI 学会"把 Sketch/Figma 设计稿转成前端代码、过滤 OpenAPI/Swagger 接口文档、管理知识库文档"。</div>
+    <div class="c-row"><span class="ck">人话</span>给 AI 装上它，AI 就会按"开浏览器→选画板→框选组件→生成代码"这套套路干活。</div>
+    <div class="analogy">类比：Skill ≈ 给 AI 装的一个专业技能模块；frontend ≈ 专门学过"设计稿转 Vue 代码"的那个模块。</div>
+    <div class="c-row"><span class="ck">关系</span>它是整篇材料的主体；后面所有概念都是它工作流程里的零件。</div>
+    <div class="src-quote">frontend 是设计稿前端代码的 Skill，作用是将 Sketch/Figma 设计稿转换为前端代码……以及管理知识库文档。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>frontend ≠ 一个网页/软件。它是一份给 AI 用的"技能配置"，运行在 AI 助手里。</div>
+  </div>
+
+  <div class="concept">
+    <div class="c-name">② CODEBYAI_API_KEY / CODEBYAI_BASE_URL</div>
+    <div class="c-row"><span class="ck">定义</span>两个环境变量。<strong>API_KEY</strong>是调用 AI 接口的凭证（必配）；<strong>BASE_URL</strong>是 AI 服务的地址（可选，默认 https://codebyai.com）。</div>
+    <div class="c-row"><span class="ck">人话</span>API_KEY 是你的"通行证"，BASE_URL 是"去哪扇门找 AI"。门不指定就走默认那扇。</div>
+    <div class="analogy">类比：API_KEY ≈ 你调后端接口时带上的 token；BASE_URL ≈ 接口的 baseURL，不传用默认域名。</div>
+    <div class="c-row"><span class="ck">关系</span>Mac 改 ~/.zshrc 后 source 生效；Windows 走"此电脑→属性→高级系统设置→环境变量"。</div>
+    <div class="src-quote">需要配置 CODEBYAI_API_KEY 和 CODEBYAI_BASE_URL 环境变量，其中 CODEBYAI_BASE_URL 为可选配置，默认值为：https://codebyai.com。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>两个不是都必填——只有 API_KEY 必填，BASE_URL 不填也有默认值。</div>
+  </div>
+
+  <div class="concept">
+    <div class="c-name">③ 画板（Artboard）</div>
+    <div class="c-row"><span class="ck">定义</span>Sketch/Figma 设计稿里，一张完整的页面图叫一个画板。一个设计稿文件里可能有多个画板（首页、列表页、详情页……）。</div>
+    <div class="c-row"><span class="ck">人话</span>设计稿里的"一页"。转代码时第一步就是告诉 AI："转哪一页"。</div>
+    <div class="analogy">类比：画板 ≈ 你要还原成 HTML 的那一张效果图；选画板 ≈ 选"这次只做列表页，不做详情页"。</div>
+    <div class="c-row"><span class="ck">关系</span>AI 开浏览器后，你做的第一个选择就是选画板；选完才能进入下一步选框架。</div>
+    <div class="src-quote">选择画板后，点击下一步；选择技术框架和尺寸单位。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>画板 ≠ 图层。图层是画板里面更小的元素（一个按钮、一段文字），画板是整页。</div>
+  </div>
+
+  <div class="concept">
+    <div class="c-name">④ 技术框架 + 尺寸单位</div>
+    <div class="c-row"><span class="ck">定义</span>选完画板后的第二个选择。<strong>技术框架</strong>决定生成什么代码（微盛统一选 Vue3）；<strong>尺寸单位</strong>决定长度怎么写（移动端选 rem，管理后台不选 rem）。</div>
+    <div class="c-row"><span class="ck">人话</span>"用什么框架写、长度用 px 还是 rem"——两个下拉框，但答案微盛已经替你定好了。</div>
+    <div class="formula">技术框架：管理后台 = Vue3 ／ 移动端 = Vue3<br>尺寸单位：移动端 = rem（1rem=50px） ／ 管理后台 = 不用 rem</div>
+    <div class="c-row"><span class="ck">关系</span>它俩是平行的两个选项，选错任一个，生成的代码都不符合微盛规范。</div>
+    <div class="src-quote">微盛管理后台、移动端均采用 Vue3 框架，移动端采用 rem 做页面尺寸适配，1rem 等于 50px。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>不是"管理后台用 Vue3、移动端用别的"——两端都是 Vue3，区别只在尺寸单位。</div>
+  </div>
+
+  <div class="concept">
+    <div class="c-name">⑤ rem 适配（1rem = 50px）</div>
+    <div class="c-row"><span class="ck">定义</span>移动端用的等比缩放方案：1rem 等于 html 根元素的字号。微盛把基准定为 50px，即设计稿量出 50px 就写 1rem、100px 就写 2rem。</div>
+    <div class="c-row"><span class="ck">人话</span>让页面在不同手机上按比例自动放大缩小，不会变形。</div>
+    <div class="analogy">类比：rem ≈ 一个自带缩放的 px；50px 是换算汇率——设计稿 px ÷ 50 = 你要写的 rem。</div>
+    <div class="c-row"><span class="ck">关系</span>只在移动端用；管理后台不用 rem。换算比例 50 是硬规定，不能改。</div>
+    <div class="src-quote">移动端采用 rem 做页面尺寸适配，1rem 等于 50px。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>50px 不是"建议值"，是微盛全公司统一的换算基准，写代码必须照这个除。</div>
+  </div>
+
+  <div class="concept">
+    <div class="c-name">⑥ 替换为组件（微盛组件）</div>
+    <div class="c-row"><span class="ck">定义</span>框选设计稿里某个元素后，选"替换为组件"指令，填上微盛组件名，AI 就把那块图块换成真正的微盛组件代码（而不是一坨裸 HTML/CSS）。</div>
+    <div class="c-row"><span class="ck">人话</span>告诉 AI："这个方块别用手画，用咱们公司现成的 XX 组件。"</div>
+    <div class="analogy">类比：替换为组件 ≈ 你手写代码时，不用 &lt;div class="btn"&gt; 自己拼按钮，而是直接 &lt;WeshotoButton/&gt; 引现成的。</div>
+    <div class="c-row"><span class="ck">关系</span>这是"AI 提效但不替代人"的关键点——AI 不知道哪个图块该用哪个微盛组件，必须你来框、来填名。</div>
+    <div class="src-quote">框选元素后，选择指令"替换为组件"，填写组件名称。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>不是 AI 自动识别组件——组件名是你填的，AI 只负责替换动作。</div>
+  </div>
+
+  <div class="concept">
+    <div class="c-name">⑦ 自由设定</div>
+    <div class="c-row"><span class="ck">定义</span>当画板原因导致选不中某个具体元素时，可以选中它的父级元素，用"自由设定"功能，通过提示词告诉 AI"这块选中的区域里该怎么实现"。</div>
+    <div class="c-row"><span class="ck">人话</span>"框不进去/选不中的死角，框它爹，然后用话描述清楚里面要啥。"</div>
+    <div class="analogy">类比：自由设定 ≈ 选不中内层元素时，选外层容器，再用自然语言"补刀"说明内部结构——像给 AI 写一段迷你需求。</div>
+    <div class="c-row"><span class="ck">关系</span>它是"框选替换组件"的补救手段，专门处理画板分层不合理、元素嵌套太深选不到的情况。</div>
+    <div class="src-quote">如果由于画板原因，无法选择到指定元素，可选中父级元素，采用"自由设定"功能，通过提示词的方式告知选中区域内的实现方式。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>自由设定 ≠ "偷懒让 AI 全做"。它是选不中元素时的退路，正常能框选时还是用"替换为组件"。</div>
+  </div>
+</section>
+
+<!-- ===== 07 苏格拉底式阅读关卡 ===== -->
+<section class="module" id="m07">
+  <span class="sec-id">07</span>
+  <h2>苏格拉底式阅读关卡 <button class="voice-btn" data-voice-id="m7">🎧 听这章</button></h2>
+  <p class="lead">不直接给答案，自己想。参考答案在每题下方，但请先停 30 秒再展开。</p>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q1 · 入门</span>为什么微盛移动端要用 rem 适配，管理后台却不用？</summary>
+    <div class="q-text">因为<strong>手机屏幕尺寸千差万别</strong>（从小屏到大屏手机），写死 px 会在不同手机上变形，必须用 rem 让页面等比缩放；而<strong>管理后台跑在 PC 浏览器上</strong>，屏幕大、分辨率相对统一，用常规 px 单位就够，不需要 rem 这层缩放。</div>
+    <div class="q-hint">提示：想想"目标设备屏幕尺寸的差异"。</div>
+  </details>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q2 · 入门</span>"frontend Skill 能自动把设计稿转成代码"和"必须人工框选元素"——这两句矛盾吗？</summary>
+    <div class="q-text">不矛盾。AI 自动完成的是<strong>翻译骨架</strong>（把图变成 Vue 代码的轮廓）；但"哪个图块对应微盛的哪个组件"这种业务判断 AI 做不了，必须<strong>人工框选 + 指定组件名</strong>。所以是"AI 干体力活 + 人干决策活"，合在一起才是完整流程。</div>
+  </details>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q3 · 进阶</span>为什么转代码时除了给设计稿，还要给 Swagger JSON？只给设计稿不行吗？</summary>
+    <div class="q-text">设计稿只画了"页面长什么样"，<strong>没说数据从哪来</strong>。Swagger JSON 是接口说明书，告诉 AI"列表数据从哪个接口拿、点删除调哪个接口、字段叫什么"。不给 Swagger，AI 只能生成纯静态页面，接口调用要么瞎编要么空着。所以两者缺一不可：设计稿管"长什么样"，Swagger 管"数据怎么动"。</div>
+    <div class="q-hint">提示：回到 02 背景 2，想想 Swagger 是干嘛的。</div>
+  </details>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q4 · 进阶</span>"自由设定"功能为什么要存在？什么情况下才该用它？</summary>
+    <div class="q-text">因为 Sketch 画板有时<strong>分层不合理或嵌套太深</strong>，导致你想框某个具体元素却选不中。这时退一步选它的父级元素，再用"自由设定"+ 提示词告诉 AI"这块区域内部该怎么实现"。它是对"框选替换组件"的<strong>补救</strong>，正常能选中的时候不该偷懒用它。</div>
+  </details>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q5 · 进阶</span>1rem = 50px 这个数能改成 75px 或 100px 吗？为什么微盛要钉死它？</summary>
+    <div class="q-text">技术上能改，但<strong>微盛项目里不能改</strong>。因为设计稿的标注、UI 走查、各页面之间的换算全都建立在"1rem=50px"这个统一基准上。你一个人改成 75px，你的页面在别的同事的换算体系里就全错位了。钉死它是为了<strong>全公司协同一致</strong>，不是技术上做不到别的值。</div>
+    <div class="q-hint">提示：想想"团队协作"和"换算一致性"。</div>
+  </details>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q6 · 深度</span>CODEBYAI_BASE_URL 为什么是"可选"的？什么情况下你会去配它？</summary>
+    <div class="q-text">因为它有<strong>默认值 https://codebyai.com</strong>，不配就走默认，所以对大多数人是可选的。但当公司部署了<strong>自有的 AI 服务地址</strong>（比如内网代理、私有化部署），你就得把 BASE_URL 改成那个内部地址，否则请求打不到正确的服务上。"可选"不等于"没用"，是"不配也有兜底"。</div>
+  </details>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q7 · 深度</span>标准流程里"补充布局代码重构注意事项"这一步，如果偷懒不补会怎样？</summary>
+    <div class="q-text">AI 生成的代码会<strong>只照着设计稿还原结构，但不符合微盛的布局规范</strong>（比如该用弹性布局的地方写了死定位、该响应式的地方写死了宽度）。补这一步是告诉 AI"重构时要注意什么"，相当于给 AI 立规矩。不补，代码能跑但质量差、难维护，后面还得人工大改——失去了"提效"的意义。</div>
+    <div class="q-hint">提示：想想"提效"和"代码质量"的平衡。</div>
+  </details>
+</section>
+
+<!-- ===== 08 闯关式任务 ===== -->
+<section class="module" id="m08">
+  <span class="sec-id">08</span>
+  <h2>闯关式任务 <button class="voice-btn" data-voice-id="m8">🎧 听这章</button></h2>
+  <p class="lead">8 道闭环题，覆盖环境配置、Vue3/rem 硬约束、操作流程、自由设定、组件替换、概念配对。选完点"检查"，答对贴 OK 贴纸，答错贴 NO 贴纸并指出错在哪。错题自动进 11 节的错题回流区。</p>
+
+  <!-- 题1 单选：Node.js 版本 -->
+  <div class="task" data-task="t1" data-answer="C"
+       data-ok="对。frontend Skill 要求 Node.js v22 及以上版本。"
+       data-no="错。原文明确写的是 Node.js v22+，不是 v18 或随便哪个 LTS。版本太低 Skill 跑不起来。"
+       data-src="原文：运行环境 Node.js v22+。"
+       data-review="回到「02 背景 5」+「05 判断 5」复习">
+    <div class="q">1. 【单选】运行 frontend Skill 需要的 Node.js 版本是？</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. Node.js v14+ 即可</button>
+      <button class="opt" data-val="B">B. Node.js v18 LTS</button>
+      <button class="opt" data-val="C">C. Node.js v22+</button>
+      <button class="opt" data-val="D">D. 任何版本都行</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题2 多选：环境变量必配/可选 -->
+  <div class="task" data-task="t2" data-multi="true" data-answer="A,C"
+       data-ok="对！API_KEY 必须配，BASE_URL 可选（不配默认 https://codebyai.com）。"
+       data-no="漏了或多了。CODEBYAI_API_KEY 是必配的；CODEBYAI_BASE_URL 可选，有默认值。BASE_URL 不是必配，API_KEY 也不是可选——别搞反。"
+       data-src="原文：需要配置 CODEBYAI_API_KEY 和 CODEBYAI_BASE_URL 环境变量，其中 CODEBYAI_BASE_URL 为可选配置，默认值为：https://codebyai.com。"
+       data-review="回到「05 判断 5」+「06 概念②」复习">
+    <div class="q">2. 【多选】关于两个环境变量，下面哪些说法是对的？（多选）</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. CODEBYAI_API_KEY 必须配置</button>
+      <button class="opt" data-val="B">B. CODEBYAI_BASE_URL 必须配置</button>
+      <button class="opt" data-val="C">C. CODEBYAI_BASE_URL 不配时默认 https://codebyai.com</button>
+      <button class="opt" data-val="D">D. 两个都是可选的</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题3 单选：微盛技术框架 -->
+  <div class="task" data-task="t3" data-answer="C"
+       data-ok="对。微盛管理后台和移动端统一采用 Vue3 框架。"
+       data-no="错。微盛两端都用 Vue3——不是 React、不是 Vue2，也不是后台移动端各用各的。"
+       data-src="原文：微盛管理后台、移动端均采用 Vue3 框架。"
+       data-review="回到「05 判断 2」+「06 概念④」复习">
+    <div class="q">3. 【单选】微盛管理后台和移动端采用的前端框架是？</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. 管理后台用 React，移动端用 Vue3</button>
+      <button class="opt" data-val="B">B. 都用 Vue2</button>
+      <button class="opt" data-val="C">C. 都用 Vue3</button>
+      <button class="opt" data-val="D">D. 管理后台用 Vue3，移动端用 React Native</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题4 单选：移动端 rem 值 -->
+  <div class="task" data-task="t4" data-answer="B"
+       data-ok="对。微盛移动端 rem 适配规定 1rem = 50px，是硬性换算基准。"
+       data-no="数值错了。微盛钉死的是 1rem = 50px，不是 75 也不是 100。这个数是全公司统一的换算汇率，不能自己改。"
+       data-src="原文：移动端采用 rem 做页面尺寸适配，1rem 等于 50px。"
+       data-review="回到「05 判断 3」+「06 概念⑤」复习">
+    <div class="q">4. 【单选】微盛移动端 rem 适配的换算基准是？</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. 1rem = 75px</button>
+      <button class="opt" data-val="B">B. 1rem = 50px</button>
+      <button class="opt" data-val="C">C. 1rem = 100px</button>
+      <button class="opt" data-val="D">D. 自己定，没有统一规定</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题5 单选：标准流程第一步 -->
+  <div class="task" data-task="t5" data-answer="A"
+       data-ok="对。流程第一步是把设计稿和 Swagger JSON 提供给 AI，再用提示词告知实现细节。"
+       data-no="顺序错了。第一步是给 AI 喂设计稿 + Swagger JSON（两份料缺一不可），AI 才会去开浏览器。直接选画板是后面才做的事。"
+       data-src="原文：将设计稿和 Swagger JSON 提供给 AI 读取，通过提示词告知 AI 实现细节……发送消息后将会自动打开浏览器。"
+       data-review="回到「04 结构地图 主线第2步」+「03 原文问题定位」复习">
+    <div class="q">5. 【单选】标准操作流程的<strong>第一步</strong>是？</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. 把设计稿和 Swagger JSON 提供给 AI，用提示词告知实现细节</button>
+      <button class="opt" data-val="B">B. 在浏览器里选画板</button>
+      <button class="opt" data-val="C">C. 框选元素替换成微盛组件</button>
+      <button class="opt" data-val="D">D. 选择技术框架和尺寸单位</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题6 判断：能否全自动 -->
+  <div class="task" data-task="t6" data-answer="B"
+       data-ok="对——这句话错在'全自动无需人工'。画板/框架/单位要人选，元素要人框选替换组件，布局注意事项要人补。"
+       data-no="你选了'对'，但这是错的。AI 只翻译骨架，关键决策（选画板、选框架、框选哪个元素替换成哪个微盛组件）都要人工干预。回到 05 判断 1 和判断 4。"
+       data-src="原文：需要人工选择画板、技术框架和尺寸单位，框选指定元素替换成微盛组件等。"
+       data-review="回到「05 判断 1 + 判断 4」+「09 误解 1」复习">
+    <div class="q">6. 【判断】只要把设计稿丢给 frontend Skill，AI 就能全自动生成完美代码，全程无需人工干预。</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. 对</button>
+      <button class="opt" data-val="B">B. 错</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题7 单选：自由设定用途 -->
+  <div class="task" data-task="t7" data-answer="C"
+       data-ok="对。画板选不中指定元素时，选中父级元素用'自由设定'，靠提示词告知选中区域的实现方式。"
+       data-no="用途搞错了。'自由设定'是画板原因导致选不中元素时的补救手段——选父级 + 提示词描述内部实现。它不是默认入口，也不是配环境变量用的。"
+       data-src="原文：如果由于画板原因，无法选择到指定元素，可选中父级元素，采用'自由设定'功能，通过提示词的方式告知选中区域内的实现方式。"
+       data-review="回到「06 概念⑦ 自由设定」+「09 误解 5」复习">
+    <div class="q">7. 【单选】"自由设定"功能主要用来解决什么问题？</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. 第一次配置 CODEBYAI_API_KEY 环境变量</button>
+      <button class="opt" data-val="B">B. 选择要转换的画板</button>
+      <button class="opt" data-val="C">C. 画板选不中指定元素时，选父级并用提示词描述实现方式</button>
+      <button class="opt" data-val="D">D. 自动选择技术框架</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题8 匹配：概念对应 -->
+  <div class="task" data-task="t8" data-type="selects"
+       data-ok="全部对！这 4 组关系背牢，整章就通了。"
+       data-no="有错。逐组对照：frontend Skill=把设计稿转代码/过滤接口/管知识库的 AI 技能；CODEBYAI_API_KEY=必配的调用凭证；自由设定=选不中元素时的补救；Vue3=微盛两端统一的框架。"
+       data-src="原文：frontend 是设计稿前端代码的 Skill，作用是将 Sketch/Figma 设计稿转换为前端代码……CODEBYAI_BASE_URL 为可选配置……无法选择到指定元素，可选中父级元素，采用'自由设定'……微盛管理后台、移动端均采用 Vue3 框架。"
+       data-review="回到「06 关键概念拆解」整章复习">
+    <div class="q">8. 【匹配】把概念和它的角色配对。</div>
+    <div class="match-row">
+      <span style="min-width:7em">① frontend Skill</span>
+      <select class="match" data-correct="A">
+        <option value="">— 请选 —</option>
+        <option value="A">A. 把设计稿转代码、过滤接口文档、管理知识库的 AI 技能</option>
+        <option value="B">B. 必配的环境变量，AI 调用接口的凭证</option>
+        <option value="C">C. 画板选不中元素时，选父级用提示词描述实现的功能</option>
+        <option value="D">D. 微盛管理后台和移动端统一采用的前端框架</option>
+      </select>
+    </div>
+    <div class="match-row">
+      <span style="min-width:7em">② CODEBYAI_API_KEY</span>
+      <select class="match" data-correct="B">
+        <option value="">— 请选 —</option>
+        <option value="A">A. 把设计稿转代码、过滤接口文档、管理知识库的 AI 技能</option>
+        <option value="B">B. 必配的环境变量，AI 调用接口的凭证</option>
+        <option value="C">C. 画板选不中元素时，选父级用提示词描述实现的功能</option>
+        <option value="D">D. 微盛管理后台和移动端统一采用的前端框架</option>
+      </select>
+    </div>
+    <div class="match-row">
+      <span style="min-width:7em">③ 自由设定</span>
+      <select class="match" data-correct="C">
+        <option value="">— 请选 —</option>
+        <option value="A">A. 把设计稿转代码、过滤接口文档、管理知识库的 AI 技能</option>
+        <option value="B">B. 必配的环境变量，AI 调用接口的凭证</option>
+        <option value="C">C. 画板选不中元素时，选父级用提示词描述实现的功能</option>
+        <option value="D">D. 微盛管理后台和移动端统一采用的前端框架</option>
+      </select>
+    </div>
+    <div class="match-row">
+      <span style="min-width:7em">④ Vue3</span>
+      <select class="match" data-correct="D">
+        <option value="">— 请选 —</option>
+        <option value="A">A. 把设计稿转代码、过滤接口文档、管理知识库的 AI 技能</option>
+        <option value="B">B. 必配的环境变量，AI 调用接口的凭证</option>
+        <option value="C">C. 画板选不中元素时，选父级用提示词描述实现的功能</option>
+        <option value="D">D. 微盛管理后台和移动端统一采用的前端框架</option>
+      </select>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+</section>
+
+<!-- ===== 09 误解与边界 ===== -->
+<section class="module" id="m09">
+  <span class="sec-id">09</span>
+  <h2>误解与边界 <button class="voice-btn" data-voice-id="m9">🎧 听这章</button></h2>
+
+  <div class="myth">
+    <div class="myth-head">误解 1 · "把设计稿一丢，AI 就能全自动生成完美代码"</div>
+    <div class="row"><span class="key">为什么容易误解</span>"设计稿转代码"听起来像一键搞定。</div>
+    <div class="row"><span class="key">原文真正说了</span>需要人工选画板、技术框架、尺寸单位，框选元素替换微盛组件，补布局重构注意事项。</div>
+    <div class="row"><span class="key">原文没有说</span>"全自动无需人工"——恰恰相反，关键决策全是人工。</div>
+    <div class="row"><span class="key">如何避免</span>把自己定位成"指挥 AI 的前端"，画板/框架/组件名都得你来定。</div>
+  </div>
+
+  <div class="myth">
+    <div class="myth-head">误解 2 · "rem 换算随便定，1rem=100px 也行"</div>
+    <div class="row"><span class="key">为什么容易误解</span>rem 是相对单位，看起来基准可以自己设。</div>
+    <div class="row"><span class="key">原文真正说了</span>移动端采用 rem 适配，<strong>1rem 等于 50px</strong>。</div>
+    <div class="row"><span class="key">原文没有说</span>"换算比例自己看着定"——50px 是微盛全公司统一的硬规定。</div>
+    <div class="row"><span class="key">如何避免</span>设计稿量出的 px 除以 50 就是你要写的 rem，别用别的除数。</div>
+  </div>
+
+  <div class="myth">
+    <div class="myth-head">误解 3 · "管理后台也要做 rem 适配"</div>
+    <div class="row"><span class="key">为什么容易误解</span>看到"微盛用 rem"就以为所有端都用。</div>
+    <div class="row"><span class="key">原文真正说了</span>只有<strong>移动端</strong>采用 rem 适配，管理后台没提 rem。</div>
+    <div class="row"><span class="key">原文没有说</span>"两端都 rem"——后台跑在 PC 上，屏幕统一，不需要这层缩放。</div>
+    <div class="row"><span class="key">如何避免</span>rem 只在移动端用；管理后台选尺寸单位时不要选 rem。</div>
+  </div>
+
+  <div class="myth">
+    <div class="myth-head">误解 4 · "Swagger 可有可无，AI 自己猜接口就行"</div>
+    <div class="row"><span class="key">为什么容易误解</span>设计稿已经画了页面，以为接口 AI 能自己推断。</div>
+    <div class="row"><span class="key">原文真正说了</span>要把<strong>设计稿和 Swagger JSON 一起</strong>提供给 AI，再用提示词告知"数据从哪个接口拿、点删除调 xx 接口"。</div>
+    <div class="row"><span class="key">原文没有说</span>"只给设计稿就够"——没 Swagger，接口调用全是瞎编。</div>
+    <div class="row"><span class="key">如何避免</span>每次转代码两份料备齐：.sketch 设计稿 + .swagger.json 接口文档。</div>
+  </div>
+
+  <div class="myth">
+    <div class="myth-head">误解 5 · "'自由设定'就是偷懒，让 AI 全自动搞定一块区域"</div>
+    <div class="row"><span class="key">为什么容易误解</span>"自由"两个字听起来像放手让 AI 自己来。</div>
+    <div class="row"><span class="key">原文真正说了</span>自由设定是<strong>画板选不中指定元素时的补救</strong>——选中父级，再用提示词告知选中区域内的实现方式。</div>
+    <div class="row"><span class="key">原文没有说</span>"平时用它省事"——正常能框选时还是该用"替换为组件"。</div>
+    <div class="row"><span class="key">如何避免</span>把自由设定当成"框选的退路"，不是默认入口。</div>
+  </div>
+</section>
+
+<!-- ===== 10 背景知识缺口 ===== -->
+<section class="module" id="m10">
+  <span class="sec-id">10</span>
+  <h2>背景知识缺口 <button class="voice-btn" data-voice-id="m10">🎧 听这章</button></h2>
+  <p class="lead">要彻底吃透这一章，建议补这 4 个背景。现在不补也行，遇到不懂的再回头看。</p>
+
+  <div class="card sky">
+    <div class="card-title">缺口 1 · Vue3 组件（单文件组件 / props / 插槽）</div>
+    <p style="margin:0">原文说"替换为微盛组件"，但没讲 Vue 组件本身。建议补：.vue 单文件组件的 template/script/style 三段、props 怎么传数据、slot 插槽怎么复用。<strong>为什么重要</strong>：你填的"组件名"就是 Vue 组件名，不懂组件就不知道填什么、生成的代码怎么改。</p>
+  </div>
+
+  <div class="card sky">
+    <div class="card-title">缺口 2 · Sketch / Figma 文件结构（画板 / 图层 / Symbol）</div>
+    <p style="margin:0">建议补：设计稿里画板（Artboard）、图层（Layer）、组件符号（Symbol）的层级关系。<strong>为什么重要</strong>：理解了"画板里嵌套图层"，你才理解为什么有时"选不中元素"要退到父级用自由设定。</p>
+  </div>
+
+  <div class="card sky">
+    <div class="card-title">缺口 3 · Swagger / OpenAPI 字段含义（path / method / schema）</div>
+    <p style="margin:0">建议补：Swagger JSON 里 paths（接口路径）、methods（GET/POST 等）、parameters（入参）、responses/schema（返回结构）各代表什么。<strong>为什么重要</strong>：AI 读 Swagger 填接口调用，你看懂字段才能验证 AI 填得对不对、提示词写得准不准。</p>
+  </div>
+
+  <div class="card sky">
+    <div class="card-title">缺口 4 · 移动端适配原理（rem / postcss-pxtorem / 视口）</div>
+    <p style="margin:0">建议补：rem 单位、根字号动态设置（通常配合 lib-flexible 或 postcss-pxtorem 自动换算）、viewport meta 标签。<strong>为什么重要</strong>：理解"1rem=50px 背后是脚本动态改 html 字号"，你才懂为什么这个基准要全公司统一、改了会乱套。</p>
+  </div>
+
+  <div class="card marker">
+    <div class="card-title">可以暂时不补的</div>
+    <p style="margin:0">Node.js v22 相比 v18 的具体新特性、Sketch 软件本身的快捷键、postcss 配置文件的具体写法——这些是工具操作层，不影响理解"设计稿转代码"的整体骨架。</p>
+  </div>
+
+  <div class="card brick">
+    <div class="card-title">🛠 实操速查表（转代码上手第一天用）</div>
+    <p style="margin:0 0 .6rem">这一章概念讲完了，但真正动手时你要填的那些"配置、选项、文件名"才是最常忘的。下面把材料里散落的硬信息汇总成一张表。</p>
+    <table class="t">
+      <thead><tr><th>环节</th><th>关键项</th><th>正确值/做法</th></tr></thead>
+      <tbody>
+        <tr><td>环境</td><td>Node.js 版本</td><td><strong>v22+</strong></td></tr>
+        <tr><td>环境变量</td><td>CODEBYAI_API_KEY</td><td><strong>必配</strong>（Mac 改 ~/.zshrc 后 source；Windows 走系统属性→环境变量）</td></tr>
+        <tr><td>环境变量</td><td>CODEBYAI_BASE_URL</td><td>可选，不配默认 <strong>https://codebyai.com</strong></td></tr>
+        <tr><td>Skill 配置</td><td>技能包文件</td><td><strong>frontend.zip</strong></td></tr>
+        <tr><td>前置准备</td><td>设计稿</td><td>Sketch 文件（如 客户群欢迎语.sketch）</td></tr>
+        <tr><td>前置准备</td><td>接口文档</td><td>Swagger JSON（如 PC_GREETING_API.swagger.json）</td></tr>
+        <tr><td>选框架</td><td>技术框架</td><td><strong>Vue3</strong>（管理后台 + 移动端都是）</td></tr>
+        <tr><td>选单位</td><td>尺寸单位</td><td>移动端选 <strong>rem（1rem=50px）</strong>；管理后台不用 rem</td></tr>
+        <tr><td>框选元素</td><td>替换指令</td><td>"替换为组件" + 填写微盛组件名</td></tr>
+        <tr><td>选不中时</td><td>补救功能</td><td>选父级元素 → "自由设定" → 提示词描述实现方式</td></tr>
+      </tbody>
+    </table>
+    <div class="src-quote" style="margin:.6rem 0 0">两份料缺一不可：设计稿管"页面长什么样"，Swagger 管"数据从哪个接口拿、点击调哪个接口"——用提示词把实现细节告诉 AI。</div>
+  </div>
+</section>
+
+<!-- ===== 11 复盘与学习报告 ===== -->
+<section class="module" id="m11">
+  <span class="sec-id">11</span>
+  <h2>复盘与学习报告 <button class="voice-btn" data-voice-id="m11">🎧 听这章</button></h2>
+  <p class="lead">学完这一章，你应该能用自己的话复述下面三件事；如果你还能问出一个连老员工都要想一想的追问，那你就真的学透了。</p>
+
+  <div class="card">
+    <div class="card-title">能复述的三件事</div>
+    <p style="margin:0">① frontend Skill 的三大作用（设计稿转代码、过滤 Swagger 接口文档、管理知识库）和它的运行环境（Node.js v22+ + API_KEY 必配 / BASE_URL 可选）；<br>② 标准操作流程六步：给设计稿和 Swagger → AI 开浏览器 → 选画板/框架/单位 → 框选替换微盛组件 → 补布局重构注意事项 → 生成代码；<br>③ 两条硬约束：微盛两端统一用 Vue3；移动端 rem 适配且 1rem=50px。</p>
+  </div>
+
+  <div class="card marker">
+    <div class="card-title">还能问的追问（示例）</div>
+    <p style="margin:0">"AI 框选替换组件时填错了组件名，生成的代码是直接报废重做，还是有办法局部修正？这套流程对'设计稿画得不规范'的容错率到底有多高？"</p>
+  </div>
+
+  <h3>错题回流区</h3>
+  <div class="wrong-box">
+    <ul id="wrongBox"><li style="color:#888">还没有错题。答错的题会自动收集到这里。</li></ul>
+  </div>
+
+  <h3>生成你的学习报告</h3>
+  <div class="report-actions">
+    <button id="genReport">生成学习报告</button>
+    <button id="copyReport">复制报告</button>
+  </div>
+  <div id="report">点「生成学习报告」按钮，根据你的答题情况生成存档。</div>
+</section>
+
+<footer>
+  <div>由 <a href="https://lyzbcy.github.io/" target="_blank" rel="noopener">捞鱼</a> 制作 · 工具能帮你预习难啃的干货，但不能代替完整学习。学习愉快 🐟</div>
+  <div style="margin-top:.4rem;font-size:.78rem;opacity:.7">微盛研发岗管培生培训 · 设计稿转前端代码 · AICoding 方向 · 理解地图</div>
+</footer>
+
+</main>
+
+<!-- ===== 右侧书签脊入口 ===== -->
+<button id="voiceFab" aria-label="打开后台语音"><span class="fab-icon">🎧</span><span class="fab-text">后台语音</span></button>
+
+<!-- ===== 圆润玩具风播放器 ===== -->
+<div id="voicePlayer">
+  <button class="vp-close" aria-label="关闭">✕</button>
+  <div class="vp-head">🎧 后台语音 · 连续播放</div>
+  <div class="vp-title">—</div>
+  <div class="vp-controls">
+    <button class="vp-prev" aria-label="上一章">⏮</button>
+    <button class="vp-play" aria-label="播放/暂停">▶</button>
+    <button class="vp-next" aria-label="下一章">⏭</button>
+  </div>
+  <input class="vp-seek" type="range" min="0" max="1000" value="0" aria-label="进度">
+  <div class="vp-time"><span class="vp-cur">00:00</span><span class="vp-dur">00:00</span></div>
+  <div class="vp-sub">点开播放后，这里会同步显示字幕</div>
+</div>
+
+<!-- ===== 固定互动引擎（原样粘贴，不要改写） ===== -->
+<script>
+(function(){
+  "use strict";
+  function $all(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));}
+  function selectedVals(t){return $all('.opt.selected',t).map(function(o){return o.getAttribute('data-val');}).sort();}
+  function setFb(t,state,html){var fb=t.querySelector('.feedback');if(!fb)return;fb.className='feedback'+(state?(' '+state):'');fb.innerHTML=html;}
+  function updateBar(){
+    var all=$all('.task'),done=$all('.task[data-answered="1"]');
+    var fill=document.getElementById('barFill'),num=document.getElementById('barNum');
+    if(fill)fill.style.width=all.length?(done.length/all.length*100)+'%':'0%';
+    if(num)num.textContent=done.length+' / '+all.length;
+  }
+  function renderWrong(){
+    var box=document.getElementById('wrongBox');if(!box)return;
+    var wrong=$all('.task[data-answered="1"][data-correct="0"]');
+    if(!wrong.length){box.innerHTML='<li style="color:#888">还没有错题。答错的题会自动收集到这里。</li>';return;}
+    box.innerHTML='';
+    wrong.forEach(function(t){var li=document.createElement('li');li.textContent='【'+(t.getAttribute('data-task')||'')+'】'+(t.getAttribute('data-review')||'回到对应模块复习');box.appendChild(li);});
+  }
+  function check(t){
+    var type=t.getAttribute('data-type'),ok=false;
+    if(type==='selects'){
+      var sels=$all('select.match',t),allok=true,empty=false;
+      sels.forEach(function(s){if(!s.value)empty=true;if(s.value!==s.getAttribute('data-correct'))allok=false;});
+      if(empty){setFb(t,'no','请先把每一项都选好再检查。');return;}
+      ok=allok;
+    }else{
+      var sel=selectedVals(t);
+      if(!sel.length){setFb(t,'no','请先选择一个选项再检查。');return;}
+      var ans=(t.getAttribute('data-answer')||'').split(',').map(function(x){return x.trim();}).sort();
+      ok=(sel.join('|')===ans.join('|'));
+    }
+    var sticker=ok?'<img class="sticker" src="https://lyzbcy.github.io/weshoto-study/img/sticker/ok.png" alt="">':'<img class="sticker" src="https://lyzbcy.github.io/weshoto-study/img/sticker/no.png" alt="">';
+    var body=ok?(t.getAttribute('data-ok')||'回答正确。'):(t.getAttribute('data-no')||'再想想。');
+    var src=t.getAttribute('data-src');
+    setFb(t,ok?'ok':'no',sticker+(ok?'':'')+body+(src?('<span class="src">'+src+'</span>'):''));
+    t.setAttribute('data-answered','1');t.setAttribute('data-correct',ok?'1':'0');
+    updateBar();renderWrong();
+  }
+  function genReport(){
+    var box=document.getElementById('report');if(!box)return;
+    var all=$all('.task'),done=$all('.task[data-answered="1"]'),right=$all('.task[data-answered="1"][data-correct="1"]');
+    var lines=['=== 学习报告 ===','完成题目：'+done.length+' / '+all.length,'答对：'+right.length+' 题',''];
+    var wrong=$all('.task[data-answered="1"][data-correct="0"]');
+    if(wrong.length){lines.push('我答错的题（建议复习）：');wrong.forEach(function(t){lines.push('- '+(t.getAttribute('data-task')||'')+'：'+(t.getAttribute('data-review')||''));});}
+    else{lines.push('暂无错题。');}
+    lines.push('','三件复述清单：');
+    lines.push('① frontend Skill 三大作用：设计稿转代码 + 过滤 Swagger 接口 + 管理知识库；环境 Node.js v22+，API_KEY 必配、BASE_URL 可选');
+    lines.push('② 标准流程六步：给设计稿和 Swagger → AI 开浏览器 → 选画板/框架/单位 → 框选替换微盛组件 → 补布局重构说明 → 生成代码');
+    lines.push('③ 两条硬约束：微盛两端统一 Vue3；移动端 rem 适配且 1rem=50px');
+    box.textContent=lines.join('\n');
+  }
+  document.addEventListener('click',function(e){
+    var c=e.target.closest?e.target:null;
+    var opt=c&&e.target.closest('.opt');
+    if(opt){var t=opt.closest('.task');if(!t)return;
+      if(t.getAttribute('data-multi')==='true'){opt.classList.toggle('selected');}
+      else{$all('.opt',t).forEach(function(o){o.classList.remove('selected');});opt.classList.add('selected');}
+      return;}
+    var btn=c&&e.target.closest('.check');
+    if(btn){var tk=btn.closest('.task');if(tk)check(tk);return;}
+    if(e.target&&e.target.id==='genReport'){genReport();return;}
+    if(e.target&&e.target.id==='copyReport'){var r=document.getElementById('report');if(r&&navigator.clipboard)navigator.clipboard.writeText(r.textContent);return;}
+  });
+  function init(){updateBar();renderWrong();}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+
+<!-- ===== 固定语音引擎（原样粘贴，不要改写） ===== -->
+<script>
+(function(){
+  "use strict";
+  if(window.__voiceEngine) return;
+  window.__voiceEngine = true;
+
+  var listNode = document.getElementById('voicePlaylist');
+  if(!listNode){ return; }
+  var TRACKS = [];
+  try { TRACKS = JSON.parse(listNode.textContent.trim()); } catch(e){ return; }
+  if(!TRACKS.length) return;
+
+  var player = document.getElementById('voicePlayer');
+  var fab = document.getElementById('voiceFab');
+  var audio = new Audio(); audio.preload = 'metadata';
+  var cur = 0;
+  var ranges = [];
+  var total = 0;
+  var seeking = false;
+
+  function $(s){ return player ? player.querySelector(s) : null; }
+  function fmt(s){ s=Math.max(0,Math.floor(s||0)); var m=Math.floor(s/60), x=s%60;
+    return (m<10?'0':'')+m+':'+(x<10?'0':'')+x; }
+
+  var probe = TRACKS.map(function(){ return {dur:0}; });
+  function tryFinalize(){
+    if(probe.some(function(p){return !p.dur;})) return;
+    ranges = []; total = 0;
+    probe.forEach(function(p){ ranges.push({dur:p.dur, start:total}); total += p.dur; });
+    var d = $('.vp-dur'); if(d) d.textContent = fmt(total);
+    var sk = $('.vp-seek'); if(sk){ sk.max = Math.max(1000, Math.floor(total*10)); }
+  }
+  TRACKS.forEach(function(t, i){
+    var a = new Audio(); a.preload = 'metadata'; a.src = t.src;
+    a.addEventListener('loadedmetadata', function(){
+      probe[i].dur = a.duration || 0; tryFinalize();
+    });
+    a.addEventListener('error', function(){ probe[i].dur = 0; tryFinalize(); });
+  });
+
+  function load(i){
+    cur = i; audio.src = TRACKS[i].src;
+    var ti = $('.vp-title'); if(ti) ti.textContent = TRACKS[i].title || ('第 '+(i+1)+' 段');
+    markBtn(i);
+  }
+  function play(){ audio.play().then(function(){ show(); setPlayIcon(true); if(fab) fab.classList.add('beat'); }).catch(function(){}); }
+  function pause(){ audio.pause(); setPlayIcon(false); if(fab) fab.classList.remove('beat'); }
+  function toggle(){ audio.paused ? play() : pause(); }
+  function next(){ if(cur < TRACKS.length-1){ load(cur+1); play(); } else { pause(); } }
+  function prev(){
+    var abs = absTime();
+    if(cur > 0 && abs - ranges[cur].start < 3){ load(cur-1); play(); }
+    else { audio.currentTime = 0; }
+  }
+  function absTime(){ return ranges[cur] ? ranges[cur].start + (audio.currentTime||0) : (audio.currentTime||0); }
+  function setPlayIcon(on){ var b=$('.vp-play'); if(b) b.textContent = on ? '⏸' : '▶'; }
+  function show(){ if(player) player.classList.add('show'); }
+  function hide(){ if(player) player.classList.remove('show'); }
+  function markBtn(i){
+    document.querySelectorAll('.voice-btn[data-voice-id]').forEach(function(b){
+      b.classList.toggle('active', b.getAttribute('data-voice-id') === TRACKS[i].id);
+    });
+  }
+
+  audio.addEventListener('timeupdate', function(){
+    if(seeking) return;
+    if(!ranges[cur]) return;
+    var abs = absTime(); var sk = $('.vp-seek'); var c = $('.vp-cur');
+    if(sk && total) sk.value = Math.round(abs / total * (sk.max||1000));
+    if(c) c.textContent = fmt(abs);
+  });
+  audio.addEventListener('ended', function(){ if(cur < TRACKS.length-1){ load(cur+1); play(); }
+    else { setPlayIcon(false); if(fab) fab.classList.remove('beat'); } });
+
+  function seekToFraction(frac){
+    if(!total) return;
+    var target = Math.max(0, Math.min(total, frac * total));
+    var i = 0; while(i < ranges.length-1 && ranges[i].start + ranges[i].dur < target){ i++; }
+    if(i !== cur){ cur = i; audio.src = TRACKS[i].src;
+      var ti=$('.vp-title'); if(ti) ti.textContent = TRACKS[i].title||('第 '+(i+1)+' 段'); markBtn(i); }
+    audio.currentTime = target - ranges[i].start;
+    var c=$('.vp-cur'); if(c) c.textContent = fmt(target);
+  }
+
+  document.addEventListener('click', function(e){
+    var t = e.target;
+    var vb = t.closest ? t.closest('.voice-btn[data-voice-id]') : null;
+    if(vb){
+      var id = vb.getAttribute('data-voice-id'), idx = -1;
+      TRACKS.forEach(function(tr, k){ if(tr.id === id) idx = k; });
+      if(idx >= 0){ load(idx); play(); }
+      return;
+    }
+    if(t.id === 'voiceFab'){ show(); if(audio.paused && !audio.src){ load(0); } if(audio.paused){ play(); } return; }
+    if(!player || !player.contains(t)) return;
+    if(t.classList.contains('vp-play')){ toggle(); return; }
+    if(t.classList.contains('vp-prev')){ prev(); return; }
+    if(t.classList.contains('vp-next')){ next(); return; }
+    if(t.classList.contains('vp-close')){ pause(); hide(); return; }
+  });
+  var sk = $('.vp-seek');
+  if(sk){
+    sk.addEventListener('input', function(){ seeking = true;
+      if(total){ var c=$('.vp-cur'); if(c) c.textContent = fmt((sk.value/(sk.max||1000))*total); } });
+    sk.addEventListener('change', function(){ seekToFraction(sk.value/(sk.max||1000)); seeking = false; });
+  }
+})();
+</script>
+
+<!-- ===== 字幕同步引擎（原样粘贴，不要改写） ===== -->
+<script>
+(function(){
+  "use strict";
+  if(window.__subEngine) return;
+  window.__subEngine = true;
+
+  var listNode = document.getElementById("voicePlaylist");
+  if(!listNode) return;
+  var subBox = document.querySelector("#voicePlayer .vp-sub");
+  var curEl = document.querySelector("#voicePlayer .vp-cur");
+  var titleEl = document.querySelector("#voicePlayer .vp-title");
+  if(!subBox) return;
+
+  var subs = [];
+  var subCache = {};
+  var curSrc = "";
+
+  function esc(s){ var d=document.createElement("div"); d.textContent=s; return d.innerHTML; }
+
+  function mp3ToJson(src){
+    var m = src.replace(/^.*?([a-zA-Z0-9_\/.\-]+\.mp3)(?:\?.*)?$/i, "$1");
+    return m.replace(/\.mp3$/i, ".json");
+  }
+
+  function loadSubFor(src){
+    if(!src || src === curSrc) return;
+    curSrc = src;
+    var jsonUrl = mp3ToJson(src);
+    if(subCache[jsonUrl]){ subs = subCache[jsonUrl]; return; }
+    fetch(jsonUrl).then(function(r){
+      if(!r.ok) throw new Error(r.status);
+      return r.json();
+    }).then(function(arr){
+      subCache[jsonUrl] = Array.isArray(arr) ? arr : [];
+      subs = subCache[jsonUrl];
+    }).catch(function(){ subs = []; });
+  }
+
+  function parseTime(text){
+    var p = String(text).trim().split(":");
+    if(p.length === 2){
+      var m = parseInt(p[0], 10) || 0;
+      var s = parseInt(p[1], 10) || 0;
+      return m * 60 + s;
+    }
+    return parseFloat(text) || 0;
+  }
+
+  function renderSub(t){
+    if(!subs.length) return;
+    var hit = null, idx = -1;
+    for(var i = 0; i < subs.length; i++){
+      if(t >= subs[i].start && t < subs[i].end){ hit = subs[i]; idx = i; break; }
+    }
+    if(!hit){
+      var prev = null;
+      for(var j = 0; j < subs.length; j++){
+        if(subs[j].start <= t) prev = subs[j]; else break;
+      }
+      subBox.classList.remove("active");
+      subBox.innerHTML = prev ? esc(prev.text) : "";
+      return;
+    }
+    subBox.classList.add("active");
+    var prevHtml = idx > 0
+      ? '<span style="opacity:.45">' + esc(subs[idx - 1].text) + "</span> "
+      : "";
+    subBox.innerHTML = prevHtml + '<span class="cur">' + esc(hit.text) + "</span>";
+  }
+
+  function tick(){
+    if(!curEl) return;
+    var sec = parseTime(curEl.textContent);
+    renderSub(sec);
+  }
+
+  function onTitleChange(){
+    var TRACKS = [];
+    try { TRACKS = JSON.parse(listNode.textContent.trim()); } catch(e){ return; }
+    var title = titleEl ? titleEl.textContent.trim() : "";
+    for(var i = 0; i < TRACKS.length; i++){
+      if(TRACKS[i].title === title){ loadSubFor(TRACKS[i].src); return; }
+    }
+  }
+
+  if(window.MutationObserver){
+    var obs = new MutationObserver(function(){ tick(); onTitleChange(); });
+    if(curEl) obs.observe(curEl, { childList:true, characterData:true, subtree:true });
+    if(titleEl) obs.observe(titleEl, { childList:true, characterData:true, subtree:true });
+  } else {
+    setInterval(function(){ tick(); onTitleChange(); }, 300);
+  }
+  setTimeout(tick, 500);
+})();
+</script>
+
+<script src="../comments.js"></script>
+<script>
+// 版本检测：内联版本号 vs version.json，不一致就刷新（解决CDN缓存旧HTML）
+(function(){
+  var PAGE_V = 7;
+  fetch("../../version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.json();}).then(function(d){
+    if(PAGE_V!==d.v){
+      var last=0; try{last=parseInt(sessionStorage.getItem("ck_refreshed")||"0");}catch(e){}
+      if(Date.now()-last<3000) return;
+      try{sessionStorage.setItem("ck_refreshed",String(Date.now()));}catch(e){}
+      setTimeout(function(){location.reload(true);},800);
+    }
+  }).catch(function(){});
+})();
+</script>
+</body>
+</html>

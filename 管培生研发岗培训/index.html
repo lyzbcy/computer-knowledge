@@ -217,11 +217,11 @@ footer a{color:var(--brick);font-weight:700;text-decoration:underline;}
       <a class="card soon-card" href="exam/building.html?cat=前端开发&sub=开发规范">
         <div class="thumb">📐</div><div class="body"><span class="tag soon">即将上线</span><h3>开发规范</h3><p>前端代码规范、目录结构、命名约定、代码评审要点。</p><div class="go">建设中 →</div></div>
       </a>
-      <a class="card soon-card" href="exam/building.html?cat=前端开发&sub=项目与发布">
-        <div class="thumb">🚀</div><div class="body"><span class="tag soon">即将上线</span><h3>项目与发布</h3><p>前端工程化、构建、任意门发布流程、灰度与正式上线。</p><div class="go">建设中 →</div></div>
+      <a class="card live-card" href="07-前端开发/项目工程说明.html">
+        <div class="thumb">🚀</div><div class="body"><span class="tag live">已上线</span><h3>项目与发布</h3><p>5个工程仓库(标品3+定开2)、3种开发模式、分支规范、本地开发流程、发布流程。</p><div class="go">进入学习 →</div></div>
       </a>
-      <a class="card soon-card" href="exam/building.html?cat=前端开发&sub=前端问题定位">
-        <div class="thumb">🐞</div><div class="body"><span class="tag soon">即将上线</span><h3>前端问题定位</h3><p>浏览器调试、网络面板、性能分析、常见 Bug 排查思路。</p><div class="go">建设中 →</div></div>
+      <a class="card live-card" href="07-前端开发/前端日志.html">
+        <div class="thumb">🐞</div><div class="body"><span class="tag live">已上线</span><h3>前端问题定位</h3><p>前端日志系统、CLS检索(Lucence语法)、Sentry异常上报、deviceId获取。</p><div class="go">进入学习 →</div></div>
       </a>
       <a class="card live-card" href="07-前端开发/AICoding-设计稿转前端代码.html">
         <div class="thumb">🤖</div><div class="body"><span class="tag live">已上线</span><h3>AICoding</h3><p>设计稿转前端代码:用 Skill 把 Sketch/Figma 转成 Vue3 代码,含操作流程、环境配置、组件替换。</p><div class="go">进入学习 →</div></div>
@@ -388,7 +388,7 @@ footer a{color:var(--brick);font-weight:700;text-decoration:underline;}
 <script>
 // 版本检测
 (function(){
-  var PAGE_V = 8;
+  var PAGE_V = 9;
   fetch("version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.json();}).then(function(d){
     if(PAGE_V!==d.v){
       var last=0; try{last=parseInt(sessionStorage.getItem("ck_refreshed")||"0");}catch(e){}

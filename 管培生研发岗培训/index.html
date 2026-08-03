@@ -211,7 +211,7 @@ footer a{color:var(--brick);font-weight:700;text-decoration:underline;}
     <div class="cat-head">
       <div class="cat-icon" style="background:var(--c-frontend)">前</div>
       <div class="cat-title">前端开发<span class="en">Frontend</span></div>
-      <div class="cat-meta">即将上线</div>
+      <div class="cat-meta">本周学习(0803~0807) · <span class="cnt">2 篇已上线</span></div>
     </div>
     <div class="grid">
       <a class="card soon-card" href="exam/building.html?cat=前端开发&sub=开发规范">
@@ -223,11 +223,11 @@ footer a{color:var(--brick);font-weight:700;text-decoration:underline;}
       <a class="card soon-card" href="exam/building.html?cat=前端开发&sub=前端问题定位">
         <div class="thumb">🐞</div><div class="body"><span class="tag soon">即将上线</span><h3>前端问题定位</h3><p>浏览器调试、网络面板、性能分析、常见 Bug 排查思路。</p><div class="go">建设中 →</div></div>
       </a>
-      <a class="card soon-card" href="exam/building.html?cat=前端开发&sub=AICoding">
-        <div class="thumb">🤖</div><div class="body"><span class="tag soon">即将上线</span><h3>AICoding</h3><p>Codex / Cursor 等 AI 编码工具的前端提效实践。</p><div class="go">建设中 →</div></div>
+      <a class="card live-card" href="07-前端开发/AICoding-设计稿转前端代码.html">
+        <div class="thumb">🤖</div><div class="body"><span class="tag live">已上线</span><h3>AICoding</h3><p>设计稿转前端代码:用 Skill 把 Sketch/Figma 转成 Vue3 代码,含操作流程、环境配置、组件替换。</p><div class="go">进入学习 →</div></div>
       </a>
-      <a class="card soon-card" href="exam/building.html?cat=前端开发&sub=前端学习材料">
-        <div class="thumb">📚</div><div class="body"><span class="tag soon">即将上线</span><h3>前端学习材料</h3><p>Vue3、TypeScript、组件库等进阶学习资源汇总。</p><div class="go">建设中 →</div></div>
+      <a class="card live-card" href="07-前端开发/前端学习资料.html">
+        <div class="thumb">📚</div><div class="body"><span class="tag live">已上线</span><h3>前端学习材料</h3><p>JS → Vue3(选项式) → Vue-Router → TS 四阶段学习路径+官方文档,周期约1个月。</p><div class="go">进入学习 →</div></div>
       </a>
 
       <!-- 前端开发考试入口 -->
@@ -388,7 +388,7 @@ footer a{color:var(--brick);font-weight:700;text-decoration:underline;}
 <script>
 // 版本检测
 (function(){
-  var PAGE_V = 7;
+  var PAGE_V = 8;
   fetch("version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.json();}).then(function(d){
     if(PAGE_V!==d.v){
       var last=0; try{last=parseInt(sessionStorage.getItem("ck_refreshed")||"0");}catch(e){}

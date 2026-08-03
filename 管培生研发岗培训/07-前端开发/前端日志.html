@@ -1,0 +1,1406 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>前端日志 · 理解地图</title>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Poppins:wght@500;600;700&family=Roboto+Mono:wght@400;600&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#FAF6EB;
+  --paper:#F3EDDD;
+  --forest:#1E3A24;
+  --sky:#BCD8EE;
+  --sage:#AFCDA8;
+  --ink:#1A2018;
+  --marker:#F5E08A;
+  --brick:#B5482A;
+  --correct:#2F7D46;
+  --wrong:#B5482A;
+  --font-display:"Archivo Black","Noto Sans SC","PingFang SC",sans-serif;
+  --font-head:"Poppins","Noto Sans SC","PingFang SC",sans-serif;
+  --font-body:-apple-system,"PingFang SC","Noto Sans SC",sans-serif;
+  --font-mono:"Roboto Mono","JetBrains Mono",monospace;
+  --radius-pill:999px;
+  --radius-card:14px;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0; background:var(--cream); color:var(--ink);
+  font-family:var(--font-body); font-size:16px; line-height:1.7;
+  display:flex;
+}
+/* ===== 左侧固定侧边栏 ===== */
+aside.sidebar{
+  position:fixed; top:0; left:0; width:280px; height:100vh;
+  background:var(--forest); color:var(--cream);
+  padding:1.5rem 1.25rem 2rem; overflow-y:auto;
+  z-index:50; flex-shrink:0;
+}
+aside.sidebar h1{
+  font-family:var(--font-display); font-size:1.3rem; line-height:1.25;
+  margin:0 0 .3rem; letter-spacing:-.01em;
+}
+aside.sidebar .sub{
+  font-size:.78rem; opacity:.75; margin-bottom:1.2rem;
+  padding-bottom:1.2rem; border-bottom:1px solid rgba(250,246,235,.18);
+}
+aside.sidebar .progress-wrap{margin-bottom:1.2rem;}
+aside.sidebar .progress-label{
+  display:flex; justify-content:space-between; align-items:center;
+  font-size:.78rem; opacity:.8; margin-bottom:.4rem;
+  font-family:var(--font-head); letter-spacing:.02em;
+}
+aside.sidebar .progress-bar{
+  height:8px; background:rgba(250,246,235,.15); border-radius:var(--radius-pill);
+  overflow:hidden;
+}
+aside.sidebar .progress-bar .fill{
+  height:100%; width:0%; background:var(--marker); border-radius:var(--radius-pill);
+  transition:width .35s ease;
+}
+aside.sidebar nav a{
+  display:block; padding:.55rem .8rem; margin-bottom:.2rem;
+  color:var(--cream); text-decoration:none; opacity:.78;
+  font-family:var(--font-head); font-weight:500; font-size:.85rem;
+  border-radius:8px; transition:all .18s; border-left:3px solid transparent;
+}
+aside.sidebar nav a:hover{ opacity:1; background:rgba(250,246,235,.08); }
+aside.sidebar nav a .no{
+  display:inline-block; width:1.8em; font-family:var(--font-mono); opacity:.7;
+  font-size:.78rem;
+}
+aside.sidebar nav a.active{ opacity:1; background:rgba(245,224,138,.18); border-left-color:var(--marker); }
+aside.sidebar .mascot{
+  margin-top:1.5rem; text-align:center; opacity:.9;
+}
+aside.sidebar .mascot img{ width:88px; height:88px; object-fit:contain; }
+aside.sidebar .mascot .mascot-text{ font-size:.72rem; opacity:.7; margin-top:.3rem; }
+
+/* ===== 右侧主区（单列纵向堆叠） ===== */
+main{
+  margin-left:280px; padding:3rem 2rem 5rem;
+  max-width:820px; width:100%; min-width:0;
+}
+section.module{
+  margin-bottom:3.5rem; scroll-margin-top:1.5rem;
+  border-top:3px solid var(--forest); padding-top:1.5rem;
+}
+section.module:first-of-type{ border-top:none; padding-top:0; }
+.sec-id{
+  display:inline-block; font-family:var(--font-mono); font-weight:600;
+  font-size:.78rem; background:var(--forest); color:var(--cream);
+  padding:.2em .7em; border-radius:var(--radius-pill); letter-spacing:.05em;
+  margin-bottom:.6rem;
+}
+h2{
+  font-family:var(--font-head); font-weight:700;
+  font-size:1.6rem; line-height:1.3; margin:0 0 1rem; color:var(--forest);
+}
+h3{
+  font-family:var(--font-head); font-weight:600;
+  font-size:1.1rem; margin:1.4rem 0 .6rem; color:var(--forest);
+}
+p{ margin:0 0 .85rem; }
+.lead{ font-size:1.05rem; color:var(--ink); }
+
+/* 单列卡片 */
+.card{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1.25rem 1.35rem; margin-bottom:1rem;
+  border-left:4px solid var(--sage);
+}
+.card.brick{ border-left-color:var(--brick); }
+.card.marker{ border-left-color:var(--marker); background:rgba(245,224,138,.18); }
+.card.sky{ border-left-color:var(--sky); }
+.card-title{
+  font-family:var(--font-head); font-weight:600; font-size:1rem;
+  margin:0 0 .4rem; color:var(--forest);
+}
+
+/* 原文依据块 */
+.src-quote{
+  background:var(--cream); border-left:3px solid var(--brick);
+  padding:.6rem .9rem; margin:.5rem 0; font-size:.9rem;
+  border-radius:0 8px 8px 0;
+}
+.src-quote::before{
+  content:"原文依据 · "; font-family:var(--font-mono); font-size:.74rem;
+  font-weight:600; color:var(--brick); letter-spacing:.05em;
+}
+
+/* 类型标签 */
+.type-tag{
+  display:inline-block; font-size:.72rem; font-family:var(--font-mono);
+  padding:.15em .6em; border-radius:var(--radius-pill); margin-right:.3em;
+  font-weight:600;
+}
+.type-tag.fact{ background:var(--sage); color:var(--forest); }
+.type-tag.judge{ background:var(--marker); color:var(--ink); }
+.type-tag.infer{ background:var(--sky); color:var(--ink); }
+.type-tag.eg{ background:var(--brick); color:var(--cream); }
+
+/* 背景补充块 */
+.bg-block{
+  background:rgba(175,205,168,.22); border-radius:var(--radius-card);
+  padding:1.1rem 1.25rem; margin-bottom:1rem;
+  border-left:4px solid var(--sage);
+}
+.bg-block .bg-label{
+  font-family:var(--font-mono); font-size:.74rem; font-weight:600;
+  color:var(--forest); letter-spacing:.06em; margin-bottom:.5rem;
+}
+.bg-block .why{ font-size:.86rem; opacity:.78; margin-top:.5rem; font-style:italic; }
+
+/* C 类比块 */
+.analogy{
+  background:rgba(188,216,238,.25); border-radius:8px;
+  padding:.7rem .9rem; margin:.6rem 0; font-size:.92rem;
+  border-left:3px solid var(--sky);
+}
+.analogy::before{
+  content:"C 类比 · "; font-family:var(--font-mono); font-size:.74rem;
+  font-weight:600; color:var(--forest); letter-spacing:.05em;
+}
+
+/* 目标项（纵向堆叠） */
+.goal-item{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:.9rem 1.1rem; margin-bottom:.8rem;
+  display:flex; align-items:flex-start; gap:.7rem;
+  border-left:4px solid var(--forest);
+}
+.goal-item .g-num{
+  font-family:var(--font-display); font-size:1.4rem; color:var(--brick);
+  line-height:1; flex-shrink:0;
+}
+
+/* 结构地图（树形/纵向） */
+.tree{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1.1rem 1.25rem; font-family:var(--font-mono); font-size:.83rem;
+  line-height:1.9;
+}
+.tree-node{ margin:.2rem 0; }
+.tree-node .label{ color:var(--forest); font-weight:600; }
+.tree-node .rel{ color:var(--brick); font-size:.76rem; }
+
+/* 关卡题 */
+.q-item{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1rem 1.15rem .9rem; margin-bottom:1rem;
+  border-left:4px solid var(--sky);
+}
+.q-item summary{ cursor:pointer; font-weight:500; }
+.q-item .q-no{
+  font-family:var(--font-mono); font-size:.74rem; font-weight:600;
+  color:var(--brick); letter-spacing:.05em; margin-bottom:.3rem;
+}
+.q-item .q-text{ font-weight:500; margin-bottom:.7rem; }
+.q-item .q-hint{ font-size:.84rem; opacity:.7; font-style:italic; margin-top:.6rem; }
+
+/* 任务（data-* 题目） */
+.task{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1rem 1.15rem 1.1rem; margin-bottom:1.1rem;
+  border-left:4px solid var(--brick);
+}
+.task .q{ font-weight:500; margin-bottom:.7rem; }
+.task .opts{ display:flex; flex-direction:column; gap:.45rem; margin-bottom:.7rem; }
+.task button.opt{
+  background:var(--cream); border:1.5px solid var(--forest);
+  border-radius:8px; padding:.55rem .8rem;
+  font-family:var(--font-body); font-size:.94rem; text-align:left;
+  cursor:pointer; transition:all .15s; color:var(--ink);
+}
+.task button.opt:hover{ background:var(--sage); }
+.task button.opt.selected{ background:var(--forest); color:var(--cream); border-color:var(--forest); }
+.task button.check{
+  background:var(--forest); color:var(--cream); border:none;
+  border-radius:var(--radius-pill); padding:.45rem 1.2rem;
+  font-family:var(--font-head); font-weight:600; font-size:.88rem;
+  cursor:pointer; margin-bottom:.6rem;
+}
+.task button.check:hover{ background:#142710; }
+.task .feedback{
+  background:var(--cream); border-radius:8px; padding:.6rem .8rem;
+  font-size:.88rem; margin-top:.4rem;
+  border-left:3px solid var(--ink);
+}
+.task .feedback.ok{ border-left-color:var(--correct); background:rgba(175,205,168,.22); }
+.task .feedback.no{ border-left-color:var(--wrong); background:rgba(181,72,42,.1); }
+.task .feedback .src{
+  display:block; margin-top:.4rem; font-size:.82rem; opacity:.8;
+  font-style:italic;
+}
+.task .match-row{
+  display:flex; align-items:center; gap:.6rem; margin-bottom:.5rem;
+  flex-wrap:wrap;
+}
+.task select.match{
+  flex:1; min-width:140px; padding:.4rem .5rem;
+  border:1.5px solid var(--forest); border-radius:6px;
+  font-family:var(--font-body); background:var(--cream);
+}
+
+/* 错题回流 */
+.wrong-box{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1rem 1.15rem; border-left:4px solid var(--wrong);
+}
+.wrong-box ul{ margin:.5rem 0 0; padding-left:1.2rem; }
+.wrong-box li{ margin-bottom:.4rem; font-size:.9rem; }
+
+/* 误解卡 */
+.myth{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1.1rem 1.25rem; margin-bottom:1rem;
+  border-left:4px solid var(--brick);
+}
+.myth .myth-head{
+  font-family:var(--font-head); font-weight:600; color:var(--brick);
+  font-size:1rem; margin-bottom:.5rem;
+}
+.myth .row{ margin:.4rem 0; font-size:.92rem; }
+.myth .row .key{
+  font-family:var(--font-mono); font-size:.74rem; font-weight:600;
+  color:var(--forest); margin-right:.4em;
+}
+
+/* 概念卡 */
+.concept{
+  background:var(--paper); border-radius:var(--radius-card);
+  padding:1.25rem 1.35rem; margin-bottom:1.1rem;
+  border-left:4px solid var(--marker);
+}
+.concept .c-name{
+  font-family:var(--font-head); font-weight:700; font-size:1.15rem;
+  color:var(--forest); margin-bottom:.6rem;
+}
+.concept .c-row{ margin:.5rem 0; font-size:.92rem; }
+.concept .c-row .ck{
+  font-family:var(--font-mono); font-size:.74rem; font-weight:600;
+  color:var(--brick); margin-right:.4em; letter-spacing:.04em;
+}
+
+/* 公式块 */
+.formula{
+  background:var(--forest); color:var(--marker);
+  border-radius:8px; padding:.8rem 1rem; margin:.6rem 0;
+  font-family:var(--font-mono); font-size:.85rem; text-align:center;
+  overflow-x:auto;
+}
+
+/* 表格 */
+table.t{
+  width:100%; border-collapse:collapse; margin:.6rem 0;
+  font-size:.86rem; background:var(--cream);
+  border-radius:8px; overflow:hidden;
+}
+table.t th, table.t td{
+  padding:.5rem .7rem; text-align:left; border:1px solid var(--paper);
+}
+table.t th{ background:var(--forest); color:var(--cream); font-family:var(--font-head); font-weight:500; }
+
+/* 表情贴纸 */
+.sticker{ display:inline-block; vertical-align:middle; width:24px; height:24px; margin:0 .3em; }
+
+/* 页脚 */
+footer{
+  margin-top:3rem; padding:1.5rem 0 1rem; border-top:2px solid var(--forest);
+  font-size:.86rem; color:var(--ink); text-align:center;
+}
+footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
+
+.hero-mark{
+  font-family:var(--font-display); font-size:.74rem;
+  color:var(--marker); background:var(--forest);
+  padding:.2em .7em; border-radius:var(--radius-pill);
+  letter-spacing:.05em; display:inline-block; margin-bottom:.6rem;
+}
+
+/* ===== 语音：右侧书签脊 ===== */
+#voiceFab{
+  position:fixed; right:0; top:50%; transform:translateY(-50%); z-index:9998;
+  display:flex; align-items:center; flex-direction:row;
+  background:var(--forest); color:var(--cream); border:none; cursor:pointer;
+  height:5em; padding:0 .55em;
+  border-radius:16px 0 0 16px;
+  box-shadow:-4px 0 14px rgba(0,0,0,.18);
+  font-family:var(--font-head); font-size:.85rem;
+  overflow:hidden;
+  transition:width .42s cubic-bezier(.4,0,.2,1), box-shadow .3s ease;
+  width:1.9em;
+}
+#voiceFab .fab-icon{
+  font-size:1.15rem; writing-mode:vertical-rl; text-orientation:upright;
+  letter-spacing:.1em; white-space:nowrap; flex-shrink:0;
+}
+#voiceFab .fab-text{
+  white-space:nowrap; opacity:0; margin-left:.6em;
+  transition:opacity .28s ease .12s;
+}
+#voiceFab:hover{
+  width:8.6em; box-shadow:-6px 0 22px rgba(0,0,0,.25);
+}
+#voiceFab:hover .fab-text{ opacity:1; }
+#voiceFab.beat{ animation:voiceBeat 1.6s ease-in-out infinite; }
+@keyframes voiceBeat{ 0%,100%{box-shadow:-4px 0 14px rgba(0,0,0,.18)} 50%{box-shadow:-4px 0 20px rgba(181,72,42,.5)} }
+
+/* ===== 语音：圆润玩具风播放器 ===== */
+#voicePlayer{
+  position:fixed; left:50%; bottom:1rem; transform:translateX(-50%) translateY(140%);
+  width:min(92vw,380px); padding:1rem 1.1rem 1.1rem; background:var(--cream);
+  border:2px solid var(--forest); border-radius:26px;
+  box-shadow:0 8px 28px rgba(0,0,0,.16); z-index:9999; transition:transform .28s ease;
+  text-align:center; font-family:var(--font-body);
+}
+#voicePlayer.show{ transform:translateX(-50%) translateY(0); }
+#voicePlayer .vp-head{ font-size:.75rem; color:var(--forest); opacity:.8; letter-spacing:.05em; }
+#voicePlayer .vp-title{ font:700 1rem/1.35 var(--font-body); color:var(--ink);
+  margin:.25rem 0 .7rem; padding:0 .2rem; word-break:break-word; }
+#voicePlayer .vp-play{
+  width:3.6rem; height:3.6rem; border:none; border-radius:50%;
+  background:var(--forest); color:var(--cream); font-size:1.3rem; cursor:pointer;
+  margin:0 auto .7rem; display:flex; align-items:center; justify-content:center;
+  box-shadow:0 3px 0 #142710; transition:transform .1s, box-shadow .1s;
+}
+#voicePlayer .vp-play:active{ transform:translateY(2px); box-shadow:0 1px 0 #142710; }
+#voicePlayer .vp-prev,#voicePlayer .vp-next{
+  width:2.3rem; height:2.3rem; border:1.5px solid var(--forest); border-radius:50%;
+  background:var(--cream); color:var(--forest); font-size:.9rem; cursor:pointer;
+}
+#voicePlayer .vp-controls{ display:flex; align-items:center; justify-content:center; gap:1.2rem; margin-bottom:.7rem; }
+#voicePlayer .vp-seek{ width:100%; margin:.2rem 0; cursor:pointer; accent-color:var(--forest); }
+#voicePlayer .vp-time{ display:flex; justify-content:space-between; font:600 .72rem/1 var(--font-mono); color:var(--ink); opacity:.75; }
+#voicePlayer .vp-close{ position:absolute; top:.5rem; right:.6rem; width:1.5rem; height:1.5rem;
+  border:none; background:transparent; color:var(--ink); font-size:1rem; cursor:pointer; opacity:.5; }
+#voicePlayer .vp-sub{
+  min-height:2.6em; max-height:3.9em; overflow:hidden;
+  font:.85rem/1.5 var(--font-body); color:var(--ink); opacity:.55;
+  margin:.2rem 0 .5rem; padding:0 .3rem;
+  transition:opacity .2s; text-align:center;
+}
+#voicePlayer .vp-sub.active{ opacity:1; }
+#voicePlayer .vp-sub .cur{ color:var(--forest); font-weight:600; }
+
+/* 「听这章」小按钮 */
+.voice-btn{
+  display:inline-block; vertical-align:middle; margin-left:.6em;
+  padding:.25em .8em; border:1px solid var(--forest); border-radius:var(--radius-pill);
+  background:var(--cream); color:var(--forest); font:600 .8rem/1.2 var(--font-body);
+  cursor:pointer; transition:background .15s;
+}
+.voice-btn:hover{ background:var(--sage); }
+.voice-btn.active{ background:var(--forest); color:var(--cream); }
+
+/* 学习报告按钮 */
+.report-actions{ margin:.8rem 0; display:flex; gap:.6rem; flex-wrap:wrap; }
+.report-actions button{
+  background:var(--forest); color:var(--cream); border:none;
+  border-radius:var(--radius-pill); padding:.5rem 1.1rem;
+  font-family:var(--font-head); font-weight:600; font-size:.88rem; cursor:pointer;
+}
+.report-actions button:hover{ background:#142710; }
+#report{
+  background:var(--cream); border-radius:8px; padding:1rem 1.1rem;
+  font-family:var(--font-mono); font-size:.82rem; white-space:pre-wrap;
+  border-left:3px solid var(--forest); min-height:3rem; line-height:1.7;
+}
+
+/* 移动端 */
+@media (max-width: 880px){
+  body{ flex-direction:column; }
+  aside.sidebar{
+    position:static; width:100%; height:auto; max-height:none;
+    padding:1.2rem 1rem;
+  }
+  main{ margin-left:0; padding:1.5rem 1rem 4rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- 语音播放列表（连续播放用） -->
+<script type="application/json" id="voicePlaylist">
+[
+  {"id":"m1","title":"01 学习目标与阅读路径","src":"audio/m1.mp3"},
+  {"id":"m2","title":"02 零基础背景包","src":"audio/m2.mp3"},
+  {"id":"m3","title":"03 原文问题定位","src":"audio/m3.mp3"},
+  {"id":"m4","title":"04 原文结构地图","src":"audio/m4.mp3"},
+  {"id":"m5","title":"05 核心判断与依据","src":"audio/m5.mp3"},
+  {"id":"m6","title":"06 关键概念拆解","src":"audio/m6.mp3"},
+  {"id":"m7","title":"07 苏格拉底式阅读关卡","src":"audio/m7.mp3"},
+  {"id":"m8","title":"08 闯关式任务","src":"audio/m8.mp3"},
+  {"id":"m9","title":"09 误解与边界","src":"audio/m9.mp3"},
+  {"id":"m10","title":"10 背景知识缺口","src":"audio/m10.mp3"},
+  {"id":"m11","title":"11 复盘与学习报告","src":"audio/m11.mp3"}
+]
+</script>
+
+<!-- ===== 左侧固定侧边栏 ===== -->
+<aside class="sidebar">
+  <h1>前端日志</h1>
+  <div class="sub">微盛研发岗管培生培训 · 前端开发 · 理解地图</div>
+
+  <div class="progress-wrap">
+    <div class="progress-label">
+      <span>任务进度</span>
+      <span><span id="barNum">0 / 0</span></span>
+    </div>
+    <div class="progress-bar"><div class="fill" id="barFill"></div></div>
+  </div>
+
+  <nav>
+    <a href="#m01"><span class="no">01</span>学习目标与阅读路径</a>
+    <a href="#m02"><span class="no">02</span>零基础背景包</a>
+    <a href="#m03"><span class="no">03</span>原文问题定位</a>
+    <a href="#m04"><span class="no">04</span>原文结构地图</a>
+    <a href="#m05"><span class="no">05</span>核心判断与依据</a>
+    <a href="#m06"><span class="no">06</span>关键概念拆解</a>
+    <a href="#m07"><span class="no">07</span>苏格拉底式阅读关卡</a>
+    <a href="#m08"><span class="no">08</span>闯关式任务</a>
+    <a href="#m09"><span class="no">09</span>误解与边界</a>
+    <a href="#m10"><span class="no">10</span>背景知识缺口</a>
+    <a href="#m11"><span class="no">11</span>复盘与学习报告</a>
+  </nav>
+
+  <div class="mascot">
+    <img src="https://lyzbcy.github.io/weshoto-study/img/sticker/mascot.png" alt="吉祥物">
+    <div class="mascot-text">陪你学完整章</div>
+  </div>
+</aside>
+
+<!-- ===== 右侧主区（单列纵向堆叠） ===== -->
+<main>
+
+<!-- ===== 01 学习目标与阅读路径 ===== -->
+<section class="module" id="m01">
+  <span class="hero-mark">理解地图</span>
+  <h2>01 学习目标与阅读路径 <button class="voice-btn" data-voice-id="m1">🎧 听这章</button></h2>
+  <p class="lead">这是一份写给"会写前端代码、但第一次想搞清楚线上偶发问题怎么排查"的同学的拆解地图。它要讲清一件事：<strong>用户在生产环境点了哪几下、发了什么请求、出了什么错——你怎么把它"重演"出来</strong>。读完这一章，你能做到下面五件事。</p>
+
+  <div class="goal-item">
+    <span class="g-num">1</span>
+    <div><strong>理解前端日志的用途</strong>：它自动记录用户操作（路由跳转含参数、网络请求出入参），加上开发者自定义日志，专门用来定位偶发问题；小程序未引入。</div>
+  </div>
+  <div class="goal-item">
+    <span class="g-num">2</span>
+    <div><strong>掌握 tag + message 的正确写法</strong>：tag=业务场景（如 GroupSend-TODO）多页面共用，不要拼接子过程；message 传文本不传 JSON 对象（避免循环引用），Error 类型传 error.message。</div>
+  </div>
+  <div class="goal-item">
+    <span class="g-num">3</span>
+    <div><strong>会用 CLS 检索日志</strong>：知道子账号、日志集/主题名、project 枚举（qv-admin/qv-admin-h5）、Lucence 语法、数据在 msg 字段、用 trace_id 查后端日志。</div>
+  </div>
+  <div class="goal-item">
+    <span class="g-num">4</span>
+    <div><strong>会获取 deviceId</strong>：PC 端在浏览器输 <code>javascript:alert(localStorage.__ws_device_id)</code> 或看控制台；移动端企微管家搜"##设备码##"或远程连企微 PC 端。</div>
+  </div>
+  <div class="goal-item">
+    <span class="g-num">5</span>
+    <div><strong>知道 Sentry 是什么</strong>：项目中未捕获的异常会上报 Sentry（wshoto.sentry.io，找老田开通），详情含 deviceId，可和 CLS 联动。</div>
+  </div>
+
+  <div class="card marker">
+    <div class="card-title">阅读路径（按顺序）</div>
+    <p style="margin:0">先在 02 补 6 个零件 → 在 03/04 看清"这份文档在解决什么、整体怎么搭" → 在 05/06 抓住 5 条核心判断和 5 个关键概念 → 在 07 自己提问 → 在 08 闯 8 道闭环题 → 在 09/10 看边界 → 在 11 出报告。</p>
+  </div>
+</section>
+
+<!-- ===== 02 零基础背景包 ===== -->
+<section class="module" id="m02">
+  <span class="sec-id">02</span>
+  <h2>零基础背景包 <button class="voice-btn" data-voice-id="m2">🎧 听这章</button></h2>
+  <p class="lead">在拆原文前，先装 6 个最基本的零件。每个都标了"背景补充"——它帮你读懂原文，但<strong>不是日志系统自己的设计论点</strong>，而是帮你建立"前端线上问题怎么追踪"的常识。</p>
+
+  <div class="bg-block">
+    <div class="bg-label">背景补充 1 · 日志埋点（log / track）</div>
+    <p style="margin:0 0 .4rem">在代码里特定位置调用一个"上报"函数，把当时的上下文（用户点了啥、参数是什么、出了什么错）写进日志系统。分两类：<strong>自动埋点</strong>（框架帮你记，不用你写）和<strong>手动埋点</strong>（你自己调函数记）。</p>
+    <div class="analogy">类比 C：埋点 ≈ 在关键函数里 printf 调试信息，只不过这些信息会被发到服务器存起来，事后能搜。</div>
+    <div class="why">为什么现在需要知道：前端日志的"自动收集（路由/请求）"和"手动调用（this.$log）"就是这两类。</div>
+  </div>
+
+  <div class="bg-block">
+    <div class="bg-label">背景补充 2 · XHR 代理（拦截 XMLHttpRequest）</div>
+    <p style="margin:0 0 .4rem">浏览器发网络请求靠 XMLHttpRequest（XHR）或 fetch。日志系统在全局"换掉"原生的 XHR 对象，包一层自己的逻辑——这样<strong>每次发请求都会先经过它</strong>，它就能悄悄把请求参数和返回内容记下来。</p>
+    <div class="analogy">类比 C：XHR 代理 ≈ 你重写了 libc 的 send() 函数，先 printf 一份再调真的 send()。</div>
+    <div class="why">为什么现在需要知道：原文的 ajaxError.ts 就是干这件事的，理解了"代理"才懂为什么 AJAX 请求会被自动记录。</div>
+  </div>
+
+  <div class="bg-block">
+    <div class="bg-label">背景补充 3 · localStorage（浏览器本地存储）</div>
+    <p style="margin:0 0 .4rem">浏览器提供给每个网站的一块持久化存储空间，关浏览器也不会丢。前端用 <code>localStorage.setItem(key, value)</code> 存，<code>getItem(key)</code> 取。微盛的 deviceId 就存在 <code>localStorage.__ws_device_id</code>。</p>
+    <div class="analogy">类比 C：localStorage ≈ 一个持久化的 key-value 配置文件，程序读写它，关机不丢。</div>
+    <div class="why">为什么现在需要知道：获取 deviceId 就是从 localStorage 里读这个 key；日志暂存也靠它。</div>
+  </div>
+
+  <div class="bg-block">
+    <div class="bg-label">背景补充 4 · sendBeacon（页面卸载时上报）</div>
+    <p style="margin:0 0 .4rem">浏览器的一个 API，专门用来在"页面马上要关闭/跳走"的瞬间发数据，发完再关。普通请求在页面关闭那一刻会被取消，sendBeacon 不会。这是日志上报的<strong>第一选择</strong>。</p>
+    <div class="analogy">类比 C：sendBeacon ≈ 进程退出前用 atexit 注册一个"把日志 flush 到磁盘"的钩子，保证最后那批数据不丢。</div>
+    <div class="why">为什么现在需要知道：原文说上报按 sendBeacon → fetch → xhr 降级，sendBeacon 排第一就是为了应对"用户突然关浏览器"。</div>
+  </div>
+
+  <div class="bg-block">
+    <div class="bg-label">背景补充 5 · Lucence 检索语法</div>
+    <p style="margin:0 0 .4rem">Elasticsearch/腾讯云 CLS 用的查询语言。核心：<code>key:value</code> 表示"在某字段里查某值"；<code>AND OR NOT ()</code> 组合逻辑；<code>""</code> 精确短语；<code>* ?</code> 通配；<code>[A TO B]</code> 范围。注意<strong>大小写敏感</strong>：<code>AND</code> 是运算符，<code>and</code> 是普通文本。</p>
+    <div class="analogy">类比 C：Lucence ≈ 一套比 grep 更强的"带字段名的正则"，能指定"只在 msg 这个字段里搜"。</div>
+    <div class="why">为什么现在需要知道：CLS 检索全靠这套语法，写错大小写就搜不到。</div>
+  </div>
+
+  <div class="bg-block">
+    <div class="bg-label">背景补充 6 · Sentry（错误监控平台）</div>
+    <p style="margin:0 0 .4rem">一个第三方服务，前端代码里接它的 SDK 后，所有"未被 try-catch 捕获的异常"会自动上报到 Sentry 服务器。你能在 Sentry 网站上看到错误栈、出错时的设备信息、用户信息，还能看同一个错误发生过多少次。</p>
+    <div class="analogy">类比 C：Sentry ≈ 一个帮你自动收集 core dump + 运行环境的线上服务，比你手动加 printf 高级。</div>
+    <div class="why">为什么现在需要知道：微盛的 Sentry 在 wshoto.sentry.io，和 CLS 是两套互补的系统。</div>
+  </div>
+</section>
+
+<!-- ===== 03 原文问题定位 ===== -->
+<section class="module" id="m03">
+  <span class="sec-id">03</span>
+  <h2>原文问题定位 <button class="voice-btn" data-voice-id="m3">🎧 听这章</button></h2>
+
+  <div class="card brick">
+    <div class="card-title">表面在讲什么？</div>
+    <p style="margin:0">一份使用说明：前端日志是什么、tag/message 怎么写、怎么获取 deviceId、怎么登 CLS 看数据、检索语法怎么用、Sentry 怎么配合。<span class="type-tag fact">事实</span></p>
+  </div>
+
+  <div class="card brick">
+    <div class="card-title">深层在回答什么问题？</div>
+    <p style="margin:0 0 .5rem"><strong>线上用户报了个"偶尔出现"的问题，前端怎么把那一刻的用户操作完整复现出来——而不是干瞪眼说"我这边好好的"？</strong>前端日志这套机制，本质是在解决<strong>偶发问题可追溯</strong>这一件事：自动记路由跳转（含参数）+ 网络请求出入参，让"用户那次点到了哪、传了什么、接口返了什么"有据可查。<span class="type-tag judge">判断</span></p>
+    <div class="src-quote">自动记录用户操作流程中的关键信息，支持开发者添加自定义日志，帮助开发者定位偶发问题。</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">读者如果只记一个问题，应该记哪个？</div>
+    <p style="margin:0"><strong>用户报问题时，我怎么能拿到他那一刻的"操作回放"（路由 + 请求出入参），并定位到对应的后端日志？</strong>把"前端 CLS 查 deviceId → 看用户行为 → 用 trace_id 联查后端日志"这条链路打通，整篇文档就串起来了。<span class="type-tag infer">推论</span></p>
+  </div>
+</section>
+
+<!-- ===== 04 原文结构地图 ===== -->
+<section class="module" id="m04">
+  <span class="sec-id">04</span>
+  <h2>原文结构地图 <button class="voice-btn" data-voice-id="m4">🎧 听这章</button></h2>
+  <p class="lead">判断结构类型：<strong>机制流程 + 工具速查</strong>（先讲机制怎么转，再讲怎么用工具看数据）。整篇是一条"日志从产生→上报→存储→检索→联动"的链路，最后 Sentry 是补充。不要把它读成并列清单。</p>
+
+  <div class="tree">
+    <div class="tree-node"><span class="label">主线：一条日志的完整生命周期</span> <span class="rel">（机制流程）</span></div>
+    <div class="tree-node">&nbsp;&nbsp;├─ <span class="label">1. 日志怎么产生（两类）</span></div>
+    <div class="tree-node">&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;自动收集：AJAX 请求（XHR 代理，ajaxError.ts）+ 页面跳转（路由守卫埋点）</div>
+    <div class="tree-node">&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;手动调用：开发者 this.$log({ tag, message, level })</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ <span class="label">2. 怎么上报（时机 + 方式）</span></div>
+    <div class="tree-node">&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;时机：默认延迟 3S；易出错场景（如移动端待办）配立即上报；3S 内关浏览器存 localStorage 下次开上报</div>
+    <div class="tree-node">&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;方式：sendBeacon → fetch → xhr 降级；内容 AES 加密</div>
+    <div class="tree-node">&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;<span class="rel">边界：和 SAAS 标品分开部署的项目（私有化/企点/有群）不用日志库</span></div>
+    <div class="tree-node">&nbsp;&nbsp;├─ <span class="label">3. 怎么定位用户（deviceId）</span></div>
+    <div class="tree-node">&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;PC：javascript:alert(localStorage.__ws_device_id) 或控制台看 __ws_device_id</div>
+    <div class="tree-node">&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;移动端：企微管家搜"##设备码##"或远程连企微 PC 端</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ <span class="label">4. 怎么看数据（CLS 检索）</span></div>
+    <div class="tree-node">&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;腾讯云 CLS：上海，日志集 TKE-TEST/TKE-PROD，主题 tke-*-service-logtopic</div>
+    <div class="tree-node">&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;子账号：wshoto-log / Jswshoto@2021</div>
+    <div class="tree-node">&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;数据在 msg 字段；project=qv-admin(PC)/qv-admin-h5(H5)；trace_id 查后端</div>
+    <div class="tree-node">&nbsp;&nbsp;└─ <span class="label">5. 检索语法（Lucence）</span></div>
+    <div class="tree-node">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;AND/OR/NOT/()/:/""/*/?/&gt;/&lt;=/TO/[]/_exists_；大小写敏感；默认 5 分钟需调大</div>
+    <div class="tree-node" style="margin-top:.6rem"><span class="label">补充：Sentry（未捕获异常上报）</span> <span class="rel">（主题簇，和 CLS 互补）</span></div>
+    <div class="tree-node">&nbsp;&nbsp;├─ 项目未捕获异常自动上报 wshoto.sentry.io（找老田开通）</div>
+    <div class="tree-node">&nbsp;&nbsp;├─ 支持 PC 端和移动端</div>
+    <div class="tree-node">&nbsp;&nbsp;└─ 详情含 deviceId，可和 CLS 联动查询</div>
+  </div>
+
+  <div class="card sky">
+    <div class="card-title">节点关系说明</div>
+    <p style="margin:0">主线四步是<strong>顺序链条</strong>（产生→上报→定位用户→检索）；CLS 和 Sentry 是<strong>互补关系</strong>（CLS 记用户行为、Sentry 记未捕获异常，靠 deviceId 联动）；"私有化不用日志库"是<strong>边界条件</strong>，独立于主链路但必须记住。把这三层分开看，就不会被一堆名词绕晕。</p>
+  </div>
+</section>
+
+<!-- ===== 05 核心判断与依据 ===== -->
+<section class="module" id="m05">
+  <span class="sec-id">05</span>
+  <h2>核心判断与依据 <button class="voice-btn" data-voice-id="m5">🎧 听这章</button></h2>
+  <p class="lead">挑出 5 条最硬的判断。每条都附原文依据和类型标签。</p>
+
+  <div class="card">
+    <div class="card-title">判断 1 · 前端日志的核心价值是"复现用户操作"，不是单纯记错误</div>
+    <p style="margin:0 0 .4rem">自动记录的是<strong>路由跳转（含参数）+ 网络请求出入参</strong>，这两类信息加上开发者自定义日志，能让你把"用户那一刻点到了哪、传了什么、接口返了什么"完整重演。它定位的是偶发问题，不是常规报错。<span class="type-tag judge">判断</span></p>
+    <div class="src-quote">自动记录用户操作流程中的关键信息……路由跳转（包含参数）、网络请求出入参……帮助开发者定位偶发问题。</div>
+    <p style="margin:.4rem 0 0;font-size:.9rem"><strong>为什么重要</strong>：理解了这条，你就懂为什么要记"请求入参"——因为复现问题靠的是"按用户传的参数重放"。</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">判断 2 · tag 定义"业务场景"且多页面共用，子过程放 message 不要拼进 tag</div>
+    <p style="margin:0 0 .4rem">tag 是业务场景的标识（如群发待办 = GroupSend-TODO），<strong>多个页面共用同一个 tag</strong>。一个业务里的子过程（如 step1/step2）<strong>不要</strong>写成 GroupSend-TODO-Step1，而应该把 step1 写进 message。否则 tag 越拆越碎、检索时根本对不齐。<span class="type-tag fact">事实</span></p>
+    <div class="src-quote">tag 代表业务场景，如群发待办可定义为 GroupSend-TODO；多个页面可使用相同的 tag；一个业务过程中的子过程不要采用拼接 tag 的方式，而应该在 message 中添加。</div>
+    <p style="margin:.4rem 0 0;font-size:.9rem"><strong>易误读</strong>：tag 不是"越细越好"，而是"同一业务场景共用一个"。粒度卡在"业务场景"，不卡在"每一步操作"。</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">判断 3 · message 传文本不传 JSON 对象；Error 类型传 error.message</div>
+    <p style="margin:0 0 .4rem">如果要把 JSON 塞进 message，必须先转成字符串，且<strong>避免循环引用</strong>导致 JSON.stringify 失败——一旦失败，后续上报流程直接卡死。Error 对象不能整个传，要传 <code>error.message</code>。<span class="type-tag fact">事实</span></p>
+    <div class="src-quote">message 需传文本值，如果需要对 JSON 进行转化，需避免 JSON 中有循环引用导致调用 JSON.stringify 失败引起后续流程无法执行……如果 message 属于 Error 类型，需自行传 error.message 字段，不要直接传 error。</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">判断 4 · 默认延迟 3S 上报，但易出错场景要配立即上报</div>
+    <p style="margin:0 0 .4rem">默认不是立即上报，而是<strong>攒 3 秒再发</strong>（批量、省请求）。代价是：3 秒内用户关了浏览器，这批数据就丢了——所以这种情况会暂存 localStorage 下次开再发。但对于"用户可能随时关浏览器又容易出错"的场景（移动端待办），必须配置立即上报。<span class="type-tag infer">推论</span></p>
+    <div class="src-quote">日志上传默认非为立即上报方式，延迟 3S 上报，如果在 3S 内用户关闭浏览器，则日志暂存 localStorage……对于易出问题且用户可能随时关闭浏览器的场景，如移动端待办场景，需配置立即上报。</div>
+    <p style="margin:.4rem 0 0;font-size:.9rem"><strong>易误读</strong>：默认 3S 不是"忘了配立即上报也没关系"——关键业务路径必须显式配立即上报，否则丢日志。</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">判断 5 · 和 SAAS 标品分开部署的项目（私有化/企点/有群）不用日志库</div>
+    <p style="margin:0 0 .4rem">日志库只服务于 SAAS 标品。私有化项目、企点、有群这些独立部署的项目，<strong>不应该引入日志库</strong>。<span class="type-tag fact">事实</span></p>
+    <div class="src-quote">和 SAAS 标品分开部署的项目均不应该使用日志库，如私有化项目，企点，有群。</div>
+    <div class="formula">能用日志库：SAAS 标品<br>不能用日志库：私有化项目 / 企点 / 有群</div>
+  </div>
+</section>
+
+<!-- ===== 06 关键概念拆解 ===== -->
+<section class="module" id="m06">
+  <span class="sec-id">06</span>
+  <h2>关键概念拆解 <button class="voice-btn" data-voice-id="m6">🎧 听这章</button></h2>
+  <p class="lead">5 个概念，环环相扣：<strong>自动日志（路由/请求）+ 自定义日志（tag/message/level）产生数据 → deviceId 标识是哪个用户 → CLS 检索把数据捞出来 → Sentry 补未捕获异常</strong>。</p>
+
+  <div class="concept">
+    <div class="c-name">① 自动日志（路由 + 请求）</div>
+    <div class="c-row"><span class="ck">定义</span>框架自动记录的两类信息：页面跳转（含参数）+ 网络请求的入参/出参。开发者不用写代码。</div>
+    <div class="c-row"><span class="ck">机制</span>AJAX 请求通过<strong>代理 XHR</strong> 实现，代码在 <code>src/plugins/monitor/error/modules/ajaxError.ts</code>；页面跳转<strong>不</strong>是用 history.pushState 拦截，而是直接在<strong>路由守卫</strong>里加埋点。</div>
+    <div class="analogy">类比 C：代理 XHR ≈ 你重写了系统的 send()，先 printf 一份请求/响应再调真的 send()；路由守卫埋点 ≈ 在 main() 的每次 switch-case 前打一行日志。</div>
+    <div class="c-row"><span class="ck">关系</span>自动日志负责"用户操作回放"；自定义日志负责"开发者主动想记的事"。两者都进 CLS。</div>
+    <div class="src-quote">AJAX 请求通过代理 XHR 实现……页面跳转未通过拦截 history.pushState 实现，而是直接在路由守卫中添加的埋点。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>"正确请求的返回内容也会被完整记录"——<strong>正确请求只记请求参数，失败请求才记返回内容</strong>。想看正确请求的返回，要用 trace_id 查后端。</div>
+  </div>
+
+  <div class="concept">
+    <div class="c-name">② 自定义日志（tag / message / level）</div>
+    <div class="c-row"><span class="ck">定义</span>开发者手动调用 <code>this.$log({ tag, message, level })</code> 上报的日志，用来补充自动日志记不到的业务上下文。</div>
+    <div class="c-row"><span class="ck">tag</span>业务场景标识（如 GroupSend-TODO），<strong>多页面共用</strong>；子过程不拼进 tag，放 message。</div>
+    <div class="c-row"><span class="ck">message</span>详情；<strong>传文本不传 JSON 对象</strong>（避免循环引用导致 JSON.stringify 崩）；Error 传 error.message。</div>
+    <div class="c-row"><span class="ck">level</span>异常传 <code>'Error'</code>（网络异常/jsapi 异常/异常分支）；其它传 <code>'Info'</code> 或不传。</div>
+    <div class="formula">this.$log({ tag:'GroupSend-TODO', message:'提交群发，目标数=120', level:'Info' })</div>
+    <div class="src-quote">异常信息需传 'Error'……其它场景均传 'Info' 或不传。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>数据格式只支持 string 和 {key: value}，<strong>不是什么都能塞</strong>；别把整个对象/数组当 message。</div>
+  </div>
+
+  <div class="concept">
+    <div class="c-name">③ deviceId（用户设备标识）</div>
+    <div class="c-row"><span class="ck">定义</span>每个用户设备在前端的唯一标识，存在 <code>localStorage.__ws_device_id</code>。它是把"某条日志"和"某个报障用户"对应起来的钥匙。</div>
+    <div class="c-row"><span class="ck">PC 端获取</span>方式一（推荐）：让用户在登录后台的浏览器地址栏输 <code>javascript:alert(localStorage.__ws_device_id)</code> 回车弹框；方式二：让用户打开控制台，在 localStorage 里找 <code>__ws_device_id</code>。</div>
+    <div class="c-row"><span class="ck">移动端获取</span>方式一：客户打开移动端"企微管家"，找 WsSearch 控件（如 TAB 搜索框），输 <code>##设备码##</code>（# 为英文符号）回车查看；方式二：远程连接客户的企业微信 PC 端，再按 PC 端方式查 localStorage。</div>
+    <div class="analogy">类比 C：deviceId ≈ 程序给每台机器生成的 hostId，日志带上它就能筛出"只看这台机器的日志"。</div>
+    <div class="c-row"><span class="ck">关系</span>CLS 检索、Sentry 详情都靠 deviceId 关联到具体用户。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>" deviceId 是用户账号"——它是<strong>设备</strong>标识，同一账号换设备会变；同一设备清了 localStorage 也会重新生成。</div>
+  </div>
+
+  <div class="concept">
+    <div class="c-name">④ CLS 检索（腾讯云日志服务）</div>
+    <div class="c-row"><span class="ck">定义</span>腾讯云的日志检索平台，前端日志最终都存这里，通过网页搜索。前端视角的检索语法、project 枚举是前端特有的。</div>
+    <div class="c-row"><span class="ck">登录</span>腾讯云子账号：用户名 <code>wshoto-log</code> / 密码 <code>Jswshoto@2021</code>（主帐号 ID 100014537081）。</div>
+    <div class="c-row"><span class="ck">日志集/主题</span>区域=上海；测试环境：日志集 <code>TKE-TEST</code> / 主题 <code>tke-test-service-logtopic</code>；生产灰度：日志集 <code>TKE-PROD</code> / 主题 <code>tke-prod-service-logtopic</code>。</div>
+    <div class="c-row"><span class="ck">project 枚举</span><code>qv-admin</code>（PC 端）/ <code>qv-admin-h5</code>（H5 端）——用 app_name 联合搜索。</div>
+    <div class="c-row"><span class="ck">数据位置</span>所有打点内容写入 <code>msg</code> 字段；查后端日志/返回结果用 <code>trace_id:"具体traceId"</code>。</div>
+    <div class="formula">检索套路：app_name:qv-admin AND msg:"群发"<br>查后端：trace_id:"abc123def456"</div>
+    <div class="src-quote">所有的数据都是写入到 msg 字段下，利用项目名称（app_name）与 msg 联合搜索……可通过搜索 trace_id:"具体的traceId" 查看后端日志/返回结果。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>CLS 默认只搜最近 <strong>5 分钟</strong>，时间范围在搜索框右侧，通常要手动调大，否则什么都搜不到。</div>
+  </div>
+
+  <div class="concept">
+    <div class="c-name">⑤ Sentry（未捕获异常监控）</div>
+    <div class="c-row"><span class="ck">定义</span>第三方错误监控平台。项目中所有<strong>未被 try-catch 捕获的异常</strong>会自动上报到 Sentry，辅助定位问题。</div>
+    <div class="c-row"><span class="ck">入口</span><code>https://wshoto.sentry.io/</code>（需找<strong>老田</strong>开通权限）；登录后按项目分类，目前支持 PC 端和移动端。</div>
+    <div class="c-row"><span class="ck">详情</span>点开错误能看到问题描述 + 错误栈；<strong>附加信息里包含当前用户的 deviceId</strong>，可以拿这个 deviceId 去 CLS 联动查用户行为。</div>
+    <div class="analogy">类比 C：Sentry ≈ 一个自动收集线上 core dump 的服务，还顺带记了崩溃机器的 hostId（deviceId）。</div>
+    <div class="c-row"><span class="ck">关系</span>Sentry 和 CLS 互补：Sentry 管"程序崩了"，CLS 管"用户干了啥"；靠 deviceId 把两者串起来。</div>
+    <div class="src-quote">项目中未捕获的异常会上报到 Sentry 平台……详情的附加信息中还包含当前用户的设备号，可以腾讯云 CLS 联动查询。</div>
+    <div class="c-row"><span class="ck">不要误解成</span>Sentry ≠ CLS。Sentry 只收"未捕获异常"，不收路由/请求/自定义日志；CLS 才是行为日志的主战场。</div>
+  </div>
+</section>
+
+<!-- ===== 07 苏格拉底式阅读关卡 ===== -->
+<section class="module" id="m07">
+  <span class="sec-id">07</span>
+  <h2>苏格拉底式阅读关卡 <button class="voice-btn" data-voice-id="m7">🎧 听这章</button></h2>
+  <p class="lead">不直接给答案，自己想。参考答案在每题下方，但请先停 30 秒再展开。</p>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q1 · 入门</span>为什么要"延迟 3S 上报"而不是每条日志立即上报？</summary>
+    <div class="q-text">为了<strong>批量、省请求</strong>。用户操作会产生大量日志点，每条都立即发会拖慢前端、堵塞网络。攒 3 秒合并发，性能好得多。代价是 3 秒内关浏览器会丢——所以用 localStorage 兜底，下次打开补发。</div>
+    <div class="q-hint">提示：想想"实时发"和"攒一批发"各自的代价。</div>
+  </details>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q2 · 入门</span>为什么 tag 不要拼接子过程（不要写 GroupSend-TODO-Step1）？</summary>
+    <div class="q-text">因为 tag 的作用是<strong>标识业务场景、便于跨页面检索</strong>。如果每个子过程一个 tag，tag 会越拆越碎，同一个业务被切成 N 个 tag，检索时根本对不齐。子过程应该写进 message，让 tag 保持"一个业务场景一个名"的粒度。</div>
+  </details>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q3 · 进阶</span>为什么私有化项目、企点、有群不能用日志库？</summary>
+    <div class="q-text">因为日志库是<strong>和 SAAS 标品绑定的一套基础设施</strong>（CLS、加密、上报通道都按 SAAS 标品的部署搭的）。私有化/企点/有群是<strong>分开部署</strong>的独立项目，没有这套后端支撑，强行引入日志库要么上报失败、要么数据进了不该进的地方。所以这些项目一律不引入。</div>
+    <div class="q-hint">提示：注意"分开部署"这四个字——日志库不是孤立的库，它依赖一整套后端。</div>
+  </details>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q4 · 进阶</span>message 为什么不能直接传 JSON 对象、也不能直接传 Error？</summary>
+    <div class="q-text">传 JSON 对象：内部会对它 <code>JSON.stringify</code>，如果对象有<strong>循环引用</strong>（如 a.b = a），stringify 直接抛错，导致后续上报流程卡死。传 Error：Error 对象不是纯数据，直接传会出问题，所以要传 <code>error.message</code>（文本）。本质都是"只传可序列化的文本"。</div>
+  </details>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q5 · 进阶</span>正确的网络请求只记请求参数、不记返回内容，为什么？想看返回内容怎么办？</summary>
+    <div class="q-text">为了<strong>控制日志量、避免服务器压力</strong>。成功请求的返回内容往往很大，全记会撑爆存储和带宽，所以只记入参。失败请求才记返回内容（便于排错）。想看成功请求的返回，要拿到那次请求的 <code>trace_id</code>，去 CLS 搜 <code>trace_id:"xxx"</code> 查后端日志/返回结果。</div>
+  </details>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q6 · 深度</span>Sentry 报了一个错，怎么定位到是哪个用户、他当时做了什么？</summary>
+    <div class="q-text">分两步：① 在 Sentry 错误详情的<strong>附加信息</strong>里找到 <code>deviceId</code>；② 拿这个 deviceId 去<strong>腾讯云 CLS</strong> 检索（用 app_name 联合 + deviceId），看这个用户在出错前后的路由跳转、网络请求、自定义日志——也就是把"用户操作回放"拼出来。这就是 Sentry 和 CLS 联动的标准套路。</div>
+    <div class="q-hint">提示：deviceId 是连接 Sentry 和 CLS 的那把钥匙。</div>
+  </details>
+
+  <details class="q-item">
+    <summary><span class="q-no">Q7 · 深度</span>用户报障说"刚操作就出问题了"，但你去 CLS 搜却什么都没有，最可能的原因是什么？</summary>
+    <div class="q-text">最可能是<strong>时间范围没调大</strong>。CLS 默认只搜最近 5 分钟，用户报障时往往已经过了几分钟甚至更久，默认范围根本覆盖不到。另外也要确认搜的是不是对应环境的日志集/主题（TKE-TEST 还是 TKE-PROD），以及 project（qv-admin / qv-admin-h5）有没有加。</div>
+  </details>
+</section>
+
+<!-- ===== 08 闯关式任务 ===== -->
+<section class="module" id="m08">
+  <span class="sec-id">08</span>
+  <h2>闯关式任务 <button class="voice-btn" data-voice-id="m8">🎧 听这章</button></h2>
+  <p class="lead">8 道闭环题，覆盖 tag 规则、CLS 账号/日志集、检索语法、deviceId 获取、Sentry 联动。选完点"检查"，答对贴 OK 贴纸，答错贴 NO 贴纸并指出错在哪。错题自动进 11 节的错题回流区。</p>
+
+  <!-- 题1 单选：tag 规则 -->
+  <div class="task" data-task="t1" data-answer="C"
+       data-ok="对。tag 是业务场景标识，多个页面共用；子过程（step1）要写进 message，不能拼进 tag。"
+       data-no="错。子过程不能拼成 GroupSend-TODO-Step1，而应写进 message。tag 保持'一个业务场景一个名'的粒度。"
+       data-src="原文：一个业务过程中的子过程不要采用拼接 tag 的方式，而应该在 message 中添加。"
+       data-review="回到「05 判断 2」+「06 概念② 自定义日志」复习">
+    <div class="q">1. 【单选】群发待办业务，开发到"第一步提交"，tag 应该怎么写？</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. tag:'GroupSend-TODO-Step1'</button>
+      <button class="opt" data-val="B">B. tag:'GroupSend-TODO-第一步'（每步一个 tag）</button>
+      <button class="opt" data-val="C">C. tag:'GroupSend-TODO'，把"第一步提交"写进 message</button>
+      <button class="opt" data-val="D">D. tag:'Step1'（只写子过程）</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题2 单选：message 传值规则 -->
+  <div class="task" data-task="t2" data-answer="B"
+       data-ok="对。message 必须传文本；Error 要传 error.message，不能整个 error 丢进去。"
+       data-no="错。message 不能直接传 error 对象，要传 error.message（文本）。直接传 error 会导致序列化出问题。"
+       data-src="原文：如果 message 属于 Error 类型，需自行传 error.message 字段，不要直接传 error。"
+       data-review="回到「05 判断 3」+「09 误解 1」复习">
+    <div class="q">2. 【单选】catch 到一个 error，要把错误信息上报，message 应该传什么？</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. message: error（整个 error 对象）</button>
+      <button class="opt" data-val="B">B. message: error.message（错误消息文本）</button>
+      <button class="opt" data-val="C">C. message: JSON.stringify(error)</button>
+      <button class="opt" data-val="D">D. message: '出错了'（不传具体信息）</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题3 单选：CLS 账号 -->
+  <div class="task" data-task="t3" data-answer="C"
+       data-ok="对。CLS 子账号是 wshoto-log / 密码 Jswshoto@2021。"
+       data-no="账号或密码记错了。CLS 用腾讯云子账号登录：用户名 wshoto-log，密码 Jswshoto@2021。"
+       data-src="原文：腾讯云子账号登录……子用户名：wshoto-log 密码：Jswshoto@2021。"
+       data-review="回到「06 概念④ CLS」+「10 工具速查表」复习">
+    <div class="q">3. 【单选】登录腾讯云 CLS 查前端日志，子账号和密码是？</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. admin / 123456</button>
+      <button class="opt" data-val="B">B. wshoto-admin / Wshoto@2021</button>
+      <button class="opt" data-val="C">C. wshoto-log / Jswshoto@2021</button>
+      <button class="opt" data-val="D">D. 用主帐号 100014537081 直接登录</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题4 单选：日志集/主题 -->
+  <div class="task" data-task="t4" data-answer="B"
+       data-ok="对。生产灰度环境用 TKE-PROD / tke-prod-service-logtopic，区域上海。"
+       data-no="选错了。生产灰度环境：区域上海，日志集 TKE-PROD，主题 tke-prod-service-logtopic。TKE-TEST 是测试环境。"
+       data-src="原文：区域选择：上海，日志集选择：TKE-PROD，日志主题选择：tke-prod-service-logtopic(生成/灰度环境)。"
+       data-review="回到「06 概念④ CLS」+「04 结构地图 第4步」复习">
+    <div class="q">4. 【单选】查生产/灰度环境的前端日志，区域、日志集、主题分别选什么？</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. 北京 / TKE-PROD / tke-prod-service-logtopic</button>
+      <button class="opt" data-val="B">B. 上海 / TKE-PROD / tke-prod-service-logtopic</button>
+      <button class="opt" data-val="C">C. 上海 / TKE-TEST / tke-test-service-logtopic</button>
+      <button class="opt" data-val="D">D. 上海 / TKE-PROD / tke-test-service-logtopic</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题5 单选：检索语法 -->
+  <div class="task" data-task="t5" data-answer="A"
+       data-ok="对。前端打点数据都在 msg 字段，PC 端 project=qv-admin，用 app_name 和 msg 联合搜索。"
+       data-no="检索方式不对。所有打点数据写在 msg 字段下，PC 端用 app_name:qv-admin 联合 msg 搜索。大小写也要注意。"
+       data-src="原文：所有的数据都是写入到 msg 字段下，利用项目名称（app_name）与 msg 联合搜索……project 枚举 qv-admin(PC)/qv-admin-h5(H5)。"
+       data-review="回到「06 概念④ CLS」+「10 检索语法表」复习">
+    <div class="q">5. 【单选】想在 CLS 搜 PC 端群发业务的日志，正确的检索写法是？</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. app_name:qv-admin AND msg:"群发"</button>
+      <button class="opt" data-val="B">B. app_name:qv-admin-h5 AND msg:"群发"</button>
+      <button class="opt" data-val="C">C. project:pc AND content:"群发"</button>
+      <button class="opt" data-val="D">D. and app_name:qv-admin and msg:群发（全小写）</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题6 单选：deviceId 获取（移动端） -->
+  <div class="task" data-task="t6" data-answer="C"
+       data-ok="对。移动端让客户在企微管家搜'##设备码##'（# 为英文符号）即可查看设备码。"
+       data-no="方式不对。移动端获取 deviceId：客户打开企微管家，在 WsSearch 控件（如 TAB 搜索框）输 ##设备码## 搜索。javascript:alert 是 PC 端方式。"
+       data-src="原文：找到 WsSearch 控件，比如客户 TAB 搜索框，输入 ##设备码##（不含，#为英文符号），点搜索或 Enter，查看设备码。"
+       data-review="回到「06 概念③ deviceId」+「10 工具速查表」复习">
+    <div class="q">6. 【单选】移动端客户报障，需要他的 deviceId，最直接的方式是？</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. 让客户在浏览器输 javascript:alert(localStorage.__ws_device_id)</button>
+      <button class="opt" data-val="B">B. 让客户打开控制台看 localStorage</button>
+      <button class="opt" data-val="C">C. 让客户在企微管家搜 ##设备码##</button>
+      <button class="opt" data-val="D">D. 让客户去 Sentry 后台看</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题7 判断：私有化项目 -->
+  <div class="task" data-task="t7" data-answer="B"
+       data-ok="对——这句话错在'都可以用'。和 SAAS 标品分开部署的私有化/企点/有群项目都不应该用日志库。"
+       data-no="你选了'对'，但这是错的。原文明确：和 SAAS 标品分开部署的项目（私有化、企点、有群）均不应该使用日志库。"
+       data-src="原文：和 SAAS 标品分开部署的项目均不应该使用日志库，如私有化项目，企点，有群。"
+       data-review="回到「05 判断 5」+「09 误解 3」复习">
+    <div class="q">7. 【判断】私有化项目、企点、有群这些项目，和 SAAS 标品一样都可以用前端日志库。</div>
+    <div class="opts">
+      <button class="opt" data-val="A">A. 对</button>
+      <button class="opt" data-val="B">B. 错</button>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+
+  <!-- 题8 匹配：概念对应 -->
+  <div class="task" data-task="t8" data-type="selects"
+       data-ok="全部对！这 4 组关系背牢，前端日志的排查链路就通了。"
+       data-no="有错。逐组对照：CLS=存前端行为日志、靠 deviceId+trace_id 检索；deviceId=用户设备标识、PC 看 localStorage；Sentry=收未捕获异常、和 CLS 靠 deviceId 联动；trace_id=查后端日志的钥匙。"
+       data-src="原文：自动记录用户操作……定位偶发问题……deviceId……Sentry……trace_id 查看后端日志/返回结果。"
+       data-review="回到「06 关键概念拆解」整章复习">
+    <div class="q">8. 【匹配】把工具/概念和它的作用配对。</div>
+    <div class="match-row">
+      <span style="min-width:7em">① 腾讯云 CLS</span>
+      <select class="match" data-correct="A">
+        <option value="">— 请选 —</option>
+        <option value="A">A. 存前端行为日志（路由/请求/自定义），靠 deviceId+trace_id 检索</option>
+        <option value="B">B. 用户设备的唯一标识，PC 端从 localStorage.__ws_device_id 取</option>
+        <option value="C">C. 收集项目中未捕获的异常，详情含 deviceId，可和 CLS 联动</option>
+        <option value="D">D. 一次请求的链路标识，用它能在 CLS 查到对应的后端日志/返回结果</option>
+      </select>
+    </div>
+    <div class="match-row">
+      <span style="min-width:7em">② deviceId</span>
+      <select class="match" data-correct="B">
+        <option value="">— 请选 —</option>
+        <option value="A">A. 存前端行为日志（路由/请求/自定义），靠 deviceId+trace_id 检索</option>
+        <option value="B">B. 用户设备的唯一标识，PC 端从 localStorage.__ws_device_id 取</option>
+        <option value="C">C. 收集项目中未捕获的异常，详情含 deviceId，可和 CLS 联动</option>
+        <option value="D">D. 一次请求的链路标识，用它能在 CLS 查到对应的后端日志/返回结果</option>
+      </select>
+    </div>
+    <div class="match-row">
+      <span style="min-width:7em">③ Sentry</span>
+      <select class="match" data-correct="C">
+        <option value="">— 请选 —</option>
+        <option value="A">A. 存前端行为日志（路由/请求/自定义），靠 deviceId+trace_id 检索</option>
+        <option value="B">B. 用户设备的唯一标识，PC 端从 localStorage.__ws_device_id 取</option>
+        <option value="C">C. 收集项目中未捕获的异常，详情含 deviceId，可和 CLS 联动</option>
+        <option value="D">D. 一次请求的链路标识，用它能在 CLS 查到对应的后端日志/返回结果</option>
+      </select>
+    </div>
+    <div class="match-row">
+      <span style="min-width:7em">④ trace_id</span>
+      <select class="match" data-correct="D">
+        <option value="">— 请选 —</option>
+        <option value="A">A. 存前端行为日志（路由/请求/自定义），靠 deviceId+trace_id 检索</option>
+        <option value="B">B. 用户设备的唯一标识，PC 端从 localStorage.__ws_device_id 取</option>
+        <option value="C">C. 收集项目中未捕获的异常，详情含 deviceId，可和 CLS 联动</option>
+        <option value="D">D. 一次请求的链路标识，用它能在 CLS 查到对应的后端日志/返回结果</option>
+      </select>
+    </div>
+    <button class="check">检查</button>
+    <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+  </div>
+</section>
+
+<!-- ===== 09 误解与边界 ===== -->
+<section class="module" id="m09">
+  <span class="sec-id">09</span>
+  <h2>误解与边界 <button class="voice-btn" data-voice-id="m9">🎧 听这章</button></h2>
+
+  <div class="myth">
+    <div class="myth-head">误解 1 · "message 可以随便传 JSON 对象/直接传 error"</div>
+    <div class="row"><span class="key">为什么容易误解</span>看 message 能"记详情"，就以为啥对象都能塞。</div>
+    <div class="row"><span class="key">原文真正说了</span>message 只支持 string 和 {key: value}；JSON 要避免循环引用导致 JSON.stringify 失败、卡死后续流程；Error 要传 error.message，不能直接传 error。</div>
+    <div class="row"><span class="key">原文没有说</span>"message 是个对象容器"——它只收可序列化的文本/简单键值。</div>
+    <div class="row"><span class="key">如何避免</span>传对象前先想"它能不能 JSON.stringify"；Error 永远传 error.message。</div>
+  </div>
+
+  <div class="myth">
+    <div class="myth-head">误解 2 · "CLS 打开就能搜到全部历史日志"</div>
+    <div class="row"><span class="key">为什么容易误解</span>搜索引擎用惯了，以为默认就是全量。</div>
+    <div class="row"><span class="key">原文真正说了</span>搜索框右侧时间范围<strong>默认 5 分钟</strong>，通常需要调大。</div>
+    <div class="row"><span class="key">原文没有说</span>"默认搜全部"——5 分钟外的数据默认搜不到。</div>
+    <div class="row"><span class="key">如何避免</span>每次搜之前先确认时间范围，按报障时间往前往后调够。</div>
+  </div>
+
+  <div class="myth">
+    <div class="myth-head">误解 3 · "私有化/企点/有群项目也能用前端日志库"</div>
+    <div class="row"><span class="key">为什么容易误解</span>以为日志库是个通用 npm 包，哪个项目都能装。</div>
+    <div class="row"><span class="key">原文真正说了</span>和 SAAS 标品分开部署的项目（私有化、企点、有群）<strong>均不应该</strong>使用日志库。</div>
+    <div class="row"><span class="key">原文没有说</span>"日志库全项目通用"——它绑定 SAAS 标品的那套后端基础设施。</div>
+    <div class="row"><span class="key">如何避免</span>接手新项目先问清楚是不是 SAAS 标品；不是，就别引日志库。</div>
+  </div>
+
+  <div class="myth">
+    <div class="myth-head">误解 4 · "tag 越细越好，每一步操作一个 tag"</div>
+    <div class="row"><span class="key">为什么容易误解</span>觉得"分得越细越容易定位"。</div>
+    <div class="row"><span class="key">原文真正说了</span>tag 代表业务场景，<strong>多个页面共用</strong>同一个 tag；子过程不要拼进 tag，要写进 message。</div>
+    <div class="row"><span class="key">原文没有说</span>"tag 要细分到每一步"——粒度卡在"业务场景"，不是"每步操作"。</div>
+    <div class="row"><span class="key">如何避免</span>tag 按"业务场景"命名（如 GroupSend-TODO），步骤信息一律进 message。</div>
+  </div>
+
+  <div class="myth">
+    <div class="myth-head">误解 5 · "正确的网络请求也会完整记录返回内容"</div>
+    <div class="row"><span class="key">为什么容易误解</span>以为自动日志会把所有出入参都完整记下来。</div>
+    <div class="row"><span class="key">原文真正说了</span>正确的网络请求结果<strong>仅记录请求参数</strong>，失败的网络请求才会记录返回内容。想看正确请求的返回，要靠 trace_id 查后端日志。</div>
+    <div class="row"><span class="key">如何避免</span>要查成功接口的返回内容，记下 trace_id 去后端日志捞，别指望 CLS 里有。</div>
+  </div>
+</section>
+
+<!-- ===== 10 背景知识缺口 ===== -->
+<section class="module" id="m10">
+  <span class="sec-id">10</span>
+  <h2>背景知识缺口 <button class="voice-btn" data-voice-id="m10">🎧 听这章</button></h2>
+  <p class="lead">要彻底吃透这一章，建议补这 4 个背景。现在不补也行，遇到不懂的再回头看。</p>
+
+  <div class="card sky">
+    <div class="card-title">缺口 1 · XHR 代理 / fetch 拦截的原理</div>
+    <p style="margin:0">原文说"AJAX 请求通过代理 XHR 实现"，但没讲怎么代理。建议补：怎么重写 window.XMLHttpRequest、怎么在 open/send 里插钩子、fetch 怎么 monkey patch。类比 C：≈ 在头文件里把系统 send 重定义成你的 wrapper，先记日志再调真 send。<strong>为什么重要</strong>：懂了代理，才懂"为什么所有请求会被自动记录、为什么能在 ajaxError.ts 一个文件里统一处理"。</p>
+  </div>
+
+  <div class="card sky">
+    <div class="card-title">缺口 2 · sendBeacon / fetch / xhr 三种上报的取舍</div>
+    <p style="margin:0">原文说"按 sendBeacon → fetch → xhr 顺序降级"，但没讲为什么。建议补：sendBeacon 为啥适合页面卸载时发、它的大小限制、fetch 的 keepalive 标志、为什么 xhr 是兜底。<strong>下一步追问</strong>：既然 sendBeacon 最好，为什么不只用它？答：它有数据大小限制、请求方法/头部受限。</p>
+  </div>
+
+  <div class="card sky">
+    <div class="card-title">缺口 3 · AES 加密与日志安全</div>
+    <p style="margin:0">原文说"内容采用 AES 加密"，但没讲细节。建议补：对称加密基本原理、前端加密后端怎么解、密钥怎么管理、为什么要加密（防止中间人看到用户操作数据）。<strong>为什么重要</strong>：理解了加密，才知道为什么日志内容在 CLS 里看到的是结构化数据而不是明文报文。</p>
+  </div>
+
+  <div class="card sky">
+    <div class="card-title">缺口 4 · Lucence 全文检索与 CLS 数据结构</div>
+    <p style="margin:0">建议补：倒排索引原理、分词器、为什么有 msg 这样的字段、key:value 检索和全文检索的区别、为什么大小写敏感。<strong>为什么重要</strong>：理解了"字段"概念，才知道为什么要写 <code>app_name:qv-admin AND msg:"群发"</code> 而不是裸搜"群发"。</p>
+  </div>
+
+  <div class="card marker">
+    <div class="card-title">可以暂时不补的</div>
+    <p style="margin:0">路由守卫的具体实现（Vue Router beforeEach）、AES 加密的具体密钥与算法实现、企业微信 PC 端控制台打开的详细步骤——这些是操作层细节，不影响理解日志系统的整体骨架。</p>
+  </div>
+
+  <div class="card brick">
+    <div class="card-title">🛠 工具速查表（原文实操硬信息，排障第一天用）</div>
+    <p style="margin:0 0 .6rem">这一章概念讲完了，但原文里那些"账号密码、日志集名"才是你接到报障第一天真正要用的。下面把原文里散落的硬信息汇总成一张表。<strong>注意：账号密码是内部信息，不要外传。</strong></p>
+    <table class="t">
+      <thead><tr><th>系统</th><th>用途</th><th>入口/账号</th><th>关键信息</th></tr></thead>
+      <tbody>
+        <tr><td>腾讯云 CLS</td><td>检索前端日志（路由/请求/自定义）</td><td>子用户名 <code>wshoto-log</code> / 密码 <code>Jswshoto@2021</code></td><td>主帐号 ID 100014537081；区域=上海</td></tr>
+        <tr><td>CLS 测试环境</td><td>查测试环境日志</td><td>日志集 <code>TKE-TEST</code></td><td>主题 <code>tke-test-service-logtopic</code></td></tr>
+        <tr><td>CLS 生产灰度</td><td>查生产/灰度日志</td><td>日志集 <code>TKE-PROD</code></td><td>主题 <code>tke-prod-service-logtopic</code></td></tr>
+        <tr><td>Sentry</td><td>查未捕获异常</td><td><code>https://wshoto.sentry.io/</code></td><td>找<strong>老田</strong>开通权限；支持 PC/移动端</td></tr>
+        <tr><td>deviceId（PC）</td><td>定位报障用户</td><td>浏览器地址栏输 <code>javascript:alert(localStorage.__ws_device_id)</code></td><td>或控制台看 localStorage 的 <code>__ws_device_id</code></td></tr>
+        <tr><td>deviceId（移动）</td><td>定位报障用户</td><td>企微管家搜 <code>##设备码##</code></td><td>或远程连企微 PC 端查 localStorage</td></tr>
+      </tbody>
+    </table>
+    <div class="src-quote" style="margin:.6rem 0 0">project 枚举：PC 端 = <code>qv-admin</code>，H5 端 = <code>qv-admin-h5</code>；所有打点数据写入 <code>msg</code> 字段，用 <code>app_name</code> 联合搜索。</div>
+  </div>
+
+  <div class="card sky">
+    <div class="card-title">📝 Lucence 检索语法速查（原文易踩坑点）</div>
+    <p style="margin:0 0 .4rem">CLS 用 Lucence 语法，<strong>大小写敏感</strong>（AND 是运算符，and 是普通文本）。下面是最常用的几条：</p>
+    <table class="t">
+      <thead><tr><th>语法</th><th>说明</th><th>示例</th></tr></thead>
+      <tbody>
+        <tr><td><code>:</code></td><td>键值检索（在某字段里查）</td><td><code>level:ERROR</code></td></tr>
+        <tr><td><code>AND</code></td><td>与（注意大写）</td><td><code>level:ERROR AND pid:1234</code></td></tr>
+        <tr><td><code>OR</code></td><td>或（注意大写）</td><td><code>level:ERROR OR level:WARNING</code></td></tr>
+        <tr><td><code>NOT</code></td><td>非（注意大写）</td><td><code>level:ERROR NOT pid:1234</code></td></tr>
+        <tr><td><code>()</code></td><td>分组，控制优先级</td><td><code>(ERROR OR WARNING) AND pid:1234</code></td></tr>
+        <tr><td><code>""</code></td><td>精确短语（顺序不变）</td><td><code>name:"john Smith"</code></td></tr>
+        <tr><td><code>*</code> / <code>?</code></td><td>通配（多字符/单字符，不支持前缀模糊）</td><td><code>host:www.test*.com</code></td></tr>
+        <tr><td><code>&gt; &gt;= &lt; &lt;=</code></td><td>范围比较</td><td><code>status:&gt;=400</code></td></tr>
+        <tr><td><code>TO</code> / <code>[]</code></td><td>范围（含边界）</td><td><code>age:[20 TO 30]</code></td></tr>
+        <tr><td><code>_exists_</code></td><td>字段是否存在</td><td><code>_exists_:userAgent</code></td></tr>
+      </tbody>
+    </table>
+    <div class="why" style="margin-top:.4rem">为什么现在需要知道：新手常写出 <code>and</code>/<code>or</code>（小写）搜不到东西，或者忘记指定字段（<code>msg:</code>）裸搜——记住"运算符大写 + key:value"这两条，能省很多来回。</div>
+  </div>
+</section>
+
+<!-- ===== 11 复盘与学习报告 ===== -->
+<section class="module" id="m11">
+  <span class="sec-id">11</span>
+  <h2>复盘与学习报告 <button class="voice-btn" data-voice-id="m11">🎧 听这章</button></h2>
+  <p class="lead">学完这一章，你应该能用自己的话复述下面三件事；如果你还能问出一个连老员工都要想一想的追问，那你就真的学透了。</p>
+
+  <div class="card">
+    <div class="card-title">能复述的三件事</div>
+    <p style="margin:0">① 前端日志的核心价值是"复现用户操作"——自动记路由跳转（含参数）+ 网络请求出入参，加开发者自定义日志（tag/message/level），定位偶发问题；小程序未引入。<br>② tag 是业务场景（多页面共用，不拼子过程）、message 传文本不传对象（Error 传 error.message）、level 异常传 Error；默认延迟 3S 上报、易错场景配立即上报；私有化/企点/有群不用日志库。<br>③ 排障链路：拿到 deviceId（PC 看 localStorage / 移动搜"##设备码##"）→ CLS（wshoto-log，上海，TKE-TEST/PROD）按 app_name+msg 检索 → 想看后端用 trace_id；Sentry 收未捕获异常，靠 deviceId 和 CLS 联动。</p>
+  </div>
+
+  <div class="card marker">
+    <div class="card-title">还能问的追问（示例）</div>
+    <p style="margin:0">"默认延迟 3S 上报，如果在 3S 内发生了未捕获异常（Sentry 会收）但用户行为日志还没发就被关掉了——Sentry 的错误和 CLS 的用户行为怎么对得上？这块有没有兜底机制把那条 localStorage 暂存日志在崩溃时也 flush 出去？"</p>
+  </div>
+
+  <h3>错题回流区</h3>
+  <div class="wrong-box">
+    <ul id="wrongBox"><li style="color:#888">还没有错题。答错的题会自动收集到这里。</li></ul>
+  </div>
+
+  <h3>生成你的学习报告</h3>
+  <div class="report-actions">
+    <button id="genReport">生成学习报告</button>
+    <button id="copyReport">复制报告</button>
+  </div>
+  <div id="report">点「生成学习报告」按钮，根据你的答题情况生成存档。</div>
+</section>
+
+<footer>
+  <div>由 <a href="https://lyzbcy.github.io/" target="_blank" rel="noopener">捞鱼</a> 制作 · 工具能帮你预习难啃的干货，但不能代替完整学习。学习愉快 🐟</div>
+  <div style="margin-top:.4rem;font-size:.78rem;opacity:.7">微盛研发岗管培生培训 · 前端开发 · 前端日志 · 理解地图</div>
+</footer>
+
+</main>
+
+<!-- ===== 右侧书签脊入口 ===== -->
+<button id="voiceFab" aria-label="打开后台语音"><span class="fab-icon">🎧</span><span class="fab-text">后台语音</span></button>
+
+<!-- ===== 圆润玩具风播放器 ===== -->
+<div id="voicePlayer">
+  <button class="vp-close" aria-label="关闭">✕</button>
+  <div class="vp-head">🎧 后台语音 · 连续播放</div>
+  <div class="vp-title">—</div>
+  <div class="vp-controls">
+    <button class="vp-prev" aria-label="上一章">⏮</button>
+    <button class="vp-play" aria-label="播放/暂停">▶</button>
+    <button class="vp-next" aria-label="下一章">⏭</button>
+  </div>
+  <input class="vp-seek" type="range" min="0" max="1000" value="0" aria-label="进度">
+  <div class="vp-time"><span class="vp-cur">00:00</span><span class="vp-dur">00:00</span></div>
+  <div class="vp-sub">点开播放后，这里会同步显示字幕</div>
+</div>
+
+<!-- ===== 固定互动引擎（原样粘贴，不要改写） ===== -->
+<script>
+(function(){
+  "use strict";
+  function $all(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));}
+  function selectedVals(t){return $all('.opt.selected',t).map(function(o){return o.getAttribute('data-val');}).sort();}
+  function setFb(t,state,html){var fb=t.querySelector('.feedback');if(!fb)return;fb.className='feedback'+(state?(' '+state):'');fb.innerHTML=html;}
+  function updateBar(){
+    var all=$all('.task'),done=$all('.task[data-answered="1"]');
+    var fill=document.getElementById('barFill'),num=document.getElementById('barNum');
+    if(fill)fill.style.width=all.length?(done.length/all.length*100)+'%':'0%';
+    if(num)num.textContent=done.length+' / '+all.length;
+  }
+  function renderWrong(){
+    var box=document.getElementById('wrongBox');if(!box)return;
+    var wrong=$all('.task[data-answered="1"][data-correct="0"]');
+    if(!wrong.length){box.innerHTML='<li style="color:#888">还没有错题。答错的题会自动收集到这里。</li>';return;}
+    box.innerHTML='';
+    wrong.forEach(function(t){var li=document.createElement('li');li.textContent='【'+(t.getAttribute('data-task')||'')+'】'+(t.getAttribute('data-review')||'回到对应模块复习');box.appendChild(li);});
+  }
+  function check(t){
+    var type=t.getAttribute('data-type'),ok=false;
+    if(type==='selects'){
+      var sels=$all('select.match',t),allok=true,empty=false;
+      sels.forEach(function(s){if(!s.value)empty=true;if(s.value!==s.getAttribute('data-correct'))allok=false;});
+      if(empty){setFb(t,'no','请先把每一项都选好再检查。');return;}
+      ok=allok;
+    }else{
+      var sel=selectedVals(t);
+      if(!sel.length){setFb(t,'no','请先选择一个选项再检查。');return;}
+      var ans=(t.getAttribute('data-answer')||'').split(',').map(function(x){return x.trim();}).sort();
+      ok=(sel.join('|')===ans.join('|'));
+    }
+    var sticker=ok?'<img class="sticker" src="https://lyzbcy.github.io/weshoto-study/img/sticker/ok.png" alt="">':'<img class="sticker" src="https://lyzbcy.github.io/weshoto-study/img/sticker/no.png" alt="">';
+    var body=ok?(t.getAttribute('data-ok')||'回答正确。'):(t.getAttribute('data-no')||'再想想。');
+    var src=t.getAttribute('data-src');
+    setFb(t,ok?'ok':'no',sticker+(ok?'':'')+body+(src?('<span class="src">'+src+'</span>'):''));
+    t.setAttribute('data-answered','1');t.setAttribute('data-correct',ok?'1':'0');
+    updateBar();renderWrong();
+  }
+  function genReport(){
+    var box=document.getElementById('report');if(!box)return;
+    var all=$all('.task'),done=$all('.task[data-answered="1"]'),right=$all('.task[data-answered="1"][data-correct="1"]');
+    var lines=['=== 学习报告 ===','完成题目：'+done.length+' / '+all.length,'答对：'+right.length+' 题',''];
+    var wrong=$all('.task[data-answered="1"][data-correct="0"]');
+    if(wrong.length){lines.push('我答错的题（建议复习）：');wrong.forEach(function(t){lines.push('- '+(t.getAttribute('data-task')||'')+'：'+(t.getAttribute('data-review')||''));});}
+    else{lines.push('暂无错题。');}
+    lines.push('','三件复述清单：');
+    lines.push('① 前端日志核心价值=复现用户操作（路由+请求出入参+自定义日志），定位偶发问题；小程序未引入');
+    lines.push('② tag=业务场景不拼子过程；message 传文本/Error 传 error.message；默认延迟 3S、易错场景立即上报；私有化/企点/有群不用日志库');
+    lines.push('③ 排障链路：deviceId（PC 看 localStorage/移动搜 ##设备码##）→ CLS（wshoto-log，上海，TKE-TEST/PROD，app_name+msg）→ trace_id 查后端；Sentry 靠 deviceId 和 CLS 联动');
+    box.textContent=lines.join('\n');
+  }
+  document.addEventListener('click',function(e){
+    var c=e.target.closest?e.target:null;
+    var opt=c&&e.target.closest('.opt');
+    if(opt){var t=opt.closest('.task');if(!t)return;
+      if(t.getAttribute('data-multi')==='true'){opt.classList.toggle('selected');}
+      else{$all('.opt',t).forEach(function(o){o.classList.remove('selected');});opt.classList.add('selected');}
+      return;}
+    var btn=c&&e.target.closest('.check');
+    if(btn){var tk=btn.closest('.task');if(tk)check(tk);return;}
+    if(e.target&&e.target.id==='genReport'){genReport();return;}
+    if(e.target&&e.target.id==='copyReport'){var r=document.getElementById('report');if(r&&navigator.clipboard)navigator.clipboard.writeText(r.textContent);return;}
+  });
+  function init(){updateBar();renderWrong();}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+
+<!-- ===== 固定语音引擎（原样粘贴，不要改写） ===== -->
+<script>
+(function(){
+  "use strict";
+  if(window.__voiceEngine) return;
+  window.__voiceEngine = true;
+
+  var listNode = document.getElementById('voicePlaylist');
+  if(!listNode){ return; }
+  var TRACKS = [];
+  try { TRACKS = JSON.parse(listNode.textContent.trim()); } catch(e){ return; }
+  if(!TRACKS.length) return;
+
+  var player = document.getElementById('voicePlayer');
+  var fab = document.getElementById('voiceFab');
+  var audio = new Audio(); audio.preload = 'metadata';
+  var cur = 0;
+  var ranges = [];
+  var total = 0;
+  var seeking = false;
+
+  function $(s){ return player ? player.querySelector(s) : null; }
+  function fmt(s){ s=Math.max(0,Math.floor(s||0)); var m=Math.floor(s/60), x=s%60;
+    return (m<10?'0':'')+m+':'+(x<10?'0':'')+x; }
+
+  var probe = TRACKS.map(function(){ return {dur:0}; });
+  function tryFinalize(){
+    if(probe.some(function(p){return !p.dur;})) return;
+    ranges = []; total = 0;
+    probe.forEach(function(p){ ranges.push({dur:p.dur, start:total}); total += p.dur; });
+    var d = $('.vp-dur'); if(d) d.textContent = fmt(total);
+    var sk = $('.vp-seek'); if(sk){ sk.max = Math.max(1000, Math.floor(total*10)); }
+  }
+  TRACKS.forEach(function(t, i){
+    var a = new Audio(); a.preload = 'metadata'; a.src = t.src;
+    a.addEventListener('loadedmetadata', function(){
+      probe[i].dur = a.duration || 0; tryFinalize();
+    });
+    a.addEventListener('error', function(){ probe[i].dur = 0; tryFinalize(); });
+  });
+
+  function load(i){
+    cur = i; audio.src = TRACKS[i].src;
+    var ti = $('.vp-title'); if(ti) ti.textContent = TRACKS[i].title || ('第 '+(i+1)+' 段');
+    markBtn(i);
+  }
+  function play(){ audio.play().then(function(){ show(); setPlayIcon(true); if(fab) fab.classList.add('beat'); }).catch(function(){}); }
+  function pause(){ audio.pause(); setPlayIcon(false); if(fab) fab.classList.remove('beat'); }
+  function toggle(){ audio.paused ? play() : pause(); }
+  function next(){ if(cur < TRACKS.length-1){ load(cur+1); play(); } else { pause(); } }
+  function prev(){
+    var abs = absTime();
+    if(cur > 0 && abs - ranges[cur].start < 3){ load(cur-1); play(); }
+    else { audio.currentTime = 0; }
+  }
+  function absTime(){ return ranges[cur] ? ranges[cur].start + (audio.currentTime||0) : (audio.currentTime||0); }
+  function setPlayIcon(on){ var b=$('.vp-play'); if(b) b.textContent = on ? '⏸' : '▶'; }
+  function show(){ if(player) player.classList.add('show'); }
+  function hide(){ if(player) player.classList.remove('show'); }
+  function markBtn(i){
+    document.querySelectorAll('.voice-btn[data-voice-id]').forEach(function(b){
+      b.classList.toggle('active', b.getAttribute('data-voice-id') === TRACKS[i].id);
+    });
+  }
+
+  audio.addEventListener('timeupdate', function(){
+    if(seeking) return;
+    if(!ranges[cur]) return;
+    var abs = absTime(); var sk = $('.vp-seek'); var c = $('.vp-cur');
+    if(sk && total) sk.value = Math.round(abs / total * (sk.max||1000));
+    if(c) c.textContent = fmt(abs);
+  });
+  audio.addEventListener('ended', function(){ if(cur < TRACKS.length-1){ load(cur+1); play(); }
+    else { setPlayIcon(false); if(fab) fab.classList.remove('beat'); } });
+
+  function seekToFraction(frac){
+    if(!total) return;
+    var target = Math.max(0, Math.min(total, frac * total));
+    var i = 0; while(i < ranges.length-1 && ranges[i].start + ranges[i].dur < target){ i++; }
+    if(i !== cur){ cur = i; audio.src = TRACKS[i].src;
+      var ti=$('.vp-title'); if(ti) ti.textContent = TRACKS[i].title||('第 '+(i+1)+' 段'); markBtn(i); }
+    audio.currentTime = target - ranges[i].start;
+    var c=$('.vp-cur'); if(c) c.textContent = fmt(target);
+  }
+
+  document.addEventListener('click', function(e){
+    var t = e.target;
+    var vb = t.closest ? t.closest('.voice-btn[data-voice-id]') : null;
+    if(vb){
+      var id = vb.getAttribute('data-voice-id'), idx = -1;
+      TRACKS.forEach(function(tr, k){ if(tr.id === id) idx = k; });
+      if(idx >= 0){ load(idx); play(); }
+      return;
+    }
+    if(t.id === 'voiceFab'){ show(); if(audio.paused && !audio.src){ load(0); } if(audio.paused){ play(); } return; }
+    if(!player || !player.contains(t)) return;
+    if(t.classList.contains('vp-play')){ toggle(); return; }
+    if(t.classList.contains('vp-prev')){ prev(); return; }
+    if(t.classList.contains('vp-next')){ next(); return; }
+    if(t.classList.contains('vp-close')){ pause(); hide(); return; }
+  });
+  var sk = $('.vp-seek');
+  if(sk){
+    sk.addEventListener('input', function(){ seeking = true;
+      if(total){ var c=$('.vp-cur'); if(c) c.textContent = fmt((sk.value/(sk.max||1000))*total); } });
+    sk.addEventListener('change', function(){ seekToFraction(sk.value/(sk.max||1000)); seeking = false; });
+  }
+})();
+</script>
+
+<!-- ===== 字幕同步引擎（原样粘贴，不要改写） ===== -->
+<script>
+(function(){
+  "use strict";
+  if(window.__subEngine) return;
+  window.__subEngine = true;
+
+  var listNode = document.getElementById("voicePlaylist");
+  if(!listNode) return;
+  var subBox = document.querySelector("#voicePlayer .vp-sub");
+  var curEl = document.querySelector("#voicePlayer .vp-cur");
+  var titleEl = document.querySelector("#voicePlayer .vp-title");
+  if(!subBox) return;
+
+  var subs = [];
+  var subCache = {};
+  var curSrc = "";
+
+  function esc(s){ var d=document.createElement("div"); d.textContent=s; return d.innerHTML; }
+
+  function mp3ToJson(src){
+    var m = src.replace(/^.*?([a-zA-Z0-9_\/.\-]+\.mp3)(?:\?.*)?$/i, "$1");
+    return m.replace(/\.mp3$/i, ".json");
+  }
+
+  function loadSubFor(src){
+    if(!src || src === curSrc) return;
+    curSrc = src;
+    var jsonUrl = mp3ToJson(src);
+    if(subCache[jsonUrl]){ subs = subCache[jsonUrl]; return; }
+    fetch(jsonUrl).then(function(r){
+      if(!r.ok) throw new Error(r.status);
+      return r.json();
+    }).then(function(arr){
+      subCache[jsonUrl] = Array.isArray(arr) ? arr : [];
+      subs = subCache[jsonUrl];
+    }).catch(function(){ subs = []; });
+  }
+
+  function parseTime(text){
+    var p = String(text).trim().split(":");
+    if(p.length === 2){
+      var m = parseInt(p[0], 10) || 0;
+      var s = parseInt(p[1], 10) || 0;
+      return m * 60 + s;
+    }
+    return parseFloat(text) || 0;
+  }
+
+  function renderSub(t){
+    if(!subs.length) return;
+    var hit = null, idx = -1;
+    for(var i = 0; i < subs.length; i++){
+      if(t >= subs[i].start && t < subs[i].end){ hit = subs[i]; idx = i; break; }
+    }
+    if(!hit){
+      var prev = null;
+      for(var j = 0; j < subs.length; j++){
+        if(subs[j].start <= t) prev = subs[j]; else break;
+      }
+      subBox.classList.remove("active");
+      subBox.innerHTML = prev ? esc(prev.text) : "";
+      return;
+    }
+    subBox.classList.add("active");
+    var prevHtml = idx > 0
+      ? '<span style="opacity:.45">' + esc(subs[idx - 1].text) + "</span> "
+      : "";
+    subBox.innerHTML = prevHtml + '<span class="cur">' + esc(hit.text) + "</span>";
+  }
+
+  function tick(){
+    if(!curEl) return;
+    var sec = parseTime(curEl.textContent);
+    renderSub(sec);
+  }
+
+  function onTitleChange(){
+    var TRACKS = [];
+    try { TRACKS = JSON.parse(listNode.textContent.trim()); } catch(e){ return; }
+    var title = titleEl ? titleEl.textContent.trim() : "";
+    for(var i = 0; i < TRACKS.length; i++){
+      if(TRACKS[i].title === title){ loadSubFor(TRACKS[i].src); return; }
+    }
+  }
+
+  if(window.MutationObserver){
+    var obs = new MutationObserver(function(){ tick(); onTitleChange(); });
+    if(curEl) obs.observe(curEl, { childList:true, characterData:true, subtree:true });
+    if(titleEl) obs.observe(titleEl, { childList:true, characterData:true, subtree:true });
+  } else {
+    setInterval(function(){ tick(); onTitleChange(); }, 300);
+  }
+  setTimeout(tick, 500);
+})();
+</script>
+
+<script src="../comments.js"></script>
+<script>
+// 版本检测：内联版本号 vs version.json，不一致就刷新（解决CDN缓存旧HTML）
+(function(){
+  var PAGE_V = 7;
+  fetch("../../version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.json();}).then(function(d){
+    if(PAGE_V!==d.v){
+      var last=0; try{last=parseInt(sessionStorage.getItem("ck_refreshed")||"0");}catch(e){}
+      if(Date.now()-last<3000) return;
+      try{sessionStorage.setItem("ck_refreshed",String(Date.now()));}catch(e){}
+      setTimeout(function(){location.reload(true);},800);
+    }
+  }).catch(function(){});
+})();
+</script>
+</body>
+</html>

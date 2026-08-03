@@ -214,8 +214,8 @@ footer a{color:var(--brick);font-weight:700;text-decoration:underline;}
       <div class="cat-meta">本周学习(0803~0807) · <span class="cnt">2 篇已上线</span></div>
     </div>
     <div class="grid">
-      <a class="card soon-card" href="exam/building.html?cat=前端开发&sub=开发规范">
-        <div class="thumb">📐</div><div class="body"><span class="tag soon">即将上线</span><h3>开发规范</h3><p>前端代码规范、目录结构、命名约定、代码评审要点。</p><div class="go">建设中 →</div></div>
+      <a class="card live-card" href="07-前端开发/前端铁律十条.html">
+        <div class="thumb">📐</div><div class="body"><span class="tag live">已上线</span><h3>开发规范</h3><p>前端铁律十条:选项式API、禁改全局、REM+FLEX、接口规范、分支管理、提测质量。</p><div class="go">进入学习 →</div></div>
       </a>
       <a class="card live-card" href="07-前端开发/项目工程说明.html">
         <div class="thumb">🚀</div><div class="body"><span class="tag live">已上线</span><h3>项目与发布</h3><p>5个工程仓库(标品3+定开2)、3种开发模式、分支规范、本地开发流程、发布流程。</p><div class="go">进入学习 →</div></div>
@@ -388,7 +388,7 @@ footer a{color:var(--brick);font-weight:700;text-decoration:underline;}
 <script>
 // 版本检测
 (function(){
-  var PAGE_V = 9;
+  var PAGE_V = 10;
   fetch("version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.json();}).then(function(d){
     if(PAGE_V!==d.v){
       var last=0; try{last=parseInt(sessionStorage.getItem("ck_refreshed")||"0");}catch(e){}

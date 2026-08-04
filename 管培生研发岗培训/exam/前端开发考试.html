@@ -1,0 +1,1038 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>前端开发考试 · 研发岗管培生</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FAF6EB;
+    --forest:#1E3A24;
+    --forest-2:#2C5236;
+    --marker:#F5E08A;
+    --marker-deep:#E7C94A;
+    --brick:#B5482A;
+    --brick-soft:#E07A55;
+    --ink:#26302A;
+    --muted:#6B7563;
+    --line:rgba(30,58,36,.14);
+    --paper:#FFFDF4;
+    --card:#FFFFFF;
+    --ok:#2F7A4D;
+    --ok-soft:#DCEFE0;
+    --no:#B5482A;
+    --no-soft:#F8DCD2;
+    --shadow:0 18px 42px rgba(43,35,23,.12);
+    --shadow-sm:0 6px 16px rgba(43,35,23,.08);
+    --radius-xl:28px;
+    --radius-lg:20px;
+    --radius-md:14px;
+    --radius-sm:999px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    color:var(--ink);
+    background:
+      radial-gradient(circle at 8% -4%, rgba(245,224,138,.45), transparent 22%),
+      radial-gradient(circle at 96% 4%, rgba(181,72,42,.10), transparent 26%),
+      linear-gradient(180deg,#FAF6EB 0%,#F3ECD8 100%);
+    font-family:"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
+    line-height:1.7;
+    padding-bottom:120px;
+  }
+  .wrap{max-width:880px;margin:0 auto;padding:0 20px}
+
+  /* ===== progress bar ===== */
+  .topbar{
+    position:sticky;top:0;z-index:60;
+    background:rgba(250,246,235,.92);
+    backdrop-filter:blur(10px);
+    border-bottom:2px dashed var(--line);
+  }
+  .topbar-inner{
+    max-width:880px;margin:0 auto;padding:10px 20px;
+    display:flex;align-items:center;gap:14px;
+  }
+  .topbar .home{
+    display:inline-flex;align-items:center;gap:6px;
+    text-decoration:none;color:var(--forest);
+    background:#fff;border:1.5px solid var(--line);
+    padding:6px 14px;border-radius:var(--radius-sm);
+    font-weight:600;font-size:13px;
+    transition:.15s;
+  }
+  .topbar .home:hover{background:var(--marker);transform:translateX(-2px)}
+  .progress-wrap{flex:1}
+  .progress-meta{font-size:12px;color:var(--muted);margin-bottom:4px;font-weight:600}
+  .progress-meta b{color:var(--forest)}
+  .progress-track{height:10px;background:#ECE3C8;border-radius:999px;overflow:hidden;border:1px solid var(--line)}
+  .progress-fill{height:100%;width:0;background:linear-gradient(90deg,var(--forest),#3F7A4D);border-radius:999px;transition:width .3s}
+
+  /* ===== header ===== */
+  .hero{
+    margin-top:18px;
+    background:linear-gradient(135deg,rgba(255,255,255,.96),rgba(252,247,232,.94)),linear-gradient(90deg,rgba(30,58,36,.08),transparent 60%);
+    border:1px solid var(--line);
+    border-radius:var(--radius-xl);
+    box-shadow:var(--shadow);
+    padding:34px 36px;
+    display:flex;align-items:center;gap:22px;
+    position:relative;overflow:hidden;
+  }
+  .hero::after{
+    content:"";position:absolute;right:-30px;top:-30px;width:160px;height:160px;
+    background:var(--marker);border-radius:50%;opacity:.4;filter:blur(4px);
+  }
+  .mascot{width:84px;height:84px;flex:0 0 auto;object-fit:contain;filter:drop-shadow(0 6px 8px rgba(0,0,0,.12));position:relative;z-index:1}
+  .hero-text{position:relative;z-index:1}
+  .hero h1{
+    margin:0;font-family:"Fredoka","Noto Sans SC",sans-serif;
+    font-size:30px;color:var(--forest);letter-spacing:.5px;
+  }
+  .hero .sub{margin:6px 0 0;color:var(--muted);font-size:14px;font-weight:500}
+  .hero .sub .tag{
+    display:inline-block;background:var(--forest);color:var(--marker);
+    padding:2px 10px;border-radius:999px;font-size:12px;margin-right:6px;font-weight:700;
+  }
+
+  /* ===== notice strip ===== */
+  .notice{
+    margin-top:18px;
+    background:linear-gradient(90deg,#FFF7C8,#FCEFB0);
+    border:2px solid var(--marker-deep);
+    border-radius:var(--radius-lg);
+    padding:16px 22px;
+    box-shadow:var(--shadow-sm);
+  }
+  .notice h3{margin:0 0 8px;color:var(--forest);font-size:15px;display:flex;align-items:center;gap:6px}
+  .notice-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px 18px;font-size:13px;color:var(--ink)}
+  .notice-grid div{background:rgba(255,255,255,.6);padding:6px 10px;border-radius:10px}
+  .notice-grid b{color:var(--brick)}
+  .notice-tip{margin-top:10px;font-size:13px;color:var(--brick);font-weight:600}
+
+  /* ===== result banner (hidden until submitted) ===== */
+  .result-banner{
+    display:none;margin-top:18px;
+    background:linear-gradient(135deg,var(--forest),var(--forest-2));
+    color:#FFF;border-radius:var(--radius-xl);
+    padding:24px 28px;box-shadow:var(--shadow);
+    align-items:center;gap:18px;
+  }
+  .result-banner.show{display:flex}
+  .result-score{
+    font-family:"Fredoka",sans-serif;font-size:48px;line-height:1;
+    color:var(--marker);min-width:110px;text-align:center;
+  }
+  .result-score small{display:block;font-size:12px;color:rgba(255,255,255,.7);font-family:"Noto Sans SC";font-weight:400;margin-top:6px}
+  .result-comment{font-size:16px;font-weight:600}
+
+  /* ===== section ===== */
+  .section{margin-top:34px}
+  .section-title{
+    display:flex;align-items:center;gap:10px;
+    font-size:18px;color:var(--forest);font-weight:700;
+    margin-bottom:14px;
+  }
+  .section-title .badge{
+    background:var(--marker);color:var(--forest);
+    padding:3px 12px;border-radius:999px;font-size:13px;font-weight:800;
+    border:1.5px solid var(--marker-deep);
+  }
+
+  /* ===== question card ===== */
+  .q{
+    background:var(--card);
+    border:1.5px solid var(--line);
+    border-radius:var(--radius-lg);
+    padding:20px 22px;margin-bottom:16px;
+    box-shadow:var(--shadow-sm);
+    transition:.2s;
+  }
+  .q.correct{border-color:var(--ok);background:linear-gradient(0deg,var(--ok-soft),#fff 30%)}
+  .q.wrong{border-color:var(--brick);background:linear-gradient(0deg,var(--no-soft),#fff 30%)}
+  .q-head{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+  .q-num{
+    font-family:"Fredoka",sans-serif;font-weight:700;font-size:15px;
+    color:#fff;background:var(--forest);
+    width:30px;height:30px;border-radius:50%;
+    display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;
+  }
+  .q-type{font-size:11px;font-weight:700;background:#EAF1E5;color:var(--forest);padding:2px 8px;border-radius:999px}
+  .q-points{font-size:11px;font-weight:700;background:var(--marker);color:var(--forest);padding:2px 8px;border-radius:999px;border:1px solid var(--marker-deep)}
+  .q-chap{font-size:11px;font-weight:600;background:#F1E9D2;color:var(--brick);padding:2px 8px;border-radius:999px}
+  .q-verdict{margin-left:auto;font-weight:800;font-size:18px;display:none}
+  .q.correct .q-verdict.correct-v{display:inline;color:var(--ok)}
+  .q.wrong .q-verdict.wrong-v{display:inline;color:var(--brick)}
+  .q.partial .q-verdict.partial-v{display:inline;color:#C98A1E}
+  .q-stem{font-size:15.5px;color:var(--ink);margin:0 0 12px;font-weight:500}
+  .q-stem .pre{font-weight:700;color:var(--forest)}
+
+  /* options */
+  .opts{display:flex;flex-direction:column;gap:8px}
+  .opt{
+    display:flex;align-items:flex-start;gap:10px;
+    padding:10px 14px;border:1.5px solid var(--line);
+    border-radius:var(--radius-md);cursor:pointer;
+    background:#FBFAF3;transition:.15s;font-size:14.5px;
+  }
+  .opt:hover{background:#FFF7DA;border-color:var(--marker-deep)}
+  .opt .marker{
+    flex:0 0 auto;width:24px;height:24px;border-radius:50%;
+    border:2px solid var(--line);display:inline-flex;align-items:center;justify-content:center;
+    font-weight:700;font-size:13px;color:var(--muted);background:#fff;
+  }
+  .opt.selected{background:#EAF1E5;border-color:var(--forest)}
+  .opt.selected .marker{background:var(--forest);color:var(--marker);border-color:var(--forest)}
+  /* multi uses square */
+  .opt.multi .marker{border-radius:6px}
+  /* answer states after submit */
+  .opt.is-answer{background:#DCEFE0;border-color:var(--ok)}
+  .opt.is-answer .marker{background:var(--ok);color:#fff;border-color:var(--ok)}
+  .opt.selected.bad-pick{background:var(--no-soft);border-color:var(--brick)}
+  .opt.selected.bad-pick .marker{background:var(--brick);color:#fff;border-color:var(--brick)}
+  .q.locked .opt{cursor:default}
+  .q.locked .opt:hover{transform:none}
+
+  /* true/false buttons */
+  .tf{display:flex;gap:10px}
+  .tf-btn{
+    flex:1;padding:14px;border:1.5px solid var(--line);border-radius:var(--radius-md);
+    background:#FBFAF3;cursor:pointer;font-size:15px;font-weight:600;
+    display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:.15s;
+  }
+  .tf-btn:hover{background:#FFF7DA;border-color:var(--marker-deep)}
+  .tf-btn.selected{background:#EAF1E5;border-color:var(--forest);color:var(--forest)}
+  .tf-btn.is-answer{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+  .tf-btn.selected.bad-pick{background:var(--no-soft);border-color:var(--brick);color:var(--brick)}
+  .q.locked .tf-btn{cursor:default}
+
+  /* matching */
+  .match-list{display:flex;flex-direction:column;gap:10px}
+  .match-row{
+    display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+    padding:10px 14px;background:#FBFAF3;border:1.5px solid var(--line);border-radius:var(--radius-md);
+  }
+  .match-left{font-weight:700;color:var(--forest);min-width:30px}
+  .match-text{flex:1;font-size:14.5px;min-width:200px}
+  .match-select{
+    padding:7px 12px;border:1.5px solid var(--line);border-radius:10px;
+    font-size:14px;background:#fff;font-weight:600;color:var(--forest);cursor:pointer;
+  }
+  .match-select:disabled{cursor:default;opacity:.85}
+  .match-row.correct-row{background:var(--ok-soft);border-color:var(--ok)}
+  .match-row.wrong-row{background:var(--no-soft);border-color:var(--brick)}
+  .match-options{font-size:13px;color:var(--muted);margin:8px 0 4px;line-height:1.9}
+  .match-options b{color:var(--forest)}
+
+  /* short answer */
+  .ta{
+    width:100%;min-height:90px;padding:12px 14px;
+    border:1.5px solid var(--line);border-radius:var(--radius-md);
+    font-family:inherit;font-size:14px;line-height:1.7;resize:vertical;background:#FBFAF3;
+  }
+  .ta:focus{outline:none;border-color:var(--forest);background:#fff}
+  .ta:disabled{background:#F4F0E0;color:var(--muted)}
+  .ref-toggle{
+    margin-top:10px;background:var(--marker);border:1.5px solid var(--marker-deep);
+    color:var(--forest);padding:6px 14px;border-radius:999px;font-weight:700;font-size:13px;cursor:pointer;
+  }
+  .ref-toggle:hover{background:var(--marker-deep)}
+  .ref-box{
+    display:none;margin-top:10px;padding:14px 16px;
+    background:#FFF7DA;border:1.5px dashed var(--marker-deep);border-radius:var(--radius-md);
+    font-size:14px;white-space:pre-wrap;color:var(--ink);
+  }
+  .ref-box.open{display:block}
+  .ref-box .ans-label{display:inline-block;background:var(--brick);color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;margin-bottom:8px}
+  .self-eval{margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .self-eval span{font-size:13px;font-weight:600;color:var(--muted)}
+  .se-btn{
+    padding:7px 16px;border-radius:999px;border:1.5px solid var(--line);background:#fff;
+    cursor:pointer;font-size:13px;font-weight:700;transition:.15s;
+  }
+  .se-btn:hover{border-color:var(--forest)}
+  .se-btn.yes{color:var(--ok);border-color:var(--ok)}
+  .se-btn.yes.active{background:var(--ok);color:#fff}
+  .se-btn.no{color:var(--brick);border-color:var(--brick)}
+  .se-btn.no.active{background:var(--brick);color:#fff}
+  .self-pts{font-size:13px;color:var(--forest);font-weight:700}
+
+  /* explanation */
+  .explain{
+    display:none;margin-top:12px;padding:12px 14px;
+    background:#F4F8EF;border-left:4px solid var(--forest);border-radius:8px;
+    font-size:13.5px;color:var(--ink);
+  }
+  .explain .ex-label{font-weight:800;color:var(--forest);margin-right:4px}
+  .explain .ans{font-weight:700;color:var(--ok)}
+  .q.show-explain .explain{display:block}
+  .pts-line{margin-top:8px;font-size:13px;font-weight:700}
+  .pts-line.gain{color:var(--ok)}
+  .pts-line.zero{color:var(--brick)}
+
+  /* submit area */
+  .submit-area{
+    margin-top:30px;text-align:center;
+    background:var(--card);border:1.5px solid var(--line);
+    border-radius:var(--radius-xl);padding:28px 22px;box-shadow:var(--shadow);
+  }
+  .submit-btn{
+    font-family:"Fredoka","Noto Sans SC",sans-serif;
+    font-size:20px;font-weight:700;
+    background:linear-gradient(180deg,var(--brick),#9A3D24);
+    color:#fff;border:none;padding:16px 50px;border-radius:999px;cursor:pointer;
+    box-shadow:0 8px 0 #7E3320, 0 14px 24px rgba(181,72,42,.3);
+    transition:.12s;letter-spacing:2px;
+  }
+  .submit-btn:hover{transform:translateY(-2px);box-shadow:0 10px 0 #7E3320, 0 16px 28px rgba(181,72,42,.35)}
+  .submit-btn:active{transform:translateY(4px);box-shadow:0 4px 0 #7E3320}
+  .submit-btn.hidden{display:none}
+  .reset-btn{
+    font-size:15px;font-weight:700;background:var(--forest);color:var(--marker);
+    border:none;padding:14px 38px;border-radius:999px;cursor:pointer;box-shadow:0 6px 0 #142319;
+    transition:.12s;letter-spacing:1px;
+  }
+  .reset-btn:hover{transform:translateY(-2px)}
+  .reset-btn:active{transform:translateY(3px);box-shadow:0 3px 0 #142319}
+  .reset-btn.hidden{display:none}
+  .submit-hint{margin-top:12px;color:var(--muted);font-size:13px}
+
+  /* ===== back to picker button ===== */
+  .back-to-picker{
+    display:inline-flex;align-items:center;gap:6px;
+    background:#fff;border:1.5px solid var(--line);color:var(--forest);
+    padding:8px 16px;border-radius:999px;font-weight:700;font-size:13px;
+    cursor:pointer;margin:14px 0 0;transition:.15s;
+  }
+  .back-to-picker:hover{background:var(--marker);transform:translateX(-2px)}
+
+  /* ===== paper picker ===== */
+  #paperPicker .picker-sub{margin:10px 0 0;color:var(--muted);font-size:14px;font-weight:500;position:relative;z-index:1}
+  .paper-list{
+    margin-top:22px;
+    display:grid;grid-template-columns:repeat(2,1fr);gap:20px;
+  }
+  .paper-card{
+    background:var(--card);border:1.5px solid var(--line);
+    border-radius:var(--radius-xl);padding:28px 26px;
+    box-shadow:var(--shadow);cursor:pointer;
+    display:flex;flex-direction:column;gap:10px;
+    transition:.2s;position:relative;overflow:hidden;
+  }
+  .paper-card:hover{
+    transform:translateY(-6px);
+    box-shadow:0 26px 54px rgba(43,35,23,.18);
+    border-color:var(--marker-deep);
+  }
+  .paper-card::after{
+    content:"";position:absolute;right:-44px;top:-44px;width:150px;height:150px;
+    background:var(--marker);border-radius:50%;opacity:.28;filter:blur(6px);
+    transition:.25s;
+  }
+  .paper-card:hover::after{opacity:.5;transform:scale(1.08)}
+  .p-icon{font-size:46px;line-height:1;position:relative;z-index:1}
+  .p-title{
+    margin:0;font-family:"Fredoka","Noto Sans SC",sans-serif;
+    font-size:23px;color:var(--forest);font-weight:700;position:relative;z-index:1;
+  }
+  .p-sub{font-size:13px;color:var(--muted);font-weight:600;position:relative;z-index:1}
+  .p-desc{font-size:14px;color:var(--ink);line-height:1.7;flex:1;position:relative;z-index:1}
+  .p-meta{
+    font-size:12px;color:var(--brick);font-weight:700;
+    background:#FFF7DA;border:1px solid var(--marker-deep);
+    padding:5px 13px;border-radius:999px;align-self:flex-start;position:relative;z-index:1;
+  }
+  .p-go{
+    margin-top:6px;font-weight:800;color:var(--forest);font-size:15px;
+    display:inline-flex;align-items:center;gap:6px;position:relative;z-index:1;transition:.15s;
+  }
+  .paper-card:hover .p-go{color:var(--brick);gap:10px}
+
+  footer{margin-top:30px;text-align:center;color:var(--muted);font-size:12px;padding:20px}
+
+  @media(max-width:640px){
+    .hero{padding:24px 18px;flex-direction:column;text-align:center;gap:12px}
+    .mascot{width:64px;height:64px}
+    .hero h1{font-size:24px}
+    .topbar .home span{display:none}
+    .result-banner{flex-direction:column;text-align:center}
+    .paper-list{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== sticky progress bar ===== -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <a class="home" href="../index.html">← <span>返回目录</span></a>
+    <div class="progress-wrap">
+      <div class="progress-meta">已答题 <b id="answeredCount">0</b> / <b id="progressTotal">19</b></div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- ===== paper picker (kept for structure; only one paper) ===== -->
+  <div id="paperPicker">
+    <div class="hero">
+      <img class="mascot" src="../../Vue3/img/sticker/mascot.png" alt="mascot">
+      <div class="hero-text">
+        <h1>选择一套试卷</h1>
+        <p class="picker-sub"><span class="tag">前端</span>前端开发考试 · 基于一人开发/前端学习资料出题。</p>
+      </div>
+    </div>
+    <div class="paper-list" id="paperList"><!-- JS renders paper cards here --></div>
+    <footer>研发岗管培生 · 前端开发考试 · v1.0</footer>
+  </div>
+
+  <!-- ===== exam area (auto-shown on boot) ===== -->
+  <div id="examArea" style="display:none">
+    <button class="back-to-picker" id="backToPicker">← 返回选卷</button>
+
+    <!-- hero -->
+    <div class="hero">
+      <img class="mascot" src="../../Vue3/img/sticker/mascot.png" alt="mascot">
+      <div class="hero-text">
+        <h1 id="heroTitle">前端开发考试</h1>
+        <div class="sub" id="heroSub"><span class="tag">前端开发</span>研发岗管培生 · 知识考试 · 共 19 题</div>
+      </div>
+    </div>
+
+    <!-- notice strip -->
+    <div class="notice">
+      <h3>📋 考试说明</h3>
+      <div class="notice-grid" id="noticeGrid">
+        <div>总分 <b>64 分</b></div>
+        <div>建议时长 <b>30 分钟</b></div>
+        <div>单选 <b>3 分/题</b>×8</div>
+        <div>多选 <b>4 分/题</b>×4（漏选得1分，错选不得分）</div>
+        <div>判断 <b>2 分/题</b>×4</div>
+        <div>匹配 <b>4 分/题</b>×1</div>
+        <div>简答 <b>6 分/题</b>×2（自评）</div>
+      </div>
+      <div class="notice-tip" id="noticeTip">💡 出题范围：学习顺序、Vue3 选项式 API 规范、各技术重点章节范围——只考「资料说了什么」，不考代码语法，非前端同学读资料即可作答。</div>
+      <div class="notice-tip">💡 做完后点击页面底部「交卷判分」自动判分；简答题点击「参考答案」后自评。</div>
+    </div>
+
+    <!-- result banner -->
+    <div class="result-banner" id="resultBanner">
+      <div class="result-score"><span id="finalScore">0</span><small id="finalScoreTotal">总分 / 64</small></div>
+      <div>
+        <div class="result-comment" id="finalComment">—</div>
+        <div style="font-size:13px;opacity:.85;margin-top:6px" id="finalDetail"></div>
+      </div>
+    </div>
+
+    <!-- exam container -->
+    <div id="exam"></div>
+
+    <!-- submit / reset -->
+    <div class="submit-area" id="submitArea">
+      <button class="submit-btn" id="submitBtn">交卷判分</button>
+      <button class="reset-btn hidden" id="resetBtn">重新考试</button>
+      <div class="submit-hint" id="submitHint">交卷后将自动判分并显示解析，输入会被锁定。</div>
+    </div>
+
+    <footer>研发岗管培生 · 前端开发考试 · v1.0</footer>
+  </div>
+
+</div>
+
+<script>
+/* ============================================================
+   DATA: papers (only one: 前端开发考试)
+   types: single | multi | judge | match | short
+   ============================================================ */
+const PAPERS = {
+  A: {
+    title: "前端开发考试",
+    icon: "🖥️",
+    sub: "19 题 · 64 分 · 学习顺序/Vue3规范/重点章节 · 自动判分",
+    desc: "基于「一人开发/前端学习资料」出题,只考规范、流程、重点章节范围,不考代码语法,非前端同学读资料即可作答。",
+    meta: "19题 · 64分 · 约30分钟",
+    heroSub: '<span class="tag">前端开发</span>研发岗管培生 · 知识考试 · 共 19 题',
+    noticeHTML:
+      '<div>总分 <b>64 分</b></div>'+
+      '<div>建议时长 <b>30 分钟</b></div>'+
+      '<div>单选 <b>3 分/题</b>×8</div>'+
+      '<div>多选 <b>4 分/题</b>×4（漏选得1分，错选不得分）</div>'+
+      '<div>判断 <b>2 分/题</b>×4</div>'+
+      '<div>匹配 <b>4 分/题</b>×1</div>'+
+      '<div>简答 <b>6 分/题</b>×2（自评）</div>',
+    noticeTip: "💡 出题范围：学习顺序、Vue3 选项式 API 规范、各技术重点章节范围——只考「资料说了什么」，不考代码语法，非前端同学读资料即可作答。",
+    fullScore: 64,
+    questions: [
+      // ---------- 一、单选 1-8 ----------
+      { id:1, type:"single", chap:"学习路径", points:3, q:"资料规定的四门技术学习顺序是？",
+        opts:[{k:"A",t:"Vue3 → JavaScript → TypeScript → Vue-Router"},
+              {k:"B",t:"JavaScript → Vue3 → Vue-Router → TypeScript"},
+              {k:"C",t:"TypeScript → JavaScript → Vue3 → Vue-Router"},
+              {k:"D",t:"JavaScript → TypeScript → Vue3 → Vue-Router"}],
+        answer:["B"], explain:"资料原文（开篇）：「按照 JavaScript / Vue3 / Vue-Router / TS 的顺序学习」。<b>关键点</b>：先 JS 打基础，再到 Vue3，然后 Vue-Router，最后 TS。"
+      },
+      { id:2, type:"single", chap:"Vue3规范", points:3, q:"我们在 Vue3 项目中采用哪种 API 风格？",
+        opts:[{k:"A",t:"组合式 API（Composition API）"},
+              {k:"B",t:"选项式 API（Options API）"},
+              {k:"C",t:"两种混用，看个人喜好"},
+              {k:"D",t:"函数式 API"}],
+        answer:["B"], explain:"资料原文（Vue3 注意事项）：「我们采用的是『选项式』API，不是组合式」。<b>关键点</b>：选项式，不是组合式。"
+      },
+      { id:3, type:"single", chap:"Vue3规范", points:3, q:"资料中「禁止使用组合式 API」给出的原因是？",
+        opts:[{k:"A",t:"组合式 API 性能较差"},
+              {k:"B",t:"组合式 API 已被官方废弃"},
+              {k:"C",t:"为保持风格统一"},
+              {k:"D",t:"组合式 API 不支持 TypeScript"}],
+        answer:["C"], explain:"资料原文：「为保持风格统一，禁止使用『组合式』API」。<b>关键点</b>：唯一原因是「保持风格统一」，不是性能或废弃问题。"
+      },
+      { id:4, type:"single", chap:"学习路径", points:3, q:"这套前端学习资料设定的学习周期是多久？",
+        opts:[{k:"A",t:"一周"},{k:"B",t:"两周"},{k:"C",t:"一个月"},{k:"D",t:"三个月"}],
+        answer:["C"], explain:"资料原文（标题与开篇）：「JavaScript / Vue3 / Vue-Router / TypeScript 一个月学习路径」「学习周期一个月」。<b>关键点</b>：一个月。"
+      },
+      { id:5, type:"single", chap:"Vue-Router", points:3, q:"下列哪一项不属于 Vue-Router 的学习内容？",
+        opts:[{k:"A",t:"入门"},{k:"B",t:"基础（全部）"},{k:"C",t:"进阶（全部）"},{k:"D",t:"状态管理"}],
+        answer:["D"], explain:"资料原文（Vue-Router 章节）只列了：入门、基础（全部）、进阶（全部）。「状态管理」属于 Vue3「应用规模化」章节，不属于 Vue-Router。"
+      },
+      { id:6, type:"single", chap:"Vue3重点", points:3, q:"Vue3「应用规模化」章节中需要重点学习的内容是？",
+        opts:[{k:"A",t:"单文件组件、路由、状态管理"},
+              {k:"B",t:"基础、深入组件、渲染机制"},
+              {k:"C",t:"五分钟上手、基础类型、接口"},
+              {k:"D",t:"入门、基础、进阶"}],
+        answer:["A"], explain:"资料原文（Vue3 重点章节）：应用规模化中的「单文件组件、路由、状态管理」。<b>关键点</b>：只这三项，不是整个应用规模化全章。"
+      },
+      { id:7, type:"single", chap:"TypeScript", points:3, q:"TypeScript「模块」这一章，资料要求只关注哪一部分？",
+        opts:[{k:"A",t:"全部内容都要学"},
+              {k:"B",t:"只关注「使用其它的 JavaScript 库」"},
+              {k:"C",t:"只关注模块的声明语法"},
+              {k:"D",t:"不需要学习"}],
+        answer:["B"], explain:"资料原文（TS 重点关注清单）：「模块（只关注『使用其它的 JavaScript 库』）」。<b>关键点</b>：模块章有范围限制，只看「使用其它的 JS 库」这一节。"
+      },
+      { id:8, type:"single", chap:"Vue3重点", points:3, q:"Vue3「进阶主题」需要学习的内容是？",
+        opts:[{k:"A",t:"五分钟上手、基础类型"},
+              {k:"B",t:"入门、基础、进阶"},
+              {k:"C",t:"渲染机制、渲染函数 & JSX"},
+              {k:"D",t:"单文件组件、路由、状态管理"}],
+        answer:["C"], explain:"资料原文（Vue3 重点章节）：进阶主题「渲染机制、渲染函数 & JSX」。<b>关键点</b>：就这两项。D 是应用规模化，B 是 Vue-Router 结构。"
+      },
+
+      // ---------- 二、多选 9-12 ----------
+      { id:9, type:"multi", chap:"Vue3重点", points:4, q:"下列哪些属于 Vue3 的重点学习章节？（多选）",
+        opts:[{k:"A",t:"基础（全部）"},
+              {k:"B",t:"深入组件（全部）"},
+              {k:"C",t:"应用规模化中的：单文件组件、路由、状态管理"},
+              {k:"D",t:"进阶主题：渲染机制、渲染函数 & JSX"},
+              {k:"E",t:"服务器端渲染（SSR）"}],
+        answer:["A","B","C","D"], explain:"资料原文（Vue3 重点章节）列出：基础（全部）、深入组件（全部）、应用规模化（单文件组件/路由/状态管理）、TypeScript（总览/TS 与组合式 API）、进阶主题（渲染机制/渲染函数 & JSX）。<b>E 资料未提及</b>，SSR 不在清单内。"
+      },
+      { id:10, type:"multi", chap:"TypeScript", points:4, q:"TypeScript 重点关注的内容包括下列哪些？（多选）",
+        opts:[{k:"A",t:"五分钟上手、JavaScript 迁移"},
+              {k:"B",t:"基础类型、接口、类、函数"},
+              {k:"C",t:"枚举、泛型、类型推论、高级类型"},
+              {k:"D",t:"声明合并"},
+              {k:"E",t:"装饰器、命名空间"}],
+        answer:["A","B","C","D"], explain:"资料原文（TS 重点关注）共 12 项：五分钟上手、JS 迁移、基础类型、接口、类、函数、枚举、泛型、类型推论、高级类型、模块（仅「使用其它的 JS 库」）、声明合并。<b>E 装饰器/命名空间资料未列</b>。"
+      },
+      { id:11, type:"multi", chap:"Vue-Router", points:4, q:"Vue-Router 的学习内容包含下列哪些？（多选）",
+        opts:[{k:"A",t:"入门"},{k:"B",t:"基础（全部）"},{k:"C",t:"进阶（全部）"},{k:"D",t:"状态管理"}],
+        answer:["A","B","C"], explain:"资料原文（Vue-Router 章节）：入门、基础（全部）、进阶（全部）。<b>D 状态管理属于 Vue3 应用规模化</b>，不是 Vue-Router。"
+      },
+      { id:12, type:"multi", chap:"Vue3重点", points:4, q:"关于 Vue3 重点章节的范围，下列说法正确的有？（多选）",
+        opts:[{k:"A",t:"TypeScript 章节需学「总览」和「TypeScript 与组合式 API」"},
+              {k:"B",t:"进阶主题包含「渲染机制」和「渲染函数 & JSX」"},
+              {k:"C",t:"应用规模化只需学单文件组件、路由、状态管理三项"},
+              {k:"D",t:"深入组件只需挑重点小节学习即可，不用全学"}],
+        answer:["A","B","C"], explain:"资料原文：TS 章节为「总览、TypeScript 与组合式 API」（A对）；进阶主题为「渲染机制、渲染函数 & JSX」（B对）；应用规模化仅「单文件组件、路由、状态管理」（C对）；深入组件明确标「（全部）」，<b>D 错</b>。"
+      },
+
+      // ---------- 三、判断 13-16 ----------
+      { id:13, type:"judge", chap:"Vue3规范", points:2, q:"为了开发灵活，我们可以在项目里混用「选项式 API」和「组合式 API」。",
+        answer:false, explain:"资料原文：「为保持风格统一，禁止使用『组合式』API」。<b>关键点</b>：禁止单独用、也禁止混用，必须统一用选项式。"
+      },
+      { id:14, type:"judge", chap:"学习路径", points:2, q:"资料要求的学习顺序是：JavaScript → Vue3 → Vue-Router → TypeScript。",
+        answer:true, explain:"资料原文（开篇）：「按照 JavaScript / Vue3 / Vue-Router / TS 的顺序学习」。顺序正确。"
+      },
+      { id:15, type:"judge", chap:"Vue3重点", points:2, q:"Vue3「基础」章节只需要挑选几个重点小节学习即可，不必全部学习。",
+        answer:false, explain:"资料原文：基础「（全部）」，需<b>全部学习</b>，不是挑重点。"
+      },
+      { id:16, type:"judge", chap:"TypeScript", points:2, q:"TypeScript「模块」章节需要完整学习全部内容。",
+        answer:false, explain:"资料原文：「模块（只关注『使用其它的 JavaScript 库』）」，<b>不是全部</b>，只看这一节。"
+      },
+
+      // ---------- 四、匹配 17 ----------
+      { id:17, type:"match", chap:"综合·学习路径", points:4, q:"把技术与它在学习资料中的地位/范围配对。",
+        left:[{k:"①",t:"JavaScript"},{k:"②",t:"Vue3"},{k:"③",t:"Vue-Router"},{k:"④",t:"TypeScript"}],
+        right:[{k:"A",t:"学习路径的第一步，基础入门"},
+               {k:"B",t:"强制使用「选项式 API」，禁止组合式"},
+               {k:"C",t:"学习内容为：入门、基础（全部）、进阶（全部）"},
+               {k:"D",t:"重点关注五分钟上手、基础类型、接口、泛型等 12 项"}],
+        answer:{"①":"A","②":"B","③":"C","④":"D"},
+        explain:"资料原文：①JavaScript 是学习顺序第一步（基础入门）；②Vue3 明确「选项式 API、禁组合式」；③Vue-Router 含入门/基础（全部）/进阶（全部）；④TypeScript 列了 12 个重点关注项（五分钟上手、JS迁移、基础类型、接口、类、函数、枚举、泛型、类型推论、高级类型、模块仅「使用其它的JS库」、声明合并）。"
+      },
+
+      // ---------- 五、简答 18-19 ----------
+      { id:18, type:"short", chap:"Vue3规范·重点", points:6, q:"资料明确「禁止使用组合式 API」。请回答：(1) 我们采用哪种 API？(2) 为什么禁止组合式 API？（用资料原话作答）",
+        ref:"【采用哪种 API】采用「选项式 API（Options API）」，不采用组合式。\n\n【为什么禁止组合式】资料原文：「为保持风格统一，禁止使用『组合式』API」。唯一原因是「保持风格统一」。\n\n采分点：答出「选项式 API」2 分；答出「为保持风格统一」4 分。"
+      },
+      { id:19, type:"short", chap:"学习路径·重点", points:6, q:"请按资料说明，列出一个月前端学习的四个阶段（顺序 + 各自范围要点）。",
+        ref:"资料原文：「按照 JavaScript / Vue3 / Vue-Router / TS 的顺序学习，学习周期一个月」。四阶段：\n\n① JavaScript：基础入门（学习顺序第一步）\n② Vue3：采用「选项式 API」；重点章节=基础（全部）+ 深入组件（全部）+ 应用规模化（单文件组件/路由/状态管理）+ TypeScript（总览/TS 与组合式 API）+ 进阶主题（渲染机制/渲染函数 & JSX）\n③ Vue-Router：入门、基础（全部）、进阶（全部）\n④ TypeScript：12 个重点关注项——五分钟上手、JavaScript 迁移、基础类型、接口、类、函数、枚举、泛型、类型推论、高级类型、模块（仅「使用其它的 JavaScript 库」）、声明合并\n\n采分点：四阶段顺序全对 2 分；各阶段范围要点齐全 4 分。"
+      }
+    ],
+    sections: [
+      { title:"一、单选题",   badge:"3分/题", ids:[1,2,3,4,5,6,7,8] },
+      { title:"二、多选题",   badge:"4分/题", ids:[9,10,11,12] },
+      { title:"三、判断题",   badge:"2分/题", ids:[13,14,15,16] },
+      { title:"四、匹配题",   badge:"4分/题", ids:[17] },
+      { title:"五、简答题",   badge:"6分/题", ids:[18,19] }
+    ]
+  }
+};
+
+/* current paper's question/section refs (reassigned on pick) */
+let currentPaper = null;
+let QUESTIONS = [];
+let SECTIONS = [];
+
+const TYPE_LABEL = {single:"单选",multi:"多选",judge:"判断",match:"匹配",short:"简答/综合"};
+
+/* state */
+let state = {}; // {id: userAnswer}
+let submitted = false;
+
+/* ============================================================
+   PAPER PICKER
+   ============================================================ */
+function renderPicker(){
+  const list = document.getElementById("paperList");
+  list.innerHTML = "";
+  Object.keys(PAPERS).forEach(key=>{
+    const p = PAPERS[key];
+    const card = document.createElement("div");
+    card.className = "paper-card";
+    card.innerHTML =
+      '<div class="p-icon">'+p.icon+'</div>'+
+      '<h3 class="p-title">'+p.title+'</h3>'+
+      '<div class="p-sub">'+p.sub+'</div>'+
+      '<div class="p-desc">'+p.desc+'</div>'+
+      '<div class="p-meta">'+p.meta+'</div>'+
+      '<div class="p-go">开始 →</div>';
+    card.addEventListener("click", ()=>startPaper(key));
+    list.appendChild(card);
+  });
+}
+
+function startPaper(key){
+  currentPaper = PAPERS[key];
+  QUESTIONS = currentPaper.questions;
+  SECTIONS = currentPaper.sections;
+
+  /* update hero / notice / progress denominator to current paper */
+  document.getElementById("heroTitle").textContent = currentPaper.title;
+  document.getElementById("heroSub").innerHTML = currentPaper.heroSub;
+  document.getElementById("noticeGrid").innerHTML = currentPaper.noticeHTML;
+  document.getElementById("noticeTip").innerHTML = currentPaper.noticeTip;
+  document.getElementById("progressTotal").textContent = QUESTIONS.length;
+  document.getElementById("finalScoreTotal").textContent = "总分 / "+currentPaper.fullScore;
+
+  /* swap views */
+  document.getElementById("paperPicker").style.display = "none";
+  document.getElementById("examArea").style.display = "block";
+
+  /* reset runtime state + UI */
+  state = {};
+  submitted = false;
+  document.getElementById("resultBanner").classList.remove("show");
+  document.getElementById("submitBtn").classList.remove("hidden");
+  document.getElementById("resetBtn").classList.add("hidden");
+  document.getElementById("submitHint").textContent = "交卷后将自动判分并显示解析，输入会被锁定。";
+
+  render();
+  updateProgress();
+  window.scrollTo({top:0});
+}
+
+function backToPicker(){
+  if(submitted || Object.keys(state).length>0){
+    if(!confirm("返回选卷将丢失当前作答,确定吗?")) return;
+  }
+  document.getElementById("examArea").style.display = "none";
+  document.getElementById("paperPicker").style.display = "block";
+  state = {};
+  submitted = false;
+  window.scrollTo({top:0});
+}
+
+/* ============================================================
+   RENDER  (engine — unchanged)
+   ============================================================ */
+function render(){
+  const root = document.getElementById("exam");
+  root.innerHTML = "";
+  SECTIONS.forEach(sec=>{
+    const sEl = document.createElement("div");
+    sEl.className = "section";
+    sEl.innerHTML = `<div class="section-title"><span class="badge">${sec.badge}</span>${sec.title}</div>`;
+    sec.ids.forEach(id=>{
+      const q = QUESTIONS.find(x=>x.id===id);
+      sEl.appendChild(renderQ(q));
+    });
+    root.appendChild(sEl);
+  });
+}
+
+function renderQ(q){
+  const el = document.createElement("div");
+  el.className = "q";
+  el.dataset.id = q.id;
+
+  const head = `
+    <div class="q-head">
+      <span class="q-num">${q.id}</span>
+      <span class="q-type">${TYPE_LABEL[q.type]}</span>
+      <span class="q-points">${q.points} 分</span>
+      <span class="q-chap">${q.chap}</span>
+      <span class="q-verdict correct-v">✓ 正确</span>
+      <span class="q-verdict wrong-v">✗ 错误</span>
+      <span class="q-verdict partial-v">▲ 部分对</span>
+    </div>`;
+
+  const stem = `<div class="q-stem">${formatStem(q.q)}</div>`;
+  let body = "";
+
+  if(q.type==="single" || q.type==="multi"){
+    body = `<div class="opts">` + q.opts.map(o=>`
+      <div class="opt ${q.type==='multi'?'multi':''}" data-q="${q.id}" data-k="${o.k}">
+        <span class="marker">${q.type==='multi'?'✓':o.k}</span>
+        <span>${o.k}. ${o.t}</span>
+      </div>`).join("") + `</div>`;
+  }
+  else if(q.type==="judge"){
+    body = `<div class="tf">
+      <button class="tf-btn" data-q="${q.id}" data-v="true">✓ 正确</button>
+      <button class="tf-btn" data-q="${q.id}" data-v="false">✗ 错误</button>
+    </div>`;
+  }
+  else if(q.type==="match"){
+    const optsHTML = q.right.map(r=>`<span><b>${r.k}.</b> ${r.t}</span>`).join(" &nbsp;&nbsp; ");
+    body = `<div class="match-options">选项：${optsHTML}</div>
+    <div class="match-list">` + q.left.map(l=>`
+      <div class="match-row" data-q="${q.id}" data-left="${l.k}">
+        <span class="match-left">${l.k}</span>
+        <span class="match-text">${l.t}</span>
+        <select class="match-select" data-q="${q.id}" data-left="${l.k}">
+          <option value="">选择 →</option>
+          ${q.right.map(r=>`<option value="${r.k}">${r.k}. ${r.t.length>14?r.t.slice(0,12)+"…":r.t}</option>`).join("")}
+        </select>
+      </div>`).join("") + `</div>`;
+  }
+  else if(q.type==="short"){
+    body = `<textarea class="ta" data-q="${q.id}" placeholder="请在此输入你的答案…（判分后请展开「参考答案」对照自评）"></textarea>
+    <div style="margin-top:10px">
+      <button class="ref-toggle" data-q="${q.id}">📖 查看参考答案</button>
+    </div>
+    <div class="ref-box" id="ref-${q.id}">
+      <span class="ans-label">参考答案</span>
+      ${q.ref}
+    </div>
+    <div class="self-eval" id="se-${q.id}" style="display:none">
+      <span>自评：</span>
+      <button class="se-btn yes" data-q="${q.id}" data-se="yes">✓ 我答对了（${q.points}分）</button>
+      <button class="se-btn no" data-q="${q.id}" data-se="no">✗ 部分对/没答对（0分）</button>
+      <span class="self-pts" id="pts-${q.id}"></span>
+    </div>`;
+  }
+
+  const explain = q.type!=="short"
+    ? `<div class="explain"><span class="ex-label">解析：</span>${q.explain}<br><span class="ex-label">正确答案：</span><span class="ans">${formatAnswer(q)}</span></div>`
+    : "";
+
+  el.innerHTML = head + stem + body + explain;
+  return el;
+}
+
+function formatStem(s){ return s.replace(/\n/g,"<br>"); }
+function formatAnswer(q){
+  if(q.type==="single"||q.type==="multi") return q.answer.join("、");
+  if(q.type==="judge") return q.answer ? "✓ 正确" : "✗ 错误";
+  if(q.type==="match") return Object.entries(q.answer).map(([k,v])=>`${k}-${v}`).join("　");
+  return "";
+}
+
+/* ============================================================
+   INTERACTION  (engine — unchanged, document-level delegation)
+   ============================================================ */
+function bind(){
+  document.addEventListener("click", e=>{
+    const t = e.target.closest("[data-q]");
+    if(t && !submitted){
+      const qid = +t.dataset.q;
+      const q = QUESTIONS.find(x=>x.id===qid);
+
+      if(t.classList.contains("opt")){
+        toggleOpt(q, t);
+      } else if(t.classList.contains("tf-btn")){
+        pickJudge(q, t);
+      } else if(t.classList.contains("ref-toggle")){
+        document.getElementById("ref-"+qid).classList.toggle("open");
+      } else if(t.classList.contains("se-btn")){
+        pickSelfEval(q, t);
+      }
+    }
+  });
+
+  document.addEventListener("change", e=>{
+    if(submitted) return;
+    const sel = e.target.closest(".match-select");
+    if(sel){
+      const qid = +sel.dataset.q;
+      const q = QUESTIONS.find(x=>x.id===qid);
+      if(!state[qid]) state[qid] = {};
+      state[qid][sel.dataset.left] = sel.value;
+      updateProgress();
+    }
+  });
+
+  document.getElementById("submitBtn").addEventListener("click", submit);
+  document.getElementById("resetBtn").addEventListener("click", reset);
+  document.getElementById("backToPicker").addEventListener("click", backToPicker);
+}
+
+function toggleOpt(q, el){
+  const k = el.dataset.k;
+  if(q.type==="single"){
+    state[q.id] = [k];
+    // visual
+    el.parentElement.querySelectorAll(".opt").forEach(o=>o.classList.remove("selected"));
+    el.classList.add("selected");
+  } else { // multi
+    if(!state[q.id]) state[q.id] = [];
+    const idx = state[q.id].indexOf(k);
+    if(idx>=0){ state[q.id].splice(idx,1); el.classList.remove("selected"); el.querySelector(".marker").textContent=""; }
+    else { state[q.id].push(k); el.classList.add("selected"); el.querySelector(".marker").textContent="✓"; }
+    state[q.id].sort();
+  }
+  updateProgress();
+}
+
+function pickJudge(q, el){
+  const v = el.dataset.v === "true";
+  state[q.id] = v;
+  el.parentElement.querySelectorAll(".tf-btn").forEach(b=>b.classList.remove("selected"));
+  el.classList.add("selected");
+  updateProgress();
+}
+
+function pickSelfEval(q, el){
+  const se = el.dataset.se; // yes / no
+  state[q.id] = (se==="yes") ? q.points : 0;
+  const wrap = document.getElementById("se-"+q.id);
+  wrap.querySelectorAll(".se-btn").forEach(b=>b.classList.remove("active"));
+  el.classList.add("active");
+  document.getElementById("pts-"+q.id).textContent = se==="yes" ? `已计入 ${q.points} 分` : "计 0 分";
+  if(submitted){ refreshResult(); }
+}
+
+function updateProgress(){
+  if(submitted) return;
+  let answered = 0;
+  QUESTIONS.forEach(q=>{
+    const a = state[q.id];
+    if(a===undefined) return;
+    if(q.type==="multi" && Array.isArray(a) && a.length>0) answered++;
+    else if(q.type==="single" && Array.isArray(a) && a.length>0) answered++;
+    else if(q.type==="judge" && typeof a==="boolean") answered++;
+    else if(q.type==="match" && typeof a==="object" && Object.keys(a).length===q.left.length) answered++;
+    else if(q.type==="short" && (typeof a==="number")) answered++;
+  });
+  const total = QUESTIONS.length || 1;
+  document.getElementById("answeredCount").textContent = answered;
+  document.getElementById("progressFill").style.width = (answered/total*100)+"%";
+}
+
+/* ============================================================
+   SCORING  (engine — unchanged)
+   ============================================================ */
+function scoreQ(q){
+  /* returns {pts, status:"correct"|"wrong"|"partial", got:N} */
+  const a = state[q.id];
+
+  if(q.type==="single"){
+    const got = Array.isArray(a) && a.length && a[0]===q.answer[0] ? q.points : 0;
+    return {pts:got, status: got>0?"correct":"wrong", got};
+  }
+  if(q.type==="multi"){
+    if(!Array.isArray(a) || a.length===0) return {pts:0, status:"wrong", got:0};
+    const correct = q.answer;
+    const allRight = a.every(x=>correct.includes(x)) && a.length===correct.length;
+    const hasWrong = a.some(x=>!correct.includes(x));
+    if(allRight) return {pts:q.points, status:"correct", got:q.points};
+    if(hasWrong) return {pts:0, status:"wrong", got:0};
+    // partial: only some correct, none wrong
+    return {pts:1, status:"partial", got:1};
+  }
+  if(q.type==="judge"){
+    const got = (a===q.answer) ? q.points : 0;
+    return {pts:got, status: got>0?"correct":"wrong", got};
+  }
+  if(q.type==="match"){
+    if(!a || typeof a!=="object") return {pts:0, status:"wrong", got:0};
+    let rightCount = 0;
+    q.left.forEach(l=>{ if(a[l.k]===q.answer[l.k]) rightCount++; });
+    const got = rightCount===q.left.length ? q.points : 0;
+    return {pts:got, status: got>0?"correct":"wrong", got, rightCount, total:q.left.length};
+  }
+  if(q.type==="short"){
+    const got = (typeof a==="number") ? a : 0;
+    return {pts:got, status:"self", got};
+  }
+  return {pts:0,status:"wrong",got:0};
+}
+
+function applyVerdict(){
+  let totalAuto = 0; // single+multi+judge+match
+  let totalShort = 0;
+  let shortCount = 0;
+
+  QUESTIONS.forEach(q=>{
+    const r = scoreQ(q);
+    const card = document.querySelector(`.q[data-id="${q.id}"]`);
+    card.classList.add("locked","show-explain");
+
+    if(q.type==="single" || q.type==="multi"){
+      q.opts.forEach(o=>{
+        const optEl = card.querySelector(`.opt[data-k="${o.k}"]`);
+        if(q.answer.includes(o.k)) optEl.classList.add("is-answer");
+        if(optEl.classList.contains("selected") && !q.answer.includes(o.k)) optEl.classList.add("bad-pick");
+      });
+      card.classList.add(r.status);
+      addPtsLine(card, r, q);
+      totalAuto += r.got;
+    }
+    else if(q.type==="judge"){
+      card.querySelectorAll(".tf-btn").forEach(b=>{
+        const v = b.dataset.v==="true";
+        if(v===q.answer) b.classList.add("is-answer");
+        if(b.classList.contains("selected") && v!==q.answer) b.classList.add("bad-pick");
+      });
+      card.classList.add(r.status);
+      addPtsLine(card, r, q);
+      totalAuto += r.got;
+    }
+    else if(q.type==="match"){
+      let rowHtml = "";
+      q.left.forEach(l=>{
+        const sel = card.querySelector(`.match-select[data-left="${l.k}"]`);
+        sel.disabled = true;
+        const rowEl = card.querySelector(`.match-row[data-left="${l.k}"]`);
+        const userV = state[q.id] && state[q.id][l.k];
+        if(userV===q.answer[l.k]){ rowEl.classList.add("correct-row"); }
+        else {
+          rowEl.classList.add("wrong-row");
+          // append correct letter
+          const hint = document.createElement("span");
+          hint.style.cssText="font-size:12px;color:var(--ok);font-weight:700;margin-left:4px";
+          hint.textContent = `→ 正确:${q.answer[l.k]}`;
+          rowEl.appendChild(hint);
+        }
+      });
+      card.classList.add(r.status);
+      addPtsLine(card, r, q);
+      totalAuto += r.got;
+    }
+    else if(q.type==="short"){
+      // disable textarea, show self-eval
+      const ta = card.querySelector(".ta");
+      ta.disabled = true;
+      document.getElementById("se-"+q.id).style.display="flex";
+      totalShort += r.got;
+      shortCount++;
+      const ptsEl = document.getElementById("pts-"+q.id);
+      ptsEl.textContent = r.got>0 ? `已计入 ${r.got} 分` : "计 0 分（请自评）";
+    }
+  });
+
+  return {totalAuto, totalShort};
+}
+
+function addPtsLine(card, r, q){
+  const div = document.createElement("div");
+  if(r.status==="partial"){
+    div.className="pts-line"; div.style.color="#C98A1E";
+    div.innerHTML = `▲ 漏选得 <b>1 分</b> / 满分 ${q.points}`;
+  } else if(r.got>0){
+    div.className="pts-line gain";
+    div.innerHTML = `✓ 得 <b>${r.got}</b> 分 / 满分 ${q.points}`;
+  } else {
+    div.className="pts-line zero";
+    div.innerHTML = `✗ 得 <b>0</b> 分 / 满分 ${q.points}` + (r.total?`（匹配对 ${r.rightCount}/${r.total}）`:"");
+  }
+  card.querySelector(".explain").appendChild(div);
+}
+
+function comment(score){
+  const pct = currentPaper ? score/currentPaper.fullScore : score/64;
+  if(pct>=0.9) return "🏆 优秀！前端学习路径与规范掌握扎实。";
+  if(pct>=0.75) return "👍 不错，重点章节范围再核对下细节。";
+  if(pct>=0.6) return "💪 刚过及格线，建议重做错题、回看前端资料对应部分。";
+  return "⚠️ 需要重点复习，尤其是 Vue3 选项式 API 规范与各技术重点章节范围。";
+}
+
+function refreshResult(){
+  let totalAuto=0, totalShort=0;
+  QUESTIONS.forEach(q=>{
+    const r = scoreQ(q);
+    if(q.type==="short") totalShort += r.got; else totalAuto += r.got;
+  });
+  const total = totalAuto + totalShort;
+  document.getElementById("finalScore").textContent = total;
+  document.getElementById("finalComment").textContent = comment(total);
+  document.getElementById("finalDetail").textContent =
+    `客观题（单选/多选/判断/匹配）${totalAuto} 分 · 主观自评（简答）${totalShort} 分`;
+}
+
+function submit(){
+  // pre-flight: warn if too few answered
+  const objective = QUESTIONS.filter(q=>q.type!=="short");
+  const unanswered = objective.filter(q=> state[q.id]===undefined ||
+    (q.type==="multi" && (!Array.isArray(state[q.id])||state[q.id].length===0)) ||
+    (q.type==="match" && (!state[q.id] || Object.keys(state[q.id]).length<q.left.length)) ).length;
+  if(unanswered>0){
+    if(!confirm(`还有 ${unanswered} 道客观题未作答，确定要交卷吗？`)) return;
+  }
+  submitted = true;
+  applyVerdict();
+  refreshResult();
+  document.getElementById("resultBanner").classList.add("show");
+  document.getElementById("submitBtn").classList.add("hidden");
+  document.getElementById("resetBtn").classList.remove("hidden");
+  document.getElementById("submitHint").textContent = "已交卷。点击「重新考试」可重置全部作答。";
+  // scroll to top to see result
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+function reset(){
+  if(!confirm("确定要重新考试吗？所有作答和判分将被清空。")) return;
+  state = {}; submitted = false;
+  render();
+  document.getElementById("resultBanner").classList.remove("show");
+  document.getElementById("submitBtn").classList.remove("hidden");
+  document.getElementById("resetBtn").classList.add("hidden");
+  document.getElementById("submitHint").textContent = "交卷后将自动判分并显示解析，输入会被锁定。";
+  document.getElementById("answeredCount").textContent = "0";
+  document.getElementById("progressFill").style.width = "0%";
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+/* boot: render picker (kept), then auto-start the single paper for a clean exam experience */
+renderPicker();
+bind();
+startPaper("A");
+</script>
+</body>
+</html>

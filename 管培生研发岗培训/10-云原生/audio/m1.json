@@ -1,0 +1,42 @@
+[
+  {
+    "start": 0.1,
+    "end": 2.95,
+    "text": "这一章聊云原生基础运维。"
+  },
+  {
+    "start": 2.9,
+    "end": 11.95,
+    "text": "作为 Java 后端，你写的服务最终要部署成 Pod 跑在 K8s 上，这一章带你理解部署背后的基础设施。"
+  },
+  {
+    "start": 11.95,
+    "end": 14.65,
+    "text": "学完你应该能做到五件事。"
+  },
+  {
+    "start": 14.65,
+    "end": 27.48,
+    "text": "第一，区分虚拟机和容器，容器共享宿主机内核、毫秒级启动、MB 级资源，虚拟机各自独立 OS、分钟级启动、GB 级资源。"
+  },
+  {
+    "start": 27.48,
+    "end": 39.35,
+    "text": "第二，背出 K8s 集群双层结构，Master Node 是控制平面负责调度和维护期望状态，Worker Node 运行 Pod 和容器并汇报状态。"
+  },
+  {
+    "start": 39.35,
+    "end": 52.91,
+    "text": "第三，记住公司命名空间划分，系统命名空间比如 kube-system 和 monitoring，业务命名空间比如 wshoto 和 wshoto-gray，工具命名空间是 tools。"
+  },
+  {
+    "start": 52.91,
+    "end": 68.62,
+    "text": "第四，分清 Pod、Deployment、Service、Ingress 的职责，Pod 是最小部署单元，Deployment 管无状态应用副本和滚动更新，Service 给 Pod 稳定入口，Ingress 做七层域名路由。"
+  },
+  {
+    "start": 68.62,
+    "end": 81.41,
+    "text": "第五，把 K8s 和框架泳道对应起来，生产命名空间 wshoto 的实例 laneId 是 MASTER，灰度命名空间 wshoto-gray 的实例 laneId 是 GRAY。"
+  }
+]

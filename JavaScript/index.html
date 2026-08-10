@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JavaScript · 学习地图合集</title>
+<style>
+:root{
+  --cream:#FAF6EB;--paper:#F3EDDD;--forest:#1E3A24;--sky:#BCD8EE;
+  --sage:#AFCDA8;--ink:#1A2018;--marker:#F5E08A;--brick:#B5482A;
+  --js:#F7DF1E;--js-deep:#C9B400;
+  --font-display:"Archivo Black","Noto Sans SC","PingFang SC",sans-serif;
+  --font-head:"Poppins","Noto Sans SC","PingFang SC",sans-serif;
+  --font-body:-apple-system,"PingFang SC","Noto Sans SC",sans-serif;
+  --font-mono:"SF Mono",ui-monospace,"Menlo","Consolas",monospace;
+  --radius:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:var(--font-body);background:var(--cream);color:var(--ink);
+  line-height:1.7;min-height:100vh;
+}
+a{color:var(--brick);text-decoration:underline;}
+a:hover{color:var(--js-deep);}
+
+.hero{
+  background:linear-gradient(135deg,var(--forest) 0%,#264a2e 100%);color:#EAF3E6;
+  padding:48px 24px 40px;text-align:center;
+}
+.hero .badge{
+  display:inline-block;background:#FFF9D0;color:#6a5a00;
+  font-size:.72rem;font-weight:700;padding:4px 12px;border-radius:999px;
+  letter-spacing:1px;margin-bottom:12px;border:1.5px solid var(--js);
+}
+.hero h1{font-family:var(--font-display);font-size:2rem;color:#fff;letter-spacing:.5px;margin-bottom:8px;}
+.hero p{color:#CFE3C7;font-size:.95rem;max-width:560px;margin:0 auto;}
+.hero .stat{font-family:monospace;color:var(--js);}
+
+.wrap{max-width:840px;margin:0 auto;padding:36px 24px 60px;}
+
+.sec-head{
+  font-family:var(--font-head);font-size:1.3rem;color:var(--forest);
+  margin:36px 0 6px;display:flex;align-items:center;gap:8px;
+}
+.sec-head .ico{font-size:1.2rem;}
+.sec-sub{color:#7A6E54;font-size:.88rem;margin-bottom:20px;}
+
+.q{
+  background:#fff;border:1px solid #E6DCC2;border-radius:var(--radius);
+  margin-bottom:22px;overflow:hidden;border-left:5px solid var(--js-deep);
+  transition:box-shadow .18s;
+}
+.q:hover{box-shadow:0 6px 18px rgba(30,58,36,.1);}
+.q-head{
+  padding:18px 22px 14px;background:var(--paper);
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  border-bottom:1px solid #E6DCC2;
+}
+.q-num{
+  font-family:var(--font-display);font-size:.82rem;color:#1a1a1a;
+  background:var(--js);min-width:52px;height:44px;padding:0 10px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:900;
+}
+.q-title{font-family:var(--font-head);font-size:1.15rem;color:var(--forest);font-weight:700;}
+.q-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;}
+.q-tags span{
+  font-size:.7rem;font-family:monospace;background:#FFF9D0;color:#6a5a00;
+  padding:2px 8px;border-radius:999px;
+}
+.q-link{
+  margin-left:auto;font-size:.78rem;font-family:monospace;
+  background:var(--sage);color:#23451F;padding:3px 10px;border-radius:999px;font-weight:600;text-decoration:none;
+}
+.q-body{padding:20px 24px 24px;}
+.q-body h4{
+  font-family:var(--font-head);font-size:.95rem;color:var(--js-deep);
+  margin:18px 0 8px;padding-bottom:4px;border-bottom:1.5px dashed #F0E8A0;
+}
+.q-body h4:first-child{margin-top:0;}
+.q-body p{font-size:.9rem;color:#3a342a;margin-bottom:8px;}
+.q-body ul,.q-body ol{margin:0 0 10px 22px;font-size:.88rem;color:#3a342a;}
+.q-body li{margin-bottom:4px;}
+.q-body strong{color:var(--forest);}
+
+pre{
+  background:#1E2820;color:#D4E8D0;border-radius:10px;padding:16px 18px;
+  overflow-x:auto;font-family:var(--font-mono);font-size:.82rem;line-height:1.6;
+  margin:10px 0;border:1px solid #2a3a2e;
+}
+pre code{background:none;padding:0;color:inherit;}
+code{
+  background:var(--paper);padding:2px 6px;border-radius:4px;
+  font-family:var(--font-mono);font-size:.82rem;color:var(--brick);
+}
+pre .c{color:#7a9a7a;}
+
+.pit{
+  background:#FFF3E0;border:1.5px solid #F0C674;border-radius:10px;
+  padding:12px 16px;font-size:.86rem;color:#6a4a00;margin:10px 0;
+}
+.pit b{color:var(--brick);}
+.pit ul{margin:6px 0 0 18px;}
+
+.gain{
+  background:#EEF3E8;border-left:4px solid var(--sage);border-radius:10px;
+  padding:12px 16px;font-size:.86rem;color:#3a4a34;margin:10px 0;
+}
+.gain b{color:#2F7D46;}
+.gain ul{margin:6px 0 0 18px;}
+
+.back{
+  display:inline-flex;align-items:center;gap:5px;
+  color:var(--forest);font-weight:600;font-size:.9rem;text-decoration:none;
+  margin-bottom:24px;padding:8px 16px;background:var(--paper);border-radius:999px;
+  border:1.5px solid var(--sage);transition:.18s;
+}
+.back:hover{background:var(--sage);color:#fff;}
+
+footer{
+  text-align:center;padding:26px 24px 36px;font-size:.82rem;color:#7A6E54;
+}
+footer a{color:var(--brick);text-decoration:underline;font-weight:700;}
+
+@media(max-width:680px){
+  .hero h1{font-size:1.5rem;}
+  .q-num{width:44px;height:38px;font-size:.88rem;}
+  .q-title{font-size:1rem;}
+  pre{font-size:.76rem;}
+}
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <span class="badge">🟡 前端语言</span>
+  <h1>JavaScript · 刷题学习地图</h1>
+  <p>用 JavaScript 刷 LeetCode，积累语言特性和算法模板。前端主力语言，也是切 Java 时的对照基准。<br>
+  已刷 <span class="stat" id="cnt">…</span> 题，持续更新中。</p>
+</section>
+
+<div class="wrap">
+  <a class="back" href="../index.html">← 返回计算机知识</a>
+
+  <div class="sec-head"><span class="ico">💡</span> 学这门语言的方式</div>
+  <p class="sec-sub">JS 的坑多在「类型」和「隐式转换」，刷题时把每个踩过的类型陷阱记下来。</p>
+  <div class="gain">
+    <b>三个最容易踩的类型陷阱：</b>
+    <ul>
+      <li><code>number</code> 没有 <code>.length</code>，也不能下标访问——要操作位数先 <code>String(x)</code></li>
+      <li><code>String(x)</code> 返回<u>新字符串</u>，不修改原变量：<code>let y = String(x)</code></li>
+      <li>字符串下标从 <code>0</code> 开始，右指针初始化是 <code>length - 1</code> 不是 <code>length</code></li>
+    </ul>
+  </div>
+
+  <div class="sec-head"><span class="ico">📝</span> 刷题笔记</div>
+  <p class="sec-sub">每题独立成卡，含思路、踩坑和可复用模板。</p>
+
+  <!-- ===== LeetCode 9 ===== -->
+  <div class="q">
+    <div class="q-head">
+      <div class="q-num">9</div>
+      <div>
+        <div class="q-title">回文数</div>
+        <div class="q-tags"><span>双指针</span><span>回文</span><span>类型转换</span><span>JS类型</span><span>简单</span></div>
+      </div>
+      <a class="q-link" href="https://leetcode.cn/problems/palindrome-number/solutions/4009744/javascript-chang-shi-by-lao-yu-bu-chi-yu-hee6/" target="_blank" rel="noopener">我的题解 →</a>
+    </div>
+    <div class="q-body">
+      <h4>① 题目理解</h4>
+      <p>判断整数 x 是否为回文（正序倒序相同）。负数一定不是（<code>-121</code> 倒过来 <code>121-</code>）。</p>
+
+      <h4>② 思路：转字符串 + 双指针</h4>
+      <p>数字不好直接比两端，转成字符串后用左右指针向中间扫，不等就 false。</p>
+
+      <h4>③ 踩坑</h4>
+      <div class="pit">
+        <b>JavaScript 类型陷阱：</b>
+        <ul>
+          <li><code>number</code> 没有 <code>.length</code> → 先 <code>String(x)</code></li>
+          <li><code>String(x)</code> 返回新字符串，不修改变量：<code>let y = String(x)</code></li>
+          <li>右指针是 <code>length - 1</code> 不是 <code>length</code></li>
+        </ul>
+      </div>
+
+      <h4>④ 代码</h4>
+<pre><code>var isPalindrome = function(x) {
+    if (x &lt; 0) return false;
+    let y = String(x);
+    let left = 0, right = y.length - 1;
+    while (left &lt; right) {
+        if (y[left] != y[right]) return false;
+        left++;
+        right--;
+    }
+    return true;
+};</code></pre>
+
+      <h4>⑤ 收获 · 双指针模板</h4>
+      <div class="gain">
+        <b>回文 / 对称 / 两端比较，都用这个模板：</b>
+<pre style="margin-top:8px;background:#1a241a;"><code>let left = 0, right = arr.length - 1;
+while (left &lt; right) {
+    if (arr[left] != arr[right]) return false;
+    left++; right--;
+}</code></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== LCR 140 ===== -->
+  <div class="q">
+    <div class="q-head">
+      <div class="q-num">LCR 140</div>
+      <div>
+        <div class="q-title">链表中倒数第 k 个节点（训练计划 II · 剑指 Offer 22）</div>
+        <div class="q-tags"><span>链表</span><span>快慢指针</span><span>双指针</span><span>简单</span></div>
+      </div>
+      <a class="q-link" href="https://leetcode.cn/problems/lian-biao-zhong-dao-shu-di-kge-jie-dian-lcof/solutions/4007054/di-yi-ci-chang-shi-js-by-lao-yu-bu-chi-y-6jpz/" target="_blank" rel="noopener">我的题解 →</a>
+    </div>
+    <div class="q-body">
+      <h4>① 题目理解</h4>
+      <p>给定单链表 head 和整数 k，返回链表中倒数第 k 个节点。</p>
+
+      <h4>② 思路：快慢指针</h4>
+      <ul>
+        <li>让 <code>fast</code> 先走 k 步</li>
+        <li>然后 <code>fast</code> 和 <code>slow</code> 一起走，<code>fast</code> 到末尾时，<code>slow</code> 正好在倒数第 k 个</li>
+        <li>一次遍历搞定，时间 O(n)，空间 O(1)</li>
+      </ul>
+
+      <h4>③ 关键点</h4>
+      <div class="pit">
+        <b>链表题的通用套路：</b>
+        <ul>
+          <li>「倒数第 k 个」= 快慢指针，快指针先走 k 步</li>
+          <li>注意边界：k 大于链表长度时 fast 会先变 null</li>
+          <li>JS 里链表就是对象：<code>{val, next}</code>，判空用 <code>!== null</code></li>
+        </ul>
+      </div>
+
+      <h4>④ 收获 · 快慢指针模板</h4>
+      <div class="gain">
+        <b>链表倒数 / 中点 / 环检测，都靠快慢指针：</b>
+        <ul>
+          <li>倒数第 k 个：fast 先走 k 步</li>
+          <li>找中点：fast 走 2 步、slow 走 1 步</li>
+          <li>判环：fast 走 2 步、slow 走 1 步，相遇即有环</li>
+        </ul>
+      </div>
+      <p style="font-size:.82rem;color:#7A6E54;margin-top:8px;">📎 完整代码见我的 <a href="https://leetcode.cn/problems/lian-biao-zhong-dao-shu-di-kge-jie-dian-lcof/solutions/4007054/di-yi-ci-chang-shi-js-by-lao-yu-bu-chi-y-6jpz/" target="_blank" rel="noopener">LeetCode 题解</a></p>
+    </div>
+  </div>
+
+  <div class="sec-head"><span class="ico">🚀</span> 接下来</div>
+  <p class="sec-sub">基于双指针 + 快慢指针基础，继续推进。</p>
+  <div class="gain" style="background:var(--paper);border-left-color:var(--js-deep);">
+    <b>规划中的下一组：</b>
+    <ul>
+      <li><code>125. 验证回文串</code> — 双指针 + 字符过滤</li>
+      <li><code>344. 反转字符串</code> — 双指针经典</li>
+      <li><code>141/142. 环形链表</code> — 快慢指针判环</li>
+      <li>继续积累 JS 类型转换、数组/字符串 API</li>
+    </ul>
+  </div>
+
+</div>
+
+<footer>
+  JavaScript 刷题学习地图 · 每题一卡，长期积累<br>
+  由 <a href="https://lyzbcy.github.io/" target="_blank" rel="noopener">捞鱼</a> 制作
+</footer>
+
+<script>
+(function(){
+  var cnt = document.getElementById('cnt');
+  if(cnt) cnt.textContent = document.querySelectorAll('.q').length;
+})();
+</script>
+
+</body>
+</html>

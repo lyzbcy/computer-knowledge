@@ -105,7 +105,7 @@ footer a{color:#1d70b8;text-decoration:underline;font-weight:700;}
     <a class="card" href="Vue3/index.html">
       <div class="thumb">💚</div>
       <div class="body">
-        <span class="tag">已上线</span>
+        <span class="tag">前端语言</span>
         <h3>Vue3 · 前端框架</h3>
         <p>响应老田企微前端需求，强制选项式 API。第一章：Vue3 入门起手式，含两大核心功能、模板语法与 8 道互动关卡。</p>
         <div class="go">进入学习地图 →</div>
@@ -116,7 +116,7 @@ footer a{color:#1d70b8;text-decoration:underline;font-weight:700;}
     <a class="card" href="企微前端能力/index.html">
       <div class="thumb">📱</div>
       <div class="body">
-        <span class="tag">已上线</span>
+        <span class="tag">前端能力</span>
         <h3>企微 JSAPI · 前端能力</h3>
         <p>选人、转发、分享、定位、扫码、界面能力五大类通用 JSAPI。与 Vue3 第五章互补，含 8 道互动关卡。</p>
         <div class="go">进入学习地图 →</div>
@@ -130,6 +130,28 @@ footer a{color:#1d70b8;text-decoration:underline;font-weight:700;}
         <span class="tag">已上线</span>
         <h3>Python 3.12 · 基础</h3>
         <p>响应老田要求学 Python。基于官方教程，含入门/控制流/数据结构/异常 4 章，每章 8 道互动关卡。</p>
+        <div class="go">进入学习地图 →</div>
+      </div>
+    </a>
+
+    <!-- Java（已上线） -->
+    <a class="card" href="Java/index.html">
+      <div class="thumb">☕</div>
+      <div class="body">
+        <span class="tag">后端语言</span>
+        <h3>Java · 刷题学习地图</h3>
+        <p>从 JavaScript 思维迁移到 Java，在 LeetCode 里逐题积累语言差异和算法模板。已含 771 宝石与石头、9 回文数。</p>
+        <div class="go">进入学习地图 →</div>
+      </div>
+    </a>
+
+    <!-- JavaScript（已上线） -->
+    <a class="card" href="JavaScript/index.html">
+      <div class="thumb">🟡</div>
+      <div class="body">
+        <span class="tag">前端语言</span>
+        <h3>JavaScript · 刷题学习地图</h3>
+        <p>用 JavaScript 刷 LeetCode，积累语言特性和算法模板。前端主力语言，也是切 Java 时的对照基准。含 9 回文数、140 链表倒数第k节点。</p>
         <div class="go">进入学习地图 →</div>
       </div>
     </a>
@@ -196,7 +218,7 @@ document.getElementById('cnt').textContent =
 <script>
 // 版本检测：内联版本号 vs version.json，不一致就刷新（解决CDN缓存旧HTML）
 (function(){
-  var PAGE_V = 4;
+  var PAGE_V = 5;
   fetch("version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.json();}).then(function(d){
     if(PAGE_V!==d.v){
       var last=0; try{last=parseInt(sessionStorage.getItem("ck_refreshed")||"0");}catch(e){}

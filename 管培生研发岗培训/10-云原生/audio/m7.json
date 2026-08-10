@@ -1,0 +1,67 @@
+[
+  {
+    "start": 0.1,
+    "end": 1.94,
+    "text": "做几道思考题。"
+  },
+  {
+    "start": 1.89,
+    "end": 7.36,
+    "text": "同事说容器和虚拟机都是虚拟化差不多，本质差异是什么？"
+  },
+  {
+    "start": 7.36,
+    "end": 15.26,
+    "text": "虚拟机是硬件虚拟化每个有独立 OS，容器是操作系统虚拟化共享宿主机内核。"
+  },
+  {
+    "start": 15.26,
+    "end": 20.85,
+    "text": "新版本要灰度发布接收定向流量，部署到哪个命名空间？"
+  },
+  {
+    "start": 20.85,
+    "end": 24.83,
+    "text": "部署到 wshoto-gray，实例 laneId 是 GRAY。"
+  },
+  {
+    "start": 24.82,
+    "end": 27.9,
+    "text": "Java 微服务该用哪种控制器？"
+  },
+  {
+    "start": 27.9,
+    "end": 33.26,
+    "text": "Deployment，因为它管无状态应用支持滚动更新和回滚。"
+  },
+  {
+    "start": 33.26,
+    "end": 36.86,
+    "text": "集群内部 Feign 调用用哪种 Service？"
+  },
+  {
+    "start": 36.86,
+    "end": 40.42,
+    "text": "ClusterIP，默认做集群内部访问。"
+  },
+  {
+    "start": 40.42,
+    "end": 45.22,
+    "text": "Pod 必然按 Pending 到 Running 到 Succeeded 线性流转吗？"
+  },
+  {
+    "start": 45.23,
+    "end": 49.09,
+    "text": "错，phase 是高层概括不是固定流转。"
+  },
+  {
+    "start": 49.09,
+    "end": 54.3,
+    "text": "数据库密码和 TLS 证书用 ConfigMap 还是 Secret？"
+  },
+  {
+    "start": 54.3,
+    "end": 56.05,
+    "text": "都用 Secret。"
+  }
+]

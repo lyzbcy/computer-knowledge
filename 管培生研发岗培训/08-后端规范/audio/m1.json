@@ -1,0 +1,47 @@
+[
+  {
+    "start": 0.1,
+    "end": 3.43,
+    "text": "这一章咱们来聊后端开发规范。"
+  },
+  {
+    "start": 3.38,
+    "end": 10.22,
+    "text": "这份规范是公司内部新增代码必须遵守的硬约束，存量代码逐步治理。"
+  },
+  {
+    "start": 10.22,
+    "end": 12.93,
+    "text": "学完你应该能做到五件事。"
+  },
+  {
+    "start": 12.93,
+    "end": 22.12,
+    "text": "第一，分清 MUST、MUST NOT 和 SHOULD 三个约束等级，知道鉴权、租户隔离、注入防护属于红线。"
+  },
+  {
+    "start": 22.12,
+    "end": 34.56,
+    "text": "第二，背出技术基线，Java 17、Spring Boot、Spring Cloud、Nacos、OpenFeign、MyBatis-Plus、PostgreSQL、Redis、RocketMQ。"
+  },
+  {
+    "start": 34.56,
+    "end": 47.36,
+    "text": "第三，说清楚分层职责，Controller 只做协议入口和调用 Service，Repository 集中数据访问，每一层用自己的对象，相邻层用 Converter 转换。"
+  },
+  {
+    "start": 47.36,
+    "end": 55.79,
+    "text": "第四，记住 Feign 契约只能扩展不能破坏性修改，废弃要标 @Deprecated 加 Javadoc。"
+  },
+  {
+    "start": 55.79,
+    "end": 66.39,
+    "text": "第五，掌握租户隔离三件套，所有租户表数据访问必带 wsTenantId，而且必须来自服务端可信上下文。"
+  },
+  {
+    "start": 66.39,
+    "end": 72.16,
+    "text": "记住一句话就够了：这份规范不是建议，是新增代码的红线。"
+  }
+]

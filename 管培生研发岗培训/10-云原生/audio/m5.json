@@ -1,0 +1,42 @@
+[
+  {
+    "start": 0.1,
+    "end": 2.1,
+    "text": "挑七个核心判断。"
+  },
+  {
+    "start": 2.05,
+    "end": 14.48,
+    "text": "第一，容器和虚拟机的本质差异是虚拟化层级，虚拟机是硬件虚拟化每个有独立 OS，容器是操作系统虚拟化共享宿主机内核。"
+  },
+  {
+    "start": 14.47,
+    "end": 25.24,
+    "text": "第二，K8s 集群是 Master 加 Worker 双层，Master 负责调度和维护期望状态，Worker 运行业务应用并汇报状态。"
+  },
+  {
+    "start": 25.24,
+    "end": 40.95,
+    "text": "第三，公司命名空间分系统、业务、工具三类，业务命名空间里 wshoto 是生产 MASTER，wshoto-gray 是灰度 GRAY，wshoto-middleware 跑 MySQL、Redis、Kafka、Nacos。"
+  },
+  {
+    "start": 40.95,
+    "end": 48.34,
+    "text": "第四，Pod 是最小部署单元，公司当前都是单容器 Pod，暂未用边车模式。"
+  },
+  {
+    "start": 48.34,
+    "end": 56.5,
+    "text": "第五，Deployment 管副本、滚动更新、版本回滚、扩缩容四件套，专门管无状态应用。"
+  },
+  {
+    "start": 56.5,
+    "end": 68.54,
+    "text": "第六，Service 三种类型对应不同场景，ClusterIP 是默认做集群内部访问，NodePort 用于临时测试，LoadBalancer 用于生产对外。"
+  },
+  {
+    "start": 68.54,
+    "end": 79.42,
+    "text": "第七，Pod 的 phase 是高层概括，不是固定状态流转流程，Pending、Running、Succeeded、Failed、Unknown 不是线性流转。"
+  }
+]

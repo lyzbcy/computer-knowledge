@@ -1,0 +1,42 @@
+[
+  {
+    "start": 0.1,
+    "end": 2.61,
+    "text": "有些背景可以先不补。"
+  },
+  {
+    "start": 2.56,
+    "end": 11.35,
+    "text": "K8s 控制平面内部组件比如 API Server、etcd、scheduler 的原理，会用 kubectl 查状态就行。"
+  },
+  {
+    "start": 11.35,
+    "end": 18.27,
+    "text": "CNI 网络插件比如 Calico 或 Flannel 的原理，知道 Pod 网络能通就行。"
+  },
+  {
+    "start": 18.27,
+    "end": 23.77,
+    "text": "Container Runtime Interface 细节，知道容器跑在 containerd 就行。"
+  },
+  {
+    "start": 23.77,
+    "end": 28.16,
+    "text": "Helm Chart 编写，会用公司现成模板部署就行。"
+  },
+  {
+    "start": 28.16,
+    "end": 37.31,
+    "text": "后续值得追问的是 K8s Service 和 Nacos discovery 怎么协同，去翻第八章 discovery-nacos-boot-starter。"
+  },
+  {
+    "start": 37.31,
+    "end": 44.26,
+    "text": "ConfigMap 和 Secret 和 Nacos 配置中心的分工，去翻 config-nacos-boot-starter。"
+  },
+  {
+    "start": 44.26,
+    "end": 50.19,
+    "text": "Pod 资源 request 和 limit 怎么定，去翻 JVM 容器化调优。"
+  }
+]

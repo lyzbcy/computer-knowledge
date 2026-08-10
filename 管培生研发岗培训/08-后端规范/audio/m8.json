@@ -1,0 +1,32 @@
+[
+  {
+    "start": 0.1,
+    "end": 1.96,
+    "text": "做一道匹配题。"
+  },
+  {
+    "start": 1.91,
+    "end": 7.72,
+    "text": "Request 对应 DTO，是 Controller 和 Service 之间的转换对象。"
+  },
+  {
+    "start": 7.72,
+    "end": 12.07,
+    "text": "Repository 读出来的数据库行对象对应 DO。"
+  },
+  {
+    "start": 12.07,
+    "end": 19.98,
+    "text": "多步本地写操作的原子事务要用 TransactionTemplate 显式包边界，不能用 @Transactional。"
+  },
+  {
+    "start": 19.98,
+    "end": 31.7,
+    "text": "废弃老 Feign 接口要同时加 @Deprecated 注解和 @deprecated Javadoc，Javadoc 里要写明替代接口、废弃日期和迁移方式。"
+  },
+  {
+    "start": 31.7,
+    "end": 39.89,
+    "text": "这道题考的是分层对象转换链和契约废弃的标准动作，是新增代码最容易踩坑的地方。"
+  }
+]

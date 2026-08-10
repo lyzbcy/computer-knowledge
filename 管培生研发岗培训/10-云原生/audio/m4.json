@@ -1,0 +1,37 @@
+[
+  {
+    "start": 0.1,
+    "end": 9.51,
+    "text": "手册的结构是机制流程加概念层级，从底层容器到上层 K8s 对象再到运维实战，一共五层。"
+  },
+  {
+    "start": 9.51,
+    "end": 15.24,
+    "text": "第一层是容器技术基础，容器是操作系统级轻量虚拟化。"
+  },
+  {
+    "start": 15.24,
+    "end": 22.15,
+    "text": "第二层是 Docker 容器引擎，把应用加环境打包成镜像以容器方式交付。"
+  },
+  {
+    "start": 22.15,
+    "end": 42.06,
+    "text": "第三层是 K8s 集群核心对象，包括 Cluster 的 Master 和 Worker、Namespace 的三类划分、Pod 是最小部署单元、Controller 的五种类型、Deployment 的四件套能力、Service 的三种类型、Ingress 的七层路由、ConfigMap 和 Secret。"
+  },
+  {
+    "start": 42.06,
+    "end": 49.06,
+    "text": "第四层是运维实战，包括查看状态、故障排查、配置变更、扩缩容。"
+  },
+  {
+    "start": 49.06,
+    "end": 56.27,
+    "text": "第五层是多环境隔离分流，wshoto 是生产 MASTER，wshoto-gray 是灰度 GRAY。"
+  },
+  {
+    "start": 56.27,
+    "end": 59.42,
+    "text": "这五层是由下到上的依赖堆叠。"
+  }
+]

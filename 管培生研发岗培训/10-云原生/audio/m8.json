@@ -1,0 +1,32 @@
+[
+  {
+    "start": 0.1,
+    "end": 3.09,
+    "text": "做一道 K8s 对象匹配题。"
+  },
+  {
+    "start": 3.04,
+    "end": 8.99,
+    "text": "Java 微服务 wshoto-customer 用 Deployment，因为它是无状态应用。"
+  },
+  {
+    "start": 8.99,
+    "end": 16.35,
+    "text": "MySQL 数据库用 StatefulSet，因为有状态应用需要固定标识和顺序部署。"
+  },
+  {
+    "start": 16.35,
+    "end": 21.5,
+    "text": "集群内部 Feign 调用用 ClusterIP，做集群内部访问。"
+  },
+  {
+    "start": 21.5,
+    "end": 26.51,
+    "text": "临时测试暴露接口用 NodePort，通过节点端口暴露。"
+  },
+  {
+    "start": 26.51,
+    "end": 41.95,
+    "text": "这道题考的是控制器选型和 Service 类型，无状态 Web 服务用 Deployment，有状态数据库用 StatefulSet，内部通信用 ClusterIP，对外暴露看场景选 NodePort 或 LoadBalancer。"
+  }
+]

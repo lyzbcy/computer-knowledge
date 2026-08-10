@@ -1,0 +1,1066 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>后端开发考试 · 研发岗管培生</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Fredoka:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FAF6EB;
+    --forest:#1E3A24;
+    --forest-2:#2C5236;
+    --marker:#F5E08A;
+    --marker-deep:#E7C94A;
+    --brick:#B5482A;
+    --brick-soft:#E07A55;
+    --ink:#26302A;
+    --muted:#6B7563;
+    --line:rgba(30,58,36,.14);
+    --paper:#FFFDF4;
+    --card:#FFFFFF;
+    --ok:#2F7A4D;
+    --ok-soft:#DCEFE0;
+    --no:#B5482A;
+    --no-soft:#F8DCD2;
+    --shadow:0 18px 42px rgba(43,35,23,.12);
+    --shadow-sm:0 6px 16px rgba(43,35,23,.08);
+    --radius-xl:28px;
+    --radius-lg:20px;
+    --radius-md:14px;
+    --radius-sm:999px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    color:var(--ink);
+    background:
+      radial-gradient(circle at 8% -4%, rgba(245,224,138,.45), transparent 22%),
+      radial-gradient(circle at 96% 4%, rgba(181,72,42,.10), transparent 26%),
+      linear-gradient(180deg,#FAF6EB 0%,#F3ECD8 100%);
+    font-family:"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
+    line-height:1.7;
+    padding-bottom:120px;
+  }
+  .wrap{max-width:920px;margin:0 auto;padding:0 20px}
+
+  /* ===== progress bar ===== */
+  .topbar{
+    position:sticky;top:0;z-index:60;
+    background:rgba(250,246,235,.92);
+    backdrop-filter:blur(10px);
+    border-bottom:2px dashed var(--line);
+  }
+  .topbar-inner{
+    max-width:920px;margin:0 auto;padding:10px 20px;
+    display:flex;align-items:center;gap:14px;
+  }
+  .topbar .home{
+    display:inline-flex;align-items:center;gap:6px;
+    text-decoration:none;color:var(--forest);
+    background:#fff;border:1.5px solid var(--line);
+    padding:6px 14px;border-radius:var(--radius-sm);
+    font-weight:600;font-size:13px;
+    transition:.15s;
+  }
+  .topbar .home:hover{background:var(--marker);transform:translateX(-2px)}
+  .progress-wrap{flex:1}
+  .progress-meta{font-size:12px;color:var(--muted);margin-bottom:4px;font-weight:600}
+  .progress-meta b{color:var(--forest)}
+  .progress-track{height:10px;background:#ECE3C8;border-radius:999px;overflow:hidden;border:1px solid var(--line)}
+  .progress-fill{height:100%;width:0;background:linear-gradient(90deg,var(--forest),#3F7A4D);border-radius:999px;transition:width .3s}
+
+  /* ===== header ===== */
+  .hero{
+    margin-top:18px;
+    background:linear-gradient(135deg,rgba(255,255,255,.96),rgba(252,247,232,.94)),linear-gradient(90deg,rgba(30,58,36,.08),transparent 60%);
+    border:1px solid var(--line);
+    border-radius:var(--radius-xl);
+    box-shadow:var(--shadow);
+    padding:34px 36px;
+    display:flex;align-items:center;gap:22px;
+    position:relative;overflow:hidden;
+  }
+  .hero::after{
+    content:"";position:absolute;right:-30px;top:-30px;width:160px;height:160px;
+    background:var(--marker);border-radius:50%;opacity:.4;filter:blur(4px);
+  }
+  .mascot{width:84px;height:84px;flex:0 0 auto;object-fit:contain;filter:drop-shadow(0 6px 8px rgba(0,0,0,.12));position:relative;z-index:1}
+  .hero-text{position:relative;z-index:1}
+  .hero h1{
+    margin:0;font-family:"Fredoka","Noto Sans SC",sans-serif;
+    font-size:30px;color:var(--forest);letter-spacing:.5px;
+  }
+  .hero .sub{margin:6px 0 0;color:var(--muted);font-size:14px;font-weight:500}
+  .hero .sub .tag{
+    display:inline-block;background:var(--forest);color:var(--marker);
+    padding:2px 10px;border-radius:999px;font-size:12px;margin-right:6px;font-weight:700;
+  }
+
+  /* ===== notice strip ===== */
+  .notice{
+    margin-top:18px;
+    background:linear-gradient(90deg,#FFF7C8,#FCEFB0);
+    border:2px solid var(--marker-deep);
+    border-radius:var(--radius-lg);
+    padding:16px 22px;
+    box-shadow:var(--shadow-sm);
+  }
+  .notice h3{margin:0 0 8px;color:var(--forest);font-size:15px;display:flex;align-items:center;gap:6px}
+  .notice-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px 18px;font-size:13px;color:var(--ink)}
+  .notice-grid div{background:rgba(255,255,255,.6);padding:6px 10px;border-radius:10px}
+  .notice-grid b{color:var(--brick)}
+  .notice-tip{margin-top:10px;font-size:13px;color:var(--brick);font-weight:600}
+
+  /* ===== result banner (hidden until submitted) ===== */
+  .result-banner{
+    display:none;margin-top:18px;
+    background:linear-gradient(135deg,var(--forest),var(--forest-2));
+    color:#FFF;border-radius:var(--radius-xl);
+    padding:24px 28px;box-shadow:var(--shadow);
+    align-items:center;gap:18px;
+  }
+  .result-banner.show{display:flex}
+  .result-score{
+    font-family:"Fredoka",sans-serif;font-size:48px;line-height:1;
+    color:var(--marker);min-width:110px;text-align:center;
+  }
+  .result-score small{display:block;font-size:12px;color:rgba(255,255,255,.7);font-family:"Noto Sans SC";font-weight:400;margin-top:6px}
+  .result-comment{font-size:16px;font-weight:600}
+
+  /* ===== section ===== */
+  .section{margin-top:34px}
+  .section-title{
+    display:flex;align-items:center;gap:10px;
+    font-size:18px;color:var(--forest);font-weight:700;
+    margin-bottom:14px;
+  }
+  .section-title .badge{
+    background:var(--marker);color:var(--forest);
+    padding:3px 12px;border-radius:999px;font-size:13px;font-weight:800;
+    border:1.5px solid var(--marker-deep);
+  }
+
+  /* ===== question card ===== */
+  .q{
+    background:var(--card);
+    border:1.5px solid var(--line);
+    border-radius:var(--radius-lg);
+    padding:20px 22px;margin-bottom:16px;
+    box-shadow:var(--shadow-sm);
+    transition:.2s;
+  }
+  .q.correct{border-color:var(--ok);background:linear-gradient(0deg,var(--ok-soft),#fff 30%)}
+  .q.wrong{border-color:var(--brick);background:linear-gradient(0deg,var(--no-soft),#fff 30%)}
+  .q-head{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+  .q-num{
+    font-family:"Fredoka",sans-serif;font-weight:700;font-size:15px;
+    color:#fff;background:var(--forest);
+    width:30px;height:30px;border-radius:50%;
+    display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;
+  }
+  .q-type{font-size:11px;font-weight:700;background:#EAF1E5;color:var(--forest);padding:2px 8px;border-radius:999px}
+  .q-points{font-size:11px;font-weight:700;background:var(--marker);color:var(--forest);padding:2px 8px;border-radius:999px;border:1px solid var(--marker-deep)}
+  .q-chap{font-size:11px;font-weight:600;background:#F1E9D2;color:var(--brick);padding:2px 8px;border-radius:999px}
+  .q-verdict{margin-left:auto;font-weight:800;font-size:18px;display:none}
+  .q.correct .q-verdict.correct-v{display:inline;color:var(--ok)}
+  .q.wrong .q-verdict.wrong-v{display:inline;color:var(--brick)}
+  .q.partial .q-verdict.partial-v{display:inline;color:#C98A1E}
+  .q-stem{font-size:15.5px;color:var(--ink);margin:0 0 12px;font-weight:500}
+  .q-stem .pre{font-weight:700;color:var(--forest)}
+
+  /* code block */
+  .code{
+    margin:10px 0 12px;
+    background:#1f2d24;
+    color:#e8f0e6;
+    border:1.5px solid #16241a;
+    border-radius:var(--radius-md);
+    padding:14px 16px;
+    font-family:"JetBrains Mono","Menlo","Consolas",monospace;
+    font-size:13px;line-height:1.65;
+    white-space:pre;overflow-x:auto;
+  }
+  .code .cm{color:#7ea583;font-style:italic}      /* comment */
+  .code .kw{color:#f5c97b}                         /* keyword */
+  .code .an{color:#e07a55}                         /* annotation */
+  .code .st{color:#bfe39a}                         /* string */
+  .code .ln{color:#5d7a5f;margin-right:10px;user-select:none}
+
+  /* options */
+  .opts{display:flex;flex-direction:column;gap:8px}
+  .opt{
+    display:flex;align-items:flex-start;gap:10px;
+    padding:10px 14px;border:1.5px solid var(--line);
+    border-radius:var(--radius-md);cursor:pointer;
+    background:#FBFAF3;transition:.15s;font-size:14.5px;
+  }
+  .opt:hover{background:#FFF7DA;border-color:var(--marker-deep)}
+  .opt .marker{
+    flex:0 0 auto;width:24px;height:24px;border-radius:50%;
+    border:2px solid var(--line);display:inline-flex;align-items:center;justify-content:center;
+    font-weight:700;font-size:13px;color:var(--muted);background:#fff;
+  }
+  .opt.selected{background:#EAF1E5;border-color:var(--forest)}
+  .opt.selected .marker{background:var(--forest);color:var(--marker);border-color:var(--forest)}
+  /* multi uses square */
+  .opt.multi .marker{border-radius:6px}
+  /* answer states after submit */
+  .opt.is-answer{background:#DCEFE0;border-color:var(--ok)}
+  .opt.is-answer .marker{background:var(--ok);color:#fff;border-color:var(--ok)}
+  .opt.selected.bad-pick{background:var(--no-soft);border-color:var(--brick)}
+  .opt.selected.bad-pick .marker{background:var(--brick);color:#fff;border-color:var(--brick)}
+  .q.locked .opt{cursor:default}
+  .q.locked .opt:hover{transform:none}
+
+  /* true/false buttons */
+  .tf{display:flex;gap:10px}
+  .tf-btn{
+    flex:1;padding:14px;border:1.5px solid var(--line);border-radius:var(--radius-md);
+    background:#FBFAF3;cursor:pointer;font-size:15px;font-weight:600;
+    display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:.15s;
+  }
+  .tf-btn:hover{background:#FFF7DA;border-color:var(--marker-deep)}
+  .tf-btn.selected{background:#EAF1E5;border-color:var(--forest);color:var(--forest)}
+  .tf-btn.is-answer{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+  .tf-btn.selected.bad-pick{background:var(--no-soft);border-color:var(--brick);color:var(--brick)}
+  .q.locked .tf-btn{cursor:default}
+
+  /* matching */
+  .match-list{display:flex;flex-direction:column;gap:10px}
+  .match-row{
+    display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+    padding:10px 14px;background:#FBFAF3;border:1.5px solid var(--line);border-radius:var(--radius-md);
+  }
+  .match-left{font-weight:700;color:var(--forest);min-width:30px}
+  .match-text{flex:1;font-size:14.5px;min-width:200px}
+  .match-select{
+    padding:7px 12px;border:1.5px solid var(--line);border-radius:10px;
+    font-size:14px;background:#fff;font-weight:600;color:var(--forest);cursor:pointer;
+  }
+  .match-select:disabled{cursor:default;opacity:.85}
+  .match-row.correct-row{background:var(--ok-soft);border-color:var(--ok)}
+  .match-row.wrong-row{background:var(--no-soft);border-color:var(--brick)}
+  .match-options{font-size:13px;color:var(--muted);margin:8px 0 4px;line-height:1.9}
+  .match-options b{color:var(--forest)}
+
+  /* short answer */
+  .ta{
+    width:100%;min-height:110px;padding:12px 14px;
+    border:1.5px solid var(--line);border-radius:var(--radius-md);
+    font-family:inherit;font-size:14px;line-height:1.7;resize:vertical;background:#FBFAF3;
+  }
+  .ta:focus{outline:none;border-color:var(--forest);background:#fff}
+  .ta:disabled{background:#F4F0E0;color:var(--muted)}
+  .ref-toggle{
+    margin-top:10px;background:var(--marker);border:1.5px solid var(--marker-deep);
+    color:var(--forest);padding:6px 14px;border-radius:999px;font-weight:700;font-size:13px;cursor:pointer;
+  }
+  .ref-toggle:hover{background:var(--marker-deep)}
+  .ref-box{
+    display:none;margin-top:10px;padding:14px 16px;
+    background:#FFF7DA;border:1.5px dashed var(--marker-deep);border-radius:var(--radius-md);
+    font-size:14px;white-space:pre-wrap;color:var(--ink);
+  }
+  .ref-box.open{display:block}
+  .ref-box .ans-label{display:inline-block;background:var(--brick);color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;margin-bottom:8px}
+  .ref-box .code{background:#1f2d24;margin:6px 0}
+  .self-eval{margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .self-eval span{font-size:13px;font-weight:600;color:var(--muted)}
+  .se-btn{
+    padding:7px 16px;border-radius:999px;border:1.5px solid var(--line);background:#fff;
+    cursor:pointer;font-size:13px;font-weight:700;transition:.15s;
+  }
+  .se-btn:hover{border-color:var(--forest)}
+  .se-btn.yes{color:var(--ok);border-color:var(--ok)}
+  .se-btn.yes.active{background:var(--ok);color:#fff}
+  .se-btn.no{color:var(--brick);border-color:var(--brick)}
+  .se-btn.no.active{background:var(--brick);color:#fff}
+  .self-pts{font-size:13px;color:var(--forest);font-weight:700}
+
+  /* explanation */
+  .explain{
+    display:none;margin-top:12px;padding:12px 14px;
+    background:#F4F8EF;border-left:4px solid var(--forest);border-radius:8px;
+    font-size:13.5px;color:var(--ink);
+  }
+  .explain .ex-label{font-weight:800;color:var(--forest);margin-right:4px}
+  .explain .ans{font-weight:700;color:var(--ok)}
+  .q.show-explain .explain{display:block}
+  .pts-line{margin-top:8px;font-size:13px;font-weight:700}
+  .pts-line.gain{color:var(--ok)}
+  .pts-line.zero{color:var(--brick)}
+
+  /* submit area */
+  .submit-area{
+    margin-top:30px;text-align:center;
+    background:var(--card);border:1.5px solid var(--line);
+    border-radius:var(--radius-xl);padding:28px 22px;box-shadow:var(--shadow);
+  }
+  .submit-btn{
+    font-family:"Fredoka","Noto Sans SC",sans-serif;
+    font-size:20px;font-weight:700;
+    background:linear-gradient(180deg,var(--brick),#9A3D24);
+    color:#fff;border:none;padding:16px 50px;border-radius:999px;cursor:pointer;
+    box-shadow:0 8px 0 #7E3320, 0 14px 24px rgba(181,72,42,.3);
+    transition:.12s;letter-spacing:2px;
+  }
+  .submit-btn:hover{transform:translateY(-2px);box-shadow:0 10px 0 #7E3320, 0 16px 28px rgba(181,72,42,.35)}
+  .submit-btn:active{transform:translateY(4px);box-shadow:0 4px 0 #7E3320}
+  .submit-btn.hidden{display:none}
+  .reset-btn{
+    font-size:15px;font-weight:700;background:var(--forest);color:var(--marker);
+    border:none;padding:14px 38px;border-radius:999px;cursor:pointer;box-shadow:0 6px 0 #142319;
+    transition:.12s;letter-spacing:1px;
+  }
+  .reset-btn:hover{transform:translateY(-2px)}
+  .reset-btn:active{transform:translateY(3px);box-shadow:0 3px 0 #142319}
+  .reset-btn.hidden{display:none}
+  .submit-hint{margin-top:12px;color:var(--muted);font-size:13px}
+
+  footer{margin-top:30px;text-align:center;color:var(--muted);font-size:12px;padding:20px}
+
+  @media(max-width:640px){
+    .hero{padding:24px 18px;flex-direction:column;text-align:center;gap:12px}
+    .mascot{width:64px;height:64px}
+    .hero h1{font-size:24px}
+    .topbar .home span{display:none}
+    .result-banner{flex-direction:column;text-align:center}
+    .code{font-size:11.5px}
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== sticky progress bar ===== -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <a class="home" href="../index.html">← <span>返回目录</span></a>
+    <div class="progress-wrap">
+      <div class="progress-meta">已答题 <b id="answeredCount">0</b> / <b id="progressTotal">22</b></div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div id="examArea">
+    <!-- hero -->
+    <div class="hero">
+      <div class="hero-text">
+        <h1>后端开发考试</h1>
+        <div class="sub" id="heroSub"><span class="tag">后端</span>研发岗管培生 · 代码规范实战 · 共 22 题</div>
+      </div>
+    </div>
+
+    <!-- notice strip -->
+    <div class="notice">
+      <h3>📋 考试说明</h3>
+      <div class="notice-grid" id="noticeGrid">
+        <div>方向 <b>后端开发</b></div>
+        <div>建议时长 <b>40 分钟</b></div>
+        <div>单选 <b>3 分/题</b>×10</div>
+        <div>多选 <b>4 分/题</b>×5（漏选得1分，错选不得分）</div>
+        <div>判断 <b>2 分/题</b>×4</div>
+        <div>匹配 <b>4 分/题</b>×1</div>
+        <div>简答 <b>6 分/题</b>×2（自评）</div>
+        <div>总分 <b>74 分</b></div>
+      </div>
+      <div class="notice-tip">💡 本卷含 <b>3 道代码审查实战题</b>（2 道多选 + 1 道简答），需根据《Wshoto 后端开发规范 v1.5》找出规范违规点，请结合 MUST / MUST NOT 条文作答。</div>
+      <div class="notice-tip">💡 做完后点击页面底部「交卷判分」自动判分；简答题点击「参考答案」后自评。每题解析均引用规范条文编号（如「违反 3.7」）。</div>
+    </div>
+
+    <!-- result banner -->
+    <div class="result-banner" id="resultBanner">
+      <div class="result-score"><span id="finalScore">0</span><small id="finalScoreTotal">总分 / 74</small></div>
+      <div>
+        <div class="result-comment" id="finalComment">—</div>
+        <div style="font-size:13px;opacity:.85;margin-top:6px" id="finalDetail"></div>
+      </div>
+    </div>
+
+    <!-- exam container -->
+    <div id="exam"></div>
+
+    <!-- submit / reset -->
+    <div class="submit-area" id="submitArea">
+      <button class="submit-btn" id="submitBtn">交卷判分</button>
+      <button class="reset-btn hidden" id="resetBtn">重新考试</button>
+      <div class="submit-hint" id="submitHint">交卷后将自动判分并显示解析，输入会被锁定。</div>
+    </div>
+
+    <footer>研发岗管培生后端开发培训 · 基于《Wshoto 后端开发规范 v1.5》· v1.0</footer>
+  </div>
+
+</div>
+
+<script>
+/* ============================================================
+   DATA: single paper
+   types: single | multi | judge | match | short
+   ============================================================ */
+const QUESTIONS = [
+  // ========== 一、单选题 1-10 ==========
+  { id:1, type:"single", chap:"2.2 Controller", points:3,
+    q:"关于 Controller 层的职责，下列哪种做法<b>违反</b>《后端开发规范》？",
+    opts:[
+      {k:"A",t:"Controller 只负责协议入口、参数校验、鉴权编排、对象转换和调用应用服务"},
+      {k:"B",t:"Controller 把业务逻辑交给 Service，数据访问交给 Repository"},
+      {k:"C",t:"在 Controller 里直接 new LambdaQueryWrapper 查数据库并返回 DO"},
+      {k:"D",t:"Controller 通过 Converter 把 Request 转成 DTO 再调 Service"}
+    ],
+    answer:["C"],
+    explain:"违反 2.2「Controller 保持轻量」（MUST）：Controller 不得直接访问 Mapper、不得把 DO 暴露为接口响应。Negative Example 原文就是「Controller 直接访问 Mapper，并将 DO 暴露为接口响应」。"
+  },
+  { id:2, type:"single", chap:"3.6 金额比较", points:3,
+    q:"比较两个 BigDecimal 金额是否相等（如 amount 与 limit），下列哪种写法<b>正确</b>？",
+    opts:[
+      {k:"A",t:"amount.equals(new BigDecimal(\"10.0\"))"},
+      {k:"B",t:"amount == limit"},
+      {k:"C",t:"amount.compareTo(limit) == 0"},
+      {k:"D",t:"amount.toString().equals(limit.toString())"}
+    ],
+    answer:["C"],
+    explain:"依据 3.6「正确比较对象和金额」（MUST）：BigDecimal 必须用 compareTo 比较。A 错：equals 会把 scale 也参与比较，10 与 10.0 不相等；B 是引用比较，包装对象缓存不可靠；D 绕远且同样受 scale 影响。规范还要求金额使用最小货币单位整数或 BigDecimal，不得用 double。"
+  },
+  { id:3, type:"single", chap:"5.4 异常处理", points:3,
+    q:"调用一个可能抛未知异常的方法时，下列哪种 catch 处理<b>符合</b>规范？",
+    opts:[
+      {k:"A",t:"catch (Exception e) { log.warn(e.getMessage()); } 后继续返回成功"},
+      {k:"B",t:"catch (Exception e) { log.error(\"sync_failed\", e); throw e; }"},
+      {k:"C",t:"catch (Exception e) { } 空处理，假装没发生"},
+      {k:"D",t:"catch (Exception e) { } finally { return ResultUtils.success(); }"}
+    ],
+    answer:["B"],
+    explain:"依据 5.4「未知异常不得吞掉」（MUST NOT）：不得空 catch、只记 getMessage() 后继续成功、或在 finally 中 return。B 是 Positive Example：记录完整堆栈（异常对象作为最后参数）并重新抛出。A 只记 message 丢失堆栈；C/D 把失败伪装成成功。"
+  },
+  { id:4, type:"single", chap:"6.11 生产索引", points:3,
+    q:"PostgreSQL 生产环境给一张已有数据的业务表新建索引，下列 SQL 哪个<b>符合</b>规范？",
+    opts:[
+      {k:"A",t:"CREATE INDEX idx_x ON customer_profile (ws_tenant_id, gmt_create)"},
+      {k:"B",t:"CREATE INDEX CONCURRENTLY idx_x ON customer_profile (ws_tenant_id, gmt_create)"},
+      {k:"C",t:"先 BEGIN; 再 CREATE INDEX; 再 COMMIT; 包进事务里执行"},
+      {k:"D",t:"表很小（空表）时可以省略 CONCURRENTLY，直接 CREATE INDEX"}
+    ],
+    answer:["B"],
+    explain:"依据 6.11「生产索引必须使用 CONCURRENTLY」（MUST）：不区分表大小、是否为空，都必须 CONCURRENTLY。C 错：CONCURRENTLY 必须独立于事务执行；D 错：规范明示「新建空表的初始化 DDL 也不例外」。"
+  },
+  { id:5, type:"single", chap:"7.2 Redis TTL", points:3,
+    q:"关于 Redis Key 的 TTL，下列哪种做法<b>违反</b>《后端开发规范》？",
+    opts:[
+      {k:"A",t:"通过脚手架 Redis 组件写入，未显式指定 TTL（由组件加默认 TTL）"},
+      {k:"B",t:"redisWClient.set(key, value, Duration.ofHours(6))"},
+      {k:"C",t:"redisWClient.set(key, value, Duration.ofHours(25))"},
+      {k:"D",t:"大量 Key 集中到期时，给 TTL 增加随机抖动"}
+    ],
+    answer:["C"],
+    explain:"违反 7.2（MUST）：显式设置的 TTL 最长不得超过 24 小时，25h 违规。A/B/D 都是规范允许甚至推荐的做法：组件兜底默认 TTL、≤24h、集中到期加抖动。此外「不得创建永久 Key」。"
+  },
+  { id:6, type:"single", chap:"6.12 事务", points:3,
+    q:"需要在一次业务操作里原子完成两步本地数据库写入，下列哪种事务写法<b>符合</b>规范？",
+    opts:[
+      {k:"A",t:"在方法上加 @Transactional 注解"},
+      {k:"B",t:"通过 TransactionTemplate / PlatformTransactionManager 显式开启、提交、回滚"},
+      {k:"C",t:"直接调用 Connection.commit() / Connection.rollback()"},
+      {k:"D",t:"直接调用 SqlSession.commit() / SqlSession.rollback()"}
+    ],
+    answer:["B"],
+    explain:"依据 6.12（MUST）：业务事务用 Spring 编程式事务显式划定边界（TransactionTemplate 或 PlatformTransactionManager）。规范明示「不得新增 @Transactional」（A 错），也不得绕过 Spring 直接操作 JDBC Connection 或 MyBatis SqlSession 事务（C/D 错）。"
+  },
+  { id:7, type:"single", chap:"3.7 反射复制", points:3,
+    q:"把一个 Request 对象的字段复制到 Entity，下列哪种做法<b>符合</b>规范？",
+    opts:[
+      {k:"A",t:"BeanUtils.copyProperties(request, entity)"},
+      {k:"B",t:"BeanUtil.copyProperties(request, entity)"},
+      {k:"C",t:"用显式 Converter：entity.setName(dto.getName()); entity.setMobile(dto.getMobile()); …"},
+      {k:"D",t:"直接把 request 当 entity 用，省得转换"}
+    ],
+    answer:["C"],
+    explain:"依据 3.7（MUST NOT）：不得使用 BeanUtils.copyProperties / BeanUtil.copyProperties 复制业务对象，改用显式 Converter 或 Builder。原因是字段语义、忽略项、类型转换都不可见，新增字段会被悄悄复制。A/B 违规；D 违反 2.6（每层用本层对象）。"
+  },
+  { id:8, type:"single", chap:"6.9 SQL 绑定", points:3,
+    q:"MyBatis 中把用户输入 name 作为查询条件，下列哪种写法<b>符合</b>规范？",
+    opts:[
+      {k:"A",t:"WHERE customer_name = '${name}'"},
+      {k:"B",t:"WHERE customer_name = #{name}"},
+      {k:"C",t:"wrapper.last(\"ORDER BY \" + request.getSortField())"},
+      {k:"D",t:"字符串拼接：\"WHERE customer_name = '\" + name + \"'\""}
+    ],
+    answer:["B"],
+    explain:"依据 6.9「SQL 值使用参数绑定」（MUST）：SQL 值用 #{} 绑定，不得用 ${} 拼接外部值（A 错，SQL 注入）；项目业务 SQL 不得让外部输入控制表名/字段名/SQL 结构。C 也违反 4.5（排序字段须白名单映射）。D 是字符串拼接同样注入。"
+  },
+  { id:9, type:"single", chap:"8.7 密钥管理", points:3,
+    q:"应用的数据库密码、第三方 AK/SK 应该怎么配置<b>才合规</b>？",
+    opts:[
+      {k:"A",t:"直接写在 application-prod.yml 里，随源码一起提交到 Git"},
+      {k:"B",t:"写在代码常量里，方便排查"},
+      {k:"C",t:"写在测试数据/文档里，方便新人查阅"},
+      {k:"D",t:"用 ${DB_PASSWORD} / ${ACCESS_KEY} 占位，由密钥管理或受控配置中心注入"}
+    ],
+    answer:["D"],
+    explain:"依据 8.7「密钥不得进入仓库」（MUST NOT）：密码、Token、AK/SK、私钥不得出现在代码、POM、YAML、文档、测试数据、日志、提交历史中。D 是 Positive Example。A/B/C 全部违规。注意：真实凭证即使删掉也很难从提交历史彻底撤回。"
+  },
+  { id:10, type:"single", chap:"4.6 Feign 兼容", points:3,
+    q:"已经上线的 Feign 接口 query(CustomerQueryRequest) 需要新增一个字段，下列哪种做法<b>符合</b>规范？",
+    opts:[
+      {k:"A",t:"直接在 CustomerQueryRequest 上加字段，老调用方不用改"},
+      {k:"B",t:"把原方法参数从 Long customerId 直接改成 List<Long>，更通用"},
+      {k:"C",t:"新增兼容字段，或新增 V2 方法/路径（如 queryV2），原契约在兼容期内保留"},
+      {k:"D",t:"先删掉老方法，再发布新方法，强制调用方升级"}
+    ],
+    answer:["C"],
+    explain:"依据 4.6「保持 Feign 和 DTO 向后兼容」（MUST NOT）：不得直接修改/删除已存在的 Feign 方法、路径、HTTP 方法、参数类型、返回类型和既有 DTO 字段；不得以「尚未发布/无调用方」为理由做破坏性修改。B 是 Negative Example 原文，老调用方会序列化/调用失败；D 强删违反 4.8 废弃流程。"
+  },
+
+  // ========== 二、多选题 11-15（含 2 道代码审查题） ==========
+  { id:11, type:"multi", chap:"2.x 分层架构", points:4,
+    q:"关于工程结构与分层，下列哪些表述<b>符合</b>《后端开发规范》？（多选）",
+    opts:[
+      {k:"A",t:"Application / 业务 Service 不得直接注入 Mapper，应通过 Repository 访问数据库"},
+      {k:"B",t:"DDD 多模块服务中，API 不直接依赖 DAL，Domain 不依赖 Web/Feign/具体中间件"},
+      {k:"C",t:"每一层必须使用本层对象（Request/DTO/Entity/DO/Response），不得让对象跨多层复用"},
+      {k:"D",t:"领域对象（Entity）里可以持有 HttpServletRequest 和 Feign Client 字段，方便复用"},
+      {k:"E",t:"复杂外部调用（多协议转换/公共错误处理）必须封装到 Dependency/Adapter/Client 层"}
+    ],
+    answer:["A","B","C","E"],
+    explain:"A→2.4（数据访问集中）、B→2.3（模块依赖方向）、C→2.6（每层用本层对象并在相邻层转换）、E→2.5（按架构类型封装外部调用），均 MUST。D 违反 2.3 的 Negative Example：领域对象依赖 Web 和 Feign 后无法独立测试和复用。"
+  },
+  { id:12, type:"multi", chap:"🎯代码审查·事务与异常", points:4,
+    q:"【代码审查】下面这段 Java 代码片段，<b>违反</b>了《后端开发规范》中的哪些条？请选出<b>实际存在</b>的违规点（多选）。\n\n" +
+       "<div class=\"code\"><span class=\"ln\">1</span><span class=\"an\">@Transactional</span>\n" +
+       "<span class=\"ln\">2</span><span class=\"kw\">public void</span> createCustomer(CustomerCreateRequest request) {\n" +
+       "<span class=\"ln\">3</span>    CustomerDO customer = <span class=\"kw\">new</span> CustomerDO();\n" +
+       "<span class=\"ln\">4</span>    <span class=\"an\">BeanUtils</span>.copyProperties(request, customer);\n" +
+       "<span class=\"ln\">5</span>    customerMapper.insert(customer);\n" +
+       "<span class=\"ln\">6</span>    <span class=\"kw\">try</span> {\n" +
+       "<span class=\"ln\">7</span>        customerFeign.notify(customer.toRequest());\n" +
+       "<span class=\"ln\">8</span>    } <span class=\"kw\">catch</span> (Exception e) { log.warn(e.getMessage()); }\n" +
+       "<span class=\"ln\">9</span>    <span class=\"kw\">return</span> ResultUtils.success(customer);\n" +
+       "<span class=\"ln\">10</span>}</div>",
+    opts:[
+      {k:"A",t:"方法上的 @Transactional —— 应使用 Spring 编程式事务（TransactionTemplate / PlatformTransactionManager）"},
+      {k:"B",t:"BeanUtils.copyProperties(request, customer) —— 不得用反射式属性复制，改用显式 Converter"},
+      {k:"C",t:"catch (Exception e) 只记 getMessage() 后继续返回 success —— 未知异常不得吞掉"},
+      {k:"D",t:"事务里调用 customerFeign.notify —— 事务内不得执行长耗时外部调用（Feign）"},
+      {k:"E",t:"customerMapper.insert(customer) 使用了主键自增 serial —— 必须用雪花 bigint 主键"}
+    ],
+    answer:["A","B","C","D"],
+    explain:"A→违反 6.12（MUST，不得新增 @Transactional）；B→违反 3.7（MUST NOT，不得用 BeanUtils.copyProperties）；C→违反 5.4（MUST NOT，不得只记 getMessage() 后继续成功）；D→违反 6.13（MUST NOT，事务内不得执行长耗时 Feign）。E 不是这段代码能看出来的（是建表 DDL 的事，对应 6.1），题干代码未体现 serial，属干扰项。"
+  },
+  { id:13, type:"multi", chap:"🎯代码审查·Controller 与安全", points:4,
+    q:"【代码审查】下面这段 Controller 代码，<b>违反</b>了《后端开发规范》中的哪些条？请选出<b>实际存在</b>的违规点（多选）。\n\n" +
+       "<div class=\"code\"><span class=\"ln\">1</span><span class=\"an\">@GetMapping</span>(<span class=\"st\">\"/public/customer/{id}\"</span>)\n" +
+       "<span class=\"ln\">2</span><span class=\"kw\">public</span> CustomerDO query(<span class=\"an\">@PathVariable</span> Long id) {\n" +
+       "<span class=\"ln\">3</span>    log.info(<span class=\"st\">\"login request=[{}] token=[{}]\"</span>, request, authorizationHeader);\n" +
+       "<span class=\"ln\">4</span>    LambdaQueryWrapper&lt;CustomerDO&gt; w = <span class=\"kw\">new</span> LambdaQueryWrapper&lt;&gt;();\n" +
+       "<span class=\"ln\">5</span>    w.eq(CustomerDO::getId, id);\n" +
+       "<span class=\"ln\">6</span>    <span class=\"kw\">return</span> customerMapper.selectOne(w);\n" +
+       "<span class=\"ln\">7</span>}</div>",
+    opts:[
+      {k:"A",t:"Controller 直接访问 customerMapper 并把 DO 作为响应返回 —— Controller 必须保持轻量"},
+      {k:"B",t:"用 @GetMapping + @PathVariable 暴露新增业务接口，且返回 DO —— 应使用 POST + 专用 Request Body + 统一 Result"},
+      {k:"C",t:"日志打印了 request 和 token —— 敏感信息（Token、可能含密码的 Request）不得写入日志"},
+      {k:"D",t:"查询条件只用了 id，没有携带 ws_tenant_id 和 deleted —— 租户表数据访问必须携带 wsTenantId"},
+      {k:"E",t:"方法名 query 与路径 /public 冲突 —— public 路径名本身不得被视为放行依据"}
+    ],
+    answer:["A","B","C","D"],
+    explain:"A→违反 2.2（Controller 不得直接访问 Mapper、不得暴露 DO）；B→违反 4.1/4.3（新增业务接口应用 POST + Request Body + 统一 Result，不得返回 DO）；C→违反 5.9（MUST NOT，不得打印 Token、完整 Request）；D→违反 6.5（MUST，租户表访问须带 ws_tenant_id，且 selectOne 只按主键无法证明租户隔离与逻辑删除）。E 表述本身是对的（4.2），但与本段代码「违规」无关，属干扰项。"
+  },
+  { id:14, type:"multi", chap:"6.x 数据库", points:4,
+    q:"关于数据库、MyBatis 与事务，下列哪些做法<b>符合</b>《后端开发规范》？（多选）",
+    opts:[
+      {k:"A",t:"新表必须包含雪花 bigint 主键、deleted、version、gmt_create、gmt_modified；租户表还需 ws_tenant_id"},
+      {k:"B",t:"SELECT / INSERT 显式列出字段，不使用 SELECT *（聚合 COUNT(*) 不受此限）"},
+      {k:"C",t:"UPDATE/DELETE 必须用经过校验的 WHERE，租户表还须携带可信租户条件"},
+      {k:"D",t:"业务唯一性先 count 再 insert（先查后写）来保证唯一"},
+      {k:"E",t:"可能增长的业务表列表查询用 LIMIT 或分页；批处理用稳定主键游标并限制单批数量"}
+    ],
+    answer:["A","B","C","E"],
+    explain:"A→6.1（统一字段）、B→6.7（明确字段）、C→6.8（安全条件）、E→6.10（查询/批处理设上限），均 MUST。D 是 6.2 的 Negative Example：应用层先查后写在并发下仍可能插入重复数据，业务唯一性应由数据库唯一索引保证（且租户内唯一索引须含 ws_tenant_id）。"
+  },
+  { id:15, type:"multi", chap:"5.x 异常与日志", points:4,
+    q:"关于异常与日志，下列哪些做法<b>违反</b>《后端开发规范》？（多选，选违规项）",
+    opts:[
+      {k:"A",t:"log.info(\"query customer: \" + JSON.toJSONString(request))"},
+      {k:"B",t:"log.info(\"all_customers=[{}]\", customerRepository.queryAll())"},
+      {k:"C",t:"log.error(\"customer_create_failed tenantId=[{}]\", wsTenantId, exception)（异常作为最后一个参数）"},
+      {k:"D",t:"catch (Exception e) { return ResultUtils.error(\"500\", e.toString()); }"},
+      {k:"E",t:"log.info(\"customer_login mobile=[{}]\", DesensitizeUtil.mobilePhone(mobile))"}
+    ],
+    answer:["A","B","D"],
+    explain:"A→违反 5.6（MUST，日志用 SLF4J {} 占位符，不用字符串拼接；且完整 Request 可能含敏感数据）；B→违反 5.7（MUST NOT，日志参数不得执行数据库调用，日志级别会影响业务行为和性能）；D→违反 5.5（MUST，业务不得重复实现通用全局异常处理器；未知异常不得向用户暴露内部信息，e.toString 可能泄露 SQL/类名/主机）。C 是 5.8 的 Positive Example（合规）；E 是 5.9 的 Positive Example（脱敏后记录，合规）。"
+  },
+
+  // ========== 三、判断题 16-19 ==========
+  { id:16, type:"judge", chap:"6.12 事务", points:2,
+    q:"业务方法上直接加 @Transactional 注解来管理数据库事务，是本项目推荐的写法。",
+    answer:false,
+    explain:"✗ 违反 6.12（MUST）：不得新增 @Transactional，应使用 Spring 编程式事务（TransactionTemplate 或 PlatformTransactionManager）显式划定最小边界。规范明示「注解隐藏了实际事务边界，也不符合项目统一的显式事务控制方式」。"
+  },
+  { id:17, type:"judge", chap:"3.6 金额", points:2,
+    q:"金额字段可以用 double / float 存储，比如 double price = 19.99D，浮点误差在业务可接受范围内。",
+    answer:false,
+    explain:"✗ 违反 3.6（MUST）：金额必须使用最小货币单位整数（如 long amountInCent = 1999L）或 BigDecimal，不得用 double/float——浮点误差会带来错误结果。BigDecimal 比较还必须用 compareTo，不得用 equals。"
+  },
+  { id:18, type:"judge", chap:"5.4 异常", points:2,
+    q:"调用下游服务时，为了不让上游感知到失败，可以在 catch 里吞掉异常、并在 finally 中 return 一个成功结果。",
+    answer:false,
+    explain:"✗ 违反 5.4（MUST NOT）：不得空 catch、只记录 getMessage() 后继续成功、或在 finally 中 return。这正是 Negative Example 原文——「调用方收到成功，原始失败和堆栈同时丢失」。应记录完整堆栈并重新抛出。"
+  },
+  { id:19, type:"judge", chap:"8.7 密钥", points:2,
+    q:"数据库的生产密码暂时写死在 application.yml 里、提交到 Git 仓库，等以后接入配置中心再改回来，这样做没问题。",
+    answer:false,
+    explain:"✗ 违反 8.7（MUST NOT）：真实凭证不得出现在代码、POM、YAML、文档、测试数据、日志、提交历史中。一旦进入仓库很难彻底删除和撤回（Git 历史仍保留）。应使用 ${DB_PASSWORD} 占位，由密钥管理或受控配置中心注入。"
+  },
+
+  // ========== 四、匹配题 20 ==========
+  { id:20, type:"match", chap:"规范条文配对", points:4,
+    q:"把下列「规范条文编号」与它的「核心内容」配对。",
+    left:[
+      {k:"①",t:"3.6"},
+      {k:"②",t:"5.4"},
+      {k:"③",t:"6.11"},
+      {k:"④",t:"7.2"},
+      {k:"⑤",t:"8.7"}
+    ],
+    right:[
+      {k:"A",t:"Redis Key 必须设置 TTL，最长不得超过 24 小时，不得创建永久 Key"},
+      {k:"B",t:"金额用最小货币单位或 BigDecimal，BigDecimal 用 compareTo 比较"},
+      {k:"C",t:"密钥、Token、AK/SK 不得进入代码/POM/YAML/仓库任何内容"},
+      {k:"D",t:"未知异常不得空 catch、只记 getMessage() 后继续成功、finally 中 return"},
+      {k:"E",t:"PostgreSQL 生产创建/删除/重建索引必须用 CONCURRENTLY"}
+    ],
+    answer:{"①":"B","②":"D","③":"E","④":"A","⑤":"C"},
+    explain:"3.6→金额比较（B）；5.4→异常不得吞掉（D）；6.11→生产索引用 CONCURRENTLY（E）；7.2→Redis TTL≤24h（A）；8.7→密钥不入仓库（C）。"
+  },
+
+  // ========== 五、简答题 21-22（含 1 道代码审查实战） ==========
+  { id:21, type:"short", chap:"🎯代码审查实战", points:6,
+    q:"【代码审查实战】下面这段综合反面代码<b>至少有 5 处</b>违反《后端开发规范》。请：<br>(1) 逐一指出违规点（写出对应规范编号）；<br>(2) 针对每个违规点给出<b>正确的改法</b>（一句话即可）。\n\n" +
+       "<div class=\"code\"><span class=\"cm\">// 类名: customer_queryService.java</span>\n" +
+       "<span class=\"an\">@RestController</span>\n" +
+       "<span class=\"kw\">public class</span> customer_queryService {\n" +
+       "    <span class=\"an\">@Resource</span> <span class=\"kw\">private</span> CustomerMapper customerMapper;\n" +
+       "\n" +
+       "    <span class=\"an\">@PostMapping</span>(<span class=\"st\">\"/feign/v1/customer/save\"</span>)\n" +
+       "    <span class=\"kw\">public</span> Result save(<span class=\"an\">@RequestBody</span> Map&lt;String,Object&gt; req) {\n" +
+       "        <span class=\"kw\">double</span> maxsize = 19.99D;\n" +
+       "        CustomerDO c = <span class=\"kw\">new</span> CustomerDO();\n" +
+       "        <span class=\"an\">BeanUtils</span>.copyProperties(req, c);\n" +
+       "        <span class=\"kw\">if</span> (c.getId() == <span class=\"kw\">null</span>)\n" +
+       "            log.warn(<span class=\"st\">\"id missing\"</span>);\n" +
+       "            throw <span class=\"kw\">new</span> RuntimeException(<span class=\"st\">\"001999: id missing\"</span>);\n" +
+       "        customerMapper.insert(c);\n" +
+       "        log.info(<span class=\"st\">\"save request=[{}] token=[{}]\"</span>, req, req.get(<span class=\"st\">\"token\"</span>));\n" +
+       "        <span class=\"kw\">try</span> {\n" +
+       "            customerMapper.update(c);\n" +
+       "            customerFeign.notify(c);\n" +
+       "        } <span class=\"kw\">catch</span> (Exception e) { log.warn(e.getMessage()); }\n" +
+       "        <span class=\"kw\">finally</span> { <span class=\"kw\">return</span> ResultUtils.success(c); }\n" +
+       "    }\n" +
+       "}",
+       ref:"<span class=\"ans-label\">参考答案（至少 5 处，下面列出 8 处）</span>\n\n" +
+            "<b>① 类名 customer_queryService —— 违反 3.1（MUST）</b>：类名应用 UpperCamelCase（如 CustomerQueryService）；常量 maxsize 应 UPPER_SNAKE_CASE，变量应用 lowerCamelCase。\n\n" +
+            "<b>② save 用 Map&lt;String,Object&gt; 入参/出参 —— 违反 4.3（MUST）</b>：应用专用 Request/Response + 统一 Result&lt;T&gt;，不用弱类型 Map。\n\n" +
+            "<b>③ double maxsize = 19.99D 存金额 —— 违反 3.6（MUST）</b>：金额用最小货币单位整数或 BigDecimal，不得用 double。\n\n" +
+            "<b>④ BeanUtils.copyProperties(req, c) —— 违反 3.7（MUST NOT）</b>：不得用反射式复制，改用显式 Converter；同时违反 2.6（Request/Map 不得直接当 DO）。\n\n" +
+            "<b>⑤ if 不带大括号导致 throw 总会执行 —— 违反 3.3（MUST）</b>：if/else/for/while 即使一条语句也必须用大括号；同时 throw new RuntimeException(\"001999:...\") 违反 5.2（MUST，应继承 BaseException，不得手工拼接错误码）。\n\n" +
+            "<b>⑥ customerMapper 直接在 Controller 注入并调用 —— 违反 2.2 + 2.4（MUST）</b>：Controller 保持轻量，数据访问集中在 Repository。\n\n" +
+            "<b>⑦ 日志打印 req 和 token —— 违反 5.9（MUST NOT）</b>：敏感信息（Token、可能含密码的 Request）不得写入日志；日志用 {} 占位符（5.6），不要拼接。\n\n" +
+            "<b>⑧ catch 只记 getMessage() 后 finally return success —— 违反 5.4（MUST NOT）</b>：未知异常不得吞掉，应记完整堆栈并重新抛出；事务里调 customerFeign 还违反 6.13。\n\n" +
+            "<b>采分点</b>：指出 ≥4 处并给出正确改法得满分（6 分）；每少一处扣 1.5 分；只指出违规不给改法酌情扣分。"
+  },
+  { id:22, type:"short", chap:"新服务接入", points:6,
+    q:"一个新建的 Java 后端服务要接入公司 framework 脚手架上线，请列出<b>必须</b>做的配置/接入项（结合规范中提到的统一父 POM、Redis、密钥、Result、异常处理、MQ 等，至少写出 6 项，并各用一句话说明作用）。",
+    ref:"<span class=\"ans-label\">参考答案（任选 6 项即可，每项 1 分）</span>\n\n" +
+        "1. <b>统一父 POM（wshoto-parent）+ Java 17</b>：管理公共依赖与版本，新建服务必须用（2.1）。对应 &lt;parent&gt;com.wshoto:wshoto-parent&lt;/parent&gt;。\n\n" +
+        "2. <b>Redis 走框架客户端（如 RedisWClient）</b>：不得自行引入 jedis 等绕过脚手架；Key 要有可识别的业务语义（7.1）。\n\n" +
+        "3. <b>Redis Key 显式设置 TTL 且 ≤24h</b>：未传 TTL 由组件加默认 TTL；不得创建永久 Key（7.2）。\n\n" +
+        "4. <b>密钥用 ${...} 占位，由配置中心/密钥管理注入</b>：datasource.password、第三方 access-key 等真实凭证不得写进仓库（8.7）。\n\n" +
+        "5. <b>统一 Result&lt;T&gt; + ResultUtils</b>：普通 JSON 接口必须用专用 Request/Response + 统一 Result（4.3）。\n\n" +
+        "6. <b>用脚手架全局异常处理器</b>：校验/业务/未知异常由全局处理器统一转 Result，业务不得重复实现通用全局处理器，未知异常不向用户暴露内部信息（5.5）。\n\n" +
+        "7. <b>自定义业务异常继承 BaseException</b>：不在 message 里手工拼错误码（5.2）。\n\n" +
+        "8. <b>MQ 用 StreamMessage 标准信封</b>：含唯一 ID、类型、租户、最小业务负载；不直接发 DO/敏感对象（7.6）；关键消息发送失败必须可处理（7.7）。\n\n" +
+        "9. <b>事务用 Spring 编程式事务（TransactionTemplate）</b>：不得新增 @Transactional（6.12），事务内不做长耗时外部调用（6.13）。\n\n" +
+        "10. <b>线程池注册为 Spring Bean + TTL 包装</b>：显式设置核心/最大/有界队列/拒绝策略，不得用 Executors 快捷方法（8.1/8.2）。\n\n" +
+        "<b>采分点</b>：写出 ≥6 项并说明作用得满分（6 分）；每少一项扣 1 分；只列名称不说明作用酌情扣分。"
+  }
+];
+
+const SECTIONS = [
+  { title:"一、单选题",       badge:"3分/题", ids:[1,2,3,4,5,6,7,8,9,10] },
+  { title:"二、多选题（含2道代码审查）", badge:"4分/题", ids:[11,12,13,14,15] },
+  { title:"三、判断题",       badge:"2分/题", ids:[16,17,18,19] },
+  { title:"四、匹配题",       badge:"4分/题", ids:[20] },
+  { title:"五、简答题（含1道代码审查实战）", badge:"6分/题", ids:[21,22] }
+];
+
+const FULL_SCORE = 74;
+const TYPE_LABEL = {single:"单选",multi:"多选",judge:"判断",match:"匹配",short:"简答/综合"};
+
+/* state */
+let state = {}; // {id: userAnswer}
+let submitted = false;
+
+/* ============================================================
+   RENDER
+   ============================================================ */
+function render(){
+  const root = document.getElementById("exam");
+  root.innerHTML = "";
+  SECTIONS.forEach(sec=>{
+    const sEl = document.createElement("div");
+    sEl.className = "section";
+    sEl.innerHTML = `<div class="section-title"><span class="badge">${sec.badge}</span>${sec.title}</div>`;
+    sec.ids.forEach(id=>{
+      const q = QUESTIONS.find(x=>x.id===id);
+      sEl.appendChild(renderQ(q));
+    });
+    root.appendChild(sEl);
+  });
+}
+
+function renderQ(q){
+  const el = document.createElement("div");
+  el.className = "q";
+  el.dataset.id = q.id;
+
+  const head = `
+    <div class="q-head">
+      <span class="q-num">${q.id}</span>
+      <span class="q-type">${TYPE_LABEL[q.type]}</span>
+      <span class="q-points">${q.points} 分</span>
+      <span class="q-chap">${q.chap}</span>
+      <span class="q-verdict correct-v">✓ 正确</span>
+      <span class="q-verdict wrong-v">✗ 错误</span>
+      <span class="q-verdict partial-v">▲ 部分对</span>
+    </div>`;
+
+  const stem = `<div class="q-stem">${formatStem(q.q)}</div>`;
+  let body = "";
+
+  if(q.type==="single" || q.type==="multi"){
+    body = `<div class="opts">` + q.opts.map(o=>`
+      <div class="opt ${q.type==='multi'?'multi':''}" data-q="${q.id}" data-k="${o.k}">
+        <span class="marker">${q.type==='multi'?'✓':o.k}</span>
+        <span>${o.k}. ${o.t}</span>
+      </div>`).join("") + `</div>`;
+  }
+  else if(q.type==="judge"){
+    body = `<div class="tf">
+      <button class="tf-btn" data-q="${q.id}" data-v="true">✓ 正确</button>
+      <button class="tf-btn" data-q="${q.id}" data-v="false">✗ 错误</button>
+    </div>`;
+  }
+  else if(q.type==="match"){
+    const optsHTML = q.right.map(r=>`<span><b>${r.k}.</b> ${r.t}</span>`).join(" &nbsp;&nbsp; ");
+    body = `<div class="match-options">选项：${optsHTML}</div>
+    <div class="match-list">` + q.left.map(l=>`
+      <div class="match-row" data-q="${q.id}" data-left="${l.k}">
+        <span class="match-left">${l.k}</span>
+        <span class="match-text">${l.t}</span>
+        <select class="match-select" data-q="${q.id}" data-left="${l.k}">
+          <option value="">选择 →</option>
+          ${q.right.map(r=>`<option value="${r.k}">${r.k}. ${r.t.length>14?r.t.slice(0,12)+"…":r.t}</option>`).join("")}
+        </select>
+      </div>`).join("") + `</div>`;
+  }
+  else if(q.type==="short"){
+    body = `<textarea class="ta" data-q="${q.id}" placeholder="请在此输入你的答案…（判分后请展开「参考答案」对照自评）"></textarea>
+    <div style="margin-top:10px">
+      <button class="ref-toggle" data-q="${q.id}">📖 查看参考答案</button>
+    </div>
+    <div class="ref-box" id="ref-${q.id}">
+      <span class="ans-label">参考答案</span>
+      ${q.ref}
+    </div>
+    <div class="self-eval" id="se-${q.id}" style="display:none">
+      <span>自评：</span>
+      <button class="se-btn yes" data-q="${q.id}" data-se="yes">✓ 我答对了（${q.points}分）</button>
+      <button class="se-btn no" data-q="${q.id}" data-se="no">✗ 部分对/没答对（0分）</button>
+      <span class="self-pts" id="pts-${q.id}"></span>
+    </div>`;
+  }
+
+  const explain = q.type!=="short"
+    ? `<div class="explain"><span class="ex-label">解析：</span>${q.explain}<br><span class="ex-label">正确答案：</span><span class="ans">${formatAnswer(q)}</span></div>`
+    : "";
+
+  el.innerHTML = head + stem + body + explain;
+  return el;
+}
+
+function formatStem(s){ return s.replace(/\n/g,"<br>"); }
+function formatAnswer(q){
+  if(q.type==="single"||q.type==="multi") return q.answer.join("、");
+  if(q.type==="judge") return q.answer ? "✓ 正确" : "✗ 错误";
+  if(q.type==="match") return Object.entries(q.answer).map(([k,v])=>`${k}-${v}`).join("　");
+  return "";
+}
+
+/* ============================================================
+   INTERACTION
+   ============================================================ */
+function bind(){
+  document.addEventListener("click", e=>{
+    const t = e.target.closest("[data-q]");
+    if(t && !submitted){
+      const qid = +t.dataset.q;
+      const q = QUESTIONS.find(x=>x.id===qid);
+
+      if(t.classList.contains("opt")){
+        toggleOpt(q, t);
+      } else if(t.classList.contains("tf-btn")){
+        pickJudge(q, t);
+      } else if(t.classList.contains("ref-toggle")){
+        document.getElementById("ref-"+qid).classList.toggle("open");
+      } else if(t.classList.contains("se-btn")){
+        pickSelfEval(q, t);
+      }
+    }
+  });
+
+  document.addEventListener("change", e=>{
+    if(submitted) return;
+    const sel = e.target.closest(".match-select");
+    if(sel){
+      const qid = +sel.dataset.q;
+      const q = QUESTIONS.find(x=>x.id===qid);
+      if(!state[qid]) state[qid] = {};
+      state[qid][sel.dataset.left] = sel.value;
+      updateProgress();
+    }
+  });
+
+  document.getElementById("submitBtn").addEventListener("click", submit);
+  document.getElementById("resetBtn").addEventListener("click", reset);
+}
+
+function toggleOpt(q, el){
+  const k = el.dataset.k;
+  if(q.type==="single"){
+    state[q.id] = [k];
+    el.parentElement.querySelectorAll(".opt").forEach(o=>o.classList.remove("selected"));
+    el.classList.add("selected");
+  } else {
+    if(!state[q.id]) state[q.id] = [];
+    const idx = state[q.id].indexOf(k);
+    if(idx>=0){ state[q.id].splice(idx,1); el.classList.remove("selected"); el.querySelector(".marker").textContent=""; }
+    else { state[q.id].push(k); el.classList.add("selected"); el.querySelector(".marker").textContent="✓"; }
+    state[q.id].sort();
+  }
+  updateProgress();
+}
+
+function pickJudge(q, el){
+  const v = el.dataset.v === "true";
+  state[q.id] = v;
+  el.parentElement.querySelectorAll(".tf-btn").forEach(b=>b.classList.remove("selected"));
+  el.classList.add("selected");
+  updateProgress();
+}
+
+function pickSelfEval(q, el){
+  const se = el.dataset.se;
+  state[q.id] = (se==="yes") ? q.points : 0;
+  const wrap = document.getElementById("se-"+q.id);
+  wrap.querySelectorAll(".se-btn").forEach(b=>b.classList.remove("active"));
+  el.classList.add("active");
+  document.getElementById("pts-"+q.id).textContent = se==="yes" ? `已计入 ${q.points} 分` : "计 0 分";
+  if(submitted){ refreshResult(); }
+}
+
+function updateProgress(){
+  if(submitted) return;
+  let answered = 0;
+  QUESTIONS.forEach(q=>{
+    const a = state[q.id];
+    if(a===undefined) return;
+    if(q.type==="multi" && Array.isArray(a) && a.length>0) answered++;
+    else if(q.type==="single" && Array.isArray(a) && a.length>0) answered++;
+    else if(q.type==="judge" && typeof a==="boolean") answered++;
+    else if(q.type==="match" && typeof a==="object" && Object.keys(a).length===q.left.length) answered++;
+    else if(q.type==="short" && (typeof a==="number")) answered++;
+  });
+  const total = QUESTIONS.length || 1;
+  document.getElementById("answeredCount").textContent = answered;
+  document.getElementById("progressFill").style.width = (answered/total*100)+"%";
+}
+
+/* ============================================================
+   SCORING
+   ============================================================ */
+function scoreQ(q){
+  const a = state[q.id];
+
+  if(q.type==="single"){
+    const got = Array.isArray(a) && a.length && a[0]===q.answer[0] ? q.points : 0;
+    return {pts:got, status: got>0?"correct":"wrong", got};
+  }
+  if(q.type==="multi"){
+    if(!Array.isArray(a) || a.length===0) return {pts:0, status:"wrong", got:0};
+    const correct = q.answer;
+    const allRight = a.every(x=>correct.includes(x)) && a.length===correct.length;
+    const hasWrong = a.some(x=>!correct.includes(x));
+    if(allRight) return {pts:q.points, status:"correct", got:q.points};
+    if(hasWrong) return {pts:0, status:"wrong", got:0};
+    return {pts:1, status:"partial", got:1};
+  }
+  if(q.type==="judge"){
+    const got = (a===q.answer) ? q.points : 0;
+    return {pts:got, status: got>0?"correct":"wrong", got};
+  }
+  if(q.type==="match"){
+    if(!a || typeof a!=="object") return {pts:0, status:"wrong", got:0};
+    let rightCount = 0;
+    q.left.forEach(l=>{ if(a[l.k]===q.answer[l.k]) rightCount++; });
+    const got = rightCount===q.left.length ? q.points : 0;
+    return {pts:got, status: got>0?"correct":"wrong", got, rightCount, total:q.left.length};
+  }
+  if(q.type==="short"){
+    const got = (typeof a==="number") ? a : 0;
+    return {pts:got, status:"self", got};
+  }
+  return {pts:0,status:"wrong",got:0};
+}
+
+function applyVerdict(){
+  let totalAuto = 0;
+  let totalShort = 0;
+
+  QUESTIONS.forEach(q=>{
+    const r = scoreQ(q);
+    const card = document.querySelector(`.q[data-id="${q.id}"]`);
+    card.classList.add("locked","show-explain");
+
+    if(q.type==="single" || q.type==="multi"){
+      q.opts.forEach(o=>{
+        const optEl = card.querySelector(`.opt[data-k="${o.k}"]`);
+        if(q.answer.includes(o.k)) optEl.classList.add("is-answer");
+        if(optEl.classList.contains("selected") && !q.answer.includes(o.k)) optEl.classList.add("bad-pick");
+      });
+      card.classList.add(r.status);
+      addPtsLine(card, r, q);
+      totalAuto += r.got;
+    }
+    else if(q.type==="judge"){
+      card.querySelectorAll(".tf-btn").forEach(b=>{
+        const v = b.dataset.v==="true";
+        if(v===q.answer) b.classList.add("is-answer");
+        if(b.classList.contains("selected") && v!==q.answer) b.classList.add("bad-pick");
+      });
+      card.classList.add(r.status);
+      addPtsLine(card, r, q);
+      totalAuto += r.got;
+    }
+    else if(q.type==="match"){
+      q.left.forEach(l=>{
+        const sel = card.querySelector(`.match-select[data-left="${l.k}"]`);
+        sel.disabled = true;
+        const rowEl = card.querySelector(`.match-row[data-left="${l.k}"]`);
+        const userV = state[q.id] && state[q.id][l.k];
+        if(userV===q.answer[l.k]){ rowEl.classList.add("correct-row"); }
+        else {
+          rowEl.classList.add("wrong-row");
+          const hint = document.createElement("span");
+          hint.style.cssText="font-size:12px;color:var(--ok);font-weight:700;margin-left:4px";
+          hint.textContent = `→ 正确:${q.answer[l.k]}`;
+          rowEl.appendChild(hint);
+        }
+      });
+      card.classList.add(r.status);
+      addPtsLine(card, r, q);
+      totalAuto += r.got;
+    }
+    else if(q.type==="short"){
+      const ta = card.querySelector(".ta");
+      ta.disabled = true;
+      document.getElementById("se-"+q.id).style.display="flex";
+      totalShort += r.got;
+      const ptsEl = document.getElementById("pts-"+q.id);
+      ptsEl.textContent = r.got>0 ? `已计入 ${r.got} 分` : "计 0 分（请自评）";
+    }
+  });
+
+  return {totalAuto, totalShort};
+}
+
+function addPtsLine(card, r, q){
+  const div = document.createElement("div");
+  if(r.status==="partial"){
+    div.className="pts-line"; div.style.color="#C98A1E";
+    div.innerHTML = `▲ 漏选得 <b>1 分</b> / 满分 ${q.points}`;
+  } else if(r.got>0){
+    div.className="pts-line gain";
+    div.innerHTML = `✓ 得 <b>${r.got}</b> 分 / 满分 ${q.points}`;
+  } else {
+    div.className="pts-line zero";
+    div.innerHTML = `✗ 得 <b>0</b> 分 / 满分 ${q.points}` + (r.total?`（匹配对 ${r.rightCount}/${r.total}）`:"");
+  }
+  card.querySelector(".explain").appendChild(div);
+}
+
+function comment(score){
+  const pct = score / FULL_SCORE * 100;
+  if(pct>=90) return "🏆 优秀！后端规范掌握扎实，代码审查能力强。";
+  if(pct>=75) return "👍 不错，重点条文已掌握，再巩固下代码审查的细节。";
+  if(pct>=60) return "💪 及格线徘徊，建议重做错题、回看对应规范条文。";
+  return "⚠️ 需要重点复习，尤其是代码审查实战题和 MUST/MUST NOT 条文。";
+}
+
+function refreshResult(){
+  let totalAuto=0, totalShort=0;
+  QUESTIONS.forEach(q=>{
+    const r = scoreQ(q);
+    if(q.type==="short") totalShort += r.got; else totalAuto += r.got;
+  });
+  const total = totalAuto + totalShort;
+  document.getElementById("finalScore").textContent = total;
+  document.getElementById("finalComment").textContent = comment(total);
+  document.getElementById("finalDetail").textContent =
+    `客观题（单选/多选/判断/匹配）${totalAuto} 分 · 主观自评（简答）${totalShort} 分`;
+}
+
+function submit(){
+  const objective = QUESTIONS.filter(q=>q.type!=="short");
+  const unanswered = objective.filter(q=> state[q.id]===undefined ||
+    (q.type==="multi" && (!Array.isArray(state[q.id])||state[q.id].length===0)) ||
+    (q.type==="match" && (!state[q.id] || Object.keys(state[q.id]).length<q.left.length)) ).length;
+  if(unanswered>0){
+    if(!confirm(`还有 ${unanswered} 道客观题未作答，确定要交卷吗？`)) return;
+  }
+  submitted = true;
+  applyVerdict();
+  refreshResult();
+  document.getElementById("resultBanner").classList.add("show");
+  document.getElementById("submitBtn").classList.add("hidden");
+  document.getElementById("resetBtn").classList.remove("hidden");
+  document.getElementById("submitHint").textContent = "已交卷。点击「重新考试」可重置全部作答。";
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+function reset(){
+  if(!confirm("确定要重新考试吗？所有作答和判分将被清空。")) return;
+  state = {}; submitted = false;
+  render();
+  document.getElementById("resultBanner").classList.remove("show");
+  document.getElementById("submitBtn").classList.remove("hidden");
+  document.getElementById("resetBtn").classList.add("hidden");
+  document.getElementById("submitHint").textContent = "交卷后将自动判分并显示解析，输入会被锁定。";
+  document.getElementById("answeredCount").textContent = "0";
+  document.getElementById("progressFill").style.width = "0%";
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+/* boot */
+render();
+bind();
+document.getElementById("progressTotal").textContent = QUESTIONS.length;
+document.getElementById("finalScoreTotal").textContent = "总分 / " + FULL_SCORE;
+</script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+[
+  {
+    "start": 0.1,
+    "end": 2.52,
+    "text": "做一道架构层匹配题。"
+  },
+  {
+    "start": 2.48,
+    "end": 5.34,
+    "text": "wshoto-gateway 属于网关层。"
+  },
+  {
+    "start": 5.34,
+    "end": 10.85,
+    "text": "wshoto-crm-bff-service 属于接入与聚合层 BFF。"
+  },
+  {
+    "start": 10.85,
+    "end": 15.97,
+    "text": "base-customer-center 也就是客户中心属于共享业务能力层。"
+  },
+  {
+    "start": 15.97,
+    "end": 20.4,
+    "text": "base-tenant-service 也就是租户属于平台基础层。"
+  },
+  {
+    "start": 20.4,
+    "end": 36.64,
+    "text": "这道题考的是五层架构和典型服务归属，记住网关只 1 个，BFF 6 个做聚合，客户中心这种跨业务复用的在共享业务能力层，租户用户权限认证这种地基在平台基础层。"
+  }
+]

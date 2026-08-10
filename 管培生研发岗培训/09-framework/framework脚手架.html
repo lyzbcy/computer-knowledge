@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第8章：wshoto-framework 脚手架 — 微盛管培生学习地图</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Poppins:wght@400;600;700&family=Noto+Sans+SC:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#FAF6EB;--paper:#F3EDDD;--forest:#1E3A24;--sky:#BCD8EE;--sage:#AFCDA8;--ink:#1A2018;--marker:#F5E08A;--brick:#B5482A;--correct:#2F7D46;--wrong:#B5482A;--font-display:"Archivo Black","Noto Sans SC","PingFang SC",sans-serif;--font-head:"Poppins","Noto Sans SC","PingFang SC",sans-serif;--font-body:-apple-system,"PingFang SC","Noto Sans SC",sans-serif;--font-mono:"Roboto Mono","JetBrains Mono",monospace;--radius-pill:999px;--radius-card:14px;}
+*{box-sizing:border-box;margin:0;padding:0;}body{font-family:var(--font-body);background:var(--cream);color:var(--ink);line-height:1.7;}
+.layout{display:flex;min-height:100vh;}
+.sidebar{width:280px;background:var(--forest);color:var(--cream);position:fixed;height:100vh;overflow-y:auto;padding:24px 20px;flex-shrink:0;z-index:10;display:flex;flex-direction:column;}
+.sidebar h2{font-family:var(--font-head);font-size:18px;margin-bottom:16px;color:var(--marker);}
+.progress-wrap{margin-bottom:20px;}.progress-bar{background:rgba(255,255,255,.15);height:8px;border-radius:var(--radius-pill);overflow:hidden;}.progress-fill{background:var(--sage);height:100%;width:0%;transition:width .3s;}.progress-num{font-size:13px;margin-top:4px;opacity:.8;}
+.nav-list{padding:0;}.nav-list li{margin-bottom:6px;list-style:none;}.nav-list a{display:block;padding:8px 12px;border-radius:8px;font-size:14px;opacity:.8;transition:.15s;text-decoration:none;color:var(--cream);}.nav-list a:hover{background:rgba(255,255,255,.1);opacity:1;}
+.sidebar-footer{margin-top:auto;padding-top:20px;font-size:12px;opacity:.5;}
+.main{margin-left:280px;flex:1;padding:40px 48px;max-width:820px;}
+.main h1{font-family:var(--font-display);font-size:32px;margin-bottom:8px;color:var(--forest);}
+.main h2{font-family:var(--font-head);font-size:22px;margin:32px 0 12px;color:var(--forest);border-bottom:2px solid var(--sage);padding-bottom:6px;}
+.main h3{font-family:var(--font-head);font-size:17px;margin:20px 0 8px;color:var(--forest);}
+.main p{margin-bottom:8px;}
+.card{background:var(--paper);border-radius:var(--radius-card);padding:20px;margin-bottom:16px;}
+.card.fact{border-left:4px solid var(--sky);}.card.judgment{border-left:4px solid var(--marker);}.card.inference{border-left:4px solid var(--sage);}.card.danger{border-left:4px solid var(--brick);}
+.src{display:inline-block;background:var(--marker);color:var(--ink);padding:2px 8px;border-radius:4px;font-size:13px;margin-top:8px;font-family:var(--font-mono);}
+.bg-note{background:#E8E4D4;border-radius:6px;padding:4px 8px;font-size:13px;color:#555;display:inline-block;}
+.objective{background:var(--paper);border-radius:var(--radius-card);padding:16px 20px;margin-bottom:12px;display:flex;gap:12px;align-items:flex-start;}
+.objective .num{background:var(--forest);color:var(--cream);width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0;}
+.structure-map{background:var(--paper);border-radius:var(--radius-card);padding:24px;}
+.structure-node{padding:12px 16px;border-radius:8px;margin-bottom:8px;border:2px solid transparent;}
+.structure-node.cluster{background:#E8F0E5;border-color:var(--sage);}.structure-node.branch{background:#E8EEF5;border-color:var(--sky);margin-left:20px;}.structure-node.leaf{background:#F5EDE5;border-color:#D4C4A8;margin-left:40px;}
+.task{background:var(--paper);border-radius:var(--radius-card);padding:20px;margin-bottom:16px;}
+.task .q{font-weight:600;margin-bottom:12px;}.opts{display:flex;flex-direction:column;gap:8px;margin-bottom:12px;}
+.opt{padding:10px 16px;border:2px solid #D4C4A8;background:var(--cream);border-radius:8px;cursor:pointer;font-size:15px;text-align:left;transition:.15s;font-family:var(--font-body);}
+.opt:hover{border-color:var(--sky);}.opt.selected{border-color:var(--forest);background:#E8F0E5;}.opt.selected::before{content:"✓ ";color:var(--correct);}
+.check{background:var(--forest);color:var(--cream);border:none;padding:8px 24px;border-radius:var(--radius-pill);cursor:pointer;font-size:14px;font-family:var(--font-body);}
+.check:hover{opacity:.85;}
+.feedback{margin-top:12px;padding:10px 14px;border-radius:8px;font-size:14px;background:#F0EBD8;min-height:44px;overflow:hidden;}.feedback.ok{background:#D4EDD9;color:var(--correct);}.feedback.no{background:#F8D7D5;color:var(--wrong);}.feedback .src{display:block;margin-top:6px;}
+.wrong-box{background:#FFF3F0;border-radius:8px;padding:12px;margin-top:16px;}.wrong-box h4{color:var(--wrong);margin-bottom:8px;}.wrong-box ul{list-style:none;padding-left:0;}.wrong-box li{padding:4px 0;font-size:14px;}
+.report-box{background:var(--paper);border-radius:8px;padding:16px;margin-top:16px;white-space:pre-wrap;font-size:14px;min-height:60px;font-family:var(--font-mono);}
+.report-btns{display:flex;gap:8px;margin-top:12px;}.report-btns button{padding:8px 16px;border-radius:var(--radius-pill);border:none;cursor:pointer;font-size:14px;}#genReport{background:var(--forest);color:var(--cream);}#copyReport{background:var(--sky);color:var(--ink);}
+.footer{text-align:center;padding:24px;margin-top:40px;border-top:1px solid #D4C4A8;font-size:13px;color:#888;}.footer a{color:var(--brick);text-decoration:underline;}
+.relevancy{margin-top:8px;font-size:13px;color:#888;border-top:1px dashed #D4C4A8;padding-top:6px;}
+.scene{background:#FFF8E1;border-left:4px solid var(--marker);border-radius:8px;padding:12px 16px;margin:10px 0;font-size:14px;}
+.scene::before{content:"🎬 Java 类比场景";display:block;font-weight:700;color:var(--brick);font-size:12px;margin-bottom:4px;letter-spacing:1px;}
+.cmp-table{width:100%;border-collapse:collapse;margin:10px 0;font-size:13px;background:var(--cream);border-radius:8px;overflow:hidden;}
+.cmp-table th{background:var(--forest);color:var(--cream);padding:8px 10px;text-align:left;}
+.cmp-table td{padding:8px 10px;border-bottom:1px solid #E0D8C0;vertical-align:top;}
+.cmp-table tr:last-child td{border-bottom:none;}
+.cmp-table td:first-child{font-weight:600;background:#F0EBD8;}
+.hardnum{background:#FFF3F0;border:2px solid var(--brick);border-radius:8px;padding:14px 18px;margin:12px 0;}
+.hardnum::before{content:"📌 记住这些硬数字/红线";display:block;font-weight:700;color:var(--brick);font-size:13px;margin-bottom:8px;letter-spacing:1px;}
+.hardnum ul{margin-left:18px;}.hardnum li{padding:3px 0;}.hardnum b{color:var(--brick);}
+.code-block{background:#14271E;color:#E8F0E5;padding:12px 14px;border-radius:8px;font-family:var(--font-mono);font-size:12.5px;line-height:1.55;margin:10px 0;overflow-x:auto;white-space:pre;}
+.code-block .kw{color:#F5E08A;}.code-block .cmt{color:#8FA68E;font-style:italic;}.code-block .str{color:#BCD8EE;}
+.fb-emoji{width:36px;height:36px;vertical-align:middle;margin-right:8px;float:left;border-radius:6px}.sec-sticker{width:34px;height:34px;vertical-align:middle;margin:0 2px 4px;display:inline-block;border-radius:6px}
+.view-source-btn{display:inline-block;margin:8px 0;padding:6px 14px;border:1.5px solid var(--forest);border-radius:999px;background:var(--marker);color:var(--forest);font:600 .82rem/1.2 var(--font-body);cursor:pointer;}
+.view-source-btn:hover{background:var(--forest);color:var(--cream);}
+.source-modal{display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.5);}
+.source-modal.show{display:flex;align-items:center;justify-content:center;padding:20px;}
+.source-modal-box{background:#fff;border-radius:14px;width:min(95vw,1100px);height:min(90vh,800px);display:flex;flex-direction:column;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,.3);}
+.source-modal-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--forest);color:var(--cream);}
+.source-modal-title{font-weight:700;font-size:.95rem;}
+.source-modal-close{background:none;border:none;color:var(--cream);font-size:1.3rem;cursor:pointer;line-height:1;}
+.source-modal-iframe{flex:1;border:none;width:100%;}
+.voice-btn{display:inline-block;vertical-align:middle;margin-left:.6em;padding:.25em .8em;border:1px solid var(--forest);border-radius:var(--radius-pill);background:var(--cream);color:var(--forest);font:600 .8rem/1.2 var(--font-body);cursor:pointer;transition:background .15s;}
+.voice-btn:hover{background:var(--sage);}.voice-btn.active{background:var(--forest);color:var(--cream);}
+#voiceFab{position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:9998;display:flex;align-items:center;flex-direction:row;background:var(--forest);color:var(--cream);border:none;cursor:pointer;height:5em;padding:0 .55em;border-radius:16px 0 0 16px;box-shadow:-4px 0 14px rgba(0,0,0,.18);font-family:var(--font-head);font-size:.85rem;overflow:hidden;transition:width .42s cubic-bezier(.4,0,.2,1), box-shadow .3s ease;width:1.9em;}
+#voiceFab .fab-icon{font-size:1.15rem;writing-mode:vertical-rl;text-orientation:upright;letter-spacing:.1em;white-space:nowrap;flex-shrink:0;}
+#voiceFab .fab-text{white-space:nowrap;opacity:0;margin-left:.6em;transition:opacity .28s ease .12s;}
+#voiceFab:hover{width:8.6em;box-shadow:-6px 0 22px rgba(0,0,0,.25);}
+#voiceFab:hover .fab-text{opacity:1;}
+#voiceFab.beat{animation:voiceBeat 1.6s ease-in-out infinite;}
+@keyframes voiceBeat{0%,100%{box-shadow:-4px 0 14px rgba(0,0,0,.18)}50%{box-shadow:-4px 0 20px rgba(181,72,42,.5)}}
+#voicePlayer{position:fixed;left:50%;bottom:1rem;transform:translateX(-50%) translateY(140%);width:min(92vw,380px);padding:1rem 1.1rem 1.1rem;background:var(--cream);border:2px solid var(--forest);border-radius:26px;box-shadow:0 8px 28px rgba(0,0,0,.16);z-index:9999;transition:transform .28s ease;text-align:center;font-family:var(--font-body);}
+#voicePlayer.show{transform:translateX(-50%) translateY(0);}
+#voicePlayer .vp-head{font-size:.75rem;color:var(--forest);opacity:.8;letter-spacing:.05em;}
+#voicePlayer .vp-title{font:700 1rem/1.35 var(--font-body);color:var(--ink);margin:.25rem 0 .7rem;padding:0 .2rem;word-break:break-word;}
+#voicePlayer .vp-play{width:3.6rem;height:3.6rem;border:none;border-radius:50%;background:var(--forest);color:var(--cream);font-size:1.3rem;cursor:pointer;margin:0 auto .7rem;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 0 #142710;transition:transform .1s, box-shadow .1s;}
+#voicePlayer .vp-play:active{transform:translateY(2px);box-shadow:0 1px 0 #142710;}
+#voicePlayer .vp-prev,#voicePlayer .vp-next{width:2.3rem;height:2.3rem;border:1.5px solid var(--forest);border-radius:50%;background:var(--cream);color:var(--forest);font-size:.9rem;cursor:pointer;}
+#voicePlayer .vp-controls{display:flex;align-items:center;justify-content:center;gap:1.2rem;margin-bottom:.7rem;}
+#voicePlayer .vp-seek{width:100%;margin:.2rem 0;cursor:pointer;accent-color:var(--forest);}
+#voicePlayer .vp-time{display:flex;justify-content:space-between;font:600 .72rem/1 var(--font-mono);color:var(--ink);opacity:.75;}
+#voicePlayer .vp-close{position:absolute;top:.5rem;right:.6rem;width:1.5rem;height:1.5rem;border:none;background:transparent;color:var(--ink);font-size:1rem;cursor:pointer;opacity:.5;}
+#voicePlayer .vp-sub{min-height:2.6em;max-height:3.9em;overflow:hidden;font:.85rem/1.5 var(--font-body);color:var(--ink);opacity:.55;margin:.2rem 0 .5rem;padding:0 .3rem;transition:opacity .2s;text-align:center;}
+#voicePlayer .vp-sub.active{opacity:1;}
+#voicePlayer .vp-sub .cur{color:var(--forest);font-weight:600;}
+@media(max-width:768px){.sidebar{position:relative;width:100%;height:auto;}.main{margin-left:0;padding:20px;}}
+</style>
+</head>
+<body>
+<script type="application/json" id="voicePlaylist">
+[
+  {"id":"m1","title":"M1 学习目标","src":"audio/m1.mp3"},
+  {"id":"m2","title":"M2 背景包","src":"audio/m2.mp3"},
+  {"id":"m3","title":"M3 问题定位","src":"audio/m3.mp3"},
+  {"id":"m4","title":"M4 结构地图","src":"audio/m4.mp3"},
+  {"id":"m5","title":"M5 核心判断","src":"audio/m5.mp3"},
+  {"id":"m6","title":"M6 概念拆解","src":"audio/m6.mp3"},
+  {"id":"m7","title":"M7 苏格拉底关卡","src":"audio/m7.mp3"},
+  {"id":"m8","title":"M8 闯关任务","src":"audio/m8.mp3"},
+  {"id":"m9","title":"M9 误解边界","src":"audio/m9.mp3"},
+  {"id":"m10","title":"M10 背景缺口","src":"audio/m10.mp3"},
+  {"id":"m11","title":"M11 复盘报告","src":"audio/m11.mp3"}
+]
+</script>
+<div class="layout">
+<aside class="sidebar">
+<h2>📋 第8章<br>wshoto-framework</h2>
+<button class="view-source-btn" onclick="openSource('https://doc.weixin.qq.com/doc/w3_ASEAyAZQAMICNzEunXaM2S1mJk6aS?scode=AA4AQQf9ABAtDvguvjASEAyAZQAMI')">📄 查看原文</button>
+<div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" id="barFill"></div></div><div class="progress-num">进度：<span id="barNum">0 / 8</span></div></div>
+<ul class="nav-list">
+<li><a href="#sec1">01 学习目标</a></li><li><a href="#sec2">02 零基础背景包</a></li><li><a href="#sec3">03 原文问题定位</a></li><li><a href="#sec4">04 原文结构地图</a></li><li><a href="#sec5">05 核心判断与依据</a></li><li><a href="#sec6">06 关键概念拆解</a></li><li><a href="#sec7">07 苏格拉底式关卡</a></li><li><a href="#sec8">08 闯关式任务</a></li><li><a href="#sec9">09 误解与边界</a></li><li><a href="#sec10">10 背景知识缺口</a></li><li><a href="#sec11">11 复盘与学习报告</a></li>
+</ul>
+<div class="sidebar-footer">微盛管培生学习地图 · 后端方向 · 第8章</div>
+</aside>
+<main class="main">
+<h1>wshoto-framework 脚手架</h1>
+<p style="color:#666;margin-bottom:24px;">基于《wshoto-framework 3.0 脚手架开发者手册》（2026-07-19）深度拆解 · 受众：Java 后端开发管培生</p>
+
+<h2 id="sec1">01 学习目标与阅读路径 <button class="voice-btn" data-voice-id="m1">🎧 听这章</button></h2>
+<p style="margin-bottom:16px;">这是公司所有 Java 微服务共用的二方包框架，掌握它就能站在巨人的肩膀上做业务。学完你应该能做到：</p>
+<div class="objective"><span class="num">1</span><div><strong>背出技术核心版本</strong>——Java 17、Spring Boot 3.4.0、Spring Cloud 2024.0.0、Spring Cloud Alibaba 2023.0.3.2、MyBatis-Plus 3.5.12、ShardingSphere 5.5.1、RocketMQ 5.3.1、Redisson 3.16.8。</div></div>
+<div class="objective"><span class="num">2</span><div><strong>说清三层依赖关系</strong>——wshoto-parent 是底；wshoto-framework-parent 是 BOM（只统一版本不传递依赖）；各业务子模块按需在 &lt;dependencies&gt; 中显式引入 starter。</div></div>
+<div class="objective"><span class="num">3</span><div><strong>记住新服务接入的最小组合</strong>——common + config-nacos + discovery-nacos + log + trace + web + monitor 是必须的；按需加 redis/stream/sharding 等。不要「省事」全引入。</div></div>
+<div class="objective"><span class="num">4</span><div><strong>理解「占位 starter 陷阱」</strong>——config-core-starter、discovery-core-starter 源码只有 package-info.java，引入它们不会获得任何能力，必须用对应的 nacos/local 实现包。</div></div>
+<div class="objective"><span class="num">5</span><div><strong>掌握泳道（lane）机制</strong>——租户映射到 MASTER/GRAY 发布环境，HTTP 入口写入 ContextHolder，Feign 负载均衡、MQ group/tag、延时消息 header 都消费这个上下文。</div></div>
+<p style="margin-top:16px;color:#666;">阅读路径：补 Spring Boot starter 机制 → 三层依赖关系 → 新服务接入步骤 → 各 starter 能力地图 → 踩坑实战 → 复盘。</p>
+
+<h2 id="sec2">02 零基础背景包 <button class="voice-btn" data-voice-id="m2">🎧 听这章</button></h2>
+<div class="card"><h3>背景补充 1：Spring Boot starter 机制</h3><p><span class="bg-note">背景补充</span></p><p style="margin-top:8px;">starter 是 Spring Boot 的「依赖打包+自动配置」约定：引入一个 starter，相当于一次性把一组相关 jar 和自动配置类加到 classpath，开箱即用。比如引入 <code style="font-family:var(--font-mono)">redis-boot-starter</code>，Redisson 客户端和默认 Bean 都自动建好。</p><p class="relevancy">为什么读本文需要它：wshoto-framework 把每个能力（配置、发现、日志、Redis、MQ）都封装成独立 starter，业务服务按需引入。</p></div>
+<div class="card"><h3>背景补充 2：BOM（Bill of Materials）</h3><p><span class="bg-note">背景补充</span></p><p style="margin-top:8px;">BOM 是 Maven 的「版本清单 POM」。用 <code style="font-family:var(--font-mono)">&lt;dependencyManagement&gt;</code> + <code style="font-family:var(--font-mono)">type=pom scope=import</code> 引入后，它<strong>只统一二方包版本，不会把 jar 自动加到 classpath</strong>。业务模块还是要自己写 <code style="font-family:var(--font-mono)">&lt;dependencies&gt;</code>。</p><p class="relevancy">为什么读本文需要它：手册反复强调「不要仅依赖 wshoto-framework-parent」，因为它是 BOM，引入它不会获得任何 starter。</p></div>
+<div class="card"><h3>背景补充 3：Nacos 配置中心 + 注册中心</h3><p><span class="bg-note">背景补充</span></p><p style="margin-top:8px;">Nacos 同时承担两个角色：①配置中心——按 namespace/group/dataId 三元组存配置文件，应用启动时拉取并支持动态刷新；②注册中心——服务实例启动时把自己注册进去，调用方通过服务名查实例列表。</p><p class="relevancy">为什么读本文需要它：config-nacos-boot-starter 和 discovery-nacos-boot-starter 是公司服务的两个「必须引入」包。</p></div>
+<div class="card"><h3>背景补充 4：TTL（TransmittableThreadLocal）</h3><p><span class="bg-note">背景补充</span></p><p style="margin-top:8px;">阿里开源的线程池上下文传递组件。普通 ThreadLocal 在线程池场景下子线程拿不到父线程的值，TTL 解决了这个问题，让 traceId、tenantId、laneId 等上下文跨线程池传递。</p><p class="relevancy">为什么读本文需要它：ContextHolder 用 TTL 保存上下文，线程池必须用 TTL 包装（TtlExecutors.getTtlExecutor）。</p></div>
+
+<h2 id="sec3">03 原文问题定位 <button class="voice-btn" data-voice-id="m3">🎧 听这章</button></h2>
+<div class="card judgment"><h3>表面在讲什么？</h3><p>30+ 个 starter 模块的能力说明：config 家族（core/local/nacos/extension）、discovery 家族、lane 泳道、trace、log、web、monitor、message、stream、delay、event、redis、extension、registry、orm、sharding-jdbc、report、scheduler、apidoc、encryptor、test。</p></div>
+<div class="card judgment"><h3>深层在回答什么问题？</h3><p><strong>「上百个 Java 微服务，怎么把配置/发现/日志/链路/Redis/MQ/分片/调度这些基础设施统一管起来，业务只写业务代码？」</strong></p><p style="margin-top:8px;">答案是「模块化二方包 + 按需引入 starter + 框架统一管上下文」：<span class="src">原文：每个功能模块独立封装为二方包，业务服务可以按需引入相关依赖</span>。</p></div>
+<div class="card judgment"><h3>作者为什么要写这篇？</h3><p>这是开发者手册，目标是让新服务快速接入、让老服务知道每个 starter 的能力边界和排障方法。手册特别强调「源码事实 vs 参考手册差异」（比如 config-local 的 watch-interval 配置键根本不存在，固定 3 秒）。</p></div>
+<div class="card judgment"><h3>只记一个问题</h3><p><strong>「新服务怎么接入框架？每个 starter 给我什么能力？」</strong>——继承 wshoto-parent → 导入 framework BOM → 按需引 starter → 配 Nacos → 框架统一管上下文透传。</p></div>
+
+<h2 id="sec4">04 原文结构地图 <button class="voice-btn" data-voice-id="m4">🎧 听这章</button></h2>
+<p style="margin-bottom:12px;">原文结构类型：<strong>能力目录 + 模块卡片</strong>（每个 starter 一个固定模板：基本信息/依赖与核心类/作用与实现/业务使用示例/如何确认已生效/边界风险排障）</p>
+<div class="structure-map">
+<div class="structure-node cluster"><strong>核心：框架 = 公共包 + 配置家族 + 发现家族 + 业务能力 starter 集合</strong></div>
+<div class="structure-node branch"><strong>基础层：wshoto-framework-common</strong></div>
+<div class="structure-node leaf">Result/Response/BaseException/ContextHolder/注解/工具类。所有 starter 的依赖上限。</div>
+<div class="structure-node branch"><strong>配置家族（config-*）</strong></div>
+<div class="structure-node leaf">core（占位）→ nacos（Spring Cloud Alibaba）/ local（3秒文件刷新）/ extension-core（SPI）/ extension-local/nacos（动态规则）</div>
+<div class="structure-node branch"><strong>发现家族（discovery-*）</strong></div>
+<div class="structure-node leaf">core（占位）→ nacos（注册+泳道负载均衡）/ local（静态服务列表）</div>
+<div class="structure-node branch"><strong>上下文与可观测（lane/trace/log/monitor/web）</strong></div>
+<div class="structure-node leaf">lane（租户→泳道）、trace（traceId 透传）、log（@WebLog+TTL MDC）、monitor（Prometheus 指标）、web（XSS/签名/压缩）</div>
+<div class="structure-node branch"><strong>消息与调度（message/stream/delay/event/scheduler）</strong></div>
+<div class="structure-node leaf">message-core（模型）→ stream（RocketMQ 生产消费）/ delay（延时消息）/ event（埋点）/ scheduler（XXL-JOB）</div>
+<div class="structure-node branch"><strong>数据层（orm/sharding-jdbc/report/redis）</strong></div>
+<div class="structure-node leaf">orm（MyBatis-Plus 通用）、sharding-jdbc（分库分表+影子库）、report（多数据源）、redis（Redisson+两层配置）</div>
+<div class="structure-node branch"><strong>扩展与治理（extension/registry/apidoc/encryptor/test）</strong></div>
+<div class="structure-node leaf">extension（业务扩展点）、registry（Feign 白名单）、apidoc（OpenAPI）、encryptor（ENC 解密）、test（TestNG+Mock）</div>
+<div style="margin-top:16px;padding:12px;background:#E8E4D4;border-radius:8px;font-size:14px;"><strong>节点关系说明：</strong>模块之间是<strong>依赖与组合</strong>关系：common 是所有 starter 的根；config-extension-core 是 lane/registry/extension/sharding 的 SPI 底座；stream 依赖 message-core 和 lane；sharding 依赖 config-extension。业务服务按需「搭积木」组合这些 starter。</div>
+</div>
+
+<h2 id="sec5">05 核心判断与依据 <button class="voice-btn" data-voice-id="m5">🎧 听这章</button></h2>
+<div class="card judgment"><h3>判断1：三层依赖关系不能混淆</h3><p><strong>原文依据：</strong><span class="src">原文 2.2：wshoto-framework-parent 和业务服务根 POM 都通过 &lt;parent&gt; 继承 wshoto-parent；业务服务在 &lt;dependencyManagement&gt; 中以 type=pom、scope=import 导入 wshoto-framework-parent；它只统一二方包版本，不会把 common 或任何 starter 自动加入 classpath</span></p>
+<table class="cmp-table"><tr><th>层</th><th>角色</th><th>能做/不能做</th></tr><tr><td>wshoto-parent</td><td>底座父 POM</td><td>JDK/Spring Boot BOM/插件基线</td></tr><tr><td>framework-parent</td><td>BOM（版本清单）</td><td>统一二方包版本，不传递依赖</td></tr><tr><td>业务子模块</td><td>实际依赖方</td><td>按职责显式 &lt;dependencies&gt; 引入</td></tr></table>
+<p style="color:var(--brick);"><strong>易误读：</strong>「我导入了 framework-parent 就能用 Result 了」——错，还要显式引 wshoto-framework-common。</p></div>
+<div class="card judgment"><h3>判断2：占位 starter 是陷阱</h3><p><strong>原文依据：</strong><span class="src">原文 6：config-core-starter 当前只有 package-info.java，没有 Bean、接口或自动配置逻辑。仅引用它不会获得配置加载或刷新能力</span></p><p><span class="src">原文 12：discovery-core-starter 只有包占位，没有运行逻辑。仅引用不会注册到任何注册中心</span></p><p style="margin-top:8px;"><strong>类型：</strong>事实。<strong>怎么破：</strong>用具体的 nacos/local 实现包替代。手册专门列出这类「误以为引入就能用」的陷阱。</p></div>
+<div class="card judgment"><h3>判断3：lane 泳道把租户映射到发布环境</h3><p><strong>原文依据：</strong><span class="src">原文 15：泳道把租户映射到特定发布环境。Nacos/本地 JSON 被解析为 List&lt;Lane&gt;，LaneDataSourceManager 监听变化；getLaneByTenantId 找到租户则返回大写 laneId，否则返回 MASTER</span></p><div class="scene">租户 A 配置在 GRAY 泳道规则里，租户 B 没配置。HTTP 请求带租户 A 的 CONTEXT_JSON 进来，Feign 负载均衡会优先选实例 metadata 里 laneId=GRAY 的 Pod；租户 B 的请求会兜底走 MASTER。</div></div>
+<div class="card judgment"><h3>判断4：trace 上下文自动透传，但线程池要用 TTL</h3><p><strong>原文依据：</strong><span class="src">原文 16：普通 HTTP/Feign、框架 MQ、XXL-JOB 调用无需手工传 header；特别注意，线程池要使用 TTL 的线程池</span></p><p><span class="src">原文 16：异常路径同样必须清理 TTL/MDC，否则线程复用会串租户、串 trace</span></p><div class="code-block"><span class="cmt">// TTL 线程池包装</span>
+<span class="kw">return</span> TtlExecutors.getTtlExecutor(executor);</div></div>
+<div class="card judgment"><h3>判断5：Redis 两层配置模型</h3><p><strong>原文依据：</strong><span class="src">原文 24：真实服务采用「两层配置」：公共 Data ID redisw-info.yaml 保存连接信息，服务主配置只声明逻辑客户端映射。RunInitDefaultRedisWClient 强制要求 wshoto.redis.config.default 存在</span></p><div class="hardnum"><ul><li><b>Redis 物理连接</b>：公共 redisw-info.yaml（前缀 redisw.config）</li><li><b>服务逻辑映射</b>：wshoto.redis.config.&lt;client&gt;.redisServerName</li><li><b>默认客户端</b>：wshoto.redis.config.default 必须存在，缺失启动失败</li><li><b>@Primary</b>：defaultRedisWClient 自动创建为 @Primary</li><li><b>命名客户端</b>：用 RedisWClientFactory 显式 @Bean 声明</li><li><b>config-local 文件刷新周期</b>：源码固定 3 秒，无 watch-interval 配置键</li><li><b>monitor 条件键</b>：management.custom.enable（不是老版 management.metrics.custom.enable）</li><li><b>delay use-v3</b>：3.0 必须为 true，false 不会自动回退旧协议</li></ul></div></div>
+<div class="card judgment"><h3>判断6：sharding 分片表查询必须显式带 wsTenantId</h3><p><strong>原文依据：</strong><span class="src">原文 28：所有 Mapper/XML/自定义 SQL 都必须显式带 ws_tenant_id；上下文存在不能替代 SQL 条件</span></p><p style="margin-top:8px;"><strong>类型：</strong>事实（MUST）。框架提供 CustomShardingDatabaseAlgorithm 按 wsTenantId 选库、CustomShardingTableAlgorithm 选表，但 SQL 条件必须业务自己写。</p></div>
+<div class="card judgment"><h3>判断7：EventClient 故意吞异常，不适合关键交易</h3><p><strong>原文依据：</strong><span class="src">原文 23：EventClient 捕获发送异常后只写日志，不向主调用方抛出；适合非关键埋点，不适合作为交易可靠事件</span></p><p style="margin-top:8px;"><strong>类型：</strong>判断。交易事件要用事务消息或本地消息表（呼应第7章 7.7 关键消息）。</p></div>
+
+<h2 id="sec6">06 关键概念拆解 <button class="voice-btn" data-voice-id="m6">🎧 听这章</button></h2>
+<div class="card"><h3>概念1：wshoto-framework-common（公共包）</h3><p><strong>原文术语：</strong>所有 starter 的基础包</p><p><strong>人话解释：</strong>框架的「公共字典」。提供统一返回模型（Result&lt;T&gt; 成功码 00000）、业务异常层次（BaseException）、TTL 上下文（ContextHolder）、注解（@WebLog/@ExtensionPoint）、工具类（JWT/AES/RSA/SM4）。</p><p><strong>与其他概念的关系：</strong>所有 starter 都依赖它；DTO/VO 模块只依赖它（不引 Redis/DB 重型包），避免把数据库依赖传递给调用方。</p><p><span class="src">原文 5</span><p style="color:var(--brick);"><strong>不要误解成：</strong>异常处理器 BaseExceptionHandler 需要业务 @ControllerAdvice 继承后才生效，不是引入 common 就自动生效。</p></div>
+<div class="card"><h3>概念2：ContextHolder（上下文中心）</h3><p><strong>原文术语：</strong>TransmittableThreadLocal&lt;Map&lt;String,String&gt;&gt; 保存上下文，并同步 MDC</p><p><strong>人话解释：</strong>一个跨线程的 Map，存 traceId、tenantId、wsTenantId、laneId、trafficType、userId 等。读取时同步到 SLF4J MDC（日志里能打 tid），TTL 回调时清理。</p><p><strong>字段对应表：</strong></p>
+<table class="cmp-table"><tr><th>字段/Header</th><th>含义</th></tr><tr><td>CONTEXT_JSON</td><td>完整上下文 JSON，Feign 主透传载体</td></tr><tr><td>x-traceId-header / tid</td><td>链路与日志关联 ID</td></tr><tr><td>x-ws-tenant-header</td><td>分库分表用的 wsTenantId</td></tr><tr><td>laneId</td><td>MASTER/GRAY/租户专属泳道</td></tr><tr><td>trafficType</td><td>SHADOW 表示压测/影子流量</td></tr></table>
+<p><span class="src">原文 5 上下文字段表</span></p></div>
+<div class="card"><h3>概念3：lane 泳道与发布环境</h3><p><strong>原文术语：</strong>tenantId → laneId 动态映射（MASTER/GRAY）</p><p><strong>人话解释：</strong>公司用「泳道」做灰度发布。规则 JSON 把指定租户映射到 GRAY 泳道，这些租户的请求会被路由到灰度 Pod；没配置的租户兜底走 MASTER（生产）。</p><div class="code-block"><span class="cmt">// 规则示例</span>
+[{<span class="str">"laneId"</span>: <span class="str">"gray"</span>, <span class="str">"tenants"</span>: [<span class="str">"t001"</span>, <span class="str">"t002"</span>]}]
+<span class="cmt">// 框架读取后转大写 GRAY，未配置返回 MASTER</span></div><p><strong>与其他概念的关系：</strong>HTTP 入口写 lane 到 ContextHolder；Feign 负载均衡按实例 metadata laneId 选 Pod；MQ 消费 group/tag 按 lane 路由；延时消息 header 带 laneId。</p><p><span class="src">原文 15</span></p><p style="color:var(--brick);"><strong>不要误解成：</strong>lane 规则文件名要和应用名匹配，marketing 服务的规则名是 wshoto-marketingcenter-lane.json 但应用名是 marketing-center，必须显式设置 Data ID。</p></div>
+<div class="card"><h3>概念4：Nacos 配置三层组织</h3><p><strong>原文术语：</strong>namespace/group/dataId</p><p><strong>人话解释：</strong>Nacos 用「命名空间+组+Data ID」三维度定位一份配置。公司约定：namespace=qw-${profile}（如 qw-test/qw-uat/qw-prod）、group 按职责分（DEFAULT_GROUP/LANE_GROUP/EXTENSION_GROUP/REGISTRY_GROUP）、dataId 按应用名拼。</p><table class="cmp-table"><tr><th>类型</th><th>namespace</th><th>group</th><th>Data ID</th></tr><tr><td>服务主配置</td><td>qw-${profile}</td><td>DEFAULT_GROUP</td><td>${app}.yaml</td></tr><tr><td>Redis 连接</td><td>qw-${profile}</td><td>DEFAULT_GROUP</td><td>redisw-info.yaml</td></tr><tr><td>数据库/分片</td><td>qw-${profile}</td><td>DEFAULT_GROUP</td><td>${app}-database.yaml</td></tr><tr><td>泳道规则</td><td>qw-lane-${profile}</td><td>LANE_GROUP</td><td>${app}-lane.json</td></tr><tr><td>Feign 白名单</td><td>qw-${profile}</td><td>REGISTRY_GROUP</td><td>${app}-registry</td></tr></table>
+<p><span class="src">原文 34.1</span></p></div>
+<div class="card"><h3>概念5：Spring Cloud Stream 函数式消费</h3><p><strong>原文术语：</strong>3.0 消费端使用函数式 Bean 和 &lt;beanName&gt;-in-0 binding</p><p><strong>人话解释：</strong>3.0 不再用 @StreamListener 注解。消费步骤：①写一个 MessageConsumer Bean，方法名格式【通道名】+Consumer；②用 messageConsumerWrapperFactory 包装；③Nacos 配 function.definition、binding、destination、group 四者一致。</p><div class="code-block"><span class="cmt">// Bean 名 = 通道名 + Consumer</span>
+<span class="kw">@Bean</span>
+<span class="kw">public</span> MessageConsumer echoChannelConsumer() { ... }
+<span class="cmt">// 通道名 echoChannel 必须与 nacos 配置一致</span></div><p><span class="src">原文 21</span></p><p style="color:var(--brick);"><strong>不要误解成：</strong>spring.cloud.stream.bindings（设 destination/group/并发）和 spring.cloud.stream.rocketmq.bindings（设 RocketMQ 专属参数）职责不同，不能混。</p></div>
+<div class="card"><h3>概念6：sharding-jdbc 分片路由</h3><p><strong>原文术语：</strong>CustomShardingDatabaseAlgorithm / CustomShardingTableAlgorithm</p><p><strong>人话解释：</strong>按 wsTenantId 决定数据落在哪个库、哪个表。启动时从 Nacos 拉分片 YAML，解密后落盘到 <code style="font-family:var(--font-mono)">${user.dir}/config/&lt;app&gt;/sharding-config.yaml</code>，再由 ShardingSphere 构建数据源。</p><p><strong>关键算法参数（改了=数据迁移）：</strong>tableIndex/tableLength/databaseIndex/databaseLength/tableTotal。改任何一个都会改变历史路由，必须按数据迁移处理，不能当配置热更新。</p><p><span class="src">原文 28</span></p></div>
+
+<h2 id="sec7">07 苏格拉底式阅读关卡 <button class="voice-btn" data-voice-id="m7">🎧 听这章</button></h2>
+<div class="task" data-task="q1" data-answer="B" data-ok="对！framework-parent 是 BOM，只统一二方包版本，不会把 common 或任何 starter 自动加入 classpath（原文 2.2）。" data-no="BOM 只管版本不管传递依赖，业务模块必须显式写 &lt;dependencies&gt; 引入需要的包。" data-src="原文 2.2：不会把 common 或任何 starter 自动加入 classpath" data-review="回到「05 核心判断」判断1复习">
+<div class="q">1. <strong>场景：</strong>新同事说「我在根 POM 导入了 wshoto-framework-parent，应该就能用 Result 了」。对吗？</div>
+<div class="opts"><button class="opt" data-val="A">A. 对，BOM 会自动传递所有依赖</button><button class="opt" data-val="B">B. 错，BOM 只统一版本，还要在需要的模块显式 &lt;dependencies&gt; 引入 wshoto-framework-common</button><button class="opt" data-val="C">C. 对，导入即用</button><button class="opt" data-val="D">D. 看版本号</button></div>
+<button class="check">检查</button><div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+</div>
+<div class="task" data-task="q2" data-answer="C" data-ok="对！config-core-starter 源码只有 package-info.java，必须用 config-nacos-boot-starter 才有配置加载能力（原文 6）。" data-no="占位 starter 陷阱：core 包没有任何运行逻辑，只引它配置中心不工作。" data-src="原文 6：仅引用它不会获得配置加载或刷新能力" data-review="回到「05 核心判断」判断2复习">
+<div class="q">2. <strong>场景：</strong>你引入了 config-core-starter，启动后发现 Nacos 配置根本没加载。问题在哪？</div>
+<div class="opts"><button class="opt" data-val="A">A. namespace 写错了</button><button class="opt" data-val="B">B. group 不对</button><button class="opt" data-val="C">C. config-core-starter 是占位包，要换成 config-nacos-boot-starter</button><button class="opt" data-val="D">D. 需要重启 Nacos</button></div>
+<button class="check">检查</button><div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+</div>
+<div class="task" data-task="q3" data-answer="B" data-ok="对！lane 规则把租户映射到 GRAY，没配置的兜底返回 MASTER（原文 15）。" data-no="未配置租户默认走 MASTER，不是 GRAY，也不是报错。" data-src="原文 15：getLaneByTenantId 找到租户则返回大写 laneId，否则返回 MASTER" data-review="回到「06 概念拆解」概念3复习">
+<div class="q">3. <strong>场景：</strong>lane 规则 JSON 里把租户 t001 配到 GRAY 泳道，租户 t002 没配置。t002 的请求会走哪个泳道？</div>
+<div class="opts"><button class="opt" data-val="A">A. GRAY</button><button class="opt" data-val="B">B. MASTER（兜底）</button><button class="opt" data-val="C">C. 报错</button><button class="opt" data-val="D">D. 随机选一个</button></div>
+<button class="check">检查</button><div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+</div>
+<div class="task" data-task="q4" data-answer="C" data-ok="对！EventClient 故意吞异常只记日志，适合非关键埋点，不适合交易可靠事件（原文 23）。" data-no="EventClient 异常不抛主流程，交易事件会丢失；要用事务消息或本地消息表。" data-src="原文 23：不适合作为交易可靠事件" data-review="回到「05 核心判断」判断7复习">
+<div class="q">4. <strong>场景：</strong>业务要发「订单创建」事件，下游必须收到才能对账。能用 event-boot-starter 吗？</div>
+<div class="opts"><button class="opt" data-val="A">A. 能，EventClient 会自动重试</button><button class="opt" data-val="B">B. 能，事件不会丢</button><button class="opt" data-val="C">C. 不能，EventClient 异常只记日志不抛，交易事件要用事务消息或本地消息表</button><button class="opt" data-val="D">D. 能，只要配置 topic 就行</button></div>
+<button class="check">检查</button><div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+</div>
+<div class="task" data-task="q5" data-answer="C" data-ok="对！分片表 SQL 必须显式带 ws_tenant_id，上下文存在不能替代 SQL 条件（原文 28）。" data-no="框架不提供透明租户隔离，SQL 条件必须业务自己写。" data-src="原文 28：上下文存在不能替代 SQL 条件" data-review="回到「05 核心判断」判断6复习">
+<div class="q">5. <strong>场景：</strong>分片表 customer 的查询 SQL 里没写 ws_tenant_id，但 ContextHolder 里有 wsTenantId。会怎样？</div>
+<div class="opts"><button class="opt" data-val="A">A. 框架自动补上 ws_tenant_id 条件</button><button class="opt" data-val="B">B. ContextHolder 有就行，SQL 不用写</button><button class="opt" data-val="C">C. 框架不透明补条件，必须业务 SQL 自己显式带，否则路由错误或被 SQL 拦截</button><button class="opt" data-val="D">D. 自动走默认库</button></div>
+<button class="check">检查</button><div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+</div>
+<div class="task" data-task="q6" data-answer="B" data-ok="对！3.0 用函数式 Bean，Bean 名=通道名+Consumer，function.definition/binding/destination/group 四者要一致（原文 21）。" data-no="3.0 不再用 @StreamListener，改用函数式 Bean。" data-src="原文 21：不再新增 @StreamListener" data-review="回到「06 概念拆解」概念5复习">
+<div class="q">6. <strong>场景：</strong>3.0 项目要新增一个 RocketMQ 消费者。哪种写法符合规范？</div>
+<div class="opts"><button class="opt" data-val="A">A. 用 @StreamListener 注解</button><button class="opt" data-val="B">B. 写 MessageConsumer Bean（方法名=通道名+Consumer）+ wrapper 包装 + Nacos 配 function.definition</button><button class="opt" data-val="C">C. 直接实现 MessageListener 接口</button><button class="opt" data-val="D">D. 用 @RocketMQMessageListener</button></div>
+<button class="check">检查</button><div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+</div>
+<div class="task" data-task="q7" data-answer="A,B,C" data-multi="true" data-ok="对！这3个都是新服务的「必须引入」starter，其他按需。" data-no="common+config-nacos+discovery-nacos+log+trace+web+monitor 是在线服务必须；redis/stream/sharding 按业务需要。" data-src="原文 36 验收清单 + 模块业务引用表" data-review="回到「05 核心判断」判断1复习">
+<div class="q">7. <strong>多选：</strong>以下哪些是新服务（在线业务）「必须引入」的 starter？</div>
+<div class="opts"><button class="opt" data-val="A">A. config-nacos-boot-starter</button><button class="opt" data-val="B">B. discovery-nacos-boot-starter</button><button class="opt" data-val="C">C. trace-boot-starter</button><button class="opt" data-val="D">D. sharding-jdbc-boot-starter（无分库分表也要引）</button></div>
+<button class="check">检查</button><div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+</div>
+
+<h2 id="sec8">08 闯关式任务 <button class="voice-btn" data-voice-id="m8">🎧 听这章</button></h2>
+<div class="task" data-task="t1" data-type="selects" data-ok="全部匹配正确！你掌握了 Nacos 三层组织、Redis 两层配置、占位 starter 陷阱。" data-no="Nacos 用 namespace/group/dataId 定位配置；Redis 用公共 redisw-info+服务逻辑映射；占位包要换成 nacos 实现。" data-src="原文 34 / 24 / 6" data-review="回到「06 概念拆解」全部概念复习">
+<div class="q">任务：把配置项匹配到正确的 Nacos Group。</div>
+<div style="margin:8px 0;">
+<div style="margin-bottom:6px;">服务主配置 ${app}.yaml → <select class="match" data-correct="a"><option value="">请选择</option><option value="a">DEFAULT_GROUP</option><option value="b">LANE_GROUP</option><option value="c">EXTENSION_GROUP</option><option value="d">REGISTRY_GROUP</option></select></div>
+<div style="margin-bottom:6px;">泳道规则 ${app}-lane.json → <select class="match" data-correct="b"><option value="">请选择</option><option value="a">DEFAULT_GROUP</option><option value="b">LANE_GROUP</option><option value="c">EXTENSION_GROUP</option><option value="d">REGISTRY_GROUP</option></select></div>
+<div style="margin-bottom:6px;">Feign 白名单 ${app}-registry → <select class="match" data-correct="d"><option value="">请选择</option><option value="a">DEFAULT_GROUP</option><option value="b">LANE_GROUP</option><option value="c">EXTENSION_GROUP</option><option value="d">REGISTRY_GROUP</option></select></div>
+<div style="margin-bottom:6px;">Redis 公共连接 redisw-info.yaml → <select class="match" data-correct="a"><option value="">请选择</option><option value="a">DEFAULT_GROUP</option><option value="b">LANE_GROUP</option><option value="c">EXTENSION_GROUP</option><option value="d">REGISTRY_GROUP</option></select></div>
+</div>
+<button class="check">检查</button><div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+</div>
+
+<h2 id="sec9">09 误解与边界 <button class="voice-btn" data-voice-id="m9">🎧 听这章</button></h2>
+<div class="card danger"><h3>误解1：「引入 framework-parent 就能用所有能力」</h3><p><strong>为什么容易误解：</strong>parent 听起来像「继承所有」。</p><p><strong>原文真正说了什么：</strong>framework-parent 是 BOM，只统一版本不传递依赖。每个 starter 要在 &lt;dependencies&gt; 显式引入。还要注意不要全引——多数 starter 会创建基础设施 Bean，错误配置会直接启动失败。</p><p><strong>如何避免：</strong>按业务需要逐项引；mvn dependency:tree 核对最终依赖。</p></div>
+<div class="card danger"><h3>误解2：「引入 config-core-starter / discovery-core-starter 就有配置中心/注册中心」</h3><p><strong>为什么容易误解：</strong>名字里有 config/discovery。</p><p><strong>原文真正说了什么：</strong>这俩是<strong>占位包</strong>，源码只有 package-info.java，没有任何运行逻辑。必须换成 config-nacos-boot-starter / discovery-nacos-boot-starter。</p><p><strong>如何避免：</strong>看每个 starter 的「源码现状」字段；启动后看 Bean 列表和日志确认能力生效。</p></div>
+<div class="card danger"><h3>误解3：「Nacos 配置发布成功 = 业务已刷新」</h3><p><strong>为什么容易误解：</strong>控制台显示发布成功。</p><p><strong>原文真正说了什么：</strong>修改可刷新测试配置后要确认目标 Bean 重绑定；数据源、连接池、第三方客户端通常<strong>不能热刷新</strong>，重要连接配置按重启变更管理。</p><p><strong>如何避免：</strong>关键配置变更走重启流程；动态配置只用于真正可刷新的业务参数。</p></div>
+<div class="card danger"><h3>误解4：「分片框架会自动给 SQL 加 ws_tenant_id」</h3><p><strong>为什么容易误解：</strong>框架好像什么都能自动化。</p><p><strong>原文真正说了什么：</strong>框架<strong>不提供透明租户隔离</strong>。ws_tenant_id 必须由业务 SQL/Wrapper 显式添加；安全检查只能发现部分危险语句，不能证明查询范围正确。</p><p><strong>如何避免：</strong>每条分片表 SQL 都显式带 ws_tenant_id；用 SelectCheckInterceptor 辅助但不能依赖它兜底。</p></div>
+<div class="card danger"><h3>误解5：「NacosDeregister 能可靠地摘流」</h3><p><strong>为什么容易误解：</strong>Bean 销毁时注销听起来很稳。</p><p><strong>原文真正说了什么：</strong>NacosDeregister 源码把占位符写成 <code style="font-family:var(--font-mono)">$(spring.application.name)</code>（注意是圆括号不是 ${}），销毁注销可能取值异常，<strong>不能作为唯一摘流机制</strong>。</p><p><strong>如何避免：</strong>摘流要走健康检查、Service 实例剔除等多重保障，不要只靠 deregister。</p></div>
+
+<h2 id="sec10">10 背景知识缺口 <button class="voice-btn" data-voice-id="m10">🎧 听这章</button></h2>
+<div class="card"><h3>现在可以先不补</h3><ul style="margin-left:20px;margin-top:8px;"><li><strong>ShardingSphere 内核 SQL 解析器原理</strong>——会用分片算法配置即可。</li><li><strong>Redisson 看门狗续期实现细节</strong>——知道「执行时间不可预估时用看门狗」即可。</li><li><strong>Spring Cloud Stream binder 内部机制</strong>——知道函数式 binding 怎么配即可。</li><li><strong>XXL-JOB 调度中心高可用部署</strong>——会用 @XxlJobTransfer 即可。</li></ul></div>
+<div class="card"><h3>后续值得追问</h3><ul style="margin-left:20px;margin-top:8px;"><li><strong>Result/BaseException 怎么和后端开发规范的统一 Result 对接</strong>→ 第7章</li><li><strong>多租户分片算法 CustomShardingDatabaseAlgorithm 的具体实现</strong>→ sharding-jdbc-boot-starter 源码</li><li><strong>Context_JSON 里到底带哪些字段、网关怎么生成</strong>→ trace-boot-starter + 网关配置</li><li><strong>extension 扩展点的六级回退顺序在生产怎么用</strong>→ extension-boot-starter 实战</li><li><strong>Pod / Service / Ingress 在 K8s 里怎么和 discovery 配合</strong>→ 第9章云原生运维</li></ul></div>
+
+<h2 id="sec11">11 复盘与学习报告 <button class="voice-btn" data-voice-id="m11">🎧 听这章</button></h2>
+<div class="wrong-box"><h4>📝 错题回流区</h4><ul id="wrongBox"><li style="color:#888">还没有错题。答错的题会自动收集到这里。</li></ul></div>
+<div class="report-btns"><button id="genReport">📊 生成学习报告</button><button id="copyReport">📋 复制报告</button></div>
+<div class="report-box" id="report">点击上方按钮生成你的学习报告。</div>
+
+<div class="footer">由 <a href="https://lyzbcy.github.io/" target="_blank" rel="noopener" style="color:#1d70b8;text-decoration:underline;font-weight:700">捞鱼</a> 制作 · 微盛管培生学习地图 · 后端方向<br>这个工具能帮你预习难啃的干货，但不能代替完整学习。学习愉快</div>
+</main>
+</div>
+<div class="source-modal" id="sourceModal" onclick="if(event.target===this)closeSource()">
+<div class="source-modal-box">
+<div class="source-modal-bar"><span class="source-modal-title">📄 原文文档：wshoto-framework 3.0 脚手架开发者手册</span><button class="source-modal-close" onclick="closeSource()">✕</button></div>
+<iframe class="source-modal-iframe" id="sourceFrame" src=""></iframe>
+</div>
+</div>
+<div id="voicePlayer">
+<button class="vp-close" aria-label="关闭">✕</button>
+<div class="vp-head">🎧 后台语音 · 连续播放</div>
+<div class="vp-title">—</div>
+<div class="vp-controls"><button class="vp-prev" aria-label="上一章">⏮</button><button class="vp-play" aria-label="播放/暂停">▶</button><button class="vp-next" aria-label="下一章">⏭</button></div>
+<input class="vp-seek" type="range" min="0" max="1000" value="0" aria-label="进度">
+<div class="vp-time"><span class="vp-cur">00:00</span><span class="vp-dur">00:00</span></div>
+<div class="vp-sub">点开播放后，这里会同步显示字幕</div>
+</div>
+<button id="voiceFab" aria-label="打开后台语音"><span class="fab-icon">🎧</span><span class="fab-text">后台语音</span></button>
+<script>
+function openSource(url){document.getElementById('sourceFrame').src=url;document.getElementById('sourceModal').classList.add('show');}
+function closeSource(){document.getElementById('sourceModal').classList.remove('show');document.getElementById('sourceFrame').src='';}
+</script>
+<script>
+(function(){
+  "use strict";
+  function $all(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));}
+  function selectedVals(t){return $all('.opt.selected',t).map(function(o){return o.getAttribute('data-val');}).sort();}
+  function setFb(t,state,html){var fb=t.querySelector('.feedback');if(!fb)return;fb.className='feedback'+(state?(' '+state):'');fb.innerHTML=html;}
+  function updateBar(){var all=$all('.task'),done=$all('.task[data-answered="1"]');var fill=document.getElementById('barFill'),num=document.getElementById('barNum');if(fill)fill.style.width=all.length?(done.length/all.length*100)+'%':'0%';if(num)num.textContent=done.length+' / '+all.length;}
+  function renderWrong(){var box=document.getElementById('wrongBox');if(!box)return;var wrong=$all('.task[data-answered="1"][data-correct="0"]');if(!wrong.length){box.innerHTML='<li style="color:#888">还没有错题。答错的题会自动收集到这里。</li>';return;}box.innerHTML='';wrong.forEach(function(t){var li=document.createElement('li');li.textContent='【'+(t.getAttribute('data-task')||'')+'】'+(t.getAttribute('data-review')||'回到对应模块复习');box.appendChild(li);});}
+  function check(t){var type=t.getAttribute('data-type'),ok=false;if(type==='selects'){var sels=$all('select.match',t),allok=true,empty=false;sels.forEach(function(s){if(!s.value)empty=true;if(s.value!==s.getAttribute('data-correct'))allok=false;});if(empty){setFb(t,'no','请先把每一项都选好再检查。');return;}ok=allok;}else{var sel=selectedVals(t);if(!sel.length){setFb(t,'no','请先选择一个选项再检查。');return;}var ans=(t.getAttribute('data-answer')||'').split(',').map(function(x){return x.trim();}).sort();ok=(sel.join('|')===ans.join('|'));}var body=ok?(t.getAttribute('data-ok')||'回答正确。'):(t.getAttribute('data-no')||'再想想。');var src=t.getAttribute('data-src');setFb(t,ok?'ok':'no',(ok?'<img class="fb-emoji" src="https://lyzbcy.github.io/weshoto-study/img/sticker/ok.png" alt="">':'<img class="fb-emoji" src="https://lyzbcy.github.io/weshoto-study/img/sticker/no.png" alt="">')+body+(src?('<span class="src">'+src+'</span>'):''));t.setAttribute('data-answered','1');t.setAttribute('data-correct',ok?'1':'0');updateBar();renderWrong();}
+  function genReport(){var box=document.getElementById('report');if(!box)return;var all=$all('.task'),done=$all('.task[data-answered="1"]'),right=$all('.task[data-answered="1"][data-correct="1"]');var lines=['=== 学习报告 ===','完成题目：'+done.length+' / '+all.length,'答对：'+right.length+' 题',''];var wrong=$all('.task[data-answered="1"][data-correct="0"]');if(wrong.length){lines.push('我答错的题（建议复习）：');wrong.forEach(function(t){lines.push('- '+(t.getAttribute('data-task')||'')+'：'+(t.getAttribute('data-review')||''));});}else{lines.push('暂无错题。');}box.textContent=lines.join('\n');}
+  document.addEventListener('click',function(e){var c=e.target.closest?e.target:null;var opt=c&&e.target.closest('.opt');if(opt){var t=opt.closest('.task');if(!t)return;if(t.getAttribute('data-multi')==='true'){opt.classList.toggle('selected');}else{$all('.opt',t).forEach(function(o){o.classList.remove('selected');});opt.classList.add('selected');}return;}var btn=c&&e.target.closest('.check');if(btn){var tk=btn.closest('.task');if(tk)check(tk);return;}if(e.target&&e.target.id==='genReport'){genReport();return;}if(e.target&&e.target.id==='copyReport'){var r=document.getElementById('report');if(r&&navigator.clipboard)navigator.clipboard.writeText(r.textContent);return;}});
+  function init(){updateBar();renderWrong();}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+<script>
+(function(){
+  "use strict";
+  if(window.__voiceEngine) return;
+  window.__voiceEngine = true;
+  var listNode = document.getElementById('voicePlaylist');
+  if(!listNode){ return; }
+  var TRACKS = [];
+  try { TRACKS = JSON.parse(listNode.textContent.trim()); } catch(e){ return; }
+  if(!TRACKS.length) return;
+  var player = document.getElementById('voicePlayer');
+  var fab = document.getElementById('voiceFab');
+  var audio = new Audio(); audio.preload = 'metadata';
+  var cur = 0;
+  var ranges = [];
+  var total = 0;
+  var seeking = false;
+  function $(s){ return player ? player.querySelector(s) : null; }
+  function fmt(s){ s=Math.max(0,Math.floor(s||0)); var m=Math.floor(s/60), x=s%60;
+    return (m<10?'0':'')+m+':'+(x<10?'0':'')+x; }
+  var probe = TRACKS.map(function(){ return {dur:0}; });
+  function tryFinalize(){
+    if(probe.some(function(p){return !p.dur;})) return;
+    ranges = []; total = 0;
+    probe.forEach(function(p){ ranges.push({dur:p.dur, start:total}); total += p.dur; });
+    var d = $('.vp-dur'); if(d) d.textContent = fmt(total);
+    var sk = $('.vp-seek'); if(sk){ sk.max = Math.max(1000, Math.floor(total*10)); }
+  }
+  TRACKS.forEach(function(t, i){
+    var a = new Audio(); a.preload = 'metadata'; a.src = t.src;
+    a.addEventListener('loadedmetadata', function(){
+      probe[i].dur = a.duration || 0; tryFinalize();
+    });
+    a.addEventListener('error', function(){ probe[i].dur = 0; tryFinalize(); });
+  });
+  function load(i){
+    cur = i; audio.src = TRACKS[i].src;
+    var ti = $('.vp-title'); if(ti) ti.textContent = TRACKS[i].title || ('第 '+(i+1)+' 段');
+    markBtn(i);
+  }
+  function play(){ audio.play().then(function(){ show(); setPlayIcon(true); if(fab) fab.classList.add('beat'); }).catch(function(){}); }
+  function pause(){ audio.pause(); setPlayIcon(false); if(fab) fab.classList.remove('beat'); }
+  function toggle(){ audio.paused ? play() : pause(); }
+  function next(){ if(cur < TRACKS.length-1){ load(cur+1); play(); } else { pause(); } }
+  function prev(){
+    var abs = absTime();
+    if(cur > 0 && abs - ranges[cur].start < 3){ load(cur-1); play(); }
+    else { audio.currentTime = 0; }
+  }
+  function absTime(){ return ranges[cur] ? ranges[cur].start + (audio.currentTime||0) : (audio.currentTime||0); }
+  function setPlayIcon(on){ var b=$('.vp-play'); if(b) b.textContent = on ? '⏸' : '▶'; }
+  function show(){ if(player) player.classList.add('show'); }
+  function hide(){ if(player) player.classList.remove('show'); }
+  function markBtn(i){
+    document.querySelectorAll('.voice-btn[data-voice-id]').forEach(function(b){
+      b.classList.toggle('active', b.getAttribute('data-voice-id') === TRACKS[i].id);
+    });
+  }
+  audio.addEventListener('timeupdate', function(){
+    if(seeking) return;
+    if(!ranges[cur]) return;
+    var abs = absTime(); var sk = $('.vp-seek'); var c = $('.vp-cur');
+    if(sk && total) sk.value = Math.round(abs / total * (sk.max||1000));
+    if(c) c.textContent = fmt(abs);
+  });
+  audio.addEventListener('ended', function(){ if(cur < TRACKS.length-1){ load(cur+1); play(); }
+    else { setPlayIcon(false); if(fab) fab.classList.remove('beat'); } });
+  function seekToFraction(frac){
+    if(!total) return;
+    var target = Math.max(0, Math.min(total, frac * total));
+    var i = 0; while(i < ranges.length-1 && ranges[i].start + ranges[i].dur < target){ i++; }
+    if(i !== cur){ cur = i; audio.src = TRACKS[i].src;
+      var ti=$('.vp-title'); if(ti) ti.textContent = TRACKS[i].title||('第 '+(i+1)+' 段'); markBtn(i); }
+    audio.currentTime = target - ranges[i].start;
+    var c=$('.vp-cur'); if(c) c.textContent = fmt(target);
+  }
+  document.addEventListener('click', function(e){
+    var t = e.target;
+    var vb = t.closest ? t.closest('.voice-btn[data-voice-id]') : null;
+    if(vb){
+      var id = vb.getAttribute('data-voice-id'), idx = -1;
+      TRACKS.forEach(function(tr, k){ if(tr.id === id) idx = k; });
+      if(idx >= 0){ load(idx); play(); }
+      return;
+    }
+    if(t.id === 'voiceFab'){ show(); if(audio.paused && !audio.src){ load(0); } if(audio.paused){ play(); } return; }
+    if(!player || !player.contains(t)) return;
+    if(t.classList.contains('vp-play')){ toggle(); return; }
+    if(t.classList.contains('vp-prev')){ prev(); return; }
+    if(t.classList.contains('vp-next')){ next(); return; }
+    if(t.classList.contains('vp-close')){ pause(); hide(); return; }
+  });
+  var sk = $('.vp-seek');
+  if(sk){
+    sk.addEventListener('input', function(){ seeking = true;
+      if(total){ var c=$('.vp-cur'); if(c) c.textContent = fmt((sk.value/(sk.max||1000))*total); } });
+    sk.addEventListener('change', function(){ seekToFraction(sk.value/(sk.max||1000)); seeking = false; });
+  }
+})();
+</script>
+<script>
+(function(){
+  "use strict";
+  if(window.__subEngine) return;
+  window.__subEngine = true;
+  var listNode = document.getElementById("voicePlaylist");
+  if(!listNode) return;
+  var subBox = document.querySelector("#voicePlayer .vp-sub");
+  var curEl = document.querySelector("#voicePlayer .vp-cur");
+  var titleEl = document.querySelector("#voicePlayer .vp-title");
+  if(!subBox) return;
+  var subs = [];
+  var subCache = {};
+  var curSrc = "";
+  function esc(s){ var d=document.createElement("div"); d.textContent=s; return d.innerHTML; }
+  function mp3ToJson(src){
+    var m = src.replace(/^.*?([a-zA-Z0-9_\/.\-]+\.mp3)(?:\?.*)?$/i, "$1");
+    return m.replace(/\.mp3$/i, ".json");
+  }
+  function loadSubFor(src){
+    if(!src || src === curSrc) return;
+    curSrc = src;
+    var jsonUrl = mp3ToJson(src);
+    if(subCache[jsonUrl]){ subs = subCache[jsonUrl]; return; }
+    fetch(jsonUrl).then(function(r){
+      if(!r.ok) throw new Error(r.status);
+      return r.json();
+    }).then(function(arr){
+      subCache[jsonUrl] = Array.isArray(arr) ? arr : [];
+      subs = subCache[jsonUrl];
+    }).catch(function(){ subs = []; });
+  }
+  function parseTime(text){
+    var p = String(text).trim().split(":");
+    if(p.length === 2){
+      var m = parseInt(p[0], 10) || 0;
+      var s = parseInt(p[1], 10) || 0;
+      return m * 60 + s;
+    }
+    return parseFloat(text) || 0;
+  }
+  function renderSub(t){
+    if(!subs.length) return;
+    var hit = null, idx = -1;
+    for(var i = 0; i < subs.length; i++){
+      if(t >= subs[i].start && t < subs[i].end){ hit = subs[i]; idx = i; break; }
+    }
+    if(!hit){
+      var prev = null;
+      for(var j = 0; j < subs.length; j++){
+        if(subs[j].start <= t) prev = subs[j]; else break;
+      }
+      subBox.classList.remove("active");
+      subBox.innerHTML = prev ? esc(prev.text) : "";
+      return;
+    }
+    subBox.classList.add("active");
+    var prevHtml = idx > 0
+      ? '<span style="opacity:.45">' + esc(subs[idx - 1].text) + "</span> "
+      : "";
+    subBox.innerHTML = prevHtml + '<span class="cur">' + esc(hit.text) + "</span>";
+  }
+  function tick(){
+    if(!curEl) return;
+    var sec = parseTime(curEl.textContent);
+    renderSub(sec);
+  }
+  function onTitleChange(){
+    var TRACKS = [];
+    try { TRACKS = JSON.parse(listNode.textContent.trim()); } catch(e){ return; }
+    var title = titleEl ? titleEl.textContent.trim() : "";
+    for(var i = 0; i < TRACKS.length; i++){
+      if(TRACKS[i].title === title){ loadSubFor(TRACKS[i].src); return; }
+    }
+  }
+  if(window.MutationObserver){
+    var obs = new MutationObserver(function(){ tick(); onTitleChange(); });
+    if(curEl) obs.observe(curEl, { childList:true, characterData:true, subtree:true });
+    if(titleEl) obs.observe(titleEl, { childList:true, characterData:true, subtree:true });
+  } else {
+    setInterval(function(){ tick(); onTitleChange(); }, 300);
+  }
+  setTimeout(tick, 500);
+})();
+</script>
+<script>(function(){"use strict";var MAP={"01":"go","02":"welcome","03":"important","04":"cheer","05":"important","06":"sleep","07":"sprint","08":"go","09":"no","10":"sleep","11":"final"};function run(){document.querySelectorAll("h2[id^=sec]").forEach(function(h){var m=h.id.match(/sec(\d+)/);if(!m)return;var name=MAP[m[1]];if(!name)return;if(h.querySelector(".sec-sticker"))return;var img=document.createElement("img");img.className="sec-sticker";img.src="https://lyzbcy.github.io/weshoto-study/img/sticker/"+name+".png";img.alt="";h.insertBefore(img,h.firstChild)})}if(document.readyState=="loading")document.addEventListener("DOMContentLoaded",run);else run()})();</script>
+</body>
+</html>

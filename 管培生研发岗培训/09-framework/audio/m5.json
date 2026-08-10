@@ -1,0 +1,42 @@
+[
+  {
+    "start": 0.1,
+    "end": 2.1,
+    "text": "挑七个核心判断。"
+  },
+  {
+    "start": 2.05,
+    "end": 14.7,
+    "text": "第一，三层依赖关系不能混淆，wshoto-parent 是底座父 POM，framework-parent 是 BOM 只统一版本不传递依赖，业务子模块按职责显式引入。"
+  },
+  {
+    "start": 14.7,
+    "end": 26.96,
+    "text": "第二，占位 starter 是陷阱，config-core-starter 和 discovery-core-starter 源码只有 package-info.java，没有任何运行逻辑，必须换成 nacos 实现包。"
+  },
+  {
+    "start": 26.96,
+    "end": 36.58,
+    "text": "第三，lane 泳道把租户映射到发布环境，规则 JSON 配置哪些租户走 GRAY，没配的兜底走 MASTER。"
+  },
+  {
+    "start": 36.58,
+    "end": 48.6,
+    "text": "第四，trace 上下文自动透传，但线程池必须用 TTL 包装，异常路径也要清理 MDC，否则线程复用会串租户串 trace。"
+  },
+  {
+    "start": 48.6,
+    "end": 61.05,
+    "text": "第五，Redis 用两层配置，公共 redisw-info.yaml 存物理连接，服务配置只声明逻辑映射，必须存在 default 客户端否则启动失败。"
+  },
+  {
+    "start": 61.05,
+    "end": 70.39,
+    "text": "第六，sharding 分片表查询必须显式带 ws_tenant_id，框架不会透明补条件。"
+  },
+  {
+    "start": 70.39,
+    "end": 80.19,
+    "text": "第七，EventClient 故意吞异常只记日志，适合非关键埋点，交易事件要用事务消息或本地消息表。"
+  }
+]

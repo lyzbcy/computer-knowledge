@@ -1,0 +1,27 @@
+[
+  {
+    "start": 0.1,
+    "end": 10.75,
+    "text": "学完这一章，你应该能说出框架在回答的问题，就是上百个微服务怎么把基础设施统一管起来让业务只写业务代码。"
+  },
+  {
+    "start": 10.75,
+    "end": 27.5,
+    "text": "你应该能列出核心判断和原文依据，包括三层依赖关系、占位 starter 陷阱、lane 泳道、trace 透传、Redis 两层配置、sharding 必须带 wsTenantId、EventClient 不适合关键交易。"
+  },
+  {
+    "start": 27.5,
+    "end": 35.52,
+    "text": "你应该能区分每个 starter 的能力边界，比如 config-core 是占位、config-nacos 才有真能力。"
+  },
+  {
+    "start": 35.52,
+    "end": 43.81,
+    "text": "你应该能指出容易误解的地方，比如 BOM 不传递依赖、占位包没能力、分片不透明补条件。"
+  },
+  {
+    "start": 43.81,
+    "end": 50.5,
+    "text": "下一步可以追问 Pod 和 Service 怎么和 discovery 配合，这就衔接到第九章了。"
+  }
+]

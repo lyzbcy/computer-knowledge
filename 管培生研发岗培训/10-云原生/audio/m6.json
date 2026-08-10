@@ -1,0 +1,37 @@
+[
+  {
+    "start": 0.1,
+    "end": 2.1,
+    "text": "拆六个关键概念。"
+  },
+  {
+    "start": 2.05,
+    "end": 14.14,
+    "text": "第一个是 Pod，K8s 调度的最小单位，里面装一个或多个容器，同一个 Pod 内共享网络和存储，Pod 是临时的挂了不会自我修复。"
+  },
+  {
+    "start": 14.14,
+    "end": 25.6,
+    "text": "第二个是 Deployment，无状态应用控制器，你声明要 3 个副本它就持续保证实际有 3 个 Pod 在跑，要升级时逐个替换不停服。"
+  },
+  {
+    "start": 25.6,
+    "end": 37.61,
+    "text": "第三个是 Service，给一组 Pod 加一个稳定的虚拟 IP 加 DNS 名，自动负载均衡到后端 Pod，无论 Pod 怎么生死 Service 入口不变。"
+  },
+  {
+    "start": 37.61,
+    "end": 49.06,
+    "text": "第四个是 Namespace，一个物理集群切多个虚拟集群做资源边界，公司用它做环境隔离，配合框架的 lane 泳道做双重隔离。"
+  },
+  {
+    "start": 49.06,
+    "end": 59.59,
+    "text": "第五个是 Ingress，七层负载均衡器，按域名和路径做 HTTP/HTTPS 路由，公司用 traefik 作为控制器。"
+  },
+  {
+    "start": 59.59,
+    "end": 72.97,
+    "text": "第六个是 ConfigMap 和 Secret，ConfigMap 存非敏感配置，Secret 存密码 Token 证书这些敏感信息，注意 Secret 是 Base64 编码不是加密。"
+  }
+]

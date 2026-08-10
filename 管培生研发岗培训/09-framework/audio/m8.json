@@ -1,0 +1,37 @@
+[
+  {
+    "start": 0.1,
+    "end": 2.73,
+    "text": "做一道 Nacos Group 匹配题。"
+  },
+  {
+    "start": 2.67,
+    "end": 7.26,
+    "text": "服务主配置 app.yaml 属于 DEFAULT_GROUP。"
+  },
+  {
+    "start": 7.26,
+    "end": 12.35,
+    "text": "泳道规则 app-lane.json 属于 LANE_GROUP。"
+  },
+  {
+    "start": 12.35,
+    "end": 17.24,
+    "text": "Feign 白名单 app-registry 属于 REGISTRY_GROUP。"
+  },
+  {
+    "start": 17.24,
+    "end": 22.98,
+    "text": "Redis 公共连接 redisw-info.yaml 属于 DEFAULT_GROUP。"
+  },
+  {
+    "start": 22.98,
+    "end": 32.2,
+    "text": "这道题考的是 Nacos 配置三层组织，namespace 按环境分，group 按职责分，dataId 按应用名拼。"
+  },
+  {
+    "start": 32.2,
+    "end": 37.09,
+    "text": "搞清楚这个，新服务接入时配置就不会放错地方。"
+  }
+]

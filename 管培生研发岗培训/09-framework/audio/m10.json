@@ -1,0 +1,42 @@
+[
+  {
+    "start": 0.1,
+    "end": 2.61,
+    "text": "有些背景可以先不补。"
+  },
+  {
+    "start": 2.56,
+    "end": 8.25,
+    "text": "ShardingSphere 内核 SQL 解析器原理，会用分片算法配置就行。"
+  },
+  {
+    "start": 8.25,
+    "end": 15.2,
+    "text": "Redisson 看门狗续期实现细节，知道执行时间不可预估时用看门狗就行。"
+  },
+  {
+    "start": 15.2,
+    "end": 21.14,
+    "text": "Spring Cloud Stream binder 内部机制，知道函数式 binding 怎么配就行。"
+  },
+  {
+    "start": 21.14,
+    "end": 29.35,
+    "text": "后续值得追问的是 Result 和 BaseException 怎么和第七章后端开发规范的统一 Result 对接。"
+  },
+  {
+    "start": 29.35,
+    "end": 35.3,
+    "text": "多租户分片算法的具体实现，去翻 sharding-jdbc starter 源码。"
+  },
+  {
+    "start": 35.3,
+    "end": 43.97,
+    "text": "Context_JSON 里到底带哪些字段、网关怎么生成，去翻 trace starter 加网关配置。"
+  },
+  {
+    "start": 43.98,
+    "end": 51.79,
+    "text": "Pod 和 Service 在 K8s 里怎么和 discovery 配合，这就衔接到第九章云原生运维了。"
+  }
+]

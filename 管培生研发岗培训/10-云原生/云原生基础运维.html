@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第9章：云原生基础运维 — 微盛管培生学习地图</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Poppins:wght@400;600;700&family=Noto+Sans+SC:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#FAF6EB;--paper:#F3EDDD;--forest:#1E3A24;--sky:#BCD8EE;--sage:#AFCDA8;--ink:#1A2018;--marker:#F5E08A;--brick:#B5482A;--correct:#2F7D46;--wrong:#B5482A;--font-display:"Archivo Black","Noto Sans SC","PingFang SC",sans-serif;--font-head:"Poppins","Noto Sans SC","PingFang SC",sans-serif;--font-body:-apple-system,"PingFang SC","Noto Sans SC",sans-serif;--font-mono:"Roboto Mono","JetBrains Mono",monospace;--radius-pill:999px;--radius-card:14px;}
+*{box-sizing:border-box;margin:0;padding:0;}body{font-family:var(--font-body);background:var(--cream);color:var(--ink);line-height:1.7;}
+.layout{display:flex;min-height:100vh;}
+.sidebar{width:280px;background:var(--forest);color:var(--cream);position:fixed;height:100vh;overflow-y:auto;padding:24px 20px;flex-shrink:0;z-index:10;display:flex;flex-direction:column;}
+.sidebar h2{font-family:var(--font-head);font-size:18px;margin-bottom:16px;color:var(--marker);}
+.progress-wrap{margin-bottom:20px;}.progress-bar{background:rgba(255,255,255,.15);height:8px;border-radius:var(--radius-pill);overflow:hidden;}.progress-fill{background:var(--sage);height:100%;width:0%;transition:width .3s;}.progress-num{font-size:13px;margin-top:4px;opacity:.8;}
+.nav-list{padding:0;}.nav-list li{margin-bottom:6px;list-style:none;}.nav-list a{display:block;padding:8px 12px;border-radius:8px;font-size:14px;opacity:.8;transition:.15s;text-decoration:none;color:var(--cream);}.nav-list a:hover{background:rgba(255,255,255,.1);opacity:1;}
+.sidebar-footer{margin-top:auto;padding-top:20px;font-size:12px;opacity:.5;}
+.main{margin-left:280px;flex:1;padding:40px 48px;max-width:820px;}
+.main h1{font-family:var(--font-display);font-size:32px;margin-bottom:8px;color:var(--forest);}
+.main h2{font-family:var(--font-head);font-size:22px;margin:32px 0 12px;color:var(--forest);border-bottom:2px solid var(--sage);padding-bottom:6px;}
+.main h3{font-family:var(--font-head);font-size:17px;margin:20px 0 8px;color:var(--forest);}
+.main p{margin-bottom:8px;}
+.card{background:var(--paper);border-radius:var(--radius-card);padding:20px;margin-bottom:16px;}
+.card.fact{border-left:4px solid var(--sky);}.card.judgment{border-left:4px solid var(--marker);}.card.inference{border-left:4px solid var(--sage);}.card.danger{border-left:4px solid var(--brick);}
+.src{display:inline-block;background:var(--marker);color:var(--ink);padding:2px 8px;border-radius:4px;font-size:13px;margin-top:8px;font-family:var(--font-mono);}
+.bg-note{background:#E8E4D4;border-radius:6px;padding:4px 8px;font-size:13px;color:#555;display:inline-block;}
+.objective{background:var(--paper);border-radius:var(--radius-card);padding:16px 20px;margin-bottom:12px;display:flex;gap:12px;align-items:flex-start;}
+.objective .num{background:var(--forest);color:var(--cream);width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0;}
+.structure-map{background:var(--paper);border-radius:var(--radius-card);padding:24px;}
+.structure-node{padding:12px 16px;border-radius:8px;margin-bottom:8px;border:2px solid transparent;}
+.structure-node.cluster{background:#E8F0E5;border-color:var(--sage);}.structure-node.branch{background:#E8EEF5;border-color:var(--sky);margin-left:20px;}.structure-node.leaf{background:#F5EDE5;border-color:#D4C4A8;margin-left:40px;}
+.task{background:var(--paper);border-radius:var(--radius-card);padding:20px;margin-bottom:16px;}
+.task .q{font-weight:600;margin-bottom:12px;}.opts{display:flex;flex-direction:column;gap:8px;margin-bottom:12px;}
+.opt{padding:10px 16px;border:2px solid #D4C4A8;background:var(--cream);border-radius:8px;cursor:pointer;font-size:15px;text-align:left;transition:.15s;font-family:var(--font-body);}
+.opt:hover{border-color:var(--sky);}.opt.selected{border-color:var(--forest);background:#E8F0E5;}.opt.selected::before{content:"✓ ";color:var(--correct);}
+.check{background:var(--forest);color:var(--cream);border:none;padding:8px 24px;border-radius:var(--radius-pill);cursor:pointer;font-size:14px;font-family:var(--font-body);}
+.check:hover{opacity:.85;}
+.feedback{margin-top:12px;padding:10px 14px;border-radius:8px;font-size:14px;background:#F0EBD8;min-height:44px;overflow:hidden;}.feedback.ok{background:#D4EDD9;color:var(--correct);}.feedback.no{background:#F8D7D5;color:var(--wrong);}.feedback .src{display:block;margin-top:6px;}
+.wrong-box{background:#FFF3F0;border-radius:8px;padding:12px;margin-top:16px;}.wrong-box h4{color:var(--wrong);margin-bottom:8px;}.wrong-box ul{list-style:none;padding-left:0;}.wrong-box li{padding:4px 0;font-size:14px;}
+.report-box{background:var(--paper);border-radius:8px;padding:16px;margin-top:16px;white-space:pre-wrap;font-size:14px;min-height:60px;font-family:var(--font-mono);}
+.report-btns{display:flex;gap:8px;margin-top:12px;}.report-btns button{padding:8px 16px;border-radius:var(--radius-pill);border:none;cursor:pointer;font-size:14px;}#genReport{background:var(--forest);color:var(--cream);}#copyReport{background:var(--sky);color:var(--ink);}
+.footer{text-align:center;padding:24px;margin-top:40px;border-top:1px solid #D4C4A8;font-size:13px;color:#888;}.footer a{color:var(--brick);text-decoration:underline;}
+.relevancy{margin-top:8px;font-size:13px;color:#888;border-top:1px dashed #D4C4A8;padding-top:6px;}
+.scene{background:#FFF8E1;border-left:4px solid var(--marker);border-radius:8px;padding:12px 16px;margin:10px 0;font-size:14px;}
+.scene::before{content:"🎬 Java 后端视角";display:block;font-weight:700;color:var(--brick);font-size:12px;margin-bottom:4px;letter-spacing:1px;}
+.cmp-table{width:100%;border-collapse:collapse;margin:10px 0;font-size:13px;background:var(--cream);border-radius:8px;overflow:hidden;}
+.cmp-table th{background:var(--forest);color:var(--cream);padding:8px 10px;text-align:left;}
+.cmp-table td{padding:8px 10px;border-bottom:1px solid #E0D8C0;vertical-align:top;}
+.cmp-table tr:last-child td{border-bottom:none;}
+.cmp-table td:first-child{font-weight:600;background:#F0EBD8;}
+.hardnum{background:#FFF3F0;border:2px solid var(--brick);border-radius:8px;padding:14px 18px;margin:12px 0;}
+.hardnum::before{content:"📌 记住这些硬数字/红线";display:block;font-weight:700;color:var(--brick);font-size:13px;margin-bottom:8px;letter-spacing:1px;}
+.hardnum ul{margin-left:18px;}.hardnum li{padding:3px 0;}.hardnum b{color:var(--brick);}
+.code-block{background:#14271E;color:#E8F0E5;padding:12px 14px;border-radius:8px;font-family:var(--font-mono);font-size:12.5px;line-height:1.55;margin:10px 0;overflow-x:auto;white-space:pre;}
+.code-block .kw{color:#F5E08A;}.code-block .cmt{color:#8FA68E;font-style:italic;}.code-block .str{color:#BCD8EE;}
+.fb-emoji{width:36px;height:36px;vertical-align:middle;margin-right:8px;float:left;border-radius:6px}.sec-sticker{width:34px;height:34px;vertical-align:middle;margin:0 2px 4px;display:inline-block;border-radius:6px}
+.view-source-btn{display:inline-block;margin:8px 0;padding:6px 14px;border:1.5px solid var(--forest);border-radius:999px;background:var(--marker);color:var(--forest);font:600 .82rem/1.2 var(--font-body);cursor:pointer;}
+.view-source-btn:hover{background:var(--forest);color:var(--cream);}
+.source-modal{display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.5);}
+.source-modal.show{display:flex;align-items:center;justify-content:center;padding:20px;}
+.source-modal-box{background:#fff;border-radius:14px;width:min(95vw,1100px);height:min(90vh,800px);display:flex;flex-direction:column;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,.3);}
+.source-modal-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--forest);color:var(--cream);}
+.source-modal-title{font-weight:700;font-size:.95rem;}
+.source-modal-close{background:none;border:none;color:var(--cream);font-size:1.3rem;cursor:pointer;line-height:1;}
+.source-modal-iframe{flex:1;border:none;width:100%;}
+.voice-btn{display:inline-block;vertical-align:middle;margin-left:.6em;padding:.25em .8em;border:1px solid var(--forest);border-radius:var(--radius-pill);background:var(--cream);color:var(--forest);font:600 .8rem/1.2 var(--font-body);cursor:pointer;transition:background .15s;}
+.voice-btn:hover{background:var(--sage);}.voice-btn.active{background:var(--forest);color:var(--cream);}
+#voiceFab{position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:9998;display:flex;align-items:center;flex-direction:row;background:var(--forest);color:var(--cream);border:none;cursor:pointer;height:5em;padding:0 .55em;border-radius:16px 0 0 16px;box-shadow:-4px 0 14px rgba(0,0,0,.18);font-family:var(--font-head);font-size:.85rem;overflow:hidden;transition:width .42s cubic-bezier(.4,0,.2,1), box-shadow .3s ease;width:1.9em;}
+#voiceFab .fab-icon{font-size:1.15rem;writing-mode:vertical-rl;text-orientation:upright;letter-spacing:.1em;white-space:nowrap;flex-shrink:0;}
+#voiceFab .fab-text{white-space:nowrap;opacity:0;margin-left:.6em;transition:opacity .28s ease .12s;}
+#voiceFab:hover{width:8.6em;box-shadow:-6px 0 22px rgba(0,0,0,.25);}
+#voiceFab:hover .fab-text{opacity:1;}
+#voiceFab.beat{animation:voiceBeat 1.6s ease-in-out infinite;}
+@keyframes voiceBeat{0%,100%{box-shadow:-4px 0 14px rgba(0,0,0,.18)}50%{box-shadow:-4px 0 20px rgba(181,72,42,.5)}}
+#voicePlayer{position:fixed;left:50%;bottom:1rem;transform:translateX(-50%) translateY(140%);width:min(92vw,380px);padding:1rem 1.1rem 1.1rem;background:var(--cream);border:2px solid var(--forest);border-radius:26px;box-shadow:0 8px 28px rgba(0,0,0,.16);z-index:9999;transition:transform .28s ease;text-align:center;font-family:var(--font-body);}
+#voicePlayer.show{transform:translateX(-50%) translateY(0);}
+#voicePlayer .vp-head{font-size:.75rem;color:var(--forest);opacity:.8;letter-spacing:.05em;}
+#voicePlayer .vp-title{font:700 1rem/1.35 var(--font-body);color:var(--ink);margin:.25rem 0 .7rem;padding:0 .2rem;word-break:break-word;}
+#voicePlayer .vp-play{width:3.6rem;height:3.6rem;border:none;border-radius:50%;background:var(--forest);color:var(--cream);font-size:1.3rem;cursor:pointer;margin:0 auto .7rem;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 0 #142710;transition:transform .1s, box-shadow .1s;}
+#voicePlayer .vp-play:active{transform:translateY(2px);box-shadow:0 1px 0 #142710;}
+#voicePlayer .vp-prev,#voicePlayer .vp-next{width:2.3rem;height:2.3rem;border:1.5px solid var(--forest);border-radius:50%;background:var(--cream);color:var(--forest);font-size:.9rem;cursor:pointer;}
+#voicePlayer .vp-controls{display:flex;align-items:center;justify-content:center;gap:1.2rem;margin-bottom:.7rem;}
+#voicePlayer .vp-seek{width:100%;margin:.2rem 0;cursor:pointer;accent-color:var(--forest);}
+#voicePlayer .vp-time{display:flex;justify-content:space-between;font:600 .72rem/1 var(--font-mono);color:var(--ink);opacity:.75;}
+#voicePlayer .vp-close{position:absolute;top:.5rem;right:.6rem;width:1.5rem;height:1.5rem;border:none;background:transparent;color:var(--ink);font-size:1rem;cursor:pointer;opacity:.5;}
+#voicePlayer .vp-sub{min-height:2.6em;max-height:3.9em;overflow:hidden;font:.85rem/1.5 var(--font-body);color:var(--ink);opacity:.55;margin:.2rem 0 .5rem;padding:0 .3rem;transition:opacity .2s;text-align:center;}
+#voicePlayer .vp-sub.active{opacity:1;}
+#voicePlayer .vp-sub .cur{color:var(--forest);font-weight:600;}
+@media(max-width:768px){.sidebar{position:relative;width:100%;height:auto;}.main{margin-left:0;padding:20px;}}
+</style>
+</head>
+<body>
+<script type="application/json" id="voicePlaylist">
+[
+  {"id":"m1","title":"M1 学习目标","src":"audio/m1.mp3"},
+  {"id":"m2","title":"M2 背景包","src":"audio/m2.mp3"},
+  {"id":"m3","title":"M3 问题定位","src":"audio/m3.mp3"},
+  {"id":"m4","title":"M4 结构地图","src":"audio/m4.mp3"},
+  {"id":"m5","title":"M5 核心判断","src":"audio/m5.mp3"},
+  {"id":"m6","title":"M6 概念拆解","src":"audio/m6.mp3"},
+  {"id":"m7","title":"M7 苏格拉底关卡","src":"audio/m7.mp3"},
+  {"id":"m8","title":"M8 闯关任务","src":"audio/m8.mp3"},
+  {"id":"m9","title":"M9 误解边界","src":"audio/m9.mp3"},
+  {"id":"m10","title":"M10 背景缺口","src":"audio/m10.mp3"},
+  {"id":"m11","title":"M11 复盘报告","src":"audio/m11.mp3"}
+]
+</script>
+<div class="layout">
+<aside class="sidebar">
+<h2>📋 第9章<br>云原生基础运维</h2>
+<button class="view-source-btn" onclick="openSource('https://doc.weixin.qq.com/doc/w3_ASEAyAZQAMICNdX1RnQbtQ76F01kF?scode=AA4AQQf9ABAKV7uh9B')">📄 查看原文</button>
+<div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" id="barFill"></div></div><div class="progress-num">进度：<span id="barNum">0 / 8</span></div></div>
+<ul class="nav-list">
+<li><a href="#sec1">01 学习目标</a></li><li><a href="#sec2">02 零基础背景包</a></li><li><a href="#sec3">03 原文问题定位</a></li><li><a href="#sec4">04 原文结构地图</a></li><li><a href="#sec5">05 核心判断与依据</a></li><li><a href="#sec6">06 关键概念拆解</a></li><li><a href="#sec7">07 苏格拉底式关卡</a></li><li><a href="#sec8">08 闯关式任务</a></li><li><a href="#sec9">09 误解与边界</a></li><li><a href="#sec10">10 背景知识缺口</a></li><li><a href="#sec11">11 复盘与学习报告</a></li>
+</ul>
+<div class="sidebar-footer">微盛管培生学习地图 · 后端方向 · 第9章</div>
+</aside>
+<main class="main">
+<h1>云原生基础运维</h1>
+<p style="color:#666;margin-bottom:24px;">基于《云原生基础运维手册》（2026-07-19）深度拆解 · 受众：Java 后端开发管培生（带你理解服务跑在哪、为什么这样部署）</p>
+
+<h2 id="sec1">01 学习目标与阅读路径 <button class="voice-btn" data-voice-id="m1">🎧 听这章</button></h2>
+<p style="margin-bottom:16px;">作为 Java 后端，你写的服务最终要部署成 Pod 跑在 K8s 上。这一章带你理解部署背后的基础设施。学完你应该能做到：</p>
+<div class="objective"><span class="num">1</span><div><strong>区分虚拟机 vs 容器</strong>——容器共享宿主机内核、毫秒级启动、MB 级资源；虚拟机各自独立 OS、分钟级启动、GB 级资源。能说出为什么公司选容器。</div></div>
+<div class="objective"><span class="num">2</span><div><strong>背出 K8s 集群双层结构</strong>——Master Node（控制平面：调度/期望状态/配置存储）+ Worker Node（运行 Pod/容器、汇报状态）。</div></div>
+<div class="objective"><span class="num">3</span><div><strong>记住公司命名空间划分</strong>——系统命名空间（kube-system/monitoring/traefik 等）vs 业务命名空间（wshoto/wshoto-gray/wshoto-middleware/wshoto-monitor/wshoto-plugin）vs 工具命名空间（tools）。</div></div>
+<div class="objective"><span class="num">4</span><div><strong>分清 Pod / Deployment / Service / Ingress 职责</strong>——Pod 是最小部署单元、Deployment 管无状态应用副本/滚动更新、Service 给 Pod 稳定入口、Ingress 做七层域名路由。</div></div>
+<div class="objective"><span class="num">5</span><div><strong>把 K8s 和框架泳道对应起来</strong>——生产命名空间 wshoto 的实例 metadata laneId=MASTER；灰度命名空间 wshoto-gray 的实例 laneId=GRAY，对应第8章 lane-boot-starter。</div></div>
+<p style="margin-top:16px;color:#666;">阅读路径：补容器/编排背景 → 理解 K8s 核心对象 → 公司集群落地（命名空间/Service 类型）→ Pod 生命周期与故障排查 → 复盘。</p>
+
+<h2 id="sec2">02 零基础背景包 <button class="voice-btn" data-voice-id="m2">🎧 听这章</button></h2>
+<div class="card"><h3>背景补充 1：为什么需要容器</h3><p><span class="bg-note">背景补充</span></p><p style="margin-top:8px;">源代码部署的痛点：开发、测试、生产环境因系统/依赖版本不同容易出 bug（「在我机器上能跑」）。容器把应用+依赖打包成镜像，<strong>一次构建处处运行</strong>，环境一致性极强，部署速度从「编译→装依赖→改配置→启动」简化为「拉镜像→启容器」。</p><p class="relevancy">为什么读本文需要它：理解容器价值，才能理解为什么公司整套云原生基础设施都建立在 Docker + K8s 上。</p></div>
+<div class="card"><h3>背景补充 2：编排问题的本质</h3><p><span class="bg-note">背景补充</span></p><p style="margin-top:8px;">容器一两个时人工能管；几十上百个跨多台机器时，就遇到：哪台机器还有资源？容器挂了谁来重启？怎么滚动更新不停服？怎么让调用方找到漂移的容器？K8s 就是来解决这些「编排」问题的。</p><p class="relevancy">为什么读本文需要它：K8s 的每个核心对象（Deployment/Service/Ingress）都对应一个编排痛点。</p></div>
+<div class="card"><h3>背景补充 3：声明式 vs 命令式</h3><p><span class="bg-note">背景补充</span></p><p style="margin-top:8px;">K8s 是「声明式」：你写 YAML 描述「我想要 3 个 Pod 副本」，K8s 控制平面持续把实际状态往期望状态拉。如果某个 Pod 挂了，控制器发现实际只有 2 个，会自动再创建 1 个。这和「命令式」（手动启停）思维完全不同。</p><p class="relevancy">为什么读本文需要它：理解「期望状态」「控制器」这些词，才看得懂 Deployment、DaemonSet 在做什么。</p></div>
+<div class="card"><h3>背景补充 4：服务发现与框架呼应</h3><p><span class="bg-note">背景补充</span></p><p style="margin-top:8px;">第8章讲 discovery-nacos-boot-starter：服务启动时把自己注册到 Nacos，调用方查 Nacos 拿实例列表。K8s 自己也有 Service + DNS 做集群内服务发现。公司混用：业务服务走 Nacos（支持多环境灰度路由），基础设施走 K8s Service。</p><p class="relevancy">为什么读本文需要它：Service 这节会反复和第8章 discovery 对比。</p></div>
+
+<h2 id="sec3">03 原文问题定位 <button class="voice-btn" data-voice-id="m3">🎧 听这章</button></h2>
+<div class="card judgment"><h3>表面在讲什么？</h3><p>容器技术、Docker、K8s（集群/命名空间/Pod/控制器/Deployment/Service/Ingress/ConfigMap/Secret）+ 运维实战（故障排查/扩缩容/配置变更）+ 多环境隔离分流。</p></div>
+<div class="card judgment"><h3>深层在回答什么问题？</h3><p><strong>「公司的 Java 微服务最终跑在什么样的基础设施上？为什么是这套？」</strong></p><p style="margin-top:8px;">答案是「容器化交付 + K8s 编排 + 命名空间隔离 + Service 抽象」：<span class="src">原文：K8s 是用于自动部署、扩缩容和管理容器化应用的编排平台，适合统一管理多节点、多服务和多实例的生产环境</span>。</p></div>
+<div class="card judgment"><h3>作者为什么要写这篇？</h3><p>这是面向运维和开发的入门手册，目的是统一云原生基础认知，让开发理解服务部署链路、让运维有标准化排查路径。手册特别强调公司集群的<strong>真实命名空间划分和 Pod 示例</strong>，不是抽象 K8s 教程。</p></div>
+<div class="card judgment"><h3>只记一个问题</h3><p><strong>「我写的 Java 服务怎么从源码变成生产流量？」</strong>——代码打成镜像 → K8s 用 Deployment 管副本 → Pod 跑容器 → Service 给稳定入口 → Ingress 接外部域名 → ConfigMap/Secret 注入配置。</p></div>
+
+<h2 id="sec4">04 原文结构地图 <button class="voice-btn" data-voice-id="m4">🎧 听这章</button></h2>
+<p style="margin-bottom:12px;">原文结构类型：<strong>机制流程 + 概念层级</strong>（从底层容器到上层 K8s 对象，再到运维实战）</p>
+<div class="structure-map">
+<div class="structure-node cluster"><strong>核心：容器化交付 + K8s 编排 + 公司命名空间隔离</strong></div>
+<div class="structure-node branch"><strong>第1层：容器技术基础（1.x）</strong></div>
+<div class="structure-node leaf">容器=轻量级虚拟化（操作系统级）；vs 虚拟机（硬件虚拟化）</div>
+<div class="structure-node branch"><strong>第2层：Docker 容器引擎（2.x）</strong></div>
+<div class="structure-node leaf">应用+环境打包成镜像，以容器方式交付运行，提高一致性/可移植性/效率</div>
+<div class="structure-node branch"><strong>第3层：K8s 集群核心对象（4.x）</strong></div>
+<div class="structure-node leaf">Cluster（Master+Worker）→ Namespace（系统/业务/工具）→ Pod（最小部署单元，单容器/多容器边车）→ Controller（Deployment/StatefulSet/DaemonSet/Job/CronJob）→ Deployment（副本/滚动/回滚/扩缩）→ Service（ClusterIP/NodePort/LoadBalancer）→ Ingress（域名/路径/TLS）→ ConfigMap（非敏感配置）→ Secret（Base64 敏感信息）</div>
+<div class="structure-node branch"><strong>第4层：运维实战（5.x）</strong></div>
+<div class="structure-node leaf">查看集群/应用状态、Pod/Service 故障排查、更新镜像/配置、扩缩容</div>
+<div class="structure-node branch"><strong>第5层：多环境隔离分流（6.x）</strong></div>
+<div class="structure-node leaf">wshoto（生产 MASTER）+ wshoto-gray（灰度 GRAY）+ wshoto-middleware（中间件）+ wshoto-monitor（监控）+ wshoto-plugin（插件）</div>
+<div style="margin-top:16px;padding:12px;background:#E8E4D4;border-radius:8px;font-size:14px;"><strong>节点关系说明：</strong>5 层是<strong>由下到上的依赖堆叠</strong>。容器是原子，K8s 编排容器，Namespace 切分集群，Pod/Deployment/Service 等对象定义「跑什么/怎么跑/怎么找到」，最后多环境用命名空间 + laneId 双重隔离。</div>
+</div>
+
+<h2 id="sec5">05 核心判断与依据 <button class="voice-btn" data-voice-id="m5">🎧 听这章</button></h2>
+<div class="card judgment"><h3>判断1：容器 vs 虚拟机的本质差异是虚拟化层级</h3><p><strong>原文依据：</strong><span class="src">原文：虚拟机=硬件虚拟化、每个 VM 独立 OS、分钟级启动、GB 级；容器=操作系统虚拟化、共享宿主机 OS 内核、毫秒级启动、MB 级</span></p>
+<table class="cmp-table"><tr><th>特性</th><th>虚拟机 VM</th><th>容器 Container</th></tr><tr><td>架构</td><td>硬件虚拟化</td><td>操作系统虚拟化</td></tr><tr><td>OS</td><td>每个 VM 独立 OS</td><td>共享宿主机 OS 内核</td></tr><tr><td>启动时间</td><td>分钟级</td><td>毫秒级</td></tr><tr><td>资源占用</td><td>GB 级</td><td>MB 级</td></tr><tr><td>密度</td><td>单机数十个</td><td>单机数百上千个</td></tr></table></div>
+<div class="card judgment"><h3>判断2：K8s 集群是 Master + Worker 双层</h3><p><strong>原文依据：</strong><span class="src">原文 4.1.2/4.1.3：Master Node 负责管理整个集群，主要承担调度 Pod、维护期望状态、存储配置；Worker Node 负责运行实际的业务应用，运行 Pod 和容器、向 Master 汇报状态</span></p>
+<table class="cmp-table"><tr><th>节点</th><th>职责</th></tr><tr><td>Master Node（控制平面）</td><td>接收操作请求、调度 Pod、维护期望状态、存储配置、监控节点和应用状态</td></tr><tr><td>Worker Node（工作节点）</td><td>运行 Pod 和容器、执行调度任务、管理本节点容器生命周期、提供网络和服务访问、向 Master 汇报状态</td></tr></table></div>
+<div class="card judgment"><h3>判断3：公司命名空间分系统/业务/工具三类</h3><p><strong>原文依据：</strong><span class="src">原文 4.2.2：命名空间分类——系统命名空间（kube-system/monitoring/observability/traefik 等）、业务命名空间（wshoto/wshoto-gray/wshoto-middleware/wshoto-monitor/wshoto-plugin）、工具命名空间（tools）</span></p>
+<div class="hardnum"><ul><li><b>系统命名空间</b>：kube-system（CoreDNS/CSI）、monitoring（Prometheus/Grafana）、observability、traefik（Ingress 控制器）、operator-lifecycle-manager、tekton-pipelines（CI/CD）</li><li><b>业务命名空间</b>：wshoto（生产 MASTER）、wshoto-gray（灰度 GRAY）、wshoto-middleware（MySQL/Redis/Kafka/Nacos）、wshoto-monitor（业务监控）、wshoto-plugin（插件）</li><li><b>工具命名空间</b>：tools（Kafdrop、RocketMQ 控制台）</li></ul></div></div>
+<div class="card judgment"><h3>判断4：Pod 是最小部署单元，公司暂未用边车模式</h3><p><strong>原文依据：</strong><span class="src">原文 4.3.1/4.3.2：Pod 是 Kubernetes 中最小的部署单元，包含一个或多个容器，这些容器共享网络和存储；公司集群的 POD 暂未使用多容器（边车模式）</span></p><p style="margin-top:8px;"><strong>类型：</strong>事实。公司当前 Pod 都是单容器模式（一个 Java 服务一个 Pod），未用边车。</p></div>
+<div class="card judgment"><h3>判断5：Deployment 管「副本+滚动+回滚+扩缩」四件套</h3><p><strong>原文依据：</strong><span class="src">原文 4.5：Deployment 是最常用的控制器，用于管理无状态应用，提供滚动更新、回滚、扩缩容等能力</span></p><table class="cmp-table"><tr><th>能力</th><th>说明</th></tr><tr><td>副本管理</td><td>维持期望数量的 Pod 实例</td></tr><tr><td>滚动更新</td><td>逐个替换旧版本 Pod，不停服</td></tr><tr><td>版本回滚</td><td>出问题时回退到历史版本</td></tr><tr><td>扩缩容</td><td>手动或自动增减副本数</td></tr></table></div>
+<div class="card judgment"><h3>判断6：Service 三种类型对应不同访问场景</h3><p><strong>原文依据：</strong><span class="src">原文 4.6：Service 是 Kubernetes 中的服务发现机制，为 Pod 提供稳定的访问入口。本集群使用的 Service 类型：ClusterIP（集群内部访问）/ NodePort（节点端口暴露）/ LoadBalancer（云负载均衡器）</span></p>
+<table class="cmp-table"><tr><th>类型</th><th>访问方式</th><th>使用场景</th></tr><tr><td>ClusterIP（默认）</td><td>ClusterIP + DNS</td><td>内部服务通信</td></tr><tr><td>NodePort</td><td>NodeIP:NodePort</td><td>临时测试、开发环境</td></tr><tr><td>LoadBalancer</td><td>外部 IP</td><td>生产环境对外服务</td></tr></table></div>
+<div class="card judgment"><h3>判断7：Pod phase 五状态不是固定流转</h3><p><strong>原文依据：</strong><span class="src">原文 4.3.3：Pod 的 phase 是对其生命周期阶段的高层概括，并不是一套固定的状态流转流程</span></p>
+<table class="cmp-table"><tr><th>Phase</th><th>说明</th></tr><tr><td>Pending</td><td>已被接受，等待调度/拉镜像/创建容器</td></tr><tr><td>Running</td><td>已绑定节点，容器已创建，至少一个在运行/启动/重启</td></tr><tr><td>Succeeded</td><td>所有容器成功终止，不会重启</td></tr><tr><td>Failed</td><td>所有容器终止，至少一个失败，不会重启</td></tr><tr><td>Unknown</td><td>无法获取状态，通常与所在节点通信异常</td></tr></table>
+<p style="color:var(--brick);"><strong>易误读：</strong>不是 Pending→Running→Succeeded 的线性流转，是高层概括。</p></div>
+
+<h2 id="sec6">06 关键概念拆解 <button class="voice-btn" data-voice-id="m6">🎧 听这章</button></h2>
+<div class="card"><h3>概念1：Pod（最小部署单元）</h3><p><strong>原文术语：</strong>Kubernetes 中最小的部署单元</p><p><strong>人话解释：</strong>Pod 是 K8s 调度的最小单位，里面装一个或多个容器（公司当前都是单容器 Pod）。同一个 Pod 内的容器<strong>共享网络和存储</strong>。Pod 是临时的——挂了不会自我修复，由控制器（Deployment）重新创建。</p><div class="scene">你写的 wshoto-customer Java 服务，最终就是以一个 Pod 的形式跑在 Worker Node 上。Pod 里的容器就是你的 Java 进程（来自镜像）。Pod IP 是临时的，重启就变。</div><p><strong>与其他概念的关系：</strong>Pod 是 Deployment 管理的对象；Service 通过 Label Selector 找到一组 Pod。</p><p><span class="src">原文 4.3</span></p></div>
+<div class="card"><h3>概念2：Deployment（无状态应用控制器）</h3><p><strong>原文术语：</strong>管理无状态应用，提供滚动更新/回滚/扩缩容</p><p><strong>人话解释：</strong>Deployment 是「期望状态守护者」。你声明「我要 3 个 wshoto-customer 副本」，Deployment 持续保证实际有 3 个 Pod 在跑；某个挂了它自动再建一个。要升级版本时，它逐个用新 Pod 替换旧 Pod（滚动更新），出问题能回滚。</p><p><strong>与其他概念的关系：</strong>Deployment 管 Pod；StatefulSet 管有状态应用（数据库）；DaemonSet 每个节点跑一个（日志采集）；Job/CronJob 一次性/定时任务。</p>
+<table class="cmp-table"><tr><th>控制器</th><th>用途</th><th>场景</th></tr><tr><td>Deployment</td><td>无状态应用</td><td>Web/API 服务（你的 Java 服务）</td></tr><tr><td>StatefulSet</td><td>有状态应用</td><td>数据库、消息队列</td></tr><tr><td>DaemonSet</td><td>每节点一个</td><td>日志采集、监控代理</td></tr><tr><td>Job</td><td>一次性任务</td><td>数据迁移、批处理</td></tr><tr><td>CronJob</td><td>定时任务</td><td>备份、清理、报表</td></tr></table>
+<p><span class="src">原文 4.4.2</span></p></div>
+<div class="card"><h3>概念3：Service（稳定访问入口）</h3><p><strong>原文术语：</strong>服务发现机制，为 Pod 提供稳定的访问入口</p><p><strong>人话解释：</strong>Pod IP 是临时的（重启就变），调用方不能直接记 Pod IP。Service 在一组 Pod 前面加一个<strong>稳定的虚拟 IP + DNS 名</strong>，自动负载均衡到后端 Pod。无论 Pod 怎么生死，Service 入口不变。</p><div class="scene">假设 wshoto-customer 有 3 个 Pod（IP 分别是 10.0.1, 10.0.2, 10.0.3）。Service wshoto-customer 给一个稳定 ClusterIP 10.0.100，DNS 名 wshoto-customer.wshoto.svc.cluster.local。其他 Pod 调这个名字，自动负载均衡到 3 个实例之一。这和第8章 Nacos 注册中心解决同一个问题——K8s Service 走集群内 DNS，Nacos 走服务名注册发现。</div><p><span class="src">原文 4.6</span></p></div>
+<div class="card"><h3>概念4：Namespace（虚拟集群）</h3><p><strong>原文术语：</strong>Kubernetes 中的虚拟集群，用于在同一物理集群中划分多个虚拟环境</p><p><strong>人话解释：</strong>一个物理 K8s 集群切多个 Namespace，资源（Pod/Service/ConfigMap）属于某个 Namespace。公司用它做环境隔离：生产业务在 wshoto、灰度在 wshoto-gray、中间件在 wshoto-middleware。Namespace 之间默认隔离，但可以跨 namespace 调用（用全名 namespace.svc）。</p><p><strong>与其他概念的关系：</strong>Namespace 是资源边界；框架的 lane 泳道（第8章）是流量路由边界。公司用 Namespace + laneId 双重隔离：wshoto 命名空间的 Pod 打 MASTER 标，wshoto-gray 的 Pod 打 GRAY 标。</p><p><span class="src">原文 4.2 + 6.2</span></p></div>
+<div class="card"><h3>概念5：Ingress（七层负载均衡）</h3><p><strong>原文术语：</strong>Kubernetes 的七层负载均衡器，提供基于域名和路径的 HTTP/HTTPS 路由</p><p><strong>人话解释：</strong>Service 的 ClusterIP 只能在集群内访问，NodePort/LoadBalancer 暴露 TCP 端口。但生产对外通常是「按域名+路径」分流：a.wshoto.com 走服务 A，b.wshoto.com/api 走服务 B。Ingress 就是干这个的，公司用 traefik 作为 Ingress 控制器。</p><p><strong>三大作用：</strong>①域名虚拟主机 ②路径路由 ③TLS/HTTPS。</p><p><span class="src">原文 4.7</span></p></div>
+<div class="card"><h3>概念6：ConfigMap vs Secret</h3><p><strong>原文术语：</strong>ConfigMap（非敏感配置）/ Secret（敏感信息，Base64 编码）</p><p><strong>人话解释：</strong>把配置和镜像解耦。ConfigMap 存普通配置（日志级别、特性开关）；Secret 存密码、Token、证书（Base64 编码，不是加密，但和 ConfigMap 分开管理）。两者都能用「环境变量」或「文件挂载」注入 Pod。</p><div class="scene">呼应第8章：框架用 Nacos 做配置中心，业务配置大多在 Nacos；但 K8s 层面的 Secret（如镜像拉取凭证 kubernetes.io/dockerconfigjson、TLS 证书）仍用 K8s Secret 管理。</div>
+<table class="cmp-table"><tr><th>类型</th><th>用途</th><th>示例</th></tr><tr><td>Opaque</td><td>通用密钥</td><td>数据库密码、API 密钥</td></tr><tr><td>dockerconfigjson</td><td>镜像拉取密钥</td><td>私有镜像仓库认证</td></tr><tr><td>tls</td><td>TLS 证书</td><td>HTTPS 证书</td></tr></table>
+<p><span class="src">原文 4.8 + 4.9</span></p></div>
+
+<h2 id="sec7">07 苏格拉底式阅读关卡 <button class="voice-btn" data-voice-id="m7">🎧 听这章</button></h2>
+<div class="task" data-task="q1" data-answer="B" data-ok="对！容器是操作系统虚拟化，共享宿主机内核，毫秒级启动、MB 级资源（原文对比表）。" data-no="容器共享宿主机内核不是独立 OS；启动是毫秒级不是分钟级。" data-src="原文：容器=操作系统虚拟化、共享宿主机 OS 内核、毫秒级启动、MB 级" data-review="回到「05 核心判断」判断1复习">
+<div class="q">1. <strong>场景：</strong>同事说「容器和虚拟机都是虚拟化，差不多」。按手册，容器和虚拟机的本质差异是？</div>
+<div class="opts"><button class="opt" data-val="A">A. 没差异，只是名字不同</button><button class="opt" data-val="B">B. 虚拟机是硬件虚拟化（独立 OS），容器是操作系统虚拟化（共享宿主机内核）</button><button class="opt" data-val="C">C. 容器比虚拟机更重</button><button class="opt" data-val="D">D. 虚拟机启动比容器快</button></div>
+<button class="check">检查</button><div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+</div>
+<div class="task" data-task="q2" data-answer="C" data-ok="对！wshoto-gray 命名空间承载灰度发布，实例 laneId=GRAY，接收定向灰度流量（原文 6.2）。" data-no="wshoto 是生产 MASTER，wshoto-middleware 是中间件，wshoto-gray 才是灰度 GRAY。" data-src="原文 6.2：wshoto-gray 灰度发布环境 GRAY" data-review="回到「05 核心判断」判断3复习">
+<div class="q">2. <strong>场景：</strong>要把新版本灰度发布、定向接收部分租户流量。应该部署到哪个命名空间？</div>
+<div class="opts"><button class="opt" data-val="A">A. wshoto（生产）</button><button class="opt" data-val="B">B. wshoto-middleware（中间件）</button><button class="opt" data-val="C">C. wshoto-gray（灰度，实例 laneId=GRAY）</button><button class="opt" data-val="D">D. kube-system</button></div>
+<button class="check">检查</button><div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+</div>
+<div class="task" data-task="q3" data-answer="B" data-ok="对！Deployment 管无状态应用，提供副本/滚动更新/回滚/扩缩容（原文 4.5）。" data-no="StatefulSet 管有状态应用（数据库）；DaemonSet 每节点一个；Job 一次性任务。Java 微服务是 Deployment。" data-src="原文 4.5：Deployment 用于管理无状态应用" data-review="回到「06 概念拆解」概念2复习">
+<div class="q">3. <strong>场景：</strong>你的 Java 微服务 wshoto-customer 要部署到 K8s。该用哪种控制器？</div>
+<div class="opts"><button class="opt" data-val="A">A. StatefulSet（有状态）</button><button class="opt" data-val="B">B. Deployment（无状态，支持滚动更新/回滚/扩缩容）</button><button class="opt" data-val="C">C. DaemonSet（每节点一个）</button><button class="opt" data-val="D">D. Job（一次性）</button></div>
+<button class="check">检查</button><div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+</div>
+<div class="task" data-task="q4" data-answer="A" data-ok="对！ClusterIP 是默认类型，提供集群内部访问（ClusterIP+DNS），用于内部服务通信（原文 4.6）。" data-no="NodePort 用于临时测试，LoadBalancer 用于生产对外服务。内部服务用 ClusterIP。" data-src="原文 4.6：ClusterIP 集群内部访问，使用场景内部服务通信" data-review="回到「06 概念拆解」概念3复习">
+<div class="q">4. <strong>场景：</strong>Service 类型选哪种用于「集群内部服务互相调用」（如 Feign 调用）？</div>
+<div class="opts"><button class="opt" data-val="A">A. ClusterIP（默认，集群内部访问）</button><button class="opt" data-val="B">B. NodePort</button><button class="opt" data-val="C">C. LoadBalancer</button><button class="opt" data-val="D">D. Ingress</button></div>
+<button class="check">检查</button><div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+</div>
+<div class="task" data-task="q5" data-answer="C" data-ok="对！Pod phase 是高层概括，不是固定状态流转流程（原文 4.3.3）。" data-no="手册明确说 phase 不是固定流转流程。" data-src="原文 4.3.3：Pod 的 phase 并不是一套固定的状态流转流程" data-review="回到「05 核心判断」判断7复习">
+<div class="q">5. <strong>场景：</strong>同事说「Pod 必然按 Pending→Running→Succeeded 线性流转」。按手册？</div>
+<div class="opts"><button class="opt" data-val="A">A. 对，固定流转</button><button class="opt" data-val="B">B. 对，必有 Succeeded</button><button class="opt" data-val="C">C. 错，phase 是高层概括，不是固定状态流转流程</button><button class="opt" data-val="D">D. 对，必经 Failed</button></div>
+<button class="check">检查</button><div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+</div>
+<div class="task" data-task="q6" data-answer="B" data-ok="对！数据库密码、API 密钥等敏感信息用 Secret（Base64 编码）（原文 4.9）。" data-no="ConfigMap 是非敏感配置；敏感信息用 Secret。" data-src="原文 4.9：Secret 是存储敏感信息的资源对象，数据经过 Base64 编码" data-review="回到「06 概念拆解」概念6复习">
+<div class="q">6. <strong>场景：</strong>要在 K8s 里存数据库密码和 TLS 证书。用 ConfigMap 还是 Secret？</div>
+<div class="opts"><button class="opt" data-val="A">A. 都用 ConfigMap</button><button class="opt" data-val="B">B. 都用 Secret（Base64 编码的敏感信息资源）</button><button class="opt" data-val="C">C. 密码用 ConfigMap，证书用 Secret</button><button class="opt" data-val="D">D. 都写在镜像里</button></div>
+<button class="check">检查</button><div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+</div>
+<div class="task" data-task="q7" data-answer="A,B,C,D" data-multi="true" data-ok="对！K8s 在容器调度、故障恢复、扩缩容、应用更新四方面都强于非 K8s（原文对比表）。" data-no="使用 K8s 在容器调度/故障恢复/扩缩容/应用更新上都有自动化优势。" data-src="原文：使用 K8s vs 不使用 K8s 对比表" data-review="回到「05 核心判断」判断2复习">
+<div class="q">7. <strong>多选：</strong>相比不用 K8s，使用 K8s 提供了哪些自动化能力？</div>
+<div class="opts"><button class="opt" data-val="A">A. 容器自动调度（按资源策略选节点）</button><button class="opt" data-val="B">B. Pod 异常时自动重建迁移</button><button class="opt" data-val="C">C. 支持滚动更新和回滚</button><button class="opt" data-val="D">D. 统一服务发现和负载均衡</button></div>
+<button class="check">检查</button><div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+</div>
+
+<h2 id="sec8">08 闯关式任务 <button class="voice-btn" data-voice-id="m8">🎧 听这章</button></h2>
+<div class="task" data-task="t1" data-type="selects" data-ok="全部匹配正确！你掌握了 K8s 控制器选型和 Service 类型。" data-no="Deployment 管无状态 Web 服务；StatefulSet 管有状态数据库；内部服务用 ClusterIP；对外生产用 LoadBalancer；临时测试用 NodePort。" data-src="原文 4.4.2 + 4.6.2" data-review="回到「06 概念拆解」概念2、概念3复习">
+<div class="q">任务：把应用场景匹配到正确的 K8s 对象。</div>
+<div style="margin:8px 0;">
+<div style="margin-bottom:6px;">Java 微服务 wshoto-customer → <select class="match" data-correct="a"><option value="">请选择</option><option value="a">Deployment（无状态）</option><option value="b">StatefulSet（有状态）</option><option value="c">DaemonSet</option><option value="d">Job</option></select></div>
+<div style="margin-bottom:6px;">MySQL 数据库 → <select class="match" data-correct="b"><option value="">请选择</option><option value="a">Deployment</option><option value="b">StatefulSet（固定标识、顺序部署）</option><option value="c">DaemonSet</option><option value="d">CronJob</option></select></div>
+<div style="margin-bottom:6px;">集群内部 Feign 调用 → <select class="match" data-correct="a"><option value="">请选择</option><option value="a">ClusterIP（集群内部访问）</option><option value="b">NodePort</option><option value="c">LoadBalancer</option><option value="d">Ingress</option></select></div>
+<div style="margin-bottom:6px;">临时测试暴露接口 → <select class="match" data-correct="b"><option value="">请选择</option><option value="a">ClusterIP</option><option value="b">NodePort（节点端口暴露）</option><option value="c">LoadBalancer</option><option value="d">ConfigMap</option></select></div>
+</div>
+<button class="check">检查</button><div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+</div>
+
+<h2 id="sec9">09 误解与边界 <button class="voice-btn" data-voice-id="m9">🎧 听这章</button></h2>
+<div class="card danger"><h3>误解1：「Pod 挂了自己会重启」</h3><p><strong>为什么容易误解：</strong>Docker 容器有 restart policy。</p><p><strong>原文真正说了什么：</strong>Pod 是临时对象，<strong>控制器（Deployment）才是负责保证期望状态</strong>的对象。Pod 本身不会「自我修复」，是控制器发现副本数少了再创建新的。</p><p><strong>如何避免：</strong>排查 Pod 故障时要看 Deployment 状态、副本数、事件，不只看单个 Pod。</p></div>
+<div class="card danger"><h3>误解2：「Service 就是负载均衡器」</h3><p><strong>为什么容易误解：</strong>Service 有负载均衡能力。</p><p><strong>原文真正说了什么：</strong>Service 的核心是<strong>服务发现 + 稳定访问入口</strong>。它给一组 Pod 一个稳定的 ClusterIP + DNS 名，并负载均衡到后端 Pod。负载均衡是手段，稳定入口才是目的。</p><p><strong>如何避免：</strong>理解 Service 解决的是「Pod IP 临时性」问题，不只是「分发流量」。</p></div>
+<div class="card danger"><h3>误解3：「命名空间 = 完全隔离」</h3><p><strong>为什么容易误解：</strong>Namespace 听起来像防火墙。</p><p><strong>原文真正说了什么：</strong>Namespace 是<strong>资源边界</strong>（Pod/Service/ConfigMap 属于某 Namespace），不是网络隔离。默认情况下 Namespace 之间网络是通的，只是资源对象分开管理。</p><p><strong>如何避免：</strong>真正做网络隔离要用 NetworkPolicy；做流量路由隔离用 lane 泳道（第8章）+ 命名空间组合。</p></div>
+<div class="card danger"><h3>误解4：「Secret 是加密的」</h3><p><strong>为什么容易误解：</strong>叫「Secret」听起来像加密。</p><p><strong>原文真正说了什么：</strong>Secret 数据是<strong>Base64 编码</strong>，<strong>不是加密</strong>。Base64 是编码格式，任何人都能解码。它的安全性来自访问控制（RBAC）和分发机制，不是编码本身。</p><p><strong>如何避免：</strong>敏感数据仍要走 KMS 或第7章 8.7 的密钥管理（环境变量/Secret 注入，不进仓库）。</p></div>
+<div class="card danger"><h3>误解5：「K8s Service 能替代 Nacos」</h3><p><strong>为什么容易误解：</strong>两者都做服务发现。</p><p><strong>原文真正说了什么：</strong>K8s Service + DNS 只在<strong>集群内</strong>做服务发现；公司业务用 Nacos（discovery-nacos-boot-starter）是因为它支持<strong>多环境灰度路由（lane 泳道）</strong>——按租户把流量导到 MASTER/GRAY，K8s Service 做不到这种业务级路由。</p><p><strong>如何避免：</strong>基础设施发现用 K8s Service；业务级灰度路由用 Nacos + lane。</p></div>
+
+<h2 id="sec10">10 背景知识缺口 <button class="voice-btn" data-voice-id="m10">🎧 听这章</button></h2>
+<div class="card"><h3>现在可以先不补</h3><ul style="margin-left:20px;margin-top:8px;"><li><strong>K8s 控制平面内部组件（API Server/etcd/scheduler/controller-manager）</strong>——会用 kubectl 查状态即可。</li><li><strong>CNI 网络插件（Calico/Flannel）原理</strong>——知道 Pod 网络能通即可。</li><li><strong>Container Runtime Interface 细节</strong>——知道容器跑在 containerd 即可。</li><li><strong>Helm Chart 编写</strong>——会用公司现成模板部署即可。</li></ul></div>
+<div class="card"><h3>后续值得追问</h3><ul style="margin-left:20px;margin-top:8px;"><li><strong>K8s Service 和 Nacos discovery 怎么协同</strong>→ 第8章 discovery-nacos-boot-starter</li><li><strong>ConfigMap/Secret 和 Nacos 配置中心的分工</strong>→ 第8章 config-nacos-boot-starter</li><li><strong>Pod 资源 request/limit 怎么定</strong>→ JVM 容器化调优</li><li><strong>滚动更新和 Spring Boot 优雅停机怎么配合</strong>→ 第8章 + Java 应用停机</li><li><strong>HPA（水平 Pod 自动扩缩容）触发条件</strong>→ monitor + Prometheus 指标</li></ul></div>
+
+<h2 id="sec11">11 复盘与学习报告 <button class="voice-btn" data-voice-id="m11">🎧 听这章</button></h2>
+<div class="wrong-box"><h4>📝 错题回流区</h4><ul id="wrongBox"><li style="color:#888">还没有错题。答错的题会自动收集到这里。</li></ul></div>
+<div class="report-btns"><button id="genReport">📊 生成学习报告</button><button id="copyReport">📋 复制报告</button></div>
+<div class="report-box" id="report">点击上方按钮生成你的学习报告。</div>
+
+<div class="footer">由 <a href="https://lyzbcy.github.io/" target="_blank" rel="noopener" style="color:#1d70b8;text-decoration:underline;font-weight:700">捞鱼</a> 制作 · 微盛管培生学习地图 · 后端方向<br>这个工具能帮你预习难啃的干货，但不能代替完整学习。学习愉快</div>
+</main>
+</div>
+<div class="source-modal" id="sourceModal" onclick="if(event.target===this)closeSource()">
+<div class="source-modal-box">
+<div class="source-modal-bar"><span class="source-modal-title">📄 原文文档：云原生基础运维手册</span><button class="source-modal-close" onclick="closeSource()">✕</button></div>
+<iframe class="source-modal-iframe" id="sourceFrame" src=""></iframe>
+</div>
+</div>
+<div id="voicePlayer">
+<button class="vp-close" aria-label="关闭">✕</button>
+<div class="vp-head">🎧 后台语音 · 连续播放</div>
+<div class="vp-title">—</div>
+<div class="vp-controls"><button class="vp-prev" aria-label="上一章">⏮</button><button class="vp-play" aria-label="播放/暂停">▶</button><button class="vp-next" aria-label="下一章">⏭</button></div>
+<input class="vp-seek" type="range" min="0" max="1000" value="0" aria-label="进度">
+<div class="vp-time"><span class="vp-cur">00:00</span><span class="vp-dur">00:00</span></div>
+<div class="vp-sub">点开播放后，这里会同步显示字幕</div>
+</div>
+<button id="voiceFab" aria-label="打开后台语音"><span class="fab-icon">🎧</span><span class="fab-text">后台语音</span></button>
+<script>
+function openSource(url){document.getElementById('sourceFrame').src=url;document.getElementById('sourceModal').classList.add('show');}
+function closeSource(){document.getElementById('sourceModal').classList.remove('show');document.getElementById('sourceFrame').src='';}
+</script>
+<script>
+(function(){
+  "use strict";
+  function $all(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));}
+  function selectedVals(t){return $all('.opt.selected',t).map(function(o){return o.getAttribute('data-val');}).sort();}
+  function setFb(t,state,html){var fb=t.querySelector('.feedback');if(!fb)return;fb.className='feedback'+(state?(' '+state):'');fb.innerHTML=html;}
+  function updateBar(){var all=$all('.task'),done=$all('.task[data-answered="1"]');var fill=document.getElementById('barFill'),num=document.getElementById('barNum');if(fill)fill.style.width=all.length?(done.length/all.length*100)+'%':'0%';if(num)num.textContent=done.length+' / '+all.length;}
+  function renderWrong(){var box=document.getElementById('wrongBox');if(!box)return;var wrong=$all('.task[data-answered="1"][data-correct="0"]');if(!wrong.length){box.innerHTML='<li style="color:#888">还没有错题。答错的题会自动收集到这里。</li>';return;}box.innerHTML='';wrong.forEach(function(t){var li=document.createElement('li');li.textContent='【'+(t.getAttribute('data-task')||'')+'】'+(t.getAttribute('data-review')||'回到对应模块复习');box.appendChild(li);});}
+  function check(t){var type=t.getAttribute('data-type'),ok=false;if(type==='selects'){var sels=$all('select.match',t),allok=true,empty=false;sels.forEach(function(s){if(!s.value)empty=true;if(s.value!==s.getAttribute('data-correct'))allok=false;});if(empty){setFb(t,'no','请先把每一项都选好再检查。');return;}ok=allok;}else{var sel=selectedVals(t);if(!sel.length){setFb(t,'no','请先选择一个选项再检查。');return;}var ans=(t.getAttribute('data-answer')||'').split(',').map(function(x){return x.trim();}).sort();ok=(sel.join('|')===ans.join('|'));}var body=ok?(t.getAttribute('data-ok')||'回答正确。'):(t.getAttribute('data-no')||'再想想。');var src=t.getAttribute('data-src');setFb(t,ok?'ok':'no',(ok?'<img class="fb-emoji" src="https://lyzbcy.github.io/weshoto-study/img/sticker/ok.png" alt="">':'<img class="fb-emoji" src="https://lyzbcy.github.io/weshoto-study/img/sticker/no.png" alt="">')+body+(src?('<span class="src">'+src+'</span>'):''));t.setAttribute('data-answered','1');t.setAttribute('data-correct',ok?'1':'0');updateBar();renderWrong();}
+  function genReport(){var box=document.getElementById('report');if(!box)return;var all=$all('.task'),done=$all('.task[data-answered="1"]'),right=$all('.task[data-answered="1"][data-correct="1"]');var lines=['=== 学习报告 ===','完成题目：'+done.length+' / '+all.length,'答对：'+right.length+' 题',''];var wrong=$all('.task[data-answered="1"][data-correct="0"]');if(wrong.length){lines.push('我答错的题（建议复习）：');wrong.forEach(function(t){lines.push('- '+(t.getAttribute('data-task')||'')+'：'+(t.getAttribute('data-review')||''));});}else{lines.push('暂无错题。');}box.textContent=lines.join('\n');}
+  document.addEventListener('click',function(e){var c=e.target.closest?e.target:null;var opt=c&&e.target.closest('.opt');if(opt){var t=opt.closest('.task');if(!t)return;if(t.getAttribute('data-multi')==='true'){opt.classList.toggle('selected');}else{$all('.opt',t).forEach(function(o){o.classList.remove('selected');});opt.classList.add('selected');}return;}var btn=c&&e.target.closest('.check');if(btn){var tk=btn.closest('.task');if(tk)check(tk);return;}if(e.target&&e.target.id==='genReport'){genReport();return;}if(e.target&&e.target.id==='copyReport'){var r=document.getElementById('report');if(r&&navigator.clipboard)navigator.clipboard.writeText(r.textContent);return;}});
+  function init(){updateBar();renderWrong();}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+<script>
+(function(){
+  "use strict";
+  if(window.__voiceEngine) return;
+  window.__voiceEngine = true;
+  var listNode = document.getElementById('voicePlaylist');
+  if(!listNode){ return; }
+  var TRACKS = [];
+  try { TRACKS = JSON.parse(listNode.textContent.trim()); } catch(e){ return; }
+  if(!TRACKS.length) return;
+  var player = document.getElementById('voicePlayer');
+  var fab = document.getElementById('voiceFab');
+  var audio = new Audio(); audio.preload = 'metadata';
+  var cur = 0;
+  var ranges = [];
+  var total = 0;
+  var seeking = false;
+  function $(s){ return player ? player.querySelector(s) : null; }
+  function fmt(s){ s=Math.max(0,Math.floor(s||0)); var m=Math.floor(s/60), x=s%60;
+    return (m<10?'0':'')+m+':'+(x<10?'0':'')+x; }
+  var probe = TRACKS.map(function(){ return {dur:0}; });
+  function tryFinalize(){
+    if(probe.some(function(p){return !p.dur;})) return;
+    ranges = []; total = 0;
+    probe.forEach(function(p){ ranges.push({dur:p.dur, start:total}); total += p.dur; });
+    var d = $('.vp-dur'); if(d) d.textContent = fmt(total);
+    var sk = $('.vp-seek'); if(sk){ sk.max = Math.max(1000, Math.floor(total*10)); }
+  }
+  TRACKS.forEach(function(t, i){
+    var a = new Audio(); a.preload = 'metadata'; a.src = t.src;
+    a.addEventListener('loadedmetadata', function(){
+      probe[i].dur = a.duration || 0; tryFinalize();
+    });
+    a.addEventListener('error', function(){ probe[i].dur = 0; tryFinalize(); });
+  });
+  function load(i){
+    cur = i; audio.src = TRACKS[i].src;
+    var ti = $('.vp-title'); if(ti) ti.textContent = TRACKS[i].title || ('第 '+(i+1)+' 段');
+    markBtn(i);
+  }
+  function play(){ audio.play().then(function(){ show(); setPlayIcon(true); if(fab) fab.classList.add('beat'); }).catch(function(){}); }
+  function pause(){ audio.pause(); setPlayIcon(false); if(fab) fab.classList.remove('beat'); }
+  function toggle(){ audio.paused ? play() : pause(); }
+  function next(){ if(cur < TRACKS.length-1){ load(cur+1); play(); } else { pause(); } }
+  function prev(){
+    var abs = absTime();
+    if(cur > 0 && abs - ranges[cur].start < 3){ load(cur-1); play(); }
+    else { audio.currentTime = 0; }
+  }
+  function absTime(){ return ranges[cur] ? ranges[cur].start + (audio.currentTime||0) : (audio.currentTime||0); }
+  function setPlayIcon(on){ var b=$('.vp-play'); if(b) b.textContent = on ? '⏸' : '▶'; }
+  function show(){ if(player) player.classList.add('show'); }
+  function hide(){ if(player) player.classList.remove('show'); }
+  function markBtn(i){
+    document.querySelectorAll('.voice-btn[data-voice-id]').forEach(function(b){
+      b.classList.toggle('active', b.getAttribute('data-voice-id') === TRACKS[i].id);
+    });
+  }
+  audio.addEventListener('timeupdate', function(){
+    if(seeking) return;
+    if(!ranges[cur]) return;
+    var abs = absTime(); var sk = $('.vp-seek'); var c = $('.vp-cur');
+    if(sk && total) sk.value = Math.round(abs / total * (sk.max||1000));
+    if(c) c.textContent = fmt(abs);
+  });
+  audio.addEventListener('ended', function(){ if(cur < TRACKS.length-1){ load(cur+1); play(); }
+    else { setPlayIcon(false); if(fab) fab.classList.remove('beat'); } });
+  function seekToFraction(frac){
+    if(!total) return;
+    var target = Math.max(0, Math.min(total, frac * total));
+    var i = 0; while(i < ranges.length-1 && ranges[i].start + ranges[i].dur < target){ i++; }
+    if(i !== cur){ cur = i; audio.src = TRACKS[i].src;
+      var ti=$('.vp-title'); if(ti) ti.textContent = TRACKS[i].title||('第 '+(i+1)+' 段'); markBtn(i); }
+    audio.currentTime = target - ranges[i].start;
+    var c=$('.vp-cur'); if(c) c.textContent = fmt(target);
+  }
+  document.addEventListener('click', function(e){
+    var t = e.target;
+    var vb = t.closest ? t.closest('.voice-btn[data-voice-id]') : null;
+    if(vb){
+      var id = vb.getAttribute('data-voice-id'), idx = -1;
+      TRACKS.forEach(function(tr, k){ if(tr.id === id) idx = k; });
+      if(idx >= 0){ load(idx); play(); }
+      return;
+    }
+    if(t.id === 'voiceFab'){ show(); if(audio.paused && !audio.src){ load(0); } if(audio.paused){ play(); } return; }
+    if(!player || !player.contains(t)) return;
+    if(t.classList.contains('vp-play')){ toggle(); return; }
+    if(t.classList.contains('vp-prev')){ prev(); return; }
+    if(t.classList.contains('vp-next')){ next(); return; }
+    if(t.classList.contains('vp-close')){ pause(); hide(); return; }
+  });
+  var sk = $('.vp-seek');
+  if(sk){
+    sk.addEventListener('input', function(){ seeking = true;
+      if(total){ var c=$('.vp-cur'); if(c) c.textContent = fmt((sk.value/(sk.max||1000))*total); } });
+    sk.addEventListener('change', function(){ seekToFraction(sk.value/(sk.max||1000)); seeking = false; });
+  }
+})();
+</script>
+<script>
+(function(){
+  "use strict";
+  if(window.__subEngine) return;
+  window.__subEngine = true;
+  var listNode = document.getElementById("voicePlaylist");
+  if(!listNode) return;
+  var subBox = document.querySelector("#voicePlayer .vp-sub");
+  var curEl = document.querySelector("#voicePlayer .vp-cur");
+  var titleEl = document.querySelector("#voicePlayer .vp-title");
+  if(!subBox) return;
+  var subs = [];
+  var subCache = {};
+  var curSrc = "";
+  function esc(s){ var d=document.createElement("div"); d.textContent=s; return d.innerHTML; }
+  function mp3ToJson(src){
+    var m = src.replace(/^.*?([a-zA-Z0-9_\/.\-]+\.mp3)(?:\?.*)?$/i, "$1");
+    return m.replace(/\.mp3$/i, ".json");
+  }
+  function loadSubFor(src){
+    if(!src || src === curSrc) return;
+    curSrc = src;
+    var jsonUrl = mp3ToJson(src);
+    if(subCache[jsonUrl]){ subs = subCache[jsonUrl]; return; }
+    fetch(jsonUrl).then(function(r){
+      if(!r.ok) throw new Error(r.status);
+      return r.json();
+    }).then(function(arr){
+      subCache[jsonUrl] = Array.isArray(arr) ? arr : [];
+      subs = subCache[jsonUrl];
+    }).catch(function(){ subs = []; });
+  }
+  function parseTime(text){
+    var p = String(text).trim().split(":");
+    if(p.length === 2){
+      var m = parseInt(p[0], 10) || 0;
+      var s = parseInt(p[1], 10) || 0;
+      return m * 60 + s;
+    }
+    return parseFloat(text) || 0;
+  }
+  function renderSub(t){
+    if(!subs.length) return;
+    var hit = null, idx = -1;
+    for(var i = 0; i < subs.length; i++){
+      if(t >= subs[i].start && t < subs[i].end){ hit = subs[i]; idx = i; break; }
+    }
+    if(!hit){
+      var prev = null;
+      for(var j = 0; j < subs.length; j++){
+        if(subs[j].start <= t) prev = subs[j]; else break;
+      }
+      subBox.classList.remove("active");
+      subBox.innerHTML = prev ? esc(prev.text) : "";
+      return;
+    }
+    subBox.classList.add("active");
+    var prevHtml = idx > 0
+      ? '<span style="opacity:.45">' + esc(subs[idx - 1].text) + "</span> "
+      : "";
+    subBox.innerHTML = prevHtml + '<span class="cur">' + esc(hit.text) + "</span>";
+  }
+  function tick(){
+    if(!curEl) return;
+    var sec = parseTime(curEl.textContent);
+    renderSub(sec);
+  }
+  function onTitleChange(){
+    var TRACKS = [];
+    try { TRACKS = JSON.parse(listNode.textContent.trim()); } catch(e){ return; }
+    var title = titleEl ? titleEl.textContent.trim() : "";
+    for(var i = 0; i < TRACKS.length; i++){
+      if(TRACKS[i].title === title){ loadSubFor(TRACKS[i].src); return; }
+    }
+  }
+  if(window.MutationObserver){
+    var obs = new MutationObserver(function(){ tick(); onTitleChange(); });
+    if(curEl) obs.observe(curEl, { childList:true, characterData:true, subtree:true });
+    if(titleEl) obs.observe(titleEl, { childList:true, characterData:true, subtree:true });
+  } else {
+    setInterval(function(){ tick(); onTitleChange(); }, 300);
+  }
+  setTimeout(tick, 500);
+})();
+</script>
+<script>(function(){"use strict";var MAP={"01":"go","02":"welcome","03":"important","04":"cheer","05":"important","06":"sleep","07":"sprint","08":"go","09":"no","10":"sleep","11":"final"};function run(){document.querySelectorAll("h2[id^=sec]").forEach(function(h){var m=h.id.match(/sec(\d+)/);if(!m)return;var name=MAP[m[1]];if(!name)return;if(h.querySelector(".sec-sticker"))return;var img=document.createElement("img");img.className="sec-sticker";img.src="https://lyzbcy.github.io/weshoto-study/img/sticker/"+name+".png";img.alt="";h.insertBefore(img,h.firstChild)})}if(document.readyState=="loading")document.addEventListener("DOMContentLoaded",run);else run()})();</script>
+</body>
+</html>

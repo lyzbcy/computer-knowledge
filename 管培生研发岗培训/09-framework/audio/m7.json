@@ -1,0 +1,57 @@
+[
+  {
+    "start": 0.1,
+    "end": 1.94,
+    "text": "做几道思考题。"
+  },
+  {
+    "start": 1.89,
+    "end": 6.92,
+    "text": "同事说导入 framework-parent 就能用 Result 了，对吗？"
+  },
+  {
+    "start": 6.92,
+    "end": 11.8,
+    "text": "错，BOM 只统一版本不传递依赖，还要显式引 common。"
+  },
+  {
+    "start": 11.8,
+    "end": 17.18,
+    "text": "引入 config-core-starter 发现 Nacos 配置没加载，问题在哪？"
+  },
+  {
+    "start": 17.18,
+    "end": 22.49,
+    "text": "config-core-starter 是占位包，要换成 config-nacos-boot-starter。"
+  },
+  {
+    "start": 22.49,
+    "end": 28.1,
+    "text": "lane 规则把租户 t001 配到 GRAY，没配的 t002 走哪？"
+  },
+  {
+    "start": 28.1,
+    "end": 29.86,
+    "text": "走 MASTER 兜底。"
+  },
+  {
+    "start": 29.86,
+    "end": 35.67,
+    "text": "业务要发订单创建事件下游必须收到，能用 event-boot-starter 吗？"
+  },
+  {
+    "start": 35.67,
+    "end": 43.31,
+    "text": "不能，EventClient 异常只记日志不抛，交易事件要用事务消息或本地消息表。"
+  },
+  {
+    "start": 43.31,
+    "end": 51.14,
+    "text": "分片表 SQL 没写 ws_tenant_id 但 ContextHolder 有，会怎样？"
+  },
+  {
+    "start": 51.14,
+    "end": 57.9,
+    "text": "框架不会透明补，必须业务自己显式带，否则路由错误或被 SQL 拦截。"
+  }
+]

@@ -1,0 +1,27 @@
+[
+  {
+    "start": 0.1,
+    "end": 2.95,
+    "text": "读手册前先补四个背景。"
+  },
+  {
+    "start": 2.9,
+    "end": 15.31,
+    "text": "第一，starter 是 Spring Boot 的依赖打包加自动配置约定，引入一个 starter 等于把一组相关 jar 和自动配置类一次性加到 classpath，开箱即用。"
+  },
+  {
+    "start": 15.31,
+    "end": 27.38,
+    "text": "第二，BOM 是 Maven 的版本清单 POM，用 dependencyManagement 导入后只统一版本，不会把 jar 自动加进来，业务模块还是要自己写 dependencies。"
+  },
+  {
+    "start": 27.38,
+    "end": 42.58,
+    "text": "第三，Nacos 同时是配置中心和注册中心，配置中心按 namespace、group、dataId 三元组存配置，注册中心让服务实例启动时注册、调用方查实例列表。"
+  },
+  {
+    "start": 42.58,
+    "end": 56.73,
+    "text": "第四，TTL 是阿里开源的 TransmittableThreadLocal，解决线程池场景下上下文跨线程传递的问题，让 traceId、tenantId、laneId 跨线程池不丢。"
+  }
+]

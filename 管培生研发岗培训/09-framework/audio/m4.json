@@ -1,0 +1,47 @@
+[
+  {
+    "start": 0.1,
+    "end": 14.89,
+    "text": "框架的结构是能力目录加模块卡片，每个 starter 一个固定模板，包括基本信息、依赖与核心类、作用与实现、业务使用示例、如何确认已生效、边界风险排障。"
+  },
+  {
+    "start": 14.89,
+    "end": 17.15,
+    "text": "整体可以分成六组。"
+  },
+  {
+    "start": 17.15,
+    "end": 25.52,
+    "text": "基础层是 wshoto-framework-common，提供 Result、BaseException、ContextHolder、注解、工具类。"
+  },
+  {
+    "start": 25.52,
+    "end": 34.91,
+    "text": "配置家族有 core 占位、nacos 用 Spring Cloud Alibaba、local 文件刷新、extension 是动态规则 SPI。"
+  },
+  {
+    "start": 34.91,
+    "end": 40.16,
+    "text": "发现家族有 core 占位和 nacos 注册加泳道负载均衡。"
+  },
+  {
+    "start": 40.16,
+    "end": 46.85,
+    "text": "上下文与可观测包括 lane、trace、log、monitor、web 五个 starter。"
+  },
+  {
+    "start": 46.85,
+    "end": 52.49,
+    "text": "消息与调度包括 message、stream、delay、event、scheduler。"
+  },
+  {
+    "start": 52.49,
+    "end": 57.94,
+    "text": "数据层包括 orm、sharding-jdbc、report、redis。"
+  },
+  {
+    "start": 57.94,
+    "end": 63.16,
+    "text": "模块之间是依赖与组合关系，业务服务按需搭积木。"
+  }
+]

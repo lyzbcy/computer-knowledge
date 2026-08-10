@@ -1,0 +1,37 @@
+[
+  {
+    "start": 0.1,
+    "end": 2.1,
+    "text": "拆六个关键概念。"
+  },
+  {
+    "start": 2.05,
+    "end": 14.5,
+    "text": "第一个是 common 公共包，框架的公共字典，提供统一返回模型、业务异常层次、TTL 上下文、注解和工具类，所有 starter 都依赖它。"
+  },
+  {
+    "start": 14.5,
+    "end": 27.85,
+    "text": "第二个是 ContextHolder，一个跨线程的 Map，存 traceId、tenantId、wsTenantId、laneId 等，读取时同步到 MDC 让日志能打 tid。"
+  },
+  {
+    "start": 27.85,
+    "end": 38.55,
+    "text": "第三个是 lane 泳道，公司用它做灰度发布，规则把指定租户映射到 GRAY，请求会路由到灰度 Pod，没配的兜底走 MASTER。"
+  },
+  {
+    "start": 38.55,
+    "end": 52.79,
+    "text": "第四个是 Nacos 配置三层组织，namespace 按环境分比如 qw-prod，group 按职责分比如 DEFAULT_GROUP 或 LANE_GROUP，dataId 按应用名拼。"
+  },
+  {
+    "start": 52.79,
+    "end": 63.4,
+    "text": "第五个是 Spring Cloud Stream 函数式消费，3.0 不再用 @StreamListener，要写 MessageConsumer Bean 配 Nacos 的 function definition。"
+  },
+  {
+    "start": 63.4,
+    "end": 74.04,
+    "text": "第六个是 sharding 分片路由，按 wsTenantId 决定数据落在哪个库哪个表，算法参数改了等于数据迁移。"
+  }
+]

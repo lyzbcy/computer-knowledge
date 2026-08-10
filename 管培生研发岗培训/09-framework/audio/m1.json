@@ -1,0 +1,42 @@
+[
+  {
+    "start": 0.1,
+    "end": 4.22,
+    "text": "这一章聊 wshoto-framework 3.0 脚手架。"
+  },
+  {
+    "start": 4.17,
+    "end": 11.91,
+    "text": "这是公司所有 Java 微服务共用的二方包框架，掌握它就能站在巨人肩膀上做业务。"
+  },
+  {
+    "start": 11.91,
+    "end": 14.61,
+    "text": "学完你应该能做到五件事。"
+  },
+  {
+    "start": 14.61,
+    "end": 33.25,
+    "text": "第一，背出技术核心版本，Java 17、Spring Boot 3.4.0、Spring Cloud 2024.0.0、MyBatis-Plus 3.5.12、ShardingSphere 5.5.1、RocketMQ 5.3.1、Redisson 3.16.8。"
+  },
+  {
+    "start": 33.25,
+    "end": 44.88,
+    "text": "第二，说清三层依赖关系，wshoto-parent 是底座，framework-parent 是 BOM 只管版本不传递依赖，业务子模块按需显式引入 starter。"
+  },
+  {
+    "start": 44.88,
+    "end": 56.88,
+    "text": "第三，记住新服务接入的最小组合，common 加 config-nacos 加 discovery-nacos 加 log 加 trace 加 web 加 monitor 是必须的，其他按需。"
+  },
+  {
+    "start": 56.88,
+    "end": 68.01,
+    "text": "第四，理解占位 starter 陷阱，config-core-starter 和 discovery-core-starter 源码只有 package-info.java，引入它们不会有任何能力。"
+  },
+  {
+    "start": 68.01,
+    "end": 76.25,
+    "text": "第五，掌握泳道机制，租户映射到 MASTER 或 GRAY 发布环境，框架统一管上下文透传。"
+  }
+]

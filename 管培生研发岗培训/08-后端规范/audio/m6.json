@@ -1,0 +1,37 @@
+[
+  {
+    "start": 0.1,
+    "end": 2.1,
+    "text": "拆六个关键概念。"
+  },
+  {
+    "start": 2.05,
+    "end": 16.65,
+    "text": "第一个是分层对象，Controller 接 Request，Service 吃 DTO，Repository 读写 DO，对外返回 Response，相邻层用 Converter 转换，禁止用 BeanUtils.copyProperties。"
+  },
+  {
+    "start": 16.65,
+    "end": 27.24,
+    "text": "第二个是 wsTenantId，租户的全局唯一编号，租户表的所有增删改查都要带它，分片表还用它做分片路由。"
+  },
+  {
+    "start": 27.24,
+    "end": 37.21,
+    "text": "第三个是统一 Result 包装，成功码是 00000，业务异常必须继承 BaseException，不能手工拼错误码。"
+  },
+  {
+    "start": 37.21,
+    "end": 46.88,
+    "text": "第四个是 Spring 编程式事务，项目统一用 TransactionTemplate 显式控制边界，禁止新增 @Transactional 注解。"
+  },
+  {
+    "start": 46.88,
+    "end": 54.44,
+    "text": "第五个是 Feign 向后兼容，要改契约只能新增 V2 方法加新路径，老方法保留。"
+  },
+  {
+    "start": 54.44,
+    "end": 63.74,
+    "text": "第六个是枚举只能扩展不能改既有值，要加新状态就新增枚举常量，老值的编号和含义保持不变。"
+  }
+]

@@ -1,0 +1,27 @@
+[
+  {
+    "start": 0.1,
+    "end": 9.11,
+    "text": "学完这一章，你应该能说出手册在回答的问题，就是公司的 Java 微服务最终跑在什么样的基础设施上。"
+  },
+  {
+    "start": 9.11,
+    "end": 25.0,
+    "text": "你应该能列出核心判断和原文依据，包括容器 vs 虚拟机、Master 和 Worker 双层、公司命名空间三类划分、Deployment 四件套、Service 三种类型、Pod phase 不是固定流转。"
+  },
+  {
+    "start": 25.0,
+    "end": 39.3,
+    "text": "你应该能解释关键概念的关系，比如 Pod 是 Deployment 管理的对象，Service 通过 Label Selector 找到一组 Pod，Namespace 是资源边界配合 lane 泳道做双重隔离。"
+  },
+  {
+    "start": 39.3,
+    "end": 49.82,
+    "text": "你应该能指出容易误解的地方，比如 Pod 不会自我修复、Secret 不是加密、K8s Service 做不到业务级灰度路由。"
+  },
+  {
+    "start": 49.83,
+    "end": 58.64,
+    "text": "下一步可以追问 Pod 资源怎么定、滚动更新和优雅停机怎么配合，这就把后端和云原生串起来了。"
+  }
+]

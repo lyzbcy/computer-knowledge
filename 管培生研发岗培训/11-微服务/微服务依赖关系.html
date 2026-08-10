@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第10章：微服务依赖关系 — 微盛管培生学习地图</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Poppins:wght@400;600;700&family=Noto+Sans+SC:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#FAF6EB;--paper:#F3EDDD;--forest:#1E3A24;--sky:#BCD8EE;--sage:#AFCDA8;--ink:#1A2018;--marker:#F5E08A;--brick:#B5482A;--correct:#2F7D46;--wrong:#B5482A;--font-display:"Archivo Black","Noto Sans SC","PingFang SC",sans-serif;--font-head:"Poppins","Noto Sans SC","PingFang SC",sans-serif;--font-body:-apple-system,"PingFang SC","Noto Sans SC",sans-serif;--font-mono:"Roboto Mono","JetBrains Mono",monospace;--radius-pill:999px;--radius-card:14px;}
+*{box-sizing:border-box;margin:0;padding:0;}body{font-family:var(--font-body);background:var(--cream);color:var(--ink);line-height:1.7;}
+.layout{display:flex;min-height:100vh;}
+.sidebar{width:280px;background:var(--forest);color:var(--cream);position:fixed;height:100vh;overflow-y:auto;padding:24px 20px;flex-shrink:0;z-index:10;display:flex;flex-direction:column;}
+.sidebar h2{font-family:var(--font-head);font-size:18px;margin-bottom:16px;color:var(--marker);}
+.progress-wrap{margin-bottom:20px;}.progress-bar{background:rgba(255,255,255,.15);height:8px;border-radius:var(--radius-pill);overflow:hidden;}.progress-fill{background:var(--sage);height:100%;width:0%;transition:width .3s;}.progress-num{font-size:13px;margin-top:4px;opacity:.8;}
+.nav-list{padding:0;}.nav-list li{margin-bottom:6px;list-style:none;}.nav-list a{display:block;padding:8px 12px;border-radius:8px;font-size:14px;opacity:.8;transition:.15s;text-decoration:none;color:var(--cream);}.nav-list a:hover{background:rgba(255,255,255,.1);opacity:1;}
+.sidebar-footer{margin-top:auto;padding-top:20px;font-size:12px;opacity:.5;}
+.main{margin-left:280px;flex:1;padding:40px 48px;max-width:820px;}
+.main h1{font-family:var(--font-display);font-size:32px;margin-bottom:8px;color:var(--forest);}
+.main h2{font-family:var(--font-head);font-size:22px;margin:32px 0 12px;color:var(--forest);border-bottom:2px solid var(--sage);padding-bottom:6px;}
+.main h3{font-family:var(--font-head);font-size:17px;margin:20px 0 8px;color:var(--forest);}
+.main p{margin-bottom:8px;}
+.card{background:var(--paper);border-radius:var(--radius-card);padding:20px;margin-bottom:16px;}
+.card.fact{border-left:4px solid var(--sky);}.card.judgment{border-left:4px solid var(--marker);}.card.inference{border-left:4px solid var(--sage);}.card.danger{border-left:4px solid var(--brick);}
+.src{display:inline-block;background:var(--marker);color:var(--ink);padding:2px 8px;border-radius:4px;font-size:13px;margin-top:8px;font-family:var(--font-mono);}
+.bg-note{background:#E8E4D4;border-radius:6px;padding:4px 8px;font-size:13px;color:#555;display:inline-block;}
+.objective{background:var(--paper);border-radius:var(--radius-card);padding:16px 20px;margin-bottom:12px;display:flex;gap:12px;align-items:flex-start;}
+.objective .num{background:var(--forest);color:var(--cream);width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0;}
+.structure-map{background:var(--paper);border-radius:var(--radius-card);padding:24px;}
+.structure-node{padding:12px 16px;border-radius:8px;margin-bottom:8px;border:2px solid transparent;}
+.structure-node.cluster{background:#E8F0E5;border-color:var(--sage);}.structure-node.branch{background:#E8EEF5;border-color:var(--sky);margin-left:20px;}.structure-node.leaf{background:#F5EDE5;border-color:#D4C4A8;margin-left:40px;}
+.task{background:var(--paper);border-radius:var(--radius-card);padding:20px;margin-bottom:16px;}
+.task .q{font-weight:600;margin-bottom:12px;}.opts{display:flex;flex-direction:column;gap:8px;margin-bottom:12px;}
+.opt{padding:10px 16px;border:2px solid #D4C4A8;background:var(--cream);border-radius:8px;cursor:pointer;font-size:15px;text-align:left;transition:.15s;font-family:var(--font-body);}
+.opt:hover{border-color:var(--sky);}.opt.selected{border-color:var(--forest);background:#E8F0E5;}.opt.selected::before{content:"✓ ";color:var(--correct);}
+.check{background:var(--forest);color:var(--cream);border:none;padding:8px 24px;border-radius:var(--radius-pill);cursor:pointer;font-size:14px;font-family:var(--font-body);}
+.check:hover{opacity:.85;}
+.feedback{margin-top:12px;padding:10px 14px;border-radius:8px;font-size:14px;background:#F0EBD8;min-height:44px;overflow:hidden;}.feedback.ok{background:#D4EDD9;color:var(--correct);}.feedback.no{background:#F8D7D5;color:var(--wrong);}.feedback .src{display:block;margin-top:6px;}
+.wrong-box{background:#FFF3F0;border-radius:8px;padding:12px;margin-top:16px;}.wrong-box h4{color:var(--wrong);margin-bottom:8px;}.wrong-box ul{list-style:none;padding-left:0;}.wrong-box li{padding:4px 0;font-size:14px;}
+.report-box{background:var(--paper);border-radius:8px;padding:16px;margin-top:16px;white-space:pre-wrap;font-size:14px;min-height:60px;font-family:var(--font-mono);}
+.report-btns{display:flex;gap:8px;margin-top:12px;}.report-btns button{padding:8px 16px;border-radius:var(--radius-pill);border:none;cursor:pointer;font-size:14px;}#genReport{background:var(--forest);color:var(--cream);}#copyReport{background:var(--sky);color:var(--ink);}
+.footer{text-align:center;padding:24px;margin-top:40px;border-top:1px solid #D4C4A8;font-size:13px;color:#888;}.footer a{color:var(--brick);text-decoration:underline;}
+.relevancy{margin-top:8px;font-size:13px;color:#888;border-top:1px dashed #D4C4A8;padding-top:6px;}
+.scene{background:#FFF8E1;border-left:4px solid var(--marker);border-radius:8px;padding:12px 16px;margin:10px 0;font-size:14px;}
+.scene::before{content:"🎬 Java 后端视角";display:block;font-weight:700;color:var(--brick);font-size:12px;margin-bottom:4px;letter-spacing:1px;}
+.cmp-table{width:100%;border-collapse:collapse;margin:10px 0;font-size:13px;background:var(--cream);border-radius:8px;overflow:hidden;}
+.cmp-table th{background:var(--forest);color:var(--cream);padding:8px 10px;text-align:left;}
+.cmp-table td{padding:8px 10px;border-bottom:1px solid #E0D8C0;vertical-align:top;}
+.cmp-table tr:last-child td{border-bottom:none;}
+.cmp-table td:first-child{font-weight:600;background:#F0EBD8;}
+.hardnum{background:#FFF3F0;border:2px solid var(--brick);border-radius:8px;padding:14px 18px;margin:12px 0;}
+.hardnum::before{content:"📌 记住这些硬数字/红线";display:block;font-weight:700;color:var(--brick);font-size:13px;margin-bottom:8px;letter-spacing:1px;}
+.hardnum ul{margin-left:18px;}.hardnum li{padding:3px 0;}.hardnum b{color:var(--brick);}
+.code-block{background:#14271E;color:#E8F0E5;padding:12px 14px;border-radius:8px;font-family:var(--font-mono);font-size:12.5px;line-height:1.55;margin:10px 0;overflow-x:auto;white-space:pre;}
+.code-block .kw{color:#F5E08A;}.code-block .cmt{color:#8FA68E;font-style:italic;}.code-block .str{color:#BCD8EE;}
+.fb-emoji{width:36px;height:36px;vertical-align:middle;margin-right:8px;float:left;border-radius:6px}.sec-sticker{width:34px;height:34px;vertical-align:middle;margin:0 2px 4px;display:inline-block;border-radius:6px}
+.view-source-btn{display:inline-block;margin:8px 0;padding:6px 14px;border:1.5px solid var(--forest);border-radius:999px;background:var(--marker);color:var(--forest);font:600 .82rem/1.2 var(--font-body);cursor:pointer;}
+.view-source-btn:hover{background:var(--forest);color:var(--cream);}
+.source-modal{display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.5);}
+.source-modal.show{display:flex;align-items:center;justify-content:center;padding:20px;}
+.source-modal-box{background:#fff;border-radius:14px;width:min(95vw,1100px);height:min(90vh,800px);display:flex;flex-direction:column;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,.3);}
+.source-modal-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--forest);color:var(--cream);}
+.source-modal-title{font-weight:700;font-size:.95rem;}
+.source-modal-close{background:none;border:none;color:var(--cream);font-size:1.3rem;cursor:pointer;line-height:1;}
+.source-modal-iframe{flex:1;border:none;width:100%;}
+.voice-btn{display:inline-block;vertical-align:middle;margin-left:.6em;padding:.25em .8em;border:1px solid var(--forest);border-radius:var(--radius-pill);background:var(--cream);color:var(--forest);font:600 .8rem/1.2 var(--font-body);cursor:pointer;transition:background .15s;}
+.voice-btn:hover{background:var(--sage);}.voice-btn.active{background:var(--forest);color:var(--cream);}
+#voiceFab{position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:9998;display:flex;align-items:center;flex-direction:row;background:var(--forest);color:var(--cream);border:none;cursor:pointer;height:5em;padding:0 .55em;border-radius:16px 0 0 16px;box-shadow:-4px 0 14px rgba(0,0,0,.18);font-family:var(--font-head);font-size:.85rem;overflow:hidden;transition:width .42s cubic-bezier(.4,0,.2,1), box-shadow .3s ease;width:1.9em;}
+#voiceFab .fab-icon{font-size:1.15rem;writing-mode:vertical-rl;text-orientation:upright;letter-spacing:.1em;white-space:nowrap;flex-shrink:0;}
+#voiceFab .fab-text{white-space:nowrap;opacity:0;margin-left:.6em;transition:opacity .28s ease .12s;}
+#voiceFab:hover{width:8.6em;box-shadow:-6px 0 22px rgba(0,0,0,.25);}
+#voiceFab:hover .fab-text{opacity:1;}
+#voiceFab.beat{animation:voiceBeat 1.6s ease-in-out infinite;}
+@keyframes voiceBeat{0%,100%{box-shadow:-4px 0 14px rgba(0,0,0,.18)}50%{box-shadow:-4px 0 20px rgba(181,72,42,.5)}}
+#voicePlayer{position:fixed;left:50%;bottom:1rem;transform:translateX(-50%) translateY(140%);width:min(92vw,380px);padding:1rem 1.1rem 1.1rem;background:var(--cream);border:2px solid var(--forest);border-radius:26px;box-shadow:0 8px 28px rgba(0,0,0,.16);z-index:9999;transition:transform .28s ease;text-align:center;font-family:var(--font-body);}
+#voicePlayer.show{transform:translateX(-50%) translateY(0);}
+#voicePlayer .vp-head{font-size:.75rem;color:var(--forest);opacity:.8;letter-spacing:.05em;}
+#voicePlayer .vp-title{font:700 1rem/1.35 var(--font-body);color:var(--ink);margin:.25rem 0 .7rem;padding:0 .2rem;word-break:break-word;}
+#voicePlayer .vp-play{width:3.6rem;height:3.6rem;border:none;border-radius:50%;background:var(--forest);color:var(--cream);font-size:1.3rem;cursor:pointer;margin:0 auto .7rem;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 0 #142710;transition:transform .1s, box-shadow .1s;}
+#voicePlayer .vp-play:active{transform:translateY(2px);box-shadow:0 1px 0 #142710;}
+#voicePlayer .vp-prev,#voicePlayer .vp-next{width:2.3rem;height:2.3rem;border:1.5px solid var(--forest);border-radius:50%;background:var(--cream);color:var(--forest);font-size:.9rem;cursor:pointer;}
+#voicePlayer .vp-controls{display:flex;align-items:center;justify-content:center;gap:1.2rem;margin-bottom:.7rem;}
+#voicePlayer .vp-seek{width:100%;margin:.2rem 0;cursor:pointer;accent-color:var(--forest);}
+#voicePlayer .vp-time{display:flex;justify-content:space-between;font:600 .72rem/1 var(--font-mono);color:var(--ink);opacity:.75;}
+#voicePlayer .vp-close{position:absolute;top:.5rem;right:.6rem;width:1.5rem;height:1.5rem;border:none;background:transparent;color:var(--ink);font-size:1rem;cursor:pointer;opacity:.5;}
+#voicePlayer .vp-sub{min-height:2.6em;max-height:3.9em;overflow:hidden;font:.85rem/1.5 var(--font-body);color:var(--ink);opacity:.55;margin:.2rem 0 .5rem;padding:0 .3rem;transition:opacity .2s;text-align:center;}
+#voicePlayer .vp-sub.active{opacity:1;}
+#voicePlayer .vp-sub .cur{color:var(--forest);font-weight:600;}
+@media(max-width:768px){.sidebar{position:relative;width:100%;height:auto;}.main{margin-left:0;padding:20px;}}
+</style>
+</head>
+<body>
+<script type="application/json" id="voicePlaylist">
+[
+  {"id":"m1","title":"M1 学习目标","src":"audio/m1.mp3"},
+  {"id":"m2","title":"M2 背景包","src":"audio/m2.mp3"},
+  {"id":"m3","title":"M3 问题定位","src":"audio/m3.mp3"},
+  {"id":"m4","title":"M4 结构地图","src":"audio/m4.mp3"},
+  {"id":"m5","title":"M5 核心判断","src":"audio/m5.mp3"},
+  {"id":"m6","title":"M6 概念拆解","src":"audio/m6.mp3"},
+  {"id":"m7","title":"M7 苏格拉底关卡","src":"audio/m7.mp3"},
+  {"id":"m8","title":"M8 闯关任务","src":"audio/m8.mp3"},
+  {"id":"m9","title":"M9 误解边界","src":"audio/m9.mp3"},
+  {"id":"m10","title":"M10 背景缺口","src":"audio/m10.mp3"},
+  {"id":"m11","title":"M11 复盘报告","src":"audio/m11.mp3"}
+]
+</script>
+<div class="layout">
+<aside class="sidebar">
+<h2>📋 第10章<br>微服务依赖关系</h2>
+<button class="view-source-btn" onclick="openSource('https://drive.weixin.qq.com/s?k=AA4AQQf9ABAI78LPPQACYAQQZmABo#/preview?fileId=i.1970325122007310.1688850303172902_f.784358566u9lM')">📄 查看原文</button>
+<div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" id="barFill"></div></div><div class="progress-num">进度：<span id="barNum">0 / 8</span></div></div>
+<ul class="nav-list">
+<li><a href="#sec1">01 学习目标</a></li><li><a href="#sec2">02 零基础背景包</a></li><li><a href="#sec3">03 原文问题定位</a></li><li><a href="#sec4">04 原文结构地图</a></li><li><a href="#sec5">05 核心判断与依据</a></li><li><a href="#sec6">06 关键概念拆解</a></li><li><a href="#sec7">07 苏格拉底式关卡</a></li><li><a href="#sec8">08 闯关式任务</a></li><li><a href="#sec9">09 误解与边界</a></li><li><a href="#sec10">10 背景知识缺口</a></li><li><a href="#sec11">11 复盘与学习报告</a></li>
+</ul>
+<div class="sidebar-footer">微盛管培生学习地图 · 后端方向 · 第10章</div>
+</aside>
+<main class="main">
+<h1>微服务依赖关系</h1>
+<p style="color:#666;margin-bottom:24px;">基于《当前微服务依赖关系》（2026-07-18）深度拆解 · 受众：Java 后端开发管培生（带你认全公司 86 个微服务和它们的调用关系）</p>
+
+<h2 id="sec1">01 学习目标与阅读路径 <button class="voice-btn" data-voice-id="m1">🎧 听这章</button></h2>
+<p style="margin-bottom:16px;">这是公司全部在线服务的「地图」。学完你应该能做到：</p>
+<div class="objective"><span class="num">1</span><div><strong>背出五层架构</strong>——网关层（1）→ 接入与聚合层 BFF（6）→ 业务应用层（53）→ 共享业务能力层（18）→ 平台基础层（8）= 共 86 个服务。</div></div>
+<div class="objective"><span class="num">2</span><div><strong>区分注册名 vs 代码模块名</strong>——例如注册名 wshoto-marketing-bff-service 对应代码模块 wshoto-marketing-bff；分层依据是业务职责和调用方向，不是 Maven 模块分层。</div></div>
+<div class="objective"><span class="num">3</span><div><strong>记住 Top 10 高依赖服务</strong>——wshoto-open（55 依赖）排第一，wshoto-marketing-bff-service（45）、wshoto-open-aggregation（30）紧随其后。改这些服务要重点评估影响面。</div></div>
+<div class="objective"><span class="num">4</span><div><strong>分清各层职责</strong>——网关只路由鉴权；BFF 编排多个领域能力（聚合）；业务应用承载具体业务；共享业务能力提供跨业务复用的领域能力；平台基础提供租户/用户/权限/认证等基座。</div></div>
+<div class="objective"><span class="num">5</span><div><strong>认出领域簇</strong>——CRM（线索/订单/客户）、营销（活动/资金/门店/朋友圈）、商城（基础/外部/中间）、会话存档（应用/文件/管理/拉取）、AI（分析/外呼/智能应用）。</div></div>
+<p style="margin-top:16px;color:#666;">阅读路径：补微服务/BFF/网关背景 → 理解五层架构 → 认识 Top 10 高依赖服务 → 拆领域簇 → 闯关场景题 → 复盘。</p>
+
+<h2 id="sec2">02 零基础背景包 <button class="voice-btn" data-voice-id="m2">🎧 听这章</button></h2>
+<div class="card"><h3>背景补充 1：为什么微服务要分层</h3><p><span class="bg-note">背景补充</span></p><p style="margin-top:8px;">单块应用（monolith）所有代码在一起，改一处影响全局；拆成微服务后每个服务独立部署、独立演进。但服务一多就会乱套——所以要用<strong>分层架构</strong>约束调用方向：上层调下层，不能反向，不能跨层乱调。这样依赖关系清晰、故障可隔离。</p><p class="relevancy">为什么读本文需要它：原文 86 个服务就是按这种分层组织的，理解分层才能看懂依赖图。</p></div>
+<div class="card"><h3>背景补充 2：BFF（Backend for Frontend）</h3><p><span class="bg-note">背景补充</span></p><p style="margin-top:8px;">BFF = 为前端定制的后端聚合层。前端一个页面要展示客户信息 + 订单 + 营销活动，如果直接调三个领域服务，前端要处理三次请求和组装逻辑。BFF 把这三次调用和聚合一手包办，前端只调 BFF 一个接口。每个业务渠道（CRM/营销/财务/商城）有自己的 BFF。</p><p class="relevancy">为什么读本文需要它：接入与聚合层的 6 个服务都是 BFF，是流量的「指挥官」。</p></div>
+<div class="card"><h3>背景补充 3：API 网关</h3><p><span class="bg-note">背景补充</span></p><p style="margin-top:8px;">网关是所有外部流量的唯一入口。它做：①请求路由（按路径转发到对应服务）②鉴权前置（验证 token）③限流熔断（流量治理）。对应第8章 discovery-nacos 的服务发现 + 第9章 Ingress 的 L7 路由。公司只有 1 个网关 wshoto-gateway。</p><p class="relevancy">为什么读本文需要它：网关层是流量链路的第一道关，所有外部请求都从它进。</p></div>
+<div class="card"><h3>背景补充 4：Feign 跨服务调用</h3><p><span class="bg-note">背景补充</span></p><p style="margin-top:8px;">第7章讲过 OpenFeign：声明式 HTTP 客户端，服务间通过 Feign 接口互相调用。本章的「依赖关系」就是「谁 Feign 调谁」。Top 10 高依赖服务 = Feign 客户端最多的服务 = 改一处影响面最大的服务。</p><p class="relevancy">为什么读本文需要它：「直接依赖服务数」就是该服务声明的 Feign 客户端数量。</p></div>
+
+<h2 id="sec3">03 原文问题定位 <button class="voice-btn" data-voice-id="m3">🎧 听这章</button></h2>
+<div class="card judgment"><h3>表面在讲什么？</h3><p>一张服务清单 + 五层架构划分 + 层间 Feign 依赖关系 + Top 10 高依赖服务排名。共 86 个服务（网关 1 + 接入聚合 6 + 业务应用 53 + 共享业务能力 18 + 平台基础 8）。</p></div>
+<div class="card judgment"><h3>深层在回答什么问题？</h3><p><strong>「公司这么多微服务，到底有哪些？谁调谁？哪些是高风险改动点？」</strong></p><p style="margin-top:8px;">答案是「五层分层 + Feign 单向依赖 + Top 10 高依赖服务重点评估」：<span class="src">原文：分层依据为业务职责和调用方向，不是 Maven 模块分层</span>。</p></div>
+<div class="card judgment"><h3>作者为什么要写这篇？</h3><p>这是架构治理文档，目的是让全员对微服务地图有共识。新需求来了能快速定位「改哪个服务、影响哪些下游」；改动高依赖服务前能评估爆炸半径。手册明确说「图中只展开核心依赖路径，跨层直调不重复连线」。</p></div>
+<div class="card judgment"><h3>只记一个问题</h3><p><strong>「我改的服务在五层哪一层？它依赖谁？谁依赖它？」</strong>——网关→BFF→业务应用→共享业务能力→平台基础，单向流动；Top 10 高依赖服务改动要重点评估。</p></div>
+
+<h2 id="sec4">04 原文结构地图 <button class="voice-btn" data-voice-id="m4">🎧 听这章</button></h2>
+<p style="margin-bottom:12px;">原文结构类型：<strong>分层目录 + Top 排名</strong>（五层架构，每层服务清单，最后给 Top 10 高依赖服务）</p>
+<div class="structure-map">
+<div class="structure-node cluster"><strong>核心：五层架构 + Feign 单向调用（上→下）</strong></div>
+<div class="structure-node branch"><strong>第1层：网关层（1 个）</strong></div>
+<div class="structure-node leaf">wshoto-gateway — 统一 API 网关：路由 + 鉴权前置 + 流量治理</div>
+<div class="structure-node branch"><strong>第2层：接入与聚合层 BFF（6 个）</strong></div>
+<div class="structure-node leaf">wshoto-crm-bff、wshoto-finance-bff、wshoto-mall-bff、wshoto-marketing-bff-service、wshoto-open、wshoto-open-aggregation — 面向业务渠道的聚合服务，编排多个领域能力</div>
+<div class="structure-node branch"><strong>第3层：业务应用层（53 个）</strong></div>
+<div class="structure-node leaf">CRM 领域（crm-clue/common/company/order/statistics 等）、营销领域（marketing-center/activity/cashfission/fund/store 等）、商城领域（mall-base/external/middle）、会话存档（cvs-app/file/pull）、AI（aioutbound/ai-analysis/ai-app）、活动（luck/fission/punch/quiz/showcase）、任务（task/todo/followtask）</div>
+<div class="structure-node branch"><strong>第4层：共享业务能力层（18 个）</strong></div>
+<div class="structure-node leaf">base-app-center（应用中心）、base-customer-center（客户中心 wshoto-customer）、base-message-center（消息中心）、base-auditlog（审计日志）、csm-server（客户成功）、custom-field（自定义字段）、task-engine-server、wshoto-base-approval/content/customer/export/tag（共享基础业务）、wshoto-integrals/summary</div>
+<div class="structure-node branch"><strong>第5层：平台基础层（8 个）</strong></div>
+<div class="structure-node leaf">auth-server（权限）、base-qwproxy（企微代理 wshoto-qwproxy）、base-sysmgr-center（系统管理）、base-tenant-service（租户）、base-user-center（用户）、callback-server（回调）、platform-uaa-server（统一认证 wshoto-uaa）、wshoto-open-config</div>
+<div style="margin-top:16px;padding:12px;background:#E8E4D4;border-radius:8px;font-size:14px;"><strong>节点关系说明：</strong>五层是<strong>严格单向调用</strong>（上→下）。网关箭头是路由方向，不是 Feign 调用。BFF 编排业务应用层的多个领域能力；业务应用层调共享业务能力层和平台基础层；共享业务能力层调平台基础层。<strong>反向调用是被禁止的</strong>。Top 10 高依赖服务集中在 BFF 和 open 系（接口暴露多）。</div>
+</div>
+
+<h2 id="sec5">05 核心判断与依据 <button class="voice-btn" data-voice-id="m5">🎧 听这章</button></h2>
+<div class="card judgment"><h3>判断1：分层依据是业务职责和调用方向，不是 Maven 模块</h3><p><strong>原文依据：</strong><span class="src">原文：分层依据为业务职责和调用方向，不是 Maven 模块分层。网关层只包含统一网关</span></p><p style="margin-top:8px;"><strong>类型：</strong>事实。<strong>关键区分：</strong>第7章讲的 client/api/application/domain/dependency/dal/bootstrap 是 Maven 模块分层（一个服务内部的代码组织），本章是<strong>跨服务</strong>的业务职责分层。</p></div>
+<div class="card judgment"><h3>判断2：86 个服务分五层，业务应用层最大</h3><p><strong>原文依据：</strong><span class="src">原文「层间 Feign 依赖」表：网关层 1 个服务、接入与聚合层 6 个、业务应用层 53 个、共享业务能力层 18 个、平台基础层 8 个</span></p>
+<div class="hardnum"><ul><li><b>网关层</b>：1 个（wshoto-gateway）</li><li><b>接入与聚合层 BFF</b>：6 个</li><li><b>业务应用层</b>：53 个（最大头）</li><li><b>共享业务能力层</b>：18 个</li><li><b>平台基础层</b>：8 个</li><li><b>合计</b>：86 个服务</li><li><b>Top 1 高依赖</b>：wshoto-open，55 个直接依赖</li><li><b>Top 2</b>：wshoto-marketing-bff-service，45 个</li><li><b>Top 3</b>：wshoto-open-aggregation，30 个</li></ul></div></div>
+<div class="card judgment"><h3>判断3：注册名和代码模块名不一定相同</h3><p><strong>原文依据：</strong><span class="src">原文服务清单两列：服务名（注册名）vs 代码模块</span></p><table class="cmp-table"><tr><th>注册名</th><th>代码模块</th></tr><tr><td>wshoto-marketing-bff-service</td><td>wshoto-marketing-bff</td></tr><tr><td>base-customer-center</td><td>wshoto-customer</td></tr><tr><td>base-qwproxy</td><td>wshoto-qwproxy</td></tr><tr><td>platform-uaa-server</td><td>wshoto-uaa</td></tr><tr><td>qrcode-server</td><td>wshoto-qrcode</td></tr></table>
+<p style="margin-top:8px;"><strong>为什么重要：</strong>看日志/调用链用注册名（Nacos 里），改代码找仓库用模块名。第8章 Nacos 配置的 <code style="font-family:var(--font-mono)">${spring.application.name}</code> 用的是注册名。</p></div>
+<div class="card judgment"><h3>判断4：wshoto-open 是依赖最多的服务（55 个下游）</h3><p><strong>原文依据：</strong><span class="src">原文 Top 10：wshoto-open 直接依赖服务数 55，主要目标：客户中心、租户、用户、活码、CRM、内容、商城</span></p><div class="scene">改 wshoto-open 的任何公共契约（Feign 接口、DTO）都会影响 55 个下游服务。这就是为什么第7章 4.6 反复强调「Feign 契约只增不改、只扩不删」——一个破坏性修改可能让 55 个服务挂掉。</div></div>
+<div class="card judgment"><h3>判断5：网关箭头是路由方向不是 Feign 调用</h3><p><strong>原文依据：</strong><span class="src">原文：图中只展开核心依赖路径，跨层直调不重复连线。网关箭头表示路由方向，不代表 Feign 调用</span></p><p style="margin-top:8px;"><strong>类型：</strong>事实。网关把请求路由到 BFF，但网关到 BFF 不是 Feign 调用，是 HTTP 路由转发。Feign 调用关系存在于 BFF→业务应用、业务应用→共享能力、共享能力→平台基础之间。</p></div>
+<div class="card judgment"><h3>判断6：客户中心 wshoto-customer 是共享层核心枢纽</h3><p><strong>原文依据：</strong><span class="src">原文 Top 10 主要目标反复出现「客户中心」：wshoto-open、marketing-bff、open-aggregation、basebiz、mall-external、quiz-activity、ai-analysis 都依赖客户中心</span></p><p style="margin-top:8px;"><strong>推论：</strong>客户中心（base-customer-center / wshoto-customer）是<strong>跨业务最常被依赖</strong>的共享服务。改它的契约要通知几乎所有上层服务。</p></div>
+<div class="card judgment"><h3>判断7：领域簇按业务职责聚合</h3><p><strong>原文依据：</strong><span class="src">原文服务清单按「一句话介绍」聚类：CRM 领域（客户/线索/商机/跟进/订单/统计）、营销领域（活动/资金/门店/朋友圈/营销配置）、商城领域（基础/外部/中间）、会话存档（应用/文件/管理/拉取）</span></p></div>
+
+<h2 id="sec6">06 关键概念拆解 <button class="voice-btn" data-voice-id="m6">🎧 听这章</button></h2>
+<div class="card"><h3>概念1：网关层（Gateway）</h3><p><strong>原文术语：</strong>统一 API 网关，负责请求路由、鉴权前置与流量治理</p><p><strong>人话解释：</strong>所有外部请求的第一站。它像个「门卫」：检查你有没有合法 token（鉴权）、按 URL 把你导向正确的服务（路由）、流量太大时拦一下（限流熔断）。公司只有 1 个网关 wshoto-gateway。</p><p><strong>与其他概念的关系：</strong>网关把流量分发到 BFF；网关本身不承载业务逻辑。对应第7章 4.2「外部流量通过 Gateway/BFF 进入，领域 Feign 接口只服务于受控的内部调用」。</p><p><span class="src">原文 网关层</span></p></div>
+<div class="card"><h3>概念2：BFF（接入与聚合层）</h3><p><strong>原文术语：</strong>面向对应业务渠道的后端聚合服务，编排多个领域能力</p><p><strong>人话解释：</strong>每个业务渠道一个 BFF——CRM、财务、商城、营销、开放平台。它把多个领域服务的细粒度 API 编排成前端需要的粗粒度接口。前端只调 BFF，不用关心后端拆了多少个服务。</p><div class="scene">前端页面要展示「客户张三的最近订单 + 待办任务 + 营销活动」。如果没 BFF，前端要分别调 crm-order、todo、marketing-center 三个 Feign。有 BFF 后前端只调 wshoto-crm-bff 一个接口，BFF 内部编排那三个调用并组装好响应。</div><p><strong>与其他概念的关系：</strong>BFF 是第7章 BFF 接口（/bff 前缀）的所在地；BFF 通过 Feign 调用业务应用层服务。</p><p><span class="src">原文 接入与聚合层</span></p></div>
+<div class="card"><h3>概念3：共享业务能力层（跨业务复用）</h3><p><strong>原文术语：</strong>共享基础业务服务，提供跨业务复用的领域能力</p><p><strong>人话解释：</strong>多个业务应用都需要的能力，抽出来做成共享服务。比如客户中心（wshoto-customer）、应用中心、消息中心、审计日志、自定义字段、积分、标签、导出。这些不是单一业务专属，而是跨 CRM/营销/商城都在用的通用能力。</p><p><strong>关键服务：</strong></p>
+<table class="cmp-table"><tr><th>注册名</th><th>代码模块</th><th>能力</th></tr><tr><td>base-customer-center</td><td>wshoto-customer</td><td>客户中心（Top 10 反复依赖）</td></tr><tr><td>base-app-center</td><td>wshoto-appcenter</td><td>应用中心</td></tr><tr><td>base-message-center</td><td>wshoto-messagecenter</td><td>消息中心</td></tr><tr><td>base-auditlog</td><td>wshoto-auditlog</td><td>审计日志</td></tr><tr><td>custom-field</td><td>wshoto-custom-field</td><td>自定义字段</td></tr><tr><td>wshoto-integrals</td><td>wshoto-integrals</td><td>积分</td></tr></table>
+<p><span class="src">原文 共享业务能力层</span></p></div>
+<div class="card"><h3>概念4：平台基础层（地基）</h3><p><strong>原文术语：</strong>租户/用户/权限/认证/企微代理/回调</p><p><strong>人话解释：</strong>整个公司 SaaS 的地基。租户管理（base-tenant-service）、用户中心（base-user-center）、权限授权（auth-server）、统一认证（platform-uaa-server）、企微 API 代理（base-qwproxy）、回调处理（callback-server）、系统管理（base-sysmgr-center）。所有上层业务最终都依赖这些。</p><p><strong>与其他概念的关系：</strong>呼应第7章 5.1 鉴权和租户——wsTenantId 来自 base-tenant-service，登录身份来自 base-user-center/platform-uaa-server，企微 API 调用经 base-qwproxy。</p><p><span class="src">原文 平台基础层</span></p></div>
+<div class="card"><h3>概念5：Top 10 高依赖服务（改动高风险点）</h3><p><strong>原文术语：</strong>直接依赖服务数 Top 10</p><p><strong>人话解释：</strong>这张表是「改动爆炸半径」排行榜。改 wshoto-open（55 依赖）的公共契约，最坏情况 55 个下游服务受影响。改高依赖服务前必须：①评估影响面 ②走第7章 4.6 的 V1/V2 兼容策略 ③通知所有下游 ④灰度发布。</p>
+<table class="cmp-table"><tr><th>排名</th><th>服务</th><th>依赖数</th><th>主要目标</th></tr><tr><td>1</td><td>wshoto-open</td><td>55</td><td>客户中心/租户/用户/活码/CRM/内容/商城</td></tr><tr><td>2</td><td>wshoto-marketing-bff-service</td><td>45</td><td>客户中心/活码/营销活动/裂变/群发/任务</td></tr><tr><td>3</td><td>wshoto-open-aggregation</td><td>30</td><td>会话检索/智能应用/聊天数据/客服/客户中心</td></tr><tr><td>4</td><td>wshoto-basebiz-service</td><td>24</td><td>客户/内容/基础平台/大数据/审批</td></tr><tr><td>5</td><td>wshoto-crm-bff-service</td><td>23</td><td>CRM 线索/订单/基础/销售/客户中心</td></tr></table>
+<p><span class="src">原文 Top 10</span></p></div>
+<div class="card"><h3>概念6：领域簇（按业务职责聚类）</h3><p><strong>原文术语：</strong>一句话介绍（按领域聚类）</p><p><strong>人话解释：</strong>53 个业务应用不是散乱的，按业务领域聚成簇：</p>
+<table class="cmp-table"><tr><th>领域簇</th><th>代表服务</th><th>承载能力</th></tr><tr><td>CRM</td><td>crm-clue/order/company/sale/follow/base</td><td>客户/线索/商机/跟进/订单/统计</td></tr><tr><td>营销</td><td>marketing-center/activity/cashfission/fund/store/momentsquare</td><td>活动/资金/门店/朋友圈/营销配置</td></tr><tr><td>商城</td><td>mall-base/external/middle</td><td>商城基础/外部业务/中间层</td></tr><tr><td>会话存档</td><td>cvs-app/file/manage/pull</td><td>应用/文件/管理/数据拉取</td></tr><tr><td>AI</td><td>aioutbound/ai-analysis/ai-app/smart-app/smart-chat</td><td>外呼/分析/智能应用</td></tr><tr><td>活动</td><td>activity-luck/fission/punch/quiz/showcase</td><td>抽奖/裂变/打卡/答题/展柜</td></tr></table>
+<p><span class="src">原文 业务应用层服务清单</span></p></div>
+
+<h2 id="sec7">07 苏格拉底式阅读关卡 <button class="voice-btn" data-voice-id="m7">🎧 听这章</button></h2>
+<div class="task" data-task="q1" data-answer="C" data-ok="对！业务应用层 53 个，是五层中最大的（原文层间 Feign 依赖表）。" data-no="业务应用层 53 个，远超共享层 18、BFF 6、平台基础 8。" data-src="原文：业务应用层 53 个服务" data-review="回到「05 核心判断」判断2复习">
+<div class="q">1. <strong>场景：</strong>公司五层架构里，哪一层的服务数量最多？</div>
+<div class="opts"><button class="opt" data-val="A">A. 网关层</button><button class="opt" data-val="B">B. 接入与聚合层 BFF</button><button class="opt" data-val="C">C. 业务应用层（53 个）</button><button class="opt" data-val="D">D. 平台基础层</button></div>
+<button class="check">检查</button><div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+</div>
+<div class="task" data-task="q2" data-answer="C" data-ok="对！wshoto-open 直接依赖 55 个服务，排 Top 1（原文 Top 10）。" data-no="wshoto-open 以 55 个依赖排第一，远超第二名 marketing-bff 的 45。" data-src="原文 Top 10：wshoto-open 55" data-review="回到「05 核心判断」判断4复习">
+<div class="q">2. <strong>场景：</strong>要改一个公共 Feign 契约，哪个服务的改动爆炸半径最大？</div>
+<div class="opts"><button class="opt" data-val="A">A. wshoto-gateway</button><button class="opt" data-val="B">B. base-tenant-service</button><button class="opt" data-val="C">C. wshoto-open（55 个下游）</button><button class="opt" data-val="D">D. base-customer-center</button></div>
+<button class="check">检查</button><div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+</div>
+<div class="task" data-task="q3" data-answer="B" data-ok="对！分层依据是业务职责和调用方向，不是 Maven 模块分层（原文开头）。" data-no="本章是跨服务业务职责分层；Maven 模块分层（client/api/domain 等）是单个服务内部代码组织。" data-src="原文：分层依据为业务职责和调用方向，不是 Maven 模块分层" data-review="回到「05 核心判断」判断1复习">
+<div class="q">3. <strong>场景：</strong>同事说「微服务依赖图的五层分层 = Maven 模块分层（client/api/domain）」。对吗？</div>
+<div class="opts"><button class="opt" data-val="A">A. 对，是同一个概念</button><button class="opt" data-val="B">B. 错，本章是跨服务的业务职责分层，不是单服务内部 Maven 模块分层</button><button class="opt" data-val="C">C. 对，都是 DDD</button><button class="opt" data-val="D">D. 看具体服务</button></div>
+<button class="check">检查</button><div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+</div>
+<div class="task" data-task="q4" data-answer="C" data-ok="对！网关箭头是路由方向，不是 Feign 调用（原文明确说明）。" data-no="网关到 BFF 是 HTTP 路由转发，不是 Feign；Feign 调用存在于 BFF→业务应用等层间。" data-src="原文：网关箭头表示路由方向，不代表 Feign 调用" data-review="回到「05 核心判断」判断5复习">
+<div class="q">4. <strong>场景：</strong>图中 wshoto-gateway 到 wshoto-crm-bff 的箭头代表什么？</div>
+<div class="opts"><button class="opt" data-val="A">A. Feign 调用</button><button class="opt" data-val="B">B. 数据库共享</button><button class="opt" data-val="C">C. 路由方向（HTTP 转发，不是 Feign 调用）</button><button class="opt" data-val="D">D. 服务注册</button></div>
+<button class="check">检查</button><div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+</div>
+<div class="task" data-task="q5" data-answer="B" data-ok="对！base-customer-center 对应代码模块 wshoto-customer（注册名≠模块名）。" data-no="注册名是 base-customer-center，代码模块是 wshoto-customer，两者不同。" data-src="原文服务清单：base-customer-center → wshoto-customer" data-review="回到「05 核心判断」判断3复习">
+<div class="q">5. <strong>场景：</strong>Nacos 里看到一个服务注册名是 base-customer-center。改代码要找哪个仓库？</div>
+<div class="opts"><button class="opt" data-val="A">A. base-customer-center 仓库</button><button class="opt" data-val="B">B. wshoto-customer 仓库（代码模块名）</button><button class="opt" data-val="C">C. base-app-center 仓库</button><button class="opt" data-val="D">D. wshoto-base-customer 仓库</button></div>
+<button class="check">检查</button><div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+</div>
+<div class="task" data-task="q6" data-answer="A" data-ok="对！CRM 系列服务（crm-clue/order/sale 等）承载客户/线索/商机/跟进/订单能力（原文业务应用层介绍）。" data-no="CRM 领域服务承载客户/线索/商机/跟进/订单，不是营销或商城。" data-src="原文：CRM 领域服务，承载客户、线索、商机、跟进、订单或统计能力" data-review="回到「06 概念拆解」概念6复习">
+<div class="q">6. <strong>场景：</strong>要找「客户线索、商机、跟进、订单」相关的微服务。看哪个领域簇？</div>
+<div class="opts"><button class="opt" data-val="A">A. CRM 领域（crm-clue/order/sale/follow 等）</button><button class="opt" data-val="B">B. 营销领域（marketing-*）</button><button class="opt" data-val="C">C. 商城领域（mall-*）</button><button class="opt" data-val="D">D. 会话存档（cvs-*）</button></div>
+<button class="check">检查</button><div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+</div>
+<div class="task" data-task="q7" data-answer="B,C,D" data-multi="true" data-ok="对！BFF/业务应用/共享能力都通过 Feign 调用下游；网关只做路由不做 Feign。" data-no="网关到 BFF 是路由转发不是 Feign；Feign 调用存在于 BFF→业务应用、业务应用→共享能力、共享→平台基础。" data-src="原文：层间 Feign 依赖 + 网关箭头不代表 Feign 调用" data-review="回到「05 核心判断」判断5复习">
+<div class="q">7. <strong>多选：</strong>以下哪些层之间存在 Feign 调用关系？</div>
+<div class="opts"><button class="opt" data-val="A">A. 网关 → BFF</button><button class="opt" data-val="B">B. BFF → 业务应用</button><button class="opt" data-val="C">C. 业务应用 → 共享业务能力</button><button class="opt" data-val="D">D. 共享业务能力 → 平台基础</button></div>
+<button class="check">检查</button><div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+</div>
+
+<h2 id="sec8">08 闯关式任务 <button class="voice-btn" data-voice-id="m8">🎧 听这章</button></h2>
+<div class="task" data-task="t1" data-type="selects" data-ok="全部匹配正确！你掌握了五层架构和典型服务归属。" data-no="网关只 1 个；BFF 6 个；客户中心在共享业务能力层；租户在平台基础层；CRM 簇在业务应用层。" data-src="原文五层服务清单" data-review="回到「06 概念拆解」全部概念复习">
+<div class="q">任务：把服务匹配到正确的架构层。</div>
+<div style="margin:8px 0;">
+<div style="margin-bottom:6px;">wshoto-gateway → <select class="match" data-correct="a"><option value="">请选择</option><option value="a">网关层</option><option value="b">接入与聚合层 BFF</option><option value="c">共享业务能力层</option><option value="d">平台基础层</option></select></div>
+<div style="margin-bottom:6px;">wshoto-crm-bff-service → <select class="match" data-correct="b"><option value="">请选择</option><option value="a">网关层</option><option value="b">接入与聚合层 BFF</option><option value="c">共享业务能力层</option><option value="d">平台基础层</option></select></div>
+<div style="margin-bottom:6px;">base-customer-center（客户中心） → <select class="match" data-correct="c"><option value="">请选择</option><option value="a">网关层</option><option value="b">接入与聚合层 BFF</option><option value="c">共享业务能力层</option><option value="d">平台基础层</option></select></div>
+<div style="margin-bottom:6px;">base-tenant-service（租户） → <select class="match" data-correct="d"><option value="">请选择</option><option value="a">网关层</option><option value="b">接入与聚合层 BFF</option><option value="c">共享业务能力层</option><option value="d">平台基础层</option></select></div>
+</div>
+<button class="check">检查</button><div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+</div>
+
+<h2 id="sec9">09 误解与边界 <button class="voice-btn" data-voice-id="m9">🎧 听这章</button></h2>
+<div class="card danger"><h3>误解1：「五层架构 = Maven 模块分层」</h3><p><strong>为什么容易误解：</strong>都叫「分层」。</p><p><strong>原文真正说了什么：</strong>本章分层依据是<strong>业务职责和调用方向</strong>，跨服务划分；Maven 模块分层（client/api/domain 等）是<strong>单服务内部</strong>的代码组织。两者维度完全不同。</p><p><strong>如何避免：</strong>看到「分层」先问是「跨服务的业务分层」还是「单服务内的代码分层」。</p></div>
+<div class="card danger"><h3>误解2：「网关也用 Feign 调 BFF」</h3><p><strong>为什么容易误解：</strong>图上有箭头。</p><p><strong>原文真正说了什么：</strong>网关箭头是<strong>路由方向</strong>，不代表 Feign 调用。网关到 BFF 是 HTTP 路由转发（按 URL path 转发），不是 Feign 声明式调用。Feign 调用存在于 BFF→业务应用、业务应用→共享能力等层间。</p><p><strong>如何避免：</strong>看依赖图先看图例说明；网关层只做路由鉴权，不写业务 Feign。</p></div>
+<div class="card danger"><h3>误解3：「注册名 = 代码模块名」</h3><p><strong>为什么容易误解：</strong>很多服务两者一样。</p><p><strong>原文真正说了什么：</strong>不少服务两者不同——base-customer-center 对应 wshoto-customer、base-qwproxy 对应 wshoto-qwproxy、platform-uaa-server 对应 wshoto-uaa。Nacos 配置/日志看注册名，改代码找仓库看模块名。</p><p><strong>如何避免：</strong>查原文两列对照表；不要按注册名猜仓库名。</p></div>
+<div class="card danger"><h3>误解4：「所有 53 个业务应用都互不相关」</h3><p><strong>为什么容易误解：</strong>数量多看起来散乱。</p><p><strong>原文真正说了什么：</strong>53 个业务应用按<strong>领域簇</strong>聚合：CRM（crm-*）、营销（marketing-*）、商城（mall-*）、会话存档（cvs-*）、AI（ai-*）、活动（luck/fission/punch 等）。同簇内服务业务职责相关。</p><p><strong>如何避免：</strong>按领域簇理解，不要逐个死记。</p></div>
+<div class="card danger"><h3>误解5：「改高依赖服务只影响直接下游」</h3><p><strong>为什么容易误解：</strong>Top 10 写的是「直接依赖数」。</p><p><strong>原文真正说了什么：</strong>Top 10 是<strong>直接</strong>依赖数。实际影响是「直接下游 + 它们的下游」的传递性影响。改 wshoto-open 的契约，55 个直接下游受影响，间接下游可能更多。</p><p><strong>如何避免：</strong>改高依赖服务公共契约要走第7章 V1/V2 兼容策略 + 全链路影响评估 + 灰度发布。</p></div>
+
+<h2 id="sec10">10 背景知识缺口 <button class="voice-btn" data-voice-id="m10">🎧 听这章</button></h2>
+<div class="card"><h3>现在可以先不补</h3><ul style="margin-left:20px;margin-top:8px;"><li><strong>每个服务的具体 API 列表</strong>——本章只给依赖关系，具体 API 看 apidoc 文档。</li><li><strong>DDD 限界上下文划分</strong>——知道领域簇划分即可，深入建模方法论属于架构师进阶。</li><li><strong>历史服务拆分/合并决策</strong>——知道当前现状即可。</li><li><strong>服务间数据共享机制（禁止共享数据库）</strong>——第7章 6.3 已说明「不创建数据库物理外键」，跨服务数据通过 Feign。</li></ul></div>
+<div class="card"><h3>后续值得追问</h3><ul style="margin-left:20px;margin-top:8px;"><li><strong>网关 wshoto-gateway 的路由配置怎么写</strong>→ 网关配置 + 第8章 discovery</li><li><strong>BFF 怎么编排多个 Feign 调用</strong>→ BFF 设计模式 + 第7章 Controller 轻量</li><li><strong>Feign 契约怎么做到向后兼容</strong>→ 第7章 4.6 V1/V2 策略</li><li><strong>客户中心 wshoto-customer 的领域模型</strong>→ 第8章 common + 客户中心代码</li><li><strong>企微代理 wshoto-qwproxy 怎么封装企微 API</strong>→ 平台基础层 + 企微开放平台文档</li></ul></div>
+
+<h2 id="sec11">11 复盘与学习报告 <button class="voice-btn" data-voice-id="m11">🎧 听这章</button></h2>
+<div class="wrong-box"><h4>📝 错题回流区</h4><ul id="wrongBox"><li style="color:#888">还没有错题。答错的题会自动收集到这里。</li></ul></div>
+<div class="report-btns"><button id="genReport">📊 生成学习报告</button><button id="copyReport">📋 复制报告</button></div>
+<div class="report-box" id="report">点击上方按钮生成你的学习报告。</div>
+
+<div class="footer">由 <a href="https://lyzbcy.github.io/" target="_blank" rel="noopener" style="color:#1d70b8;text-decoration:underline;font-weight:700">捞鱼</a> 制作 · 微盛管培生学习地图 · 后端方向<br>这个工具能帮你预习难啃的干货，但不能代替完整学习。学习愉快</div>
+</main>
+</div>
+<div class="source-modal" id="sourceModal" onclick="if(event.target===this)closeSource()">
+<div class="source-modal-box">
+<div class="source-modal-bar"><span class="source-modal-title">📄 原文文档：当前微服务依赖关系</span><button class="source-modal-close" onclick="closeSource()">✕</button></div>
+<iframe class="source-modal-iframe" id="sourceFrame" src=""></iframe>
+</div>
+</div>
+<div id="voicePlayer">
+<button class="vp-close" aria-label="关闭">✕</button>
+<div class="vp-head">🎧 后台语音 · 连续播放</div>
+<div class="vp-title">—</div>
+<div class="vp-controls"><button class="vp-prev" aria-label="上一章">⏮</button><button class="vp-play" aria-label="播放/暂停">▶</button><button class="vp-next" aria-label="下一章">⏭</button></div>
+<input class="vp-seek" type="range" min="0" max="1000" value="0" aria-label="进度">
+<div class="vp-time"><span class="vp-cur">00:00</span><span class="vp-dur">00:00</span></div>
+<div class="vp-sub">点开播放后，这里会同步显示字幕</div>
+</div>
+<button id="voiceFab" aria-label="打开后台语音"><span class="fab-icon">🎧</span><span class="fab-text">后台语音</span></button>
+<script>
+function openSource(url){document.getElementById('sourceFrame').src=url;document.getElementById('sourceModal').classList.add('show');}
+function closeSource(){document.getElementById('sourceModal').classList.remove('show');document.getElementById('sourceFrame').src='';}
+</script>
+<script>
+(function(){
+  "use strict";
+  function $all(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));}
+  function selectedVals(t){return $all('.opt.selected',t).map(function(o){return o.getAttribute('data-val');}).sort();}
+  function setFb(t,state,html){var fb=t.querySelector('.feedback');if(!fb)return;fb.className='feedback'+(state?(' '+state):'');fb.innerHTML=html;}
+  function updateBar(){var all=$all('.task'),done=$all('.task[data-answered="1"]');var fill=document.getElementById('barFill'),num=document.getElementById('barNum');if(fill)fill.style.width=all.length?(done.length/all.length*100)+'%':'0%';if(num)num.textContent=done.length+' / '+all.length;}
+  function renderWrong(){var box=document.getElementById('wrongBox');if(!box)return;var wrong=$all('.task[data-answered="1"][data-correct="0"]');if(!wrong.length){box.innerHTML='<li style="color:#888">还没有错题。答错的题会自动收集到这里。</li>';return;}box.innerHTML='';wrong.forEach(function(t){var li=document.createElement('li');li.textContent='【'+(t.getAttribute('data-task')||'')+'】'+(t.getAttribute('data-review')||'回到对应模块复习');box.appendChild(li);});}
+  function check(t){var type=t.getAttribute('data-type'),ok=false;if(type==='selects'){var sels=$all('select.match',t),allok=true,empty=false;sels.forEach(function(s){if(!s.value)empty=true;if(s.value!==s.getAttribute('data-correct'))allok=false;});if(empty){setFb(t,'no','请先把每一项都选好再检查。');return;}ok=allok;}else{var sel=selectedVals(t);if(!sel.length){setFb(t,'no','请先选择一个选项再检查。');return;}var ans=(t.getAttribute('data-answer')||'').split(',').map(function(x){return x.trim();}).sort();ok=(sel.join('|')===ans.join('|'));}var body=ok?(t.getAttribute('data-ok')||'回答正确。'):(t.getAttribute('data-no')||'再想想。');var src=t.getAttribute('data-src');setFb(t,ok?'ok':'no',(ok?'<img class="fb-emoji" src="https://lyzbcy.github.io/weshoto-study/img/sticker/ok.png" alt="">':'<img class="fb-emoji" src="https://lyzbcy.github.io/weshoto-study/img/sticker/no.png" alt="">')+body+(src?('<span class="src">'+src+'</span>'):''));t.setAttribute('data-answered','1');t.setAttribute('data-correct',ok?'1':'0');updateBar();renderWrong();}
+  function genReport(){var box=document.getElementById('report');if(!box)return;var all=$all('.task'),done=$all('.task[data-answered="1"]'),right=$all('.task[data-answered="1"][data-correct="1"]');var lines=['=== 学习报告 ===','完成题目：'+done.length+' / '+all.length,'答对：'+right.length+' 题',''];var wrong=$all('.task[data-answered="1"][data-correct="0"]');if(wrong.length){lines.push('我答错的题（建议复习）：');wrong.forEach(function(t){lines.push('- '+(t.getAttribute('data-task')||'')+'：'+(t.getAttribute('data-review')||''));});}else{lines.push('暂无错题。');}box.textContent=lines.join('\n');}
+  document.addEventListener('click',function(e){var c=e.target.closest?e.target:null;var opt=c&&e.target.closest('.opt');if(opt){var t=opt.closest('.task');if(!t)return;if(t.getAttribute('data-multi')==='true'){opt.classList.toggle('selected');}else{$all('.opt',t).forEach(function(o){o.classList.remove('selected');});opt.classList.add('selected');}return;}var btn=c&&e.target.closest('.check');if(btn){var tk=btn.closest('.task');if(tk)check(tk);return;}if(e.target&&e.target.id==='genReport'){genReport();return;}if(e.target&&e.target.id==='copyReport'){var r=document.getElementById('report');if(r&&navigator.clipboard)navigator.clipboard.writeText(r.textContent);return;}});
+  function init(){updateBar();renderWrong();}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+<script>
+(function(){
+  "use strict";
+  if(window.__voiceEngine) return;
+  window.__voiceEngine = true;
+  var listNode = document.getElementById('voicePlaylist');
+  if(!listNode){ return; }
+  var TRACKS = [];
+  try { TRACKS = JSON.parse(listNode.textContent.trim()); } catch(e){ return; }
+  if(!TRACKS.length) return;
+  var player = document.getElementById('voicePlayer');
+  var fab = document.getElementById('voiceFab');
+  var audio = new Audio(); audio.preload = 'metadata';
+  var cur = 0;
+  var ranges = [];
+  var total = 0;
+  var seeking = false;
+  function $(s){ return player ? player.querySelector(s) : null; }
+  function fmt(s){ s=Math.max(0,Math.floor(s||0)); var m=Math.floor(s/60), x=s%60;
+    return (m<10?'0':'')+m+':'+(x<10?'0':'')+x; }
+  var probe = TRACKS.map(function(){ return {dur:0}; });
+  function tryFinalize(){
+    if(probe.some(function(p){return !p.dur;})) return;
+    ranges = []; total = 0;
+    probe.forEach(function(p){ ranges.push({dur:p.dur, start:total}); total += p.dur; });
+    var d = $('.vp-dur'); if(d) d.textContent = fmt(total);
+    var sk = $('.vp-seek'); if(sk){ sk.max = Math.max(1000, Math.floor(total*10)); }
+  }
+  TRACKS.forEach(function(t, i){
+    var a = new Audio(); a.preload = 'metadata'; a.src = t.src;
+    a.addEventListener('loadedmetadata', function(){
+      probe[i].dur = a.duration || 0; tryFinalize();
+    });
+    a.addEventListener('error', function(){ probe[i].dur = 0; tryFinalize(); });
+  });
+  function load(i){
+    cur = i; audio.src = TRACKS[i].src;
+    var ti = $('.vp-title'); if(ti) ti.textContent = TRACKS[i].title || ('第 '+(i+1)+' 段');
+    markBtn(i);
+  }
+  function play(){ audio.play().then(function(){ show(); setPlayIcon(true); if(fab) fab.classList.add('beat'); }).catch(function(){}); }
+  function pause(){ audio.pause(); setPlayIcon(false); if(fab) fab.classList.remove('beat'); }
+  function toggle(){ audio.paused ? play() : pause(); }
+  function next(){ if(cur < TRACKS.length-1){ load(cur+1); play(); } else { pause(); } }
+  function prev(){
+    var abs = absTime();
+    if(cur > 0 && abs - ranges[cur].start < 3){ load(cur-1); play(); }
+    else { audio.currentTime = 0; }
+  }
+  function absTime(){ return ranges[cur] ? ranges[cur].start + (audio.currentTime||0) : (audio.currentTime||0); }
+  function setPlayIcon(on){ var b=$('.vp-play'); if(b) b.textContent = on ? '⏸' : '▶'; }
+  function show(){ if(player) player.classList.add('show'); }
+  function hide(){ if(player) player.classList.remove('show'); }
+  function markBtn(i){
+    document.querySelectorAll('.voice-btn[data-voice-id]').forEach(function(b){
+      b.classList.toggle('active', b.getAttribute('data-voice-id') === TRACKS[i].id);
+    });
+  }
+  audio.addEventListener('timeupdate', function(){
+    if(seeking) return;
+    if(!ranges[cur]) return;
+    var abs = absTime(); var sk = $('.vp-seek'); var c = $('.vp-cur');
+    if(sk && total) sk.value = Math.round(abs / total * (sk.max||1000));
+    if(c) c.textContent = fmt(abs);
+  });
+  audio.addEventListener('ended', function(){ if(cur < TRACKS.length-1){ load(cur+1); play(); }
+    else { setPlayIcon(false); if(fab) fab.classList.remove('beat'); } });
+  function seekToFraction(frac){
+    if(!total) return;
+    var target = Math.max(0, Math.min(total, frac * total));
+    var i = 0; while(i < ranges.length-1 && ranges[i].start + ranges[i].dur < target){ i++; }
+    if(i !== cur){ cur = i; audio.src = TRACKS[i].src;
+      var ti=$('.vp-title'); if(ti) ti.textContent = TRACKS[i].title||('第 '+(i+1)+' 段'); markBtn(i); }
+    audio.currentTime = target - ranges[i].start;
+    var c=$('.vp-cur'); if(c) c.textContent = fmt(target);
+  }
+  document.addEventListener('click', function(e){
+    var t = e.target;
+    var vb = t.closest ? t.closest('.voice-btn[data-voice-id]') : null;
+    if(vb){
+      var id = vb.getAttribute('data-voice-id'), idx = -1;
+      TRACKS.forEach(function(tr, k){ if(tr.id === id) idx = k; });
+      if(idx >= 0){ load(idx); play(); }
+      return;
+    }
+    if(t.id === 'voiceFab'){ show(); if(audio.paused && !audio.src){ load(0); } if(audio.paused){ play(); } return; }
+    if(!player || !player.contains(t)) return;
+    if(t.classList.contains('vp-play')){ toggle(); return; }
+    if(t.classList.contains('vp-prev')){ prev(); return; }
+    if(t.classList.contains('vp-next')){ next(); return; }
+    if(t.classList.contains('vp-close')){ pause(); hide(); return; }
+  });
+  var sk = $('.vp-seek');
+  if(sk){
+    sk.addEventListener('input', function(){ seeking = true;
+      if(total){ var c=$('.vp-cur'); if(c) c.textContent = fmt((sk.value/(sk.max||1000))*total); } });
+    sk.addEventListener('change', function(){ seekToFraction(sk.value/(sk.max||1000)); seeking = false; });
+  }
+})();
+</script>
+<script>
+(function(){
+  "use strict";
+  if(window.__subEngine) return;
+  window.__subEngine = true;
+  var listNode = document.getElementById("voicePlaylist");
+  if(!listNode) return;
+  var subBox = document.querySelector("#voicePlayer .vp-sub");
+  var curEl = document.querySelector("#voicePlayer .vp-cur");
+  var titleEl = document.querySelector("#voicePlayer .vp-title");
+  if(!subBox) return;
+  var subs = [];
+  var subCache = {};
+  var curSrc = "";
+  function esc(s){ var d=document.createElement("div"); d.textContent=s; return d.innerHTML; }
+  function mp3ToJson(src){
+    var m = src.replace(/^.*?([a-zA-Z0-9_\/.\-]+\.mp3)(?:\?.*)?$/i, "$1");
+    return m.replace(/\.mp3$/i, ".json");
+  }
+  function loadSubFor(src){
+    if(!src || src === curSrc) return;
+    curSrc = src;
+    var jsonUrl = mp3ToJson(src);
+    if(subCache[jsonUrl]){ subs = subCache[jsonUrl]; return; }
+    fetch(jsonUrl).then(function(r){
+      if(!r.ok) throw new Error(r.status);
+      return r.json();
+    }).then(function(arr){
+      subCache[jsonUrl] = Array.isArray(arr) ? arr : [];
+      subs = subCache[jsonUrl];
+    }).catch(function(){ subs = []; });
+  }
+  function parseTime(text){
+    var p = String(text).trim().split(":");
+    if(p.length === 2){
+      var m = parseInt(p[0], 10) || 0;
+      var s = parseInt(p[1], 10) || 0;
+      return m * 60 + s;
+    }
+    return parseFloat(text) || 0;
+  }
+  function renderSub(t){
+    if(!subs.length) return;
+    var hit = null, idx = -1;
+    for(var i = 0; i < subs.length; i++){
+      if(t >= subs[i].start && t < subs[i].end){ hit = subs[i]; idx = i; break; }
+    }
+    if(!hit){
+      var prev = null;
+      for(var j = 0; j < subs.length; j++){
+        if(subs[j].start <= t) prev = subs[j]; else break;
+      }
+      subBox.classList.remove("active");
+      subBox.innerHTML = prev ? esc(prev.text) : "";
+      return;
+    }
+    subBox.classList.add("active");
+    var prevHtml = idx > 0
+      ? '<span style="opacity:.45">' + esc(subs[idx - 1].text) + "</span> "
+      : "";
+    subBox.innerHTML = prevHtml + '<span class="cur">' + esc(hit.text) + "</span>";
+  }
+  function tick(){
+    if(!curEl) return;
+    var sec = parseTime(curEl.textContent);
+    renderSub(sec);
+  }
+  function onTitleChange(){
+    var TRACKS = [];
+    try { TRACKS = JSON.parse(listNode.textContent.trim()); } catch(e){ return; }
+    var title = titleEl ? titleEl.textContent.trim() : "";
+    for(var i = 0; i < TRACKS.length; i++){
+      if(TRACKS[i].title === title){ loadSubFor(TRACKS[i].src); return; }
+    }
+  }
+  if(window.MutationObserver){
+    var obs = new MutationObserver(function(){ tick(); onTitleChange(); });
+    if(curEl) obs.observe(curEl, { childList:true, characterData:true, subtree:true });
+    if(titleEl) obs.observe(titleEl, { childList:true, characterData:true, subtree:true });
+  } else {
+    setInterval(function(){ tick(); onTitleChange(); }, 300);
+  }
+  setTimeout(tick, 500);
+})();
+</script>
+<script>(function(){"use strict";var MAP={"01":"go","02":"welcome","03":"important","04":"cheer","05":"important","06":"sleep","07":"sprint","08":"go","09":"no","10":"sleep","11":"final"};function run(){document.querySelectorAll("h2[id^=sec]").forEach(function(h){var m=h.id.match(/sec(\d+)/);if(!m)return;var name=MAP[m[1]];if(!name)return;if(h.querySelector(".sec-sticker"))return;var img=document.createElement("img");img.className="sec-sticker";img.src="https://lyzbcy.github.io/weshoto-study/img/sticker/"+name+".png";img.alt="";h.insertBefore(img,h.firstChild)})}if(document.readyState=="loading")document.addEventListener("DOMContentLoaded",run);else run()})();</script>
+</body>
+</html>

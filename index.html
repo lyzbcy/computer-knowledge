@@ -84,6 +84,50 @@ footer{
   text-align:center;padding:26px 24px 36px;font-size:.82rem;color:#7A6E54;
 }
 footer a{color:#1d70b8;text-decoration:underline;font-weight:700;}
+
+/* ============ 版本与缓存 dock（右下角）============ */
+.update-dock{
+  position:fixed;right:18px;bottom:18px;
+  width:min(320px,calc(100vw - 36px));z-index:80;overflow:hidden;
+  background:#fff;border:1px solid #E6DCC2;border-radius:16px;
+  box-shadow:0 12px 36px rgba(30,58,36,.14);
+  border-top:4px solid var(--sage);
+}
+.update-dock.collapsed{width:auto;min-width:220px;}
+.dock-toggle{
+  width:100%;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:9px;
+  padding:11px 15px;background:transparent;border:0;cursor:pointer;text-align:left;
+  font-family:var(--font-head);font-weight:700;font-size:.82rem;color:var(--forest);
+}
+.live-dot{
+  width:9px;height:9px;background:var(--marker);border-radius:50%;
+  box-shadow:0 0 0 4px rgba(245,224,138,.22);
+}
+.update-dock:not(.collapsed) .live-dot{background:var(--sage);box-shadow:0 0 0 4px rgba(175,205,168,.22);}
+#dockSummary{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.toggle-icon{font-size:1.1rem;color:var(--sage);line-height:1;}
+.dock-body{padding:0 15px 15px;}
+.update-dock.collapsed .dock-body{display:none;}
+.dock-meta{display:flex;flex-wrap:wrap;gap:6px;font-size:.7rem;}
+.dock-meta span{
+  padding:3px 8px;border-radius:999px;font-family:monospace;
+  background:var(--paper);color:#6a6048;border:1px solid #E6DCC2;
+}
+.dock-note{margin:10px 0 0;font-size:.8rem;color:#3a342a;line-height:1.5;}
+.cache-tip{margin:9px 0 0;color:#8A7E5A;font-size:.72rem;line-height:1.5;}
+.refresh-button{
+  width:100%;margin-top:12px;padding:10px 12px;border:0;border-radius:10px;cursor:pointer;
+  font-family:var(--font-head);font-weight:700;font-size:.85rem;
+  background:var(--forest);color:#EAF3E6;transition:background .18s;
+}
+.refresh-button:hover{background:#16301D;}
+.refresh-status{min-height:1.1em;margin:7px 0 0;color:var(--brick);font-size:.72rem;text-align:center;}
+@media(max-width:680px){
+  .update-dock{right:10px;bottom:10px;}
+  .update-dock.collapsed{width:180px;min-width:0;}
+  .update-dock.collapsed .dock-toggle{padding:9px 12px;}
+  #dockSummary{font-size:.72rem;}
+}
 </style>
 </head>
 <body>
@@ -197,6 +241,25 @@ footer a{color:#1d70b8;text-decoration:underline;font-weight:700;}
   由 <a href="https://lyzbcy.github.io/" target="_blank" rel="noopener">捞鱼</a> 制作
 </footer>
 
+<!-- 版本与缓存 dock（右下角，可折叠）-->
+<aside class="update-dock collapsed" id="updateDock" aria-label="页面版本信息">
+  <button class="dock-toggle" id="dockToggle" type="button" aria-expanded="false" aria-controls="dockBody">
+    <span class="live-dot" aria-hidden="true"></span>
+    <span id="dockSummary">版本读取中…</span>
+    <span class="toggle-icon" aria-hidden="true">+</span>
+  </button>
+  <div class="dock-body" id="dockBody">
+    <div class="dock-meta">
+      <span id="versionLabel">版本读取中…</span>
+      <span id="updatedLabel">更新时间读取中…</span>
+    </div>
+    <p class="dock-note" id="updateNote">正在核对远端版本。</p>
+    <p class="cache-tip">静态页面可能保留旧缓存。如果内容看起来没更新，点下面按钮强制刷新。</p>
+    <button class="refresh-button" id="forceRefresh" type="button">一键强制刷新</button>
+    <p class="refresh-status" id="refreshStatus" aria-live="polite"></p>
+  </div>
+</aside>
+
 <script>
 // ===== 密码保护：未验证则跳转到验证页 =====
 (function(){
@@ -216,17 +279,117 @@ document.getElementById('cnt').textContent =
 </script>
 
 <script>
-// 版本检测：内联版本号 vs version.json，不一致就刷新（解决CDN缓存旧HTML）
+// ===== 版本检测 + dock（移植自 help.wshoto 的可靠刷新机制）=====
 (function(){
-  var PAGE_V = 5;
-  fetch("version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.json();}).then(function(d){
-    if(PAGE_V!==d.v){
-      var last=0; try{last=parseInt(sessionStorage.getItem("ck_refreshed")||"0");}catch(e){}
-      if(Date.now()-last<3000) return;
-      try{sessionStorage.setItem("ck_refreshed",String(Date.now()));}catch(e){}
-      setTimeout(function(){location.reload(true);},800);
+  "use strict";
+  var PAGE_V = 6;
+  var INLINE_VERSION = {
+    v: PAGE_V,
+    updated: '2026-08-10',
+    notes: [
+      '新增 Java、JavaScript 刷题学习地图栏目',
+      '首页卡片标注前端/后端语言归类',
+      '新增右下角版本 dock（可见版本 + 一键强制刷新）'
+    ]
+  };
+
+  // 渲染版本信息到 dock
+  function renderVersion(version, status){
+    var vl = document.getElementById('versionLabel');
+    var ul = document.getElementById('updatedLabel');
+    var ds = document.getElementById('dockSummary');
+    var un = document.getElementById('updateNote');
+    var rs = document.getElementById('refreshStatus');
+    if(vl) vl.textContent = '版本 v' + version.v;
+    if(ul) ul.textContent = '更新于 ' + version.updated;
+    if(ds) ds.textContent = 'v' + version.v + ' · ' + String(version.updated).slice(0,10);
+    if(un && Array.isArray(version.notes) && version.notes.length) un.textContent = version.notes.join(' · ');
+    if(rs && status) rs.textContent = status;
+  }
+
+  // 拉远端 version.json（带时间戳，绕缓存）
+  function fetchRemoteVersion(){
+    return fetch('version.json?t=' + Date.now(), {cache:'no-store'})
+      .then(function(r){ if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(function(d){
+        if(!Number.isInteger(d.v) || !d.updated) throw new Error('版本文件格式不对');
+        return d;
+      });
+  }
+
+  // 生成绕缓存的刷新 URL（版本号 + 时间戳双保险）
+  function refreshedUrl(version){
+    var url = new URL(window.location.href);
+    url.searchParams.set('v', String(version));
+    url.searchParams.set('_refresh', String(Date.now()));
+    return url.toString();
+  }
+
+  // 展开 dock
+  function expandDock(){
+    var dock = document.getElementById('updateDock');
+    if(dock) dock.classList.remove('collapsed');
+    var tog = document.getElementById('dockToggle');
+    if(tog){
+      tog.setAttribute('aria-expanded','true');
+      var ico = tog.querySelector('.toggle-icon');
+      if(ico) ico.textContent = '−';
     }
-  }).catch(function(){});
+  }
+
+  // 核对版本：不一致自动刷新一次（按版本号防死循环），还不行提示手动刷
+  function checkVersion(){
+    renderVersion(INLINE_VERSION, '正在核对远端版本…');
+    fetchRemoteVersion().then(function(remote){
+      var isLatest = remote.v === PAGE_V;
+      renderVersion(remote, isLatest ? '当前已是最新版本。' : '发现新版本，正在强制刷新…');
+      if(!isLatest){
+        expandDock();
+        var refreshKey = 'ck-auto-refresh:' + remote.v;
+        var alreadyRefreshed = false;
+        try{ alreadyRefreshed = sessionStorage.getItem(refreshKey) === '1'; }catch(e){}
+        if(!alreadyRefreshed){
+          try{ sessionStorage.setItem(refreshKey, '1'); }catch(e){}
+          setTimeout(function(){ location.replace(refreshedUrl(remote.v)); }, 800);
+        }else{
+          var rs = document.getElementById('refreshStatus');
+          if(rs) rs.textContent = '已自动刷新过一次；如仍未更新，请点下方按钮手动刷新。';
+        }
+      }
+    }).catch(function(){
+      renderVersion(INLINE_VERSION, '暂时无法读取远端版本，可手动强制刷新。');
+    });
+  }
+
+  // 手动强制刷新
+  function forceRefresh(){
+    var btn = document.getElementById('forceRefresh');
+    if(btn) btn.disabled = true;
+    var rs = document.getElementById('refreshStatus');
+    if(rs) rs.textContent = '正在获取最新版本并绕过缓存…';
+    fetchRemoteVersion().then(function(remote){
+      location.replace(refreshedUrl(remote.v));
+    }).catch(function(){
+      location.replace(refreshedUrl(PAGE_V));
+    });
+  }
+
+  // 绑定 dock 折叠
+  var dockToggle = document.getElementById('dockToggle');
+  if(dockToggle){
+    dockToggle.addEventListener('click', function(e){
+      var dock = document.getElementById('updateDock');
+      if(!dock) return;
+      var collapsed = dock.classList.toggle('collapsed');
+      this.setAttribute('aria-expanded', String(!collapsed));
+      var ico = this.querySelector('.toggle-icon');
+      if(ico) ico.textContent = collapsed ? '+' : '−';
+    });
+  }
+  var forceBtn = document.getElementById('forceRefresh');
+  if(forceBtn) forceBtn.addEventListener('click', forceRefresh);
+
+  checkVersion();
 })();
 </script>
 </body>

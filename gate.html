@@ -143,15 +143,21 @@ setTimeout(function(){input&&input.focus();},300);
 </script>
 
 <script>
-// 版本检测：内联版本号 vs version.json，不一致就刷新（解决CDN缓存旧HTML）
+// 版本检测：用带时间戳的 URL 强制绕缓存（替代已废弃的 reload(true)）
 (function(){
-  var PAGE_V = 5;
+  var PAGE_V = 6;
   fetch("version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.json();}).then(function(d){
     if(PAGE_V!==d.v){
-      var last=0; try{last=parseInt(sessionStorage.getItem("ck_refreshed")||"0");}catch(e){}
-      if(Date.now()-last<3000) return;
-      try{sessionStorage.setItem("ck_refreshed",String(Date.now()));}catch(e){}
-      setTimeout(function(){location.reload(true);},800);
+      var key = 'ck-gate-refresh:' + d.v;
+      var already = false;
+      try{ already = sessionStorage.getItem(key) === '1'; }catch(e){}
+      if(!already){
+        try{ sessionStorage.setItem(key,'1'); }catch(e){}
+        var url = new URL(window.location.href);
+        url.searchParams.set('v', String(d.v));
+        url.searchParams.set('_refresh', String(Date.now()));
+        setTimeout(function(){ location.replace(url.toString()); }, 800);
+      }
     }
   }).catch(function(){});
 })();

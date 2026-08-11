@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Java · 学习地图合集</title>
+<title>Java · 刷题学习地图</title>
 <style>
 :root{
   --cream:#FAF6EB;--paper:#F3EDDD;--forest:#1E3A24;--sky:#BCD8EE;
@@ -17,132 +17,83 @@
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
-body{
-  font-family:var(--font-body);background:var(--cream);color:var(--ink);
-  line-height:1.7;min-height:100vh;
-}
+body{font-family:var(--font-body);background:var(--cream);color:var(--ink);line-height:1.7;min-height:100vh;}
 a{color:var(--brick);text-decoration:underline;}
-a:hover{color:var(--java);}
 
-/* ============ 顶部 hero ============ */
-.hero{
-  background:linear-gradient(135deg,var(--forest) 0%,#264a2e 100%);color:#EAF3E6;
-  padding:48px 24px 40px;text-align:center;
-}
-.hero .badge{
-  display:inline-block;background:var(--java-soft);color:var(--java);
-  font-size:.72rem;font-weight:700;padding:4px 12px;border-radius:999px;
-  letter-spacing:1px;margin-bottom:12px;border:1.5px solid var(--java);
-}
-.hero h1{font-family:var(--font-display);font-size:2rem;color:#fff;letter-spacing:.5px;margin-bottom:8px;}
-.hero p{color:#CFE3C7;font-size:.95rem;max-width:560px;margin:0 auto;}
+.hero{background:linear-gradient(135deg,var(--forest) 0%,#264a2e 100%);color:#EAF3E6;padding:44px 24px 36px;text-align:center;}
+.hero .badge{display:inline-block;background:var(--java-soft);color:var(--java);font-size:.72rem;font-weight:700;padding:4px 12px;border-radius:999px;letter-spacing:1px;margin-bottom:12px;border:1.5px solid var(--java);}
+.hero h1{font-family:var(--font-display);font-size:1.9rem;color:#fff;letter-spacing:.5px;margin-bottom:8px;}
+.hero p{color:#CFE3C7;font-size:.92rem;max-width:560px;margin:0 auto;}
 .hero .stat{font-family:monospace;color:var(--marker);}
 
-/* ============ 主体 ============ */
-.wrap{max-width:840px;margin:0 auto;padding:36px 24px 60px;}
-
-/* 区段标题 */
-.sec-head{
-  font-family:var(--font-head);font-size:1.3rem;color:var(--forest);
-  margin:36px 0 6px;display:flex;align-items:center;gap:8px;
-}
-.sec-head .ico{font-size:1.2rem;}
-.sec-sub{color:#7A6E54;font-size:.88rem;margin-bottom:20px;}
-
-/* ============ 刷题卡片 ============ */
-.q{
-  background:#fff;border:1px solid #E6DCC2;border-radius:var(--radius);
-  margin-bottom:22px;overflow:hidden;border-left:5px solid var(--java);
-  transition:box-shadow .18s;
-}
-.q:hover{box-shadow:0 6px 18px rgba(30,58,36,.1);}
-.q-head{
-  padding:18px 22px 14px;background:var(--paper);
-  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
-  border-bottom:1px solid #E6DCC2;
-}
-.q-num{
-  font-family:var(--font-display);font-size:.95rem;color:#fff;
-  background:var(--java);min-width:44px;height:44px;padding:0 10px;border-radius:10px;
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;
-}
-.q-title{font-family:var(--font-head);font-size:1.15rem;color:var(--forest);font-weight:700;}
-.q-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;}
-.q-tags span{
-  font-size:.7rem;font-family:monospace;background:var(--java-soft);color:var(--java);
-  padding:2px 8px;border-radius:999px;
-}
-.q-lang{
-  margin-left:auto;font-size:.72rem;font-family:monospace;
-  background:var(--sage);color:#23451F;padding:3px 10px;border-radius:999px;font-weight:600;
-}
-.q-body{padding:20px 24px 24px;}
-.q-body h4{
-  font-family:var(--font-head);font-size:.95rem;color:var(--java);
-  margin:18px 0 8px;padding-bottom:4px;border-bottom:1.5px dashed var(--java-soft);
-}
-.q-body h4:first-child{margin-top:0;}
-.q-body p{font-size:.9rem;color:#3a342a;margin-bottom:8px;}
-.q-body ul,.q-body ol{margin:0 0 10px 22px;font-size:.88rem;color:#3a342a;}
-.q-body li{margin-bottom:4px;}
-.q-body strong{color:var(--forest);}
-
-/* 代码块 */
-pre{
-  background:#1E2820;color:#D4E8D0;border-radius:10px;padding:16px 18px;
-  overflow-x:auto;font-family:var(--font-mono);font-size:.82rem;line-height:1.6;
-  margin:10px 0;border:1px solid #2a3a2e;
-}
-pre code{background:none;padding:0;color:inherit;}
-code{
-  background:var(--paper);padding:2px 6px;border-radius:4px;
-  font-family:var(--font-mono);font-size:.82rem;color:var(--brick);
-}
-/* 代码里的注释色 */
-pre .c{color:#7a9a7a;}
-
-/* 踩坑提示框 */
-.pit{
-  background:#FFF3E0;border:1.5px solid #F0C674;border-radius:10px;
-  padding:12px 16px;font-size:.86rem;color:#6a4a00;margin:10px 0;
-}
-.pit b{color:var(--brick);}
-.pit ul{margin:6px 0 0 18px;}
-
-/* 收获框 */
-.gain{
-  background:#EEF3E8;border-left:4px solid var(--sage);border-radius:10px;
-  padding:12px 16px;font-size:.86rem;color:#3a4a34;margin:10px 0;
-}
-.gain b{color:#2F7D46;}
-.gain ul{margin:6px 0 0 18px;}
-
-/* 表格 */
-.tbl{width:100%;border-collapse:collapse;margin:10px 0;font-size:.84rem;background:var(--cream);border-radius:8px;overflow:hidden;}
-.tbl th{background:var(--java);color:#fff;padding:8px 10px;text-align:left;font-size:.78rem;}
-.tbl td{padding:8px 10px;border-bottom:1px solid #E0D8C0;vertical-align:top;}
-.tbl tr:last-child td{border-bottom:none;}
-
-/* ============ 返回链接 ============ */
-.back{
-  display:inline-flex;align-items:center;gap:5px;
-  color:var(--forest);font-weight:600;font-size:.9rem;text-decoration:none;
-  margin-bottom:24px;padding:8px 16px;background:var(--paper);border-radius:999px;
-  border:1.5px solid var(--sage);transition:.18s;
-}
+.wrap{max-width:980px;margin:0 auto;padding:32px 20px 80px;}
+.back{display:inline-flex;align-items:center;gap:5px;color:var(--forest);font-weight:600;font-size:.88rem;text-decoration:none;margin-bottom:22px;padding:7px 14px;background:var(--paper);border-radius:999px;border:1.5px solid var(--sage);}
 .back:hover{background:var(--sage);color:#fff;}
 
-footer{
-  text-align:center;padding:26px 24px 36px;font-size:.82rem;color:#7A6E54;
-}
-footer a{color:var(--brick);text-decoration:underline;font-weight:700;}
+.sec-head{font-family:var(--font-head);font-size:1.2rem;color:var(--forest);margin:28px 0 4px;display:flex;align-items:center;gap:8px;}
+.sec-sub{color:#7A6E54;font-size:.84rem;margin-bottom:18px;}
 
-/* 移动端 */
+/* Java vs JS 速查（常驻）*/
+.cheat{background:#fff;border:1px solid #E6DCC2;border-radius:12px;padding:16px 18px;margin-bottom:24px;border-left:4px solid var(--java);}
+.cheat h3{font-family:var(--font-head);font-size:.95rem;color:var(--java);margin-bottom:10px;}
+.cheat .tbl{width:100%;border-collapse:collapse;font-size:.82rem;}
+.cheat .tbl th{background:var(--java);color:#fff;padding:6px 9px;text-align:left;font-size:.76rem;}
+.cheat .tbl td{padding:6px 9px;border-bottom:1px solid #E0D8C0;}
+.cheat .tbl tr:last-child td{border:none;}
+.cheat code{background:var(--paper);padding:2px 6px;border-radius:4px;font-family:var(--font-mono);font-size:.8rem;color:var(--brick);}
+
+/* 橱窗 */
+.shop{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:14px;}
+.shop-item{background:#fff;border:1px solid #E6DCC2;border-radius:12px;padding:16px 14px 14px;cursor:pointer;transition:transform .15s,box-shadow .15s;display:flex;flex-direction:column;border-top:4px solid var(--java);position:relative;}
+.shop-item:hover{transform:translateY(-3px);box-shadow:0 8px 20px rgba(30,58,36,.12);}
+.shop-item .num{font-family:var(--font-display);font-size:.86rem;color:#fff;background:var(--java);padding:2px 9px;border-radius:6px;align-self:flex-start;margin-bottom:8px;font-weight:900;}
+.shop-item .ttl{font-family:var(--font-head);font-size:.92rem;color:var(--forest);font-weight:700;line-height:1.35;margin-bottom:6px;}
+.shop-item .tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px;}
+.shop-item .tags span{font-size:.64rem;font-family:monospace;background:var(--java-soft);color:var(--java);padding:1px 6px;border-radius:999px;}
+.shop-item .date{font-size:.7rem;color:#9A8E70;margin-top:auto;font-family:monospace;}
+.shop-item .arrow{position:absolute;bottom:10px;right:12px;color:var(--java);font-size:.8rem;font-weight:700;}
+
+/* Modal */
+.modal-mask{position:fixed;inset:0;background:rgba(20,30,18,.55);z-index:100;display:none;align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto;}
+.modal-mask.open{display:flex;}
+.modal{background:var(--cream);border-radius:16px;max-width:720px;width:100%;margin:auto;box-shadow:0 20px 60px rgba(0,0,0,.3);border-top:6px solid var(--java);overflow:hidden;}
+.modal-head{padding:20px 24px 16px;background:var(--paper);display:flex;align-items:center;gap:14px;border-bottom:1px solid #E6DCC2;position:sticky;top:0;z-index:2;}
+.modal-num{font-family:var(--font-display);font-size:.9rem;color:#fff;background:var(--java);padding:4px 12px;border-radius:8px;font-weight:900;flex-shrink:0;}
+.modal-title{font-family:var(--font-head);font-size:1.1rem;color:var(--forest);font-weight:700;flex:1;}
+.modal-close{width:34px;height:34px;border:0;border-radius:50%;cursor:pointer;background:var(--forest);color:#fff;font-size:1.2rem;line-height:1;flex-shrink:0;}
+.modal-close:hover{background:#16301D;}
+.modal-body{padding:20px 24px 28px;max-height:calc(100vh - 180px);overflow-y:auto;overscroll-behavior:contain;}
+.modal-body h4{font-family:var(--font-head);font-size:.95rem;color:var(--java);margin:18px 0 8px;padding-bottom:4px;border-bottom:1.5px dashed var(--java-soft);}
+.modal-body h4:first-child{margin-top:0;}
+.modal-body p{font-size:.88rem;color:#3a342a;margin-bottom:8px;}
+.modal-body ul,.modal-body ol{margin:0 0 10px 22px;font-size:.86rem;color:#3a342a;}
+.modal-body li{margin-bottom:4px;}
+.modal-body strong{color:var(--forest);}
+
+pre{background:#1E2820;color:#D4E8D0;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:var(--font-mono);font-size:.8rem;line-height:1.6;margin:10px 0;border:1px solid #2a3a2e;}
+pre code{background:none;padding:0;color:inherit;}
+code{background:var(--paper);padding:2px 6px;border-radius:4px;font-family:var(--font-mono);font-size:.8rem;color:var(--brick);}
+pre .c{color:#7a9a7a;}
+
+.pit{background:#FFF3E0;border:1.5px solid #F0C674;border-radius:10px;padding:11px 15px;font-size:.84rem;color:#6a4a00;margin:10px 0;}
+.pit b{color:var(--brick);} .pit ul{margin:6px 0 0 18px;}
+.gain{background:#EEF3E8;border-left:4px solid var(--sage);border-radius:10px;padding:11px 15px;font-size:.84rem;color:#3a4a34;margin:10px 0;}
+.gain b{color:#2F7D46;} .gain ul{margin:6px 0 0 18px;}
+.tbl{width:100%;border-collapse:collapse;margin:10px 0;font-size:.82rem;background:var(--cream);border-radius:8px;overflow:hidden;}
+.tbl th{background:var(--java);color:#fff;padding:7px 9px;text-align:left;font-size:.76rem;}
+.tbl td{padding:7px 9px;border-bottom:1px solid #E0D8C0;} .tbl tr:last-child td{border:none;}
+.sol-link{display:inline-block;margin:6px 0 0;font-size:.8rem;color:var(--brick);}
+
+footer{text-align:center;padding:24px;font-size:.8rem;color:#7A6E54;}
+
 @media(max-width:680px){
   .hero h1{font-size:1.5rem;}
-  .q-num{width:38px;height:38px;font-size:.95rem;}
-  .q-title{font-size:1rem;}
-  pre{font-size:.76rem;}
+  .shop{grid-template-columns:repeat(2,1fr);gap:10px;}
+  .shop-item{padding:13px 11px 11px;}
+  .shop-item .ttl{font-size:.84rem;}
+  .modal-mask{padding:20px 10px;}
+  .modal-body{padding:16px 16px 24px;}
+  pre{font-size:.74rem;}
 }
 </style>
 </head>
@@ -151,245 +102,120 @@ footer a{color:var(--brick);text-decoration:underline;font-weight:700;}
 <section class="hero">
   <span class="badge">☕ 后端语言</span>
   <h1>Java · 刷题学习地图</h1>
-  <p>从 JavaScript 思维迁移到 Java，在 LeetCode 里逐题积累语言差异和算法模板。<br>
-  已刷 <span class="stat" id="cnt">…</span> 题，持续更新中。</p>
+  <p>从 JavaScript 思维迁移到 Java，在 LeetCode 里逐题积累语言差异和算法模板。<br>已刷 <span class="stat" id="cnt">…</span> 题，点击卡片查看详情。</p>
 </section>
 
 <div class="wrap">
   <a class="back" href="../index.html">← 返回计算机知识</a>
 
-  <div class="sec-head"><span class="ico">💡</span> 学这门语言的方式</div>
-  <p class="sec-sub">不是背 API，而是边刷题边踩坑，把「Java 和 JS 哪里不一样」一条条记下来。</p>
-  <div class="gain">
-    <b>核心方法</b>：每道题按「题目理解 → 思路 → 踩坑 → 代码 → 收获」记一遍，重点沉淀<u>语言差异笔记</u>（Java vs JS），比单纯记算法更有长期价值。
+  <div class="cheat">
+    <h3>🔑 Java vs JS 速查（做题前扫一眼）</h3>
+    <table class="tbl">
+      <thead><tr><th>功能</th><th>JavaScript</th><th>Java</th></tr></thead>
+      <tbody>
+        <tr><td>数字转字符串</td><td><code>String(x)</code></td><td><code>String.valueOf(x)</code></td></tr>
+        <tr><td>字符串长度</td><td><code>str.length</code></td><td><code>str.length()</code></td></tr>
+        <tr><td>取字符</td><td><code>str[i]</code></td><td><code>str.charAt(i)</code></td></tr>
+        <tr><td>数组长度</td><td><code>arr.length</code></td><td><code>arr.length</code>（无括号）</td></tr>
+        <tr><td>创建数组</td><td><code>new Array(n).fill(0)</code></td><td><code>new int[n]</code></td></tr>
+      </tbody>
+    </table>
   </div>
 
-  <div class="sec-head"><span class="ico">🔑</span> Java vs JS 速查（做题最常踩的坑）</div>
-  <p class="sec-sub">这几条是从 JS 切 Java 时几乎必踩的坑，做题前先扫一眼。</p>
-  <table class="tbl">
-    <thead><tr><th>功能</th><th>JavaScript</th><th>Java</th></tr></thead>
-    <tbody>
-      <tr><td>数字转字符串</td><td><code>String(x)</code></td><td><code>String.valueOf(x)</code></td></tr>
-      <tr><td>字符串长度</td><td><code>str.length</code></td><td><code>str.length()</code> <span style="color:var(--brick);">（带括号！）</span></td></tr>
-      <tr><td>取字符</td><td><code>str[i]</code></td><td><code>str.charAt(i)</code> <span style="color:var(--brick);">（不能下标！）</span></td></tr>
-      <tr><td>数组长度</td><td><code>arr.length</code></td><td><code>arr.length</code>（无括号）</td></tr>
-    </tbody>
-  </table>
-  <div class="pit"><b>最容易混的</b>：Java 里数组用 <code>.length</code>，字符串用 <code>.length()</code>，差一对括号，错了编译就报红。</div>
+  <div class="sec-head">🛒 题目橱窗</div>
+  <p class="sec-sub">点击任意题目卡片，查看完整思路、代码与踩坑记录。</p>
 
-  <!-- ============ 题目卡片 ============ -->
-  <div class="sec-head"><span class="ico">📝</span> 刷题笔记</div>
-  <p class="sec-sub">每题独立成卡，含完整思路、踩坑和可复用模板。</p>
-
-  <!-- ===== LeetCode 771 ===== -->
-  <div class="q">
-    <div class="q-head">
-      <div class="q-num">771</div>
-      <div>
-        <div class="q-title">宝石与石头</div>
-        <div class="q-tags"><span>Java基础</span><span>String</span><span>字符遍历</span><span>HashSet</span><span>简单</span></div>
-      </div>
-      <span class="q-lang">Java</span>
-    </div>
-    <div class="q-body">
-      <h4>① 题目理解</h4>
-      <p>给定 <code>jewels</code>（宝石类型）和 <code>stones</code>（拥有的石头），统计 stones 里有多少个字符属于 jewels。字母区分大小写，jewels 字符不重复。</p>
-      <p>例：<code>jewels="aA"</code>，<code>stones="aAAbbbb"</code> → 结果 <strong>3</strong>（a×1 + A×2）。</p>
-
-      <h4>② 思路</h4>
-      <ul>
-        <li><b>暴力枚举</b>：双层循环，遍历每个 jewel，去 stones 里找。时间 O(m×n)，空间 O(1)。</li>
-        <li><b>HashSet 优化</b>：把 jewels 放进 Set，遍历 stones 判断在不在 Set 里。时间 O(m+n)，空间 O(m)。</li>
-      </ul>
-
-      <h4>③ 踩坑（JS → Java 必踩）</h4>
-      <div class="pit">
-        <b>这道题的核心坑，全是 Java String 的：</b>
-        <ul>
-          <li>字符串长度用 <code>.length()</code> 不是 <code>.length</code>（JS 是属性，Java 是方法）</li>
-          <li>取字符用 <code>.charAt(i)</code> 不能用 <code>jewels[i]</code>（Java String 不能下标访问）</li>
-          <li>判断循环结束用 <code>i &lt; jewels.length()</code>，没有 null 结束符（别带 C/C++ 思维）</li>
-        </ul>
-      </div>
-
-      <h4>④ 代码</h4>
-<pre><code><span class="c">// 方法一：暴力枚举 O(m×n)</span>
-class Solution {
-    public int numJewelsInStones(String jewels, String stones) {
-        int sum = 0;
-        for (int i = 0; i &lt; jewels.length(); i++) {
-            for (int j = 0; j &lt; stones.length(); j++) {
-                if (jewels.charAt(i) == stones.charAt(j)) {
-                    sum++;
-                }
-            }
-        }
-        return sum;
-    }
-}</code></pre>
-
-      <h4>⑤ 收获</h4>
-      <div class="gain">
-        <b>可复用的判断：</b>
-        <ul>
-          <li>遇到「判断字符是否存在 / 两个集合比较 / 查重复」→ 优先考虑 <code>HashSet</code> / <code>HashMap</code>，哈希结构通常比暴力更优</li>
-          <li>Java String 的三个基础 API：<code>.length()</code>、<code>.charAt(i)</code>、<code>String ≠ char[]</code></li>
-        </ul>
-      </div>
-    </div>
-  </div>
-
-  <!-- ===== LeetCode 9（JS版）===== -->
-  <div class="q">
-    <div class="q-head">
-      <div class="q-num">9</div>
-      <div>
-        <div class="q-title">回文数 · JavaScript 版</div>
-        <div class="q-tags"><span>双指针</span><span>回文</span><span>类型转换</span><span>JS类型</span><span>简单</span></div>
-      </div>
-      <span class="q-lang">JavaScript</span>
-    </div>
-    <div class="q-body">
-      <h4>① 题目理解</h4>
-      <p>判断整数 x 是否为回文（正序倒序相同）。负数一定不是回文（<code>-121</code> 倒过来 <code>121-</code>）。</p>
-
-      <h4>② 思路：转字符串 + 双指针</h4>
-      <p>数字不好直接比两端，转成字符串后用左右指针向中间扫，不等就返回 false。</p>
-
-      <h4>③ 踩坑</h4>
-      <div class="pit">
-        <b>JavaScript 类型陷阱：</b>
-        <ul>
-          <li><code>number</code> 没有 <code>.length</code>，要先 <code>String(x)</code> 转成字符串</li>
-          <li><code>String(x)</code> 返回<b>新字符串</b>，不修改原变量：<code>let y = String(x)</code> 而不是 <code>String(y)</code></li>
-          <li>右指针初始化是 <code>length - 1</code> 不是 <code>length</code>（下标从 0 开始）</li>
-        </ul>
-      </div>
-
-      <h4>④ 代码</h4>
-<pre><code><span class="c">// JavaScript · 双指针</span>
-var isPalindrome = function(x) {
-    if (x &lt; 0) return false;
-    let y = String(x);
-    let left = 0, right = y.length - 1;
-    while (left &lt; right) {
-        if (y[left] != y[right]) return false;
-        left++;
-        right--;
-    }
-    return true;
-};</code></pre>
-
-      <h4>⑤ 收获 · 双指针模板</h4>
-      <div class="gain">
-        <b>遇到回文 / 对称 / 两端比较，优先用这个模板：</b>
-<pre style="margin-top:8px;background:#1a241a;"><code>let left = 0, right = arr.length - 1;
-while (left &lt; right) {
-    if (arr[left] != arr[right]) return false;
-    left++; right--;
-}</code></pre>
-        后面的「反转字符串」「验证回文串」都是它的变形。
-      </div>
-    </div>
-  </div>
-
-  <!-- ===== LeetCode 9（Java版）===== -->
-  <div class="q">
-    <div class="q-head">
-      <div class="q-num">9</div>
-      <div>
-        <div class="q-title">回文数 · Java 版</div>
-        <div class="q-tags"><span>双指针</span><span>回文</span><span>String</span><span>Java基础</span><span>类型转换</span></div>
-      </div>
-      <span class="q-lang">Java</span>
-    </div>
-    <div class="q-body">
-      <h4>① 同一道题，Java 再做一遍</h4>
-      <p>把 JS 版迁移到 Java，重点不是算法（一样），而是<strong>语言差异</strong>。</p>
-
-      <h4>② 关键差异</h4>
-      <table class="tbl">
-        <thead><tr><th>操作</th><th>JavaScript</th><th>Java</th></tr></thead>
-        <tbody>
-          <tr><td>数字转字符串</td><td><code>String(x)</code></td><td><code>String.valueOf(x)</code></td></tr>
-          <tr><td>字符串长度</td><td><code>y.length</code></td><td><code>y.length()</code></td></tr>
-          <tr><td>取字符</td><td><code>y[left]</code></td><td><code>y.charAt(left)</code></td></tr>
-        </tbody>
-      </table>
-
-      <h4>③ 踩坑</h4>
-      <div class="pit">
-        <b>Java 额外的坑：</b>
-        <ul>
-          <li><code>valueOf</code> 别拼成 <code>value0f</code>（大写 O 不是数字 0）</li>
-          <li><code>String.valueOf(x)</code> 返回新对象，要赋值：<code>String y = String.valueOf(x)</code></li>
-        </ul>
-      </div>
-
-      <h4>④ 代码</h4>
-<pre><code><span class="c">// Java · 转字符串 + 双指针</span>
-class Solution {
-    public boolean isPalindrome(int x) {
-        if (x &lt; 0) return false;
-        String y = String.valueOf(x);
-        int left = 0, right = y.length() - 1;
-        while (left &lt; right) {
-            if (y.charAt(left) != y.charAt(right)) return false;
-            left++;
-            right--;
-        }
-        return true;
-    }
-}</code></pre>
-
-      <h4>⑤ 收获</h4>
-      <div class="gain">
-        <b>这是 Java 刷题的小里程碑：</b>
-        <ul>
-          <li>771 → 学会 Java String 基础（<code>.length()</code> / <code>.charAt()</code>）</li>
-          <li>9 → 用 Java String + 双指针完成完整题目</li>
-          <li>后面 125（验证回文串）、344（反转字符串）都是这个模板的变形</li>
-        </ul>
-      </div>
-
-      <h4>⑥ 进阶：不转字符串的做法</h4>
-      <p>题目要求可以不转字符串——只反转数字的后半部分，和前半部分比较，空间复杂度可降到 O(1)。</p>
-<pre><code><span class="c">// 如 x=1221，反转后半段 21→12，和前半段 12 比较，相等</span>
-<span class="c">// 空间 O(1)，留给后续补充完整代码</span></code></pre>
-    </div>
-  </div>
-
-  <!-- ============ 接下来 ============ -->
-  <div class="sec-head"><span class="ico">🚀</span> 接下来</div>
-  <p class="sec-sub">基于已掌握的双指针 + String 基础，下一批题。</p>
-  <div class="gain" style="background:var(--paper);border-left-color:var(--java);">
-    <b>规划中的下一组（同模板变形）：</b>
-    <ul>
-      <li><code>125. 验证回文串</code> — 双指针 + 字符过滤</li>
-      <li><code>344. 反转字符串</code> — 双指针经典</li>
-      <li>积累 <code>ArrayList</code> vs 数组、<code>HashMap</code> 常用 API、<code>StringBuilder</code> 使用场景</li>
-    </ul>
-  </div>
-
+  <div class="shop" id="shop"></div>
 </div>
 
-<footer>
-  Java 刷题学习地图 · 每题一卡，长期积累<br>
-  由 <a href="https://lyzbcy.github.io/" target="_blank" rel="noopener">捞鱼</a> 制作
-</footer>
+<div class="modal-mask" id="modalMask">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="modal-num" id="mNum"></span>
+      <span class="modal-title" id="mTitle"></span>
+      <button class="modal-close" id="mClose" aria-label="关闭">×</button>
+    </div>
+    <div class="modal-body" id="mBody"></div>
+  </div>
+</div>
+
+<footer>Java 刷题学习地图 · 由 <a href="https://lyzbcy.github.io/" target="_blank" rel="noopener">捞鱼</a> 制作</footer>
 
 <script>
-// 已刷题数 = 按题号去重（同一题的 JS/Java 双版本只算一道）
-(function(){
-  var cnt = document.getElementById('cnt');
-  if(cnt){
-    var nums = {};
-    document.querySelectorAll('.q-num').forEach(function(el){
-      nums[el.textContent.trim()] = true;
-    });
-    cnt.textContent = Object.keys(nums).length;
+var PROBLEMS = [
+  {
+    num:'771', title:'宝石与石头', date:'2026-08-07',
+    tags:['String','字符遍历','HashSet','简单'],
+    link:'',
+    body:
+      '<h4>① 题目理解</h4><p><code>jewels</code>（宝石类型）和 <code>stones</code>（石头），统计 stones 里多少字符属于 jewels。区分大小写。</p>'+
+      '<h4>② 思路</h4><ul><li><b>暴力</b>：双层循环，O(m×n)</li><li><b>HashSet</b>：jewels 放 Set，遍历 stones 判断，O(m+n)</li></ul>'+
+      '<h4>③ 踩坑（JS→Java 必踩）</h4><div class="pit"><b>全是 Java String 的坑：</b><ul><li>长度用 <code>.length()</code> 不是 <code>.length</code></li><li>取字符用 <code>.charAt(i)</code> 不能 <code>jewels[i]</code></li><li>循环用 <code>i &lt; jewels.length()</code>，没有 null 结束符</li></ul></div>'+
+      '<h4>④ 代码（暴力）</h4><pre><code><span class="c">// O(m×n)</span>\nclass Solution {\n    public int numJewelsInStones(String jewels, String stones) {\n        int sum = 0;\n        for (int i = 0; i &lt; jewels.length(); i++) {\n            for (int j = 0; j &lt; stones.length(); j++) {\n                if (jewels.charAt(i) == stones.charAt(j)) sum++;\n            }\n        }\n        return sum;\n    }\n}</code></pre>'+
+      '<h4>⑤ 收获</h4><div class="gain"><ul><li>判断字符是否存在/查重复 → 优先 HashSet/HashMap</li><li>Java String 三基础：<code>.length()</code>、<code>.charAt()</code>、String ≠ char[]</li></ul></div>'
+  },
+  {
+    num:'9', title:'回文数', date:'2026-08-07',
+    tags:['双指针','回文','String','简单'],
+    link:'https://leetcode.cn/problems/palindrome-number/solutions/4009757/java-chu-xue-by-lao-yu-bu-chi-yu-cbmu/',
+    body:
+      '<h4>① 题目理解</h4><p>判断整数 x 是否回文。负数一定不是。</p>'+
+      '<h4>② 思路：转字符串 + 双指针</h4>'+
+      '<h4>③ 关键差异（vs JS）</h4><table class="tbl"><thead><tr><th>操作</th><th>JS</th><th>Java</th></tr></thead><tbody><tr><td>数字转字符串</td><td><code>String(x)</code></td><td><code>String.valueOf(x)</code></td></tr><tr><td>长度</td><td><code>y.length</code></td><td><code>y.length()</code></td></tr><tr><td>取字符</td><td><code>y[left]</code></td><td><code>y.charAt(left)</code></td></tr></tbody></table>'+
+      '<h4>④ 踩坑</h4><div class="pit"><ul><li><code>valueOf</code> 别拼成 <code>value0f</code>（O 不是 0）</li><li><code>String.valueOf(x)</code> 返回新对象，要赋值</li></ul></div>'+
+      '<h4>⑤ 代码</h4><pre><code>class Solution {\n    public boolean isPalindrome(int x) {\n        if (x &lt; 0) return false;\n        String y = String.valueOf(x);\n        int left = 0, right = y.length() - 1;\n        while (left &lt; right) {\n            if (y.charAt(left) != y.charAt(right)) return false;\n            left++; right--;\n        }\n        return true;\n    }\n}</code></pre>'+
+      '<h4>⑥ 进阶</h4><div class="gain">不转字符串：只反转数字后半部分，和前半部分比较，空间 O(1)。</div>'
+  },
+  {
+    num:'997', title:'找到小镇的法官', date:'2026-08-11',
+    tags:['有向图','入度出度','二维数组','简单'],
+    link:'https://leetcode.cn/problems/find-the-town-judge/solutions/4010144/javaxue-xi-zhong-liang-ci-bian-li-ben-fa-lqra/',
+    body:
+      '<h4>① 题目理解</h4><p><code>trust[i]=[a,b]</code> 表示 a 信任 b。法官：入度 n-1（被所有人信任）、出度 0（不信任任何人）。</p>'+
+      '<h4>② 图论建模</h4><p>人是节点，信任是有向边。法官 = 入度 - 出度 = n-1。</p>'+
+      '<h4>③ 核心思想：score 数组</h4><p><code>score[i]</code>：i 信任别人 -1、被信任 +1。最后 <code>score[i]==n-1</code> 的人就是法官。</p>'+
+      '<h4>④ Java 代码</h4><pre><code>class Solution {\n    public int findJudge(int n, int[][] trust) {\n        int[] score = new int[n + 1];\n        for (int i = 0; i &lt; trust.length; i++) {\n            score[trust[i][1]]++;  // 被信任者 +1\n            score[trust[i][0]]--;  // 信任者 -1\n        }\n        for (int i = 1; i &lt; n + 1; i++) {\n            if (score[i] == n - 1) return i;\n        }\n        return -1;\n    }\n}</code></pre>'+
+      '<h4>⑤ Java 学习点</h4><div class="gain"><ul><li>数组声明：<code>int[] score = new int[n+1]</code>（不是 C 写法），默认全 0</li><li>二维数组：<code>trust[i][0]</code> 信任者、<code>trust[i][1]</code> 被信任者</li><li>数组长度 <code>arr.length</code> 无括号，String <code>length()</code> 有括号</li><li>增强 for：<code>for(int[] r : trust)</code></li></ul></div>'+
+      '<h4>⑥ 踩坑</h4><div class="pit"><ul><li>数组用 <code>new int[n+1]</code>，不能用 C 的 <code>int score[n+1]=0</code></li><li>循环用 <code>i &lt; trust.length</code>，不要 <code>trust[i]!=null</code></li><li>编号从 1 开始，数组开 n+1 让 score[1]~score[n] 直接对应</li></ul></div>'+
+      '<h4>⑦ 复杂度</h4><p>时间 O(m+n)，空间 O(n)。</p>'
   }
-})();
+];
+
+var shop = document.getElementById('shop');
+var html = '';
+PROBLEMS.forEach(function(p, i){
+  var tagsHtml = p.tags.map(function(t){ return '<span>'+t+'</span>'; }).join('');
+  var linkHtml = p.link ? '<a class="sol-link" href="'+p.link+'" target="_blank" rel="noopener">我的 LeetCode 题解 →</a>' : '';
+  html +=
+    '<div class="shop-item" data-idx="'+i+'">'+
+      '<span class="num">'+p.num+'</span>'+
+      '<div class="ttl">'+p.title+'</div>'+
+      '<div class="tags">'+tagsHtml+'</div>'+
+      '<div class="date">'+(p.date||'')+'</div>'+
+      '<span class="arrow">›</span>'+
+    '</div>';
+  p._fullBody = p.body + linkHtml;
+});
+shop.innerHTML = html;
+document.getElementById('cnt').textContent = PROBLEMS.length;
+
+var mask = document.getElementById('modalMask');
+function openModal(i){
+  var p = PROBLEMS[i];
+  document.getElementById('mNum').textContent = p.num;
+  document.getElementById('mTitle').textContent = p.title;
+  document.getElementById('mBody').innerHTML = p._fullBody;
+  mask.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal(){ mask.classList.remove('open'); document.body.style.overflow = ''; }
+shop.addEventListener('click', function(e){
+  var item = e.target.closest('.shop-item');
+  if(item) openModal(parseInt(item.getAttribute('data-idx'),10));
+});
+document.getElementById('mClose').addEventListener('click', closeModal);
+mask.addEventListener('click', function(e){ if(e.target === mask) closeModal(); });
+document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeModal(); });
 </script>
 
 </body>

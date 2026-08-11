@@ -184,7 +184,7 @@ footer a{color:#1d70b8;text-decoration:underline;font-weight:700;}
       <div class="body">
         <span class="tag">后端语言</span>
         <h3>Java · 刷题学习地图</h3>
-        <p>从 JavaScript 思维迁移到 Java，在 LeetCode 里逐题积累语言差异和算法模板。已含 771 宝石与石头、9 回文数。</p>
+        <p>从 JavaScript 思维迁移到 Java，在 LeetCode 里逐题积累语言差异和算法模板。已含 771 宝石与石头、9 回文数、997 找法官。</p>
         <div class="go">进入学习地图 →</div>
       </div>
     </a>
@@ -195,7 +195,7 @@ footer a{color:#1d70b8;text-decoration:underline;font-weight:700;}
       <div class="body">
         <span class="tag">前端语言</span>
         <h3>JavaScript · 刷题学习地图</h3>
-        <p>用 JavaScript 刷 LeetCode，积累语言特性和算法模板。前端主力语言，也是切 Java 时的对照基准。含 9 回文数、140 链表倒数第k节点。</p>
+        <p>用 JavaScript 刷 LeetCode，积累语言特性和算法模板。前端主力语言，也是切 Java 时的对照基准。含 9 回文数、LCR 140、997 找法官、28 字符串匹配、35 搜索插入位置。</p>
         <div class="go">进入学习地图 →</div>
       </div>
     </a>
@@ -282,14 +282,14 @@ document.getElementById('cnt').textContent =
 // ===== 版本检测 + dock（移植自 help.wshoto 的可靠刷新机制）=====
 (function(){
   "use strict";
-  var PAGE_V = 6;
+  var PAGE_V = 7;
   var INLINE_VERSION = {
     v: PAGE_V,
-    updated: '2026-08-10',
+    updated: '2026-08-11',
     notes: [
-      '新增 Java、JavaScript 刷题学习地图栏目',
-      '首页卡片标注前端/后端语言归类',
-      '新增右下角版本 dock（可见版本 + 一键强制刷新）'
+      'Java/JavaScript 刷题页改为橱窗式展示（点击卡片看详情）',
+      'JS 新增 997 找法官、28 字符串匹配、35 搜索插入位置',
+      'Java 新增 997 找法官（有向图入度出度）'
     ]
   };
 

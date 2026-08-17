@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>大数据模拟卷二 · 微盛实践 · 研发岗管培生</title>
+<style>
+:root{
+  --primary:#2563eb; --primary-dark:#1e40af; --success:#16a34a; --danger:#dc2626;
+  --warn:#d97706; --bg:#f1f5f9; --card:#ffffff; --text:#1e293b; --muted:#64748b;
+  --border:#e2e8f0; --correct:#f0fdf4; --wrong:#fef2f2;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);line-height:1.7;}
+.wrap{max-width:880px;margin:0 auto;padding:24px 16px 80px;}
+/* header */
+.header{background:linear-gradient(135deg,#1e3a8a,#2563eb);color:#fff;border-radius:16px;padding:32px 28px;margin-bottom:20px;box-shadow:0 8px 24px rgba(37,99,235,.25);}
+.header h1{font-size:26px;margin-bottom:8px;}
+.header .sub{opacity:.9;font-size:14px;}
+.header .meta{display:flex;gap:16px;flex-wrap:wrap;margin-top:16px;font-size:13px;}
+.header .meta span{background:rgba(255,255,255,.15);padding:4px 12px;border-radius:999px;}
+/* notice */
+.notice{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 22px;margin-bottom:20px;font-size:14px;}
+.notice h3{font-size:15px;margin-bottom:10px;color:var(--primary-dark);}
+.notice li{margin-left:20px;margin-bottom:4px;color:var(--muted);}
+.notice b{color:var(--text);}
+/* sticky bar */
+.sticky{position:sticky;top:0;z-index:50;background:rgba(241,245,249,.95);backdrop-filter:blur(8px);padding:10px 0;margin-bottom:16px;}
+.sticky-inner{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;box-shadow:0 2px 8px rgba(0,0,0,.05);}
+.sticky .info{font-size:13px;color:var(--muted);}
+.sticky .spacer{flex:1;}
+.timer{font-variant-numeric:tabular-nums;font-weight:700;color:var(--primary);font-size:15px;}
+.btn{border:none;cursor:pointer;border-radius:8px;padding:9px 22px;font-size:14px;font-weight:600;transition:.15s;}
+.btn-primary{background:var(--primary);color:#fff;}
+.btn-primary:hover{background:var(--primary-dark);}
+.btn-ghost{background:#fff;color:var(--primary);border:1px solid var(--primary);}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+/* answer sheet */
+.sheet{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 18px;margin-bottom:20px;}
+.sheet h4{font-size:13px;color:var(--muted);margin-bottom:10px;font-weight:600;}
+.sheet-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(40px,1fr));gap:6px;}
+.sheet-item{width:40px;height:36px;border-radius:8px;border:1px solid var(--border);background:#fff;font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.12s;color:var(--muted);}
+.sheet-item.done{background:var(--primary);color:#fff;border-color:var(--primary);}
+.sheet-item.correct{background:var(--success);color:#fff;border-color:var(--success);}
+.sheet-item.wrong{background:var(--danger);color:#fff;border-color:var(--danger);}
+.sheet-item.partial{background:var(--warn);color:#fff;border-color:var(--warn);}
+.sheet-item.pending{background:#cbd5e1;color:#fff;border-color:#cbd5e1;}
+.sheet-item:hover{transform:scale(1.08);}
+/* question card */
+.q-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px 24px;margin-bottom:18px;}
+.q-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;}
+.q-num{background:var(--primary);color:#fff;border-radius:8px;min-width:34px;height:28px;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;padding:0 8px;}
+.q-type{font-size:12px;padding:2px 10px;border-radius:999px;font-weight:600;}
+.t-single{background:#dbeafe;color:#1d4ed8;}
+.t-multi{background:#fce7f3;color:#be185d;}
+.t-judge{background:#fef3c7;color:#b45309;}
+.t-match{background:#ede9fe;color:#6d28d9;}
+.t-short{background:#d1fae5;color:#047857;}
+.q-chap{font-size:12px;color:var(--muted);}
+.q-pts{font-size:12px;color:var(--muted);margin-left:auto;}
+.q-text{font-size:15.5px;font-weight:600;margin-bottom:14px;white-space:pre-wrap;}
+.opts{display:flex;flex-direction:column;gap:8px;}
+.opt{display:flex;gap:10px;align-items:flex-start;border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;cursor:pointer;transition:.12s;font-size:14.5px;background:#fff;}
+.opt:hover{border-color:var(--primary);background:#f8faff;}
+.opt.sel{border-color:var(--primary);background:#eff6ff;}
+.opt .k{font-weight:700;color:var(--primary);flex-shrink:0;}
+.opt.ok{border-color:var(--success);background:var(--correct);}
+.opt.ok .k{color:var(--success);}
+.opt.bad{border-color:var(--danger);background:var(--wrong);}
+.opt.bad .k{color:var(--danger);}
+.opt.lock{cursor:default;}
+/* judge */
+.judge-row{display:flex;gap:10px;}
+.judge-row .opt{flex:1;justify-content:center;font-weight:600;}
+/* match */
+.match-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.match-col h5{font-size:13px;color:var(--muted);margin-bottom:8px;}
+.match-item{border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:8px;font-size:14px;background:#fff;}
+.match-item b{color:var(--primary);}
+.match-item input{width:52px;padding:4px 8px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;text-align:center;font-weight:700;color:var(--primary);}
+.match-item input:focus{outline:none;border-color:var(--primary);}
+.match-item.ok{border-color:var(--success);background:var(--correct);}
+.match-item.bad{border-color:var(--danger);background:var(--wrong);}
+/* short answer */
+.short-ta{width:100%;min-height:150px;border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;font-size:14px;font-family:inherit;resize:vertical;line-height:1.7;}
+.short-ta:focus{outline:none;border-color:var(--primary);}
+.self-grade{margin-top:12px;display:none;align-items:center;gap:10px;background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:12px 14px;font-size:14px;flex-wrap:wrap;}
+.self-grade.show{display:flex;}
+.self-grade select{padding:6px 10px;border-radius:8px;border:1.5px solid var(--border);font-size:14px;}
+/* explain */
+.explain{display:none;margin-top:14px;border-radius:10px;padding:12px 16px;font-size:13.5px;border-left:4px solid var(--primary);background:#f8fafc;}
+.explain.show{display:block;}
+.explain .ans-line{font-weight:700;margin-bottom:6px;}
+.explain.ok{border-left-color:var(--success);background:var(--correct);}
+.explain.bad{border-left-color:var(--danger);background:var(--wrong);}
+.explain .src{color:var(--muted);margin-top:6px;font-size:13px;}
+/* result panel */
+.result-panel{display:none;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:20px;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.06);}
+.result-panel.show{display:block;}
+.score-big{font-size:52px;font-weight:800;color:var(--primary);margin:6px 0;}
+.score-sub{color:var(--muted);font-size:14px;margin-bottom:14px;}
+.stat-row{display:flex;justify-content:center;gap:26px;flex-wrap:wrap;margin:14px 0;}
+.stat-row div{font-size:13px;color:var(--muted);}
+.stat-row b{display:block;font-size:22px;color:var(--text);}
+.footer-note{text-align:center;color:var(--muted);font-size:12px;margin-top:30px;}
+@media(max-width:640px){.match-grid{grid-template-columns:1fr;}.header h1{font-size:20px;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <h1>大数据模拟卷二 · 微盛实践 · 研发岗管培生</h1>
+    <div class="sub">侧重第二章《微盛大数据实践》：四类需求 / 五种口径 / 对账验收 / 链路边界 / 证据链与 AI Native · 考"场景辨析"，不考概念默写</div>
+    <div class="meta">
+      <span>方向：大数据</span>
+      <span>时长：40 分钟</span>
+      <span>题数：20 题 · 总分 80 分</span>
+      <span>题型：单选 12 · 多选 6 · 简答 2</span>
+    </div>
+  </div>
+
+  <div class="notice">
+    <h3>考试说明</h3>
+    <ul>
+      <li>本卷为<b>模拟卷二（微盛实践专项）</b>，重点考查场景应用判断：给业务需求判断类型与口径，给对账数据判断验收是否通过。</li>
+      <li><b>单选 12 题 × 3 分</b>；<b>多选 6 题 × 4 分</b>（全对得 4 分，<b>漏选得 1 分，错选不得分</b>）；<b>简答 2 题 × 10 分</b>（提交后对照参考答案自评给分）。</li>
+      <li>点击下方答题卡格子可快速跳转到对应题目；已作答题目会高亮。</li>
+      <li>全部作答完后点击「提交判分」，系统自动评分并展示每题解析（含答案解析与出题原因）；简答题需按参考要点自行评分并计入总分。</li>
+    </ul>
+  </div>
+
+  <div class="sticky">
+    <div class="sticky-inner">
+      <div class="info">已答 <b id="doneCnt">0</b> / 20</div>
+      <div class="info">用时 <span class="timer" id="timer">00:00</span></div>
+      <div class="spacer"></div>
+      <button class="btn btn-primary" id="submitBtn" onclick="submitExam()">提交判分</button>
+    </div>
+  </div>
+
+  <div class="sheet">
+    <h4>答题卡（点击跳转）</h4>
+    <div class="sheet-grid" id="sheetGrid"></div>
+  </div>
+
+  <div class="result-panel" id="resultPanel">
+    <h2 id="resTitle"></h2>
+    <div class="score-big" id="resScore">0</div>
+    <div class="score-sub" id="resSub"></div>
+    <div class="stat-row" id="resStat"></div>
+    <button class="btn btn-ghost" onclick="location.reload()">重新作答</button>
+  </div>
+
+  <div id="quizArea"></div>
+
+  <div class="footer-note">大数据模拟卷二 · 微盛实践 · 研发岗管培生 · 出题依据：大数据培训 01/02/03 三讲知识库 · 每题解析附答案解析与出题原因</div>
+</div>
+
+<script>
+const EXAM_TITLE = "大数据模拟卷二 · 微盛实践 · 研发岗管培生";
+
+const questions = [
+// ================= 单选 12 题 × 3分 =================
+{ id:1, type:"single", chap:"微盛实践·需求分类", points:3,
+  q:"运营同学提需求：“我要按客户所属行业看员工触达客户之后的效果（打开率、回复率），用来优化触达策略。”数据同学说：“这个最终会做成一张报表页面，所以按统计报表处理就行。”这个判断错在哪？",
+  opts:[
+    {k:"A",t:"没错，四类需求本来就是按最终呈现形式划分的，做成报表就是统计报表"},
+    {k:"B",t:"错了，该需求的业务目的是指导运营决策，应归为运营分析，不能按呈现形式归类"},
+    {k:"C",t:"错了，凡涉及打开率、回复率等比率指标的需求一律归为 AI 分析"},
+    {k:"D",t:"错了，运营同学提的需求一律归为客户交付，因为最终服务对象是业务方"}
+  ],
+  answer:["B"],
+  explain:"答案解析：知识库（02）考点应用明确：「运营同学要‘按客户所属行业看员工触达客户后的效果，优化触达策略’——属于运营分析；‘因为最终展示成报表就算统计报表’是错的——分类看需求本质（指导运营决策），不看最终呈现形式」。运营分析的典型场景正是「运营看板、客户列表、员工行为分析、客户触达效果」。A 正是培训点名的高频错误归类法；C 的“比率指标→AI 分析”毫无依据；D 把“业务方提需求”偷换成“客户交付”，客户交付指的是私有化迁移、定制报表、历史核查这类对外交付场景。<br><br>📌 出题原因：考察四类需求按业务目的（而非呈现形式）归类的能力——这是知识库明确标注的高频易错点，归类错会导致整个需求处理流程（口径定义、验收方式）走偏。"
+},
+{ id:2, type:"single", chap:"微盛实践·需求分类", points:3,
+  q:"需求单上写着：“每月自动跑一遍客户全量会话内容，输出客户抱怨点、痛痒爽分类和话题聚类，供产品月报引用。”按四类需求归类，这属于：",
+  opts:[
+    {k:"A",t:"统计报表类，因为它按月定时产出，和员工标签日统计一个性质"},
+    {k:"B",t:"运营分析类，因为产出的结论要给产品团队看、指导运营动作"},
+    {k:"C",t:"AI 分析类，对应 vivo VOC 月报、痛痒爽分析、话题洞察这类场景"},
+    {k:"D",t:"客户交付类，因为月报最终会呈现给客户，属于对外交付物"}
+  ],
+  answer:["C"],
+  explain:"答案解析：题干“抱怨点、痛痒爽分类、话题聚类”是知识库（02）AI 分析典型场景的原词：「vivo VOC 月报、痛痒爽分析、智能质检、话题洞察」——需要对会话内容做语义理解与聚类，是 AI 分析的标志。A 的干扰点“按月定时产出”是统计报表的形式特征，但归类不看产出节奏看业务本质（同“呈现形式”陷阱）；B 把“给产品团队看”偷换成运营分析；D 把“给客户看的月报”偷换成客户交付，客户交付指的是私有化迁移、历史核查、问数解释等场景。<br><br>📌 出题原因：考察在“定时产出 + 报表形式”的包装下识别 AI 分析需求的能力——AI 分析对证据链要求最高，误归为统计报表会导致后续验收标准完全用错。"
+},
+{ id:3, type:"single", chap:"微盛实践·口径", points:3,
+  q:"“按部门统计员工给客户打标签的数量”这个需求，数据团队对比了五种候选口径后最终采用了某一个。最终采用的是哪个、为什么？",
+  opts:[
+    {k:"A",t:"请求数，因为请求是系统层面最原始的记录，不存在口径歧义"},
+    {k:"B",t:"去重客户数，因为业务方最常引用客户数，最容易向老板解释"},
+    {k:"C",t:"成功新增标签事件数，因为它最贴近“员工打标签”这个动作本身"},
+    {k:"D",t:"去重标签数，因为标签体系的健康度比动作次数更有管理意义"}
+  ],
+  answer:["C"],
+  explain:"答案解析：知识库（02）口径表明确：「成功新增标签事件数——最贴近‘员工打标签’这个动作，最终采用」。A 是本题最强干扰：请求数恰恰因为「一个请求可能包含多个标签动作」而不能等同动作次数；B 的去重客户数回答的是「多少客户被打过标签」而非动作次数；D 的去重标签数回答的是「用了多少种标签」。口径选择的标准不是“好不好解释”或“哪个更常用”，而是哪个真正回答了业务问题。<br><br>📌 出题原因：考察“最终采用哪个口径及其判断标准”。五种口径的辨析是 02 讲核心考点，记住结论之外更要记住理由——用业务动作本身（成功新增事件）而非载体（请求/客户/标签）计数。"
+},
+{ id:4, type:"single", chap:"微盛实践·对账", points:3,
+  q:"标签统计任务的验收报告里写着三个数：90、6、0。结合上下游对账的做法，这组数字的含义是：",
+  opts:[
+    {k:"A",t:"DWD 有 90 个事件行，ADS 汇总成 6 行，目标粒度重复为 0，且 6 行指标合计等于 90"},
+    {k:"B",t:"业务提了 90 条需求，上线了 6 张报表，线上投诉工单为 0 个"},
+    {k:"C",t:"上游采集成功率 90%，下游任务成功率 6 成，数据丢失率为 0"},
+    {k:"D",t:"ODS 存 90 行原始数据，DWS 汇总成 6 个主题，空部门统计行为 0"}
+  ],
+  answer:["A"],
+  explain:"答案解析：知识库（02）对账验收表：「DWD 事件行 90——完整日的事件级明细；ADS 汇总行 6——按统计日、租户、部门汇总后的行数；粒度重复 0——目标粒度重复为 0，空部门为 0；验证逻辑：6 行 ADS 指标合计 = 上游 90 个成功新增标签事件」。B、C 编造了不存在的业务指标；D 是层位错配——原始 90 行是 DWD 事实明细而非 ODS 原貌层，6 行汇总落在 ADS 而非 DWS（该实例中 ADS 直接面向页面消费）。<br><br>📌 出题原因：考察 90-6-0 对账公式的准确含义——这是“目标表有数据不算通过，关键是明细和汇总对得上”的具体载体，把 90/6/0 记错层位或记成别的指标，对账验收就形同虚设。"
+},
+{ id:5, type:"single", chap:"微盛实践·链路边界", points:3,
+  q:"现有链路包括：数据来源 → 采集同步 → 数仓分层 → 分析引擎 → 平台自动化 → 业务消费。运营要临时看“某员工近半年所有会话明细”并按时间、客户多维切片，这个查询压力应由谁承担？",
+  opts:[
+    {k:"A",t:"数仓分层环节，因为明细数据是分层加工出来的，查询也应留在分层内"},
+    {k:"B",t:"分析引擎（如 Doris），它负责明细随时查询和灵活多维分析"},
+    {k:"C",t:"采集同步环节，因为它最贴近业务库原始数据，查最新的也最快"},
+    {k:"D",t:"平台自动化环节，因为调度系统掌握全部任务可以直接下查数据"}
+  ],
+  answer:["B"],
+  explain:"答案解析：知识库（02）链路职责边界表：「分析引擎——承担明细查询/多维分析（如 Doris）；平台自动化——调度、任务、补跑、告警」。题干“随时查 + 多维切片”正是 OLAP 分析引擎的定义场景。A 混淆了“加工”与“消费”——数仓分层负责逐层加工，查询消费由分析引擎承接；C 的采集同步职责是把业务库数据抽到数仓 ODS，不服务查询；D 的平台自动化做调度运维，不是查询入口。<br><br>📌 出题原因：考察链路六环节职责不能混在一起讲的落地判断——知道“数据从哪来、在哪儿加工、在哪儿查、谁调度”，才能判断一个需求该把压力落到哪个环节。"
+},
+{ id:6, type:"single", chap:"微盛实践·分层", points:3,
+  q:"标签统计任务上线后，数据团队需要向业务证明“汇总数没错”。他们把 90 个事件明细存在 DWD、把按统计日+租户+部门聚合的 6 行存在 ADS。这个设计直接体现了：",
+  opts:[
+    {k:"A",t:"DWD 明细可数、可对账，ADS 汇总可由明细推出，每一步都能复核"},
+    {k:"B",t:"ADS 存明细、DWD 存汇总，两层互为备份从而实现容灾"},
+    {k:"C",t:"明细与汇总分两层存储，主要目的是把存储成本压缩到最低"},
+    {k:"D",t:"DWD 负责面向页面交付，ADS 负责沉淀公共统计供多报表复用"}
+  ],
+  answer:["A"],
+  explain:"答案解析：知识库（01/02）：「DWD 存 90 个事件行（事实明细），ADS 存 6 行汇总（按统计日、租户、部门），验证时 6 行 ADS 指标合计 = 90 个上游事件——这就是‘每一步能复核’的具体样子」。B 把两层的分工说反了；C 的“压缩存储成本”与分层目的相悖（分层反而多存冗余）；D 把 ADS 与 DWS 的职责对调错配。核心是：明细在 DWD 可数可对账，汇总在 ADS 可由明细推出，上下游对账成立。<br><br>📌 出题原因：考察“分层如何支撑对账复核”的理解——90 行/6 行是贯穿 01、02 两讲的标志性实例，理解它就同时理解了分层职责和验收逻辑。"
+},
+{ id:7, type:"single", chap:"微盛实践·证据链", points:3,
+  q:"客户在月度汇报上当场质疑 AI 分析报告的一个结论。按“智能分析必须带证据链”的要求，下列哪组材料能真正支撑客户复核这个结论？",
+  opts:[
+    {k:"A",t:"结论的文字表述，再配一组排版精美的可视化图表增强说服力"},
+    {k:"B",t:"统计口径与样本范围、支撑结论的会话原文片段、模型与提示词批次、运行记录和复核入口"},
+    {k:"C",t:"模型给出的置信度分数，以及模型参数量等规模指标证明能力"},
+    {k:"D",t:"报告的生成日期、撰写人署名和内部评审通过的截图记录"}
+  ],
+  answer:["B"],
+  explain:"答案解析：知识库（03）证据链六要素：指标引用（统计口径、样本范围、占比和明细数）、原文证据（会话片段和样本）、模型批次（模型、提示词、任务批次和版本）、质量校验、运行记录（任务日志、重试、异常和人工修正）、复核入口（用户追问时能回看数据和原文）——B 命中其中五项。A 正是原文警惕的「没有证据链的 AI 结论，越流畅越容易让人放松警惕」；C 的技术参数不构成业务证据；D 的署名和评审记录与数据来源无关。<br><br>📌 出题原因：考察证据链要素的实战运用——客户问数是“结果追不回”痛点的直接爆发场景，能否拿出 B 这组材料是数据可信度的试金石。"
+},
+{ id:8, type:"single", chap:"微盛实践·AI Native", points:3,
+  q:"AI Native 受控开发流程中，评审同学发现某 AI 生成的方案有这样一步：“AI 凭记忆里的表结构直接选了客户表写 SQL，没有查看字段注释、DDL 和已有调度任务。”这一步违反了流程中的哪个要求？",
+  opts:[
+    {k:"A",t:"识别需求：自然语言需求应先拆业务实体、指标、粒度和窗口"},
+    {k:"B",t:"探查候选表：要看字段、注释、DDL、已有 SQL、调度和样例数据，不凭记忆选表"},
+    {k:"C",t:"生成设计：应输出血缘、任务 DAG、幂等和校验规则等设计文档"},
+    {k:"D",t:"人工审批：生产发布必须由人审批，不由 AI 绕过边界"}
+  ],
+  answer:["B"],
+  explain:"答案解析：知识库（03）六步流程第 2 步「探查候选表：看字段、注释、DDL、已有 SQL、调度和样例数据——不凭记忆选表」，题干“凭记忆选表、不看 DDL”正违反此步（同款陷阱见 03 讲“AI 记住所有历史表结构不用查 DDL——恰好违反探查候选表的要求”）。A、C、D 都是流程中的真实步骤，但题干问题发生在选表环节，与需求拆解、设计产出、审批边界均不对应。<br><br>📌 出题原因：考察 AI Native 六步流程的逐步落地判断——不背流程名词，而是给一个违规操作定位它违反了哪一步，这是 Review 岗位真实的日常工作。"
+},
+{ id:9, type:"single", chap:"微盛实践·harness", points:3,
+  q:"团队引入 harness（受控开发流水线）后，把需求原文、口径方案、任务设计、执行计划和 run-log 都记录成可交接的工作项。按培训观点，这样做的核心价值是：",
+  opts:[
+    {k:"A",t:"替人完成业务判断，让系统自动决定该用哪个口径和哪张表"},
+    {k:"B",t:"降低漏项、口径漂移和交接成本，判断过程本身被留下来可交接"},
+    {k:"C",t:"提高 SQL 的生成速度，让需求从接收到上线的时间缩短十倍"},
+    {k:"D",t:"减少表和任务的数量，把重复报表合并成一张万能报表"}
+  ],
+  answer:["B"],
+  explain:"答案解析：知识库（02）：「harness 不是替人做业务判断，而是把需求、证据、任务设计和 gate 记录成可交接的工作项」，价值是「降低漏项、口径漂移和交接成本」。A 与原文第一句直接相反——它不替人做业务判断；C 的“写得快”不是重点，02 讲收束语「重点不是写得快，而是说得清、查得到、跑得稳」；D 无中生有，harness 是记录与流程载体而非报表合并工具。<br><br>📌 出题原因：考察对 harness 定位的准确理解——最典型的误读就是把它当成“自动决策工具”（A 陷阱）。它是把判断过程留痕、支撑受控开发的基础设施。"
+},
+{ id:10, type:"single", chap:"微盛实践·口径", points:3,
+  q:"数据同学没和业务对口径，直接按“客户-标签组合数”实现了“打标签数量”并上线。业务方看完说数字偏小：员工给同一客户反复打同一个标签多次，只被算了一次。这事件的核心教训是：",
+  opts:[
+    {k:"A",t:"客户-标签组合数这个口径本身就是错的，以后全公司禁用"},
+    {k:"B",t:"SQL 引擎精度有问题，应该换更快的计算引擎重跑一遍"},
+    {k:"C",t:"同一需求存在多种算法，组合数会合并真实多次动作，动手前必须先对齐口径"},
+    {k:"D",t:"上线太仓促，应该先跑起来给业务看，让业务自己挑顺眼的数字"}
+  ],
+  answer:["C"],
+  explain:"答案解析：知识库（02）口径表：「客户-标签组合数——会合并真实的多次动作」；且「一句需求不能直接写 SQL……必须先定口径」「口径没有对错，只有是否回答了业务问题」。本题业务方要的是动作次数（应采用成功新增标签事件数），组合数回答的是另一个问题。A 错在把“没回答这个业务问题”当成“口径本身错”；B 与引擎无关，数字逻辑就错了；D 是“先跑再改”的错误做法，知识库判断题明确否定——口径不先对齐只会反复返工。<br><br>📌 出题原因：考察把“五种口径各有回答的问题”运用到事故归因——业务说“数字不对”时，第一反应应是口径错配而非技术故障，这是数据同学最值钱的条件反射。"
+},
+{ id:11, type:"single", chap:"微盛实践·需求分类", points:3,
+  q:"实施同学接到工作单：帮某客户把历史两年的经营数据从旧环境迁到私有化环境，迁完后客户对其中一个月的新增客户数不认可，要求逐笔回查当时的来源和算法。按四类需求归类，这张工作单属于：",
+  opts:[
+    {k:"A",t:"统计报表类，因为回查要重跑大量统计 SQL，本质是补算报表"},
+    {k:"B",t:"运营分析类，因为客户要基于这些数据做后续的经营决策"},
+    {k:"C",t:"客户交付类，对应私有化数据迁移、历史核查、问数解释等场景"},
+    {k:"D",t:"AI 分析类，因为逐笔回查需要智能化手段才能核对两年数据"}
+  ],
+  answer:["C"],
+  explain:"答案解析：题干两个动作“私有化迁移 + 历史数字回查”分别对应知识库（02）客户交付典型场景的「私有化数据迁移」和「历史核查」，客户不认可数字还涉及「问数解释」——它直接对应 01 讲“结果追不回”痛点（客户问数必须能回查）。A 的干扰点“要重跑 SQL”是手段不是目的，归类看业务本质不看技术动作；B 把客户“以后会用”偷换成运营分析；D 无中生有，题干没有任何模型分析诉求。<br><br>📌 出题原因：考察客户交付类需求的识别，尤其是“历史核查”这种披着统计外衣的场景——这类需求的验收标准是“能回查、能解释”，误归为统计报表会用错整条处理链路。"
+},
+{ id:12, type:"single", chap:"微盛实践·收束", points:3,
+  q:"微盛大数据实践的重点被概括为“说得清、查得到、跑得稳”。其中“用上下游对账证明明细和汇总对得上（6 行 ADS 合计 = 90 个上游事件）”这一验收动作，最直接体现的是：",
+  opts:[
+    {k:"A",t:"说得清：把业务话翻译成可验证的数据话，口径人人都懂"},
+    {k:"B",t:"查得到：数字可回溯到明细与来源，证明过程经得起下钻复核"},
+    {k:"C",t:"跑得稳：任务按时产出不延迟，调度失败能自动补跑"},
+    {k:"D",t:"写得快：SQL 开发效率高，需求从接收到上线周期短"}
+  ],
+  answer:["B"],
+  explain:"答案解析：知识库（02）背景补充明确：「对账=内部一致性校验（汇总可由明细推出）……两者合成‘可证明的正确’，是‘说得清、查得到、跑得稳’中‘查得到’的落点」。A 的“说得清”落点在口径翻译；C 的“跑得稳”落点在任务调度与产出稳定性；D 的“写得快”被收束语明确否定（「重点不是写得快」）。对账的动作本质是“可回溯、可下钻复核”。<br><br>📌 出题原因：考察三个关键词与具体工作动作的对应关系——知道对账体现“查得到”，才能理解为什么“目标表有数据不算通过”，而不是把对账当成例行公事。"
+},
+// ================= 多选 6 题 × 4分 =================
+{ id:13, type:"multi", chap:"微盛实践·需求分类", points:4,
+  q:"【多选】按四类需求归类，下列说法正确的有：（漏选得 1 分，错选不得分）",
+  opts:[
+    {k:"A",t:"员工标签统计、商机明细日统计、部门排行属于统计报表类"},
+    {k:"B",t:"智能质检、话题洞察、vivo VOC 月报属于 AI 分析类"},
+    {k:"C",t:"客户对某个数字不认可、要求解释来源，属于客户交付里的“问数解释”"},
+    {k:"D",t:"运营看板因为长得像报表页面，所以应归入统计报表类而非运营分析类"}
+  ],
+  answer:["A","B","C"],
+  explain:"答案解析：A、B、C 与知识库（02）四类需求表逐条一致：统计报表——「员工标签统计、新增好友与会话统计、商机明细日统计、部门排行」；AI 分析——「vivo VOC 月报、痛痒爽分析、智能质检、话题洞察」；客户交付——「私有化数据迁移、客户定制报表、历史核查、问数解释」。D 是“按呈现形式分类”的典型错误：运营看板是运营分析的典型场景（「运营看板、客户列表、员工行为分析、客户触达效果」），归类看业务目的不看长得像什么。<br><br>📌 出题原因：考察四类需求典型场景的批量辨析，并复现“呈现形式陷阱”（D）——多选错选不得分，D 这类听着有道理的归类错误是最大失分点。"
+},
+{ id:14, type:"multi", chap:"微盛实践·口径", points:4,
+  q:"【多选】关于“打标签数量”五种候选口径各自回答的问题，下列说法正确的有：（漏选得 1 分，错选不得分）",
+  opts:[
+    {k:"A",t:"去重客户数回答的是“多少客户被打过标签”，不是动作次数"},
+    {k:"B",t:"去重标签数回答的是“用了多少种标签”，和客户数无关"},
+    {k:"C",t:"客户-标签组合数会合并真实的多次动作，同一客户同一标签打多次只算一次"},
+    {k:"D",t:"请求数与打标签动作数一一对应，一个请求有且只有一个标签动作"}
+  ],
+  answer:["A","B","C"],
+  explain:"答案解析：A、B、C 与知识库（02）口径判断表逐字对应。D 是本题核心陷阱：「请求数——一个请求可能包含多个标签动作」，正因为它与动作数不是一一对应，最终采用的才是「成功新增标签事件数」。“一一对应”听着符合直觉（一次请求打一个标），但批量打标签场景一个请求会带多个标签动作，必须懂这个细节才能排除。<br><br>📌 出题原因：考察五种口径的语义边界，重点检验“请求数≠动作数”这一最隐蔽的陷阱——知识库专门标注该口径“一个请求可能包含多个标签动作”，实际口径评审中这是高频误判点。"
+},
+{ id:15, type:"multi", chap:"微盛实践·口径", points:4,
+  q:"【多选】关于口径选择的原则，下列说法符合培训观点的有：（漏选得 1 分，错选不得分）",
+  opts:[
+    {k:"A",t:"最终采用“成功新增标签事件数”，因为它最贴近“员工打标签”这个动作"},
+    {k:"B",t:"口径没有绝对对错，只有是否回答了业务方真正想问的问题"},
+    {k:"C",t:"不先对齐口径会反复返工，所以一句需求不能直接动手写 SQL"},
+    {k:"D",t:"口径拿不准时可以先按自己理解上线，反正业务反馈后改口径很快"}
+  ],
+  answer:["A","B","C"],
+  explain:"答案解析：A 对应「成功新增标签事件数：最贴近‘员工打标签’这个动作，最终采用」；B 对应「口径没有对错，只有是否回答了业务问题」；C 对应「一句需求不能直接写 SQL……必须先定口径」及 01 讲「不先对齐就会反复返工」。D 是知识库明确否定的判断题原陷阱：「口径可以先按自己理解写 SQL 跑起来、不对再改——错」，改口径意味着下游汇总、报表、已交付数字全部重算，返工代价极高。<br><br>📌 出题原因：考察口径先行的原则性理解。D 代表“迭代很快所以先跑再说”的常见侥幸心理，与培训“先定口径再动手”的纪律直接冲突——这是新手最易犯、代价最大的错误。"
+},
+{ id:16, type:"multi", chap:"微盛实践·成套出现", points:4,
+  q:"【多选】培训强调微盛实践中有一组动作“必须成套出现，不能只做其中一两件”。下列哪些属于这组必须成套出现的动作？（漏选得 1 分，错选不得分）",
+  opts:[
+    {k:"A",t:"口径：先把业务话翻译成双方确认的数据话"},
+    {k:"B",t:"幂等与验证：任务可重跑，且用上下游对账证明明细和汇总对得上"},
+    {k:"C",t:"选表与分层：选对来源表，数据落在正确的数仓层"},
+    {k:"D",t:"报表美化：统一字体、配色和图表风格，提升页面观感"}
+  ],
+  answer:["A","B","C"],
+  explain:"答案解析：知识库（02）收束语原文：「口径、选表、分层、幂等、验证和 Review 风险必须成套出现（不能只做其中一两件）」。A、B、C 分别覆盖口径、幂等+验证、选表+分层。D 是跨章凑数干扰项——报表视觉风格在 01 讲痛点辨析中已被用作“不属于数据层面问题”的反例，自然也不属于这组成套动作。<br><br>📌 出题原因：考察“成套出现”清单的准确记忆与运用。只做口径不做验证、或只做分层不做幂等，都会在“说得清、查得到、跑得稳”上留短板——D 这类干扰训练的是把数据动作和视觉动作分开的敏感度。"
+},
+{ id:17, type:"multi", chap:"微盛实践·链路边界", points:4,
+  q:"【多选】关于现有链路各环节的职责边界（数据来源→采集同步→数仓分层→分析引擎→平台自动化→业务消费），下列说法正确的有：（漏选得 1 分，错选不得分）",
+  opts:[
+    {k:"A",t:"采集同步的职责是把业务库数据抽到数仓 ODS，对接数据来源与数仓"},
+    {k:"B",t:"平台自动化负责调度、任务、补跑、告警，保障链路跑得稳"},
+    {k:"C",t:"分析引擎承担明细查询和多维分析，供业务侧灵活取数"},
+    {k:"D",t:"数仓分层的职责是把业务库数据抽取到 ODS，代替采集同步环节"}
+  ],
+  answer:["A","B","C"],
+  explain:"答案解析：A、B、C 与知识库（02）链路职责表逐条对应：采集同步「把业务库数据抽到数仓 ODS」；平台自动化「调度、任务、补跑、告警」；分析引擎「承担明细查询/多维分析（如 Doris）」。D 是职责错配干扰：数仓分层的职责是「ODS→DWD→DWS→ADS 逐层加工」，抽取到 ODS 是采集同步环节的事——两环相邻、最易混淆，原文强调这些环节“不能混在一起讲”。<br><br>📌 出题原因：考察相邻环节的职责切分——采集同步与数仓分层是链路上边界最模糊的一对，混在一起讲会导致任务设计时把抽取逻辑写进分层加工、出问题查不清归属。"
+},
+{ id:18, type:"multi", chap:"微盛实践·对账", points:4,
+  q:"【多选】关于标签统计任务的验收标准，下列说法符合“上下游对账”做法的有：（漏选得 1 分，错选不得分）",
+  opts:[
+    {k:"A",t:"目标表有数据、行数不为 0 并不算通过，关键是证明明细和汇总对得上"},
+    {k:"B",t:"目标粒度重复必须为 0，且空部门统计为 0"},
+    {k:"C",t:"6 行 ADS 的指标合计必须等于上游 90 个成功新增标签事件"},
+    {k:"D",t:"业务方看了一眼没提投诉、和上周数字比对波动不大，即可视为通过"}
+  ],
+  answer:["A","B","C"],
+  explain:"答案解析：A 对应原文「目标表有数据不算通过，关键是能证明明细和汇总对得上」；B 对应「目标粒度重复为 0，空部门为 0」——粒度校验保证同一统计日+租户+部门只应有一行，空数据部门不应出现统计行；C 对应验证公式「6 行 ADS 指标合计 = 上游 90 个成功新增标签事件」。D 把两个被原文明确否定的错误验收（“没投诉就算通过”不可验证；“和上周比波动不大”可能一直错且波动小）打包成干扰项。<br><br>📌 出题原因：考察对账验收标准的完整掌握。A/B/C 三条合起来才是“可证明的正确”，D 代表实际工作中最常见的两种敷衍验收——分不清它们，验收就退化为“看一眼没投诉”。"
+},
+// ================= 简答 2 题 × 10分 =================
+{ id:19, type:"short", chap:"微盛实践·对账验收", points:10,
+  q:"【简答·自评】标签统计任务上线次日，你拿到完整日 2026-07-12 的验收数据：(1) DWD 层成功新增标签事件 92 条；(2) ADS 层按统计日+租户+部门汇总出 6 行，6 行指标合计为 88；(3) 粒度重复检查：同一“统计日+租户+部门”组合发现 1 组重复；(4) 6 行中有 1 行的部门字段为空。请判断：本次验收是否通过？逐项说明每项数据是否达标、依据是什么？如果不通过，给出下一步排查动作。",
+  refAnswer:"结论：验收不通过（结论 2 分）。逐项判断（每项 1.5 分，共 6 分）：(1) DWD 92 条事件本身只是上游明细基数，单独不构成通过或失败，但它是 ADS 合计的对账基准；(2) ADS 合计 88 ≠ DWD 92 条事件——违反“6 行 ADS 指标合计 = 上游成功新增标签事件数”的上下游对账公式，不达标；(3) 粒度重复出现 1 组——违反“目标粒度重复为 0”（同一统计日+租户+部门只应有一行），不达标；(4) 出现空部门行——违反“空部门为 0”，不达标。下一步排查（2 分）：按分层逐层下钻定位——回到 DWD 明细核对 92 条事件是否都是“成功新增”且属于该完整日（过滤条件是否错），检查聚合逻辑是否把失败/重复事件错误排除导致合计少 4；检查按部门取值的关联逻辑（部门变更、员工无部门映射）找出空部门来源；修复后按层幂等重跑 ADS，再重新执行对账（合计=基数、粒度重复 0、空部门 0）三件套验收。评分：结论 2 分 + 逐项判断 6 分（每项须含“是否达标+依据”）+ 排查方向 2 分。",
+  explain:"答案解析：依据知识库（02）对账验收表：「验证逻辑：6 行 ADS 指标合计 = 上游 90 个成功新增标签事件（本题上游为 92）」「目标粒度重复为 0，空部门为 0」，以及 01 讲分层收益「问题定位：报表数字错，可逐层下钻找到是哪层引入的错误；重跑：上游修正后可按层幂等重算」。本题三处不达标项分别对应对账公式、粒度唯一性校验、空部门校验三个考点。<br><br>📌 出题原因：考察对账验收的实战判定能力——给一组真实形态的验收数据（有对得上的基数、对不上的合计、重复粒度、空部门），能否逐项套用验收标准并给出下钻排查路径，这是数据任务上线前最后一道关的真实工作。"
+},
+{ id:20, type:"short", chap:"微盛实践·口径设计", points:10,
+  q:"【简答·自答】业务方丢来一句新需求：“统计各部门客户的会话响应时长。”请回答：(1) 为什么这句话不能直接动手写 SQL？(2) 动手前必须先和业务方对齐哪些口径要素？请至少列出 3 个，并针对本需求各给出一句“如果不先定会怎样”的风险说明。",
+  refAnswer:"(1) 不能直接写 SQL 的原因（3 分）：和“打标签数量”一样，这句话存在多种可能算法，不同算法回答的是完全不同的问题——例如“响应时长”可以按首条回复间隔、平均回复间隔或最长等待算；“各部门”可以按客户所属部门、员工所属部门或会话归属部门算。不先对齐口径就会反复返工、口径漂移（02 讲原文：“一句需求不能直接写 SQL……必须先定口径”）。(2) 口径要素（每个要素 2 分＝要素名 1 分＋本需求示例或风险 1 分，至少 3 个、至多 7 分；对照知识库要素框架）：① 业务实体：统计谁——是客户发起的会话还是员工发起的，是否只算客户先发言的会话；② 指标定义：“响应时长”指什么——员工对客户首条消息的首回间隔，还是全部回复的平均间隔，失败/超时会话是否计入；③ 统计粒度：按“部门×统计日×租户”汇总（同标签统计的目标粒度），还是按员工明细；部门取客户所属还是接待员工所属；④ 时间窗口：哪个统计日、完整日边界如何取（凌晨跨天会话算哪天）；⑤ 去重与过滤规则：机器人自动回复算不算响应、会话状态（进行中/已结束）是否过滤、粒度重复为 0、空部门为 0。风险示例（须言之有理）：不先定“部门归属”→ 按员工部门算出的跨部门接待数字与按客户部门算的完全对不上；不先定“首回还是平均”→ 数字量级差数倍，业务质疑后整条链路重算。评分：原因 3 分 + 要素至多 7 分（每个 2 分，答满 3 个即得 6 分，第 4 个起每个 1 分）。",
+  explain:"答案解析：依据 02 讲「一句需求不能直接写 SQL……必须先定口径」及口径要素框架（业务实体、指标定义、统计粒度、时间窗口、去重与过滤规则——与 03 讲“识别需求：自然语言需求先拆业务实体、指标、粒度和窗口”同源）。“会话响应时长”是知识库口径思想在新需求上的迁移：首回间隔/平均间隔、客户部门/员工部门两组歧义都是该需求真实存在的口径分叉。<br><br>📌 出题原因：考察口径翻译方法的迁移能力——不考“背出五种算法”，而是考能否在新需求上独立找出歧义点并拆成可对齐的口径要素，这是接任何数据需求前的第一个动作。"
+}
+];
+
+// ============ state ============
+const state = { answers:{}, shorts:{}, submitted:false };
+const TYPE_NAME = {single:"单选",multi:"多选",judge:"判断",match:"匹配",short:"简答"};
+
+// ============ render ============
+function render(){
+  const area = document.getElementById("quizArea");
+  let html = "";
+  questions.forEach(q=>{
+    html += `<div class="q-card" id="q${q.id}">`;
+    html += `<div class="q-head"><span class="q-num">${q.id}</span><span class="q-type t-${q.type}">${TYPE_NAME[q.type]}</span><span class="q-chap">${q.chap}</span><span class="q-pts">${q.points} 分</span></div>`;
+    html += `<div class="q-text">${q.q}</div>`;
+    if(q.type==="single"||q.type==="multi"||q.type==="judge"){
+      const multi = q.type==="multi";
+      html += `<div class="${q.type==='judge'?'judge-row':'opts'}">`;
+      q.opts.forEach(o=>{
+        html += `<div class="opt" data-q="${q.id}" data-k="${o.k}" onclick="pick(${q.id},'${o.k}',${multi})"><span class="k">${o.k}</span><span>${o.t}</span></div>`;
+      });
+      html += `</div>`;
+    } else if(q.type==="short"){
+      html += `<textarea class="short-ta" id="shortTa_${q.id}" placeholder="在此作答……" oninput="state.shorts[${q.id}]=this.value;updateSheet()"></textarea>`;
+      html += `<div class="self-grade" id="selfGrade_${q.id}"><span>对照参考答案，自评给分：</span><select id="selfScore_${q.id}" onchange="applySelf(${q.id})"><option value="">选择分数</option>`;
+      for(let i=0;i<=q.points;i++) html += `<option value="${i}">${i} 分</option>`;
+      html += `</select><span id="selfTotal_${q.id}" style="font-weight:700;color:var(--warn)"></span></div>`;
+    }
+    html += `<div class="explain" id="ex${q.id}"></div>`;
+    html += `</div>`;
+  });
+  area.innerHTML = html;
+  renderSheet();
+}
+
+function renderSheet(){
+  const grid = document.getElementById("sheetGrid");
+  grid.innerHTML = questions.map(q=>`<div class="sheet-item" id="sh${q.id}" onclick="document.getElementById('q${q.id}').scrollIntoView({behavior:'smooth',block:'center'})">${q.id}</div>`).join("");
+  updateSheet();
+}
+
+function isDone(q){
+  if(q.type==="single"||q.type==="multi"||q.type==="judge") return !!(state.answers[q.id]&&state.answers[q.id].length);
+  if(q.type==="match") return q.matchLeft.every((m,i)=>state.match[q.id+"_"+i]);
+  if(q.type==="short") return (state.shorts[q.id]||"").trim().length>0;
+  return false;
+}
+function updateSheet(){
+  let done=0;
+  questions.forEach(q=>{
+    const el=document.getElementById("sh"+q.id);
+    if(el) el.className="sheet-item"+(isDone(q)?" done":"");
+    if(isDone(q)) done++;
+  });
+  document.getElementById("doneCnt").textContent=done;
+}
+
+function pick(id,k,multi){
+  if(state.submitted) return;
+  if(!state.answers[id]) state.answers[id]=[];
+  const arr=state.answers[id];
+  const i=arr.indexOf(k);
+  if(multi){ i>=0?arr.splice(i,1):arr.push(k); }
+  else { arr.length=0; arr.push(k); }
+  document.querySelectorAll(`.opt[data-q="${id}"]`).forEach(o=>o.classList.toggle("sel",arr.includes(o.dataset.k)));
+  updateSheet();
+}
+
+// ============ grading ============
+function gradeQ(q){
+  if(q.type==="single"||q.type==="judge"){
+    const a=(state.answers[q.id]||[])[0];
+    return {score: a===q.answer[0]?q.points:0, correct: a===q.answer[0], user:a??"未作答"};
+  }
+  if(q.type==="multi"){
+    const sel=(state.answers[q.id]||[]).slice().sort();
+    const ok=sel.join("")===q.answer.slice().sort().join("");
+    let score=0;
+    if(ok) score=q.points;
+    else if(sel.length>0 && sel.every(k=>q.answer.includes(k))) score=1; // 漏选得1分
+    return {score, correct:ok, partial:!ok&&score>0, user:sel.join("")||"未作答"};
+  }
+  return {score:0, correct:null, user:"自评"};
+}
+
+function submitExam(){
+  const unanswered = questions.filter(q=>!isDone(q)).length;
+  if(!state.submitted && unanswered>0 && !confirm(`还有 ${unanswered} 题未作答，确定提交判分吗？`)) return;
+  state.submitted=true;
+  document.getElementById("submitBtn").disabled=true;
+
+  let auto=0, autoFull=0, autoQ=0, correctCnt=0;
+  questions.forEach(q=>{
+    const g=gradeQ(q);
+    if(q.type!=="short"){
+      auto+=g.score; autoQ++;
+      if(g.correct) correctCnt++;
+      if(g.score===q.points) autoFull++;
+    }
+    showExplain(q,g);
+  });
+
+  const panel=document.getElementById("resultPanel");
+  const autoTotal = questions.filter(q=>q.type!=="short").reduce((s,q)=>s+q.points,0);
+  const shortQs = questions.filter(q=>q.type==="short");
+  const shortPts = shortQs.reduce((s,q)=>s+q.points,0);
+  const TOTAL = questions.reduce((s,q)=>s+q.points,0);
+  const saveBtn = `<button class="btn btn-primary" style="margin-left:12px" onclick="applySelfAll(${auto},${TOTAL})">已自评简答，计入总分</button>`;
+  document.getElementById("resTitle").textContent = auto>=autoTotal*0.8?"成绩不错！":"已提交判分";
+  document.getElementById("resScore").textContent = `${auto} / ${TOTAL}`;
+  document.getElementById("resSub").innerHTML = `客观题（单选/多选）自动判分：<b>${auto} / ${autoTotal}</b>；简答 ${shortQs.length} 题（题 ${shortQs.map(q=>q.id).join("、")}）共 ${shortPts} 分，请对照参考答案逐题自评后点击下方按钮计入总分。${saveBtn}`;
+  document.getElementById("resStat").innerHTML = `<div><b>${correctCnt}/${autoQ}</b>客观题全对</div><div><b>${autoFull}/${autoQ}</b>拿满分</div><div><b>${TOTAL}</b>卷面总分</div>`;
+  panel.classList.add("show");
+  panel.scrollIntoView({behavior:"smooth"});
+
+  // reveal all short self-grade panels
+  document.querySelectorAll(".self-grade").forEach(e=>e.classList.add("show"));
+  // lock inputs
+  document.querySelectorAll(".opt").forEach(o=>o.classList.add("lock"));
+  updateSheetAfter(auto);
+  window._autoScore = auto; window._totalScore = TOTAL;
+}
+
+function applySelfAll(auto,total){
+  let self=0;
+  questions.filter(q=>q.type==="short").forEach(q=>{
+    const v=document.getElementById("selfScore_"+q.id).value;
+    if(v) self+=Number(v);
+  });
+  const fin = auto + self;
+  document.getElementById("resScore").textContent = `${fin} / ${total}`;
+  document.getElementById("resSub").innerHTML = `客观题 ${auto} 分 + 简答自评合计 ${self} 分 = 最终得分 <b>${fin} / ${total}</b>。`;
+  questions.filter(q=>q.type==="short").forEach(q=>{
+    document.getElementById("selfTotal_"+q.id).textContent = `已计入`;
+  });
+}
+function applySelf(id){
+  const v=Number(document.getElementById("selfScore_"+id).value||0);
+  document.getElementById("selfTotal_"+id).textContent = `自评 ${v} 分（点上方按钮计入总分）`;
+}
+
+function showExplain(q,g){
+  const ex=document.getElementById("ex"+q.id);
+  let ansText="";
+  if(q.type==="single"||q.type==="judge") ansText=`正确答案：${q.answer[0]}`;
+  else if(q.type==="multi") ansText=`正确答案：${q.answer.join("")}`;
+  else ansText=`参考答案要点（自评）：`;
+  let extra="";
+  if(q.type==="short") extra=`<div style="margin-top:8px;background:#fff;padding:10px;border-radius:8px;border:1px solid #fde68a"><b>参考答案：</b>${q.refAnswer}</div>`;
+  ex.className="explain show "+(g.correct===true?"ok":g.correct===false?"bad":"");
+  ex.innerHTML=`<div class="ans-line">${ansText}　<span style="color:var(--muted);font-weight:400">（你的作答：${g.user}，本题得 ${g.score} / ${q.points} 分）</span></div>${extra}<div class="src">${q.explain}</div>`;
+  // option coloring for choice questions
+  if(q.type==="single"||q.type==="multi"||q.type==="judge"){
+    document.querySelectorAll(`.opt[data-q="${q.id}"]`).forEach(o=>{
+      o.classList.remove("sel");
+      if(q.answer.includes(o.dataset.k)) o.classList.add("ok");
+      else if((state.answers[q.id]||[]).includes(o.dataset.k)) o.classList.add("bad");
+    });
+  }
+}
+
+function updateSheetAfter(){
+  questions.forEach(q=>{
+    const g=gradeQ(q);
+    const el=document.getElementById("sh"+q.id);
+    if(!el) return;
+    if(g.correct===true) el.className="sheet-item correct";
+    else if(g.correct===false&&g.score>0) el.className="sheet-item partial";
+    else if(g.correct===false) el.className="sheet-item wrong";
+    else el.className="sheet-item pending";
+  });
+}
+
+// ============ timer ============
+let sec=0;
+setInterval(()=>{
+  sec++;
+  const m=String(Math.floor(sec/60)).padStart(2,"0"), s=String(sec%60).padStart(2,"0");
+  document.getElementById("timer").textContent=`${m}:${s}`;
+},1000);
+
+render();
+</script>
+</body>
+</html>

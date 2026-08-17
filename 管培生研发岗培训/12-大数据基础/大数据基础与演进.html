@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第12章 大数据基础与演进 · 学习地图</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Poppins:wght@400;600;700&family=Roboto+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#FAF6EB; --paper:#F3EDDD; --forest:#1E3A24; --sky:#BCD8EE; --sage:#AFCDA8;
+  --ink:#1A2018; --marker:#F5E08A; --brick:#B5482A;
+  --correct:#2F7D46; --wrong:#B5482A;
+  --font-display:"Archivo Black","Noto Sans SC","PingFang SC",sans-serif;
+  --font-head:"Poppins","Noto Sans SC","PingFang SC",sans-serif;
+  --font-body:-apple-system,"PingFang SC","Noto Sans SC",sans-serif;
+  --font-mono:"Roboto Mono","JetBrains Mono",monospace;
+  --radius-pill:999px; --radius-card:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--cream);color:var(--ink);font-family:var(--font-body);line-height:1.7}
+.layout{display:flex;min-height:100vh}
+/* ---- 左侧固定侧边栏 ---- */
+.sidebar{width:280px;flex-shrink:0;background:var(--forest);color:var(--cream);padding:1.6rem 1.3rem;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sidebar .brand{font-family:var(--font-display);font-size:1.05rem;line-height:1.35;color:var(--marker);margin-bottom:.4rem}
+.sidebar .sub{font-size:.78rem;opacity:.75;margin-bottom:1.2rem}
+.progress-wrap{background:rgba(255,255,255,.08);border-radius:var(--radius-pill);padding:.7rem .9rem;margin-bottom:1.2rem}
+.progress-wrap .plabel{font-size:.75rem;letter-spacing:.05em;opacity:.85;margin-bottom:.35rem}
+.pbar{background:rgba(255,255,255,.15);height:8px;border-radius:var(--radius-pill);overflow:hidden}
+#barFill{display:block;height:100%;width:0%;background:var(--marker);border-radius:var(--radius-pill);transition:width .3s}
+#barNum{font-family:var(--font-mono);font-size:.8rem;color:var(--marker)}
+.sidebar nav a{display:block;color:var(--cream);text-decoration:none;font-size:.82rem;padding:.34rem .5rem;border-radius:8px;opacity:.82}
+.sidebar nav a:hover{background:rgba(255,255,255,.12);opacity:1}
+.sidebar .nav-title{font-family:var(--font-head);font-weight:700;font-size:.78rem;letter-spacing:.12em;color:var(--sage);margin:.6rem 0 .3rem}
+/* ---- 主区单列 ---- */
+.main{flex:1;min-width:0;padding:2.2rem clamp(1rem,4vw,3.2rem) 4rem;max-width:860px}
+.hero{border:2px solid var(--forest);border-radius:var(--radius-card);background:var(--paper);padding:1.6rem 1.5rem;margin-bottom:2rem}
+.hero .chip{display:inline-block;background:var(--forest);color:var(--cream);font:600 .72rem/1 var(--font-head);letter-spacing:.1em;padding:.42em .9em;border-radius:var(--radius-pill);margin-bottom:.8rem}
+.hero h1{font-family:var(--font-display);font-size:clamp(1.5rem,4vw,2.2rem);line-height:1.25;margin-bottom:.5rem}
+.hero p{font-size:.95rem}
+.hero .mascot{float:right;width:72px;margin-left:1rem}
+section{margin-bottom:2.4rem}
+.sec-head{display:flex;align-items:baseline;gap:.7rem;border-bottom:2px solid var(--forest);padding-bottom:.5rem;margin-bottom:1.1rem}
+.sec-id{font-family:var(--font-mono);font-weight:600;font-size:.78rem;background:var(--sky);color:var(--forest);padding:.2em .6em;border-radius:var(--radius-pill)}
+.sec-head h2{font-family:var(--font-head);font-weight:700;font-size:1.15rem;color:var(--forest)}
+.card{background:#fff;border:1.5px solid var(--forest);border-radius:var(--radius-card);padding:1.1rem 1.2rem;margin-bottom:1rem}
+.card.paper{background:var(--paper)}
+.card h3{font-family:var(--font-head);font-size:.98rem;color:var(--forest);margin-bottom:.45rem}
+.card p{font-size:.92rem;margin-bottom:.45rem}
+.tag{display:inline-block;font:600 .7rem/1.4 var(--font-head);padding:.15em .7em;border-radius:var(--radius-pill);vertical-align:middle}
+.tag.bg{background:var(--sky);color:var(--forest)}
+.tag.fact{background:var(--sage);color:var(--forest)}
+.tag.judge{background:var(--marker);color:var(--ink)}
+.tag.inf{background:#E8DCC8;color:var(--ink)}
+.tag.eg{background:#F0C9B8;color:var(--brick)}
+.src-quote{display:block;background:var(--paper);border-left:4px solid var(--forest);padding:.5rem .8rem;font-size:.85rem;margin:.45rem 0;border-radius:0 8px 8px 0}
+.src{display:block;margin-top:.4rem;font-size:.8rem;color:var(--forest);background:var(--sky);border-radius:6px;padding:.15rem .6rem}
+.goal{display:flex;gap:.7rem;align-items:flex-start;background:#fff;border:1.5px solid var(--forest);border-radius:var(--radius-card);padding:.85rem 1rem;margin-bottom:.7rem}
+.goal .gno{font-family:var(--font-mono);font-weight:600;color:var(--brick);flex-shrink:0}
+.structure{font-family:var(--font-mono);font-size:.82rem;background:var(--forest);color:var(--cream);border-radius:var(--radius-card);padding:1rem 1.2rem;overflow-x:auto;white-space:pre;line-height:1.8}
+.concept-rel{font-size:.85rem;background:var(--marker);border-radius:8px;padding:.5rem .8rem;display:inline-block;margin:.3rem 0}
+/* ---- 互动题 ---- */
+.task{background:#fff;border:2px solid var(--forest);border-radius:var(--radius-card);padding:1.1rem 1.2rem;margin-bottom:1.2rem}
+.task .q{font-weight:600;font-size:.95rem;margin-bottom:.7rem}
+.task .opts{display:flex;flex-direction:column;gap:.5rem;margin-bottom:.8rem}
+.task .opt{text-align:left;border:1.5px solid var(--forest);background:var(--cream);border-radius:10px;padding:.5rem .8rem;font:inherit;font-size:.88rem;cursor:pointer}
+.task .opt:hover{background:var(--sky)}
+.task .opt.selected{background:var(--forest);color:var(--cream)}
+.task .check{border:2px solid var(--forest);background:var(--marker);color:var(--ink);font:700 .85rem var(--font-head);padding:.45em 1.3em;border-radius:var(--radius-pill);cursor:pointer}
+.task .feedback{display:block;margin-top:.8rem;font-size:.86rem;background:var(--paper);border-radius:8px;padding:.6rem .8rem}
+.task .feedback.ok{background:var(--sage)}
+.task .feedback.no{background:#F0C9B8}
+.task .feedback .src{display:block;margin-top:.35rem}
+select.match{font:inherit;font-size:.85rem;padding:.3rem .5rem;border:1.5px solid var(--forest);border-radius:8px;background:#fff;margin:.2rem .3rem .2rem 0}
+/* ---- 误解 ---- */
+.mis{background:#fff;border-left:5px solid var(--brick);border-radius:0 var(--radius-card) var(--radius-card) 0;padding:.9rem 1.1rem;margin-bottom:.9rem;box-shadow:none;border-top:1px solid #E5DEC9;border-right:1px solid #E5DEC9;border-bottom:1px solid #E5DEC9}
+.mis h3{color:var(--brick);font-size:.92rem;margin-bottom:.35rem}
+/* ---- 报告 ---- */
+#wrongBox{background:#fff;border:1.5px dashed var(--brick);border-radius:var(--radius-card);padding:.8rem 1rem;font-size:.85rem;margin-bottom:1rem}
+#report{width:100%;min-height:9rem;background:var(--forest);color:var(--cream);font-family:var(--font-mono);font-size:.8rem;border:none;border-radius:var(--radius-card);padding:.9rem 1rem;white-space:pre-wrap;margin-bottom:.7rem}
+.btn-row{display:flex;gap:.7rem;flex-wrap:wrap}
+.btn-row button{border:2px solid var(--forest);background:var(--marker);font:700 .85rem var(--font-head);padding:.5em 1.2em;border-radius:var(--radius-pill);cursor:pointer}
+footer{border-top:2px solid var(--forest);margin-top:2rem;padding-top:1rem;font-size:.82rem;color:var(--ink)}
+.sticker{width:40px;vertical-align:middle;margin-right:.4rem}
+/* ---- 语音 ---- */
+.voice-btn{display:inline-block;vertical-align:middle;margin-left:.6em;padding:.25em .8em;border:1px solid var(--forest);border-radius:var(--radius-pill);background:var(--cream);color:var(--forest);font:600 .8rem/1.2 var(--font-body);cursor:pointer;transition:background .15s}
+.voice-btn:hover{background:var(--sage)}
+.voice-btn.active{background:var(--forest);color:var(--cream)}
+#voiceFab{position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:9998;display:flex;align-items:center;flex-direction:row;background:var(--forest);color:var(--cream);border:none;cursor:pointer;height:5em;padding:0 .55em;border-radius:16px 0 0 16px;box-shadow:-4px 0 14px rgba(0,0,0,.18);font-family:var(--font-head);font-size:.85rem;overflow:hidden;transition:width .42s cubic-bezier(.4,0,.2,1),box-shadow .3s ease;width:1.9em}
+#voiceFab .fab-icon{font-size:1.15rem;writing-mode:vertical-rl;text-orientation:upright;letter-spacing:.1em;white-space:nowrap;flex-shrink:0}
+#voiceFab .fab-text{white-space:nowrap;opacity:0;margin-left:.6em;transition:opacity .28s ease .12s}
+#voiceFab:hover{width:8.6em;box-shadow:-6px 0 22px rgba(0,0,0,.25)}
+#voiceFab:hover .fab-text{opacity:1}
+#voiceFab.beat{animation:voiceBeat 1.6s ease-in-out infinite}
+@keyframes voiceBeat{0%,100%{box-shadow:-4px 0 14px rgba(0,0,0,.18)}50%{box-shadow:-4px 0 20px rgba(181,72,42,.5)}}
+#voicePlayer{position:fixed;left:50%;bottom:1rem;transform:translateX(-50%) translateY(140%);width:min(92vw,380px);padding:1rem 1.1rem 1.1rem;background:var(--cream);border:2px solid var(--forest);border-radius:26px;box-shadow:0 8px 28px rgba(0,0,0,.16);z-index:9999;transition:transform .28s ease;text-align:center;font-family:var(--font-body)}
+#voicePlayer.show{transform:translateX(-50%) translateY(0)}
+#voicePlayer .vp-head{font-size:.75rem;color:var(--forest);opacity:.8;letter-spacing:.05em}
+#voicePlayer .vp-title{font:700 1rem/1.35 var(--font-body);color:var(--ink);margin:.25rem 0 .7rem;padding:0 .2rem;word-break:break-word}
+#voicePlayer .vp-play{width:3.6rem;height:3.6rem;border:none;border-radius:50%;background:var(--forest);color:var(--cream);font-size:1.3rem;cursor:pointer;margin:0 auto .7rem;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 0 #142710;transition:transform .1s,box-shadow .1s}
+#voicePlayer .vp-play:active{transform:translateY(2px);box-shadow:0 1px 0 #142710}
+#voicePlayer .vp-prev,#voicePlayer .vp-next{width:2.3rem;height:2.3rem;border:1.5px solid var(--forest);border-radius:50%;background:var(--cream);color:var(--forest);font-size:.9rem;cursor:pointer}
+#voicePlayer .vp-controls{display:flex;align-items:center;justify-content:center;gap:1.2rem;margin-bottom:.7rem}
+#voicePlayer .vp-seek{width:100%;margin:.2rem 0;cursor:pointer;accent-color:var(--forest)}
+#voicePlayer .vp-time{display:flex;justify-content:space-between;font:600 .72rem/1 var(--font-mono);color:var(--ink);opacity:.75}
+#voicePlayer .vp-close{position:absolute;top:.5rem;right:.6rem;width:1.5rem;height:1.5rem;border:none;background:transparent;color:var(--ink);font-size:1rem;cursor:pointer;opacity:.5}
+#voicePlayer .vp-sub{min-height:2.6em;max-height:3.9em;overflow:hidden;font:.85rem/1.5 var(--font-body);color:var(--ink);opacity:.55;margin:.2rem 0 .5rem;padding:0 .3rem;transition:opacity .2s;text-align:center}
+#voicePlayer .vp-sub.active{opacity:1}
+#voicePlayer .vp-sub .cur{color:var(--forest);font-weight:600}
+@media(max-width:820px){
+  .layout{flex-direction:column}
+  .sidebar{position:static;width:100%;height:auto}
+  .hero .mascot{float:none;display:block;margin:0 0 .8rem}
+}
+</style>
+</head>
+<body>
+<script type="application/json" id="voicePlaylist">
+[
+ {"id":"ch1","title":"学习目标与阅读路径","src":"audio-bd1/ch1.mp3"},
+ {"id":"ch2","title":"零基础背景包","src":"audio-bd1/ch2.mp3"},
+ {"id":"ch3","title":"原文问题定位","src":"audio-bd1/ch3.mp3"},
+ {"id":"ch4","title":"原文结构地图","src":"audio-bd1/ch4.mp3"},
+ {"id":"ch5","title":"核心判断与依据","src":"audio-bd1/ch5.mp3"},
+ {"id":"ch6","title":"关键概念拆解","src":"audio-bd1/ch6.mp3"},
+ {"id":"ch7","title":"苏格拉底式阅读关卡","src":"audio-bd1/ch7.mp3"},
+ {"id":"ch8","title":"闯关式任务","src":"audio-bd1/ch8.mp3"},
+ {"id":"ch9","title":"误解与边界","src":"audio-bd1/ch9.mp3"},
+ {"id":"ch10","title":"背景知识缺口","src":"audio-bd1/ch10.mp3"},
+ {"id":"ch11","title":"复盘与学习报告","src":"audio-bd1/ch11.mp3"}
+]
+</script>
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand">大数据 · 第12章<br>基础与演进</div>
+  <div class="sub">微盛研发管培生 · 大数据方向通识</div>
+  <div class="progress-wrap">
+    <div class="plabel">任务进度 <span id="barNum">0 / 8</span></div>
+    <div class="pbar"><span id="barFill"></span></div>
+  </div>
+  <nav>
+    <div class="nav-title">本章路线</div>
+    <a href="#m01">01 学习目标与阅读路径</a>
+    <a href="#m02">02 零基础背景包</a>
+    <a href="#m03">03 原文问题定位</a>
+    <a href="#m04">04 原文结构地图</a>
+    <a href="#m05">05 核心判断与依据</a>
+    <a href="#m06">06 关键概念拆解</a>
+    <a href="#m07">07 苏格拉底式关卡</a>
+    <a href="#m08">08 闯关式任务</a>
+    <a href="#m09">09 误解与边界</a>
+    <a href="#m10">10 背景知识缺口</a>
+    <a href="#m11">11 复盘与学习报告</a>
+  </nav>
+</aside>
+<main class="main">
+  <div class="hero">
+    <img class="mascot" src="https://lyzbcy.github.io/weshoto-study/img/sticker/mascot.png" alt="">
+    <span class="chip">大数据 01 / 培训拆分版</span>
+    <h1>大数据基础与演进</h1>
+    <p>先讲清楚为什么需要大数据，再讲技术为什么一步步变成数据底座。本章你将学会：判断业务真正的大数据问题是什么、数仓为什么要分层、AI 时代为什么更需要证据链。</p>
+  </div>
+
+  <section id="m01">
+    <div class="sec-head"><span class="sec-id">01</span><h2>学习目标与阅读路径 <button class="voice-btn" data-voice-id="ch1">🎧 听这节</button></h2></div>
+    <div class="goal"><span class="gno">目标1</span><div>能说出培训认为「需要大数据」的四个真实业务问题（数据分散、查询变慢、口径混乱、结果追不回）</div></div>
+    <div class="goal"><span class="gno">目标2</span><div>能复述 ODS / DWD / DWS / ADS 四层各自的职责，并解释「分层是为了每一步能复核」</div></div>
+    <div class="goal"><span class="gno">目标3</span><div>能区分至少 3 个核心判断和它们的原文依据</div></div>
+    <div class="goal"><span class="gno">目标4</span><div>能指出至少 2 个容易误解的地方（如「大数据=文件大」）</div></div>
+    <div class="goal"><span class="gno">目标5</span><div>能提出 1 个后续追问（比如：我们团队的批流时效选型该怎么做）</div></div>
+  </section>
+
+  <section id="m02">
+    <div class="sec-head"><span class="sec-id">02</span><h2>零基础背景包 <button class="voice-btn" data-voice-id="ch2">🎧 听这节</button></h2></div>
+    <div class="card">
+      <h3><span class="tag bg">背景补充</span> 业务库 vs 分析库</h3>
+      <p>业务库（如 MySQL）为在线交易设计，讲究单条快；分析查询动辄扫半年数据，会把在线服务拖垮。所以分析要搬到专门的数据系统。</p>
+      <p>为什么现在需要知道：理解「查询变慢」不是机器不行，而是负载类型不匹配。</p>
+    </div>
+    <div class="card">
+      <h3><span class="tag bg">背景补充</span> 数据仓库（Data Warehouse）</h3>
+      <p>把分散在多个系统的数据统一接入、清洗、建模后集中存放，面向分析和报表，不直接承接在线交易。</p>
+      <p>为什么现在需要知道：本章讲的「数据底座」就是数据仓库的演进形态。</p>
+    </div>
+    <div class="card">
+      <h3><span class="tag bg">背景补充</span> 口径</h3>
+      <p>同一个指标（如「客户数」）的统计规则：算哪些人、从哪天起算、去不去重。口径不对齐，两个团队报表数字必然打架。</p>
+      <p>为什么现在需要知道：「口径混乱」是本章四大问题之一。</p>
+    </div>
+    <div class="card">
+      <h3><span class="tag bg">背景补充</span> 血缘（Lineage）</h3>
+      <p>记录一张表的数据从哪些源表经过哪些任务加工而来。顺着血缘回溯，才能回答「这个数字怎么来的」。</p>
+      <p>为什么现在需要知道：AI 时代的证据链依赖血缘链路。它不是本文的主张，只是帮助你读懂原文。</p>
+    </div>
+  </section>
+
+  <section id="m03">
+    <div class="sec-head"><span class="sec-id">03</span><h2>原文问题定位 <button class="voice-btn" data-voice-id="ch3">🎧 听这节</button></h2></div>
+    <div class="card">
+      <h3>表面在讲什么</h3>
+      <p>大数据的四大痛点、架构演进、数仓分层、批流架构、AI 时代的证据链。<span class="tag fact">事实</span></p>
+    </div>
+    <div class="card">
+      <h3>深层在回答什么问题</h3>
+      <p>「为什么业务需要大数据，而不是把 Excel/业务库撑大一点？」原文的回答：真正的问题不是文件有多大，而是业务能不能稳定看数、解释数、复用数。<span class="tag judge">判断</span></p>
+      <span class="src-quote">原文（第2页）：「真正的问题不是文件有多大，而是业务能不能稳定看数、解释数、复用数。」</span>
+    </div>
+    <div class="card">
+      <h3>如果只记一个问题</h3>
+      <p>记这个：<strong>大数据解决的到底是「存不下」还是「说不清」？</strong>——按本章观点，是后者：能不能解释数、复用数、追回结果。</p>
+    </div>
+  </section>
+
+  <section id="m04">
+    <div class="sec-head"><span class="sec-id">04</span><h2>原文结构地图 <button class="voice-btn" data-voice-id="ch4">🎧 听这节</button></h2></div>
+    <p style="font-size:.88rem;margin-bottom:.6rem">结构类型判断：<strong>机制流程型</strong>（问题 → 演进 → 分层 → 时效 → 证据链，层层递进）。</p>
+    <div class="structure">为什么需要大数据（4个业务问题）
+  ├─ 数据分散 ─ 单表查询无法还原业务全貌      [第2页]
+  ├─ 查询变慢 ─ 业务库不适合长期分析查询      [第2页]
+  ├─ 口径混乱 ─ 不先对齐就会反复返工          [第2页]
+  └─ 结果追不回 ─ 必须能回到来源表和原始证据  [第2页]
+        │ 递进：技术如何应对
+        ▼
+架构从查表走向数据底座                        [第3页]
+  「每一次技术演进，都是在解决更复杂的数据使用问题」
+        │ 递进：底座内部怎么组织
+        ▼
+数仓分层 ODS→DWD→DWS→ADS                     [第4页]
+  「分层不是为了显得专业，而是为了让每一步能复核」
+        │ 并列：时效维度怎么选
+        ▼
+批流架构：离线 / 实时 / OLAP 各承其职          [第5页]
+  「不是互相替代，而是分别承担不同查询和加工压力」
+        │ 递进：AI 带来新要求
+        ▼
+AI 时代更需要证据链（六要素）                  [第6页]
+  「AI 给的不再只是数字，而是一段看起来很顺的结论」</div>
+  </section>
+
+  <section id="m05">
+    <div class="sec-head"><span class="sec-id">05</span><h2>核心判断与依据 <button class="voice-btn" data-voice-id="ch5">🎧 听这节</button></h2></div>
+    <div class="card">
+      <h3>判断1：大数据 ≠ 数据量大</h3>
+      <p><strong>核心判断：</strong>「Excel 打不开」不是大数据的定义，能稳定看数、解释数、复用数才是问题本体。</p>
+      <span class="src-quote">原文依据（第2页标题+导语）：「大数据不是 Excel 打不开」「真正的问题不是文件有多大，而是业务能不能稳定看数、解释数、复用数。」</span>
+      <p><span class="tag judge">判断</span> 为什么重要：它决定了选型和治理的方向——堆机器解决不了口径和追溯问题。可能的误读：把本章当成「存储扩容指南」。</p>
+    </div>
+    <div class="card">
+      <h3>判断2：四大业务问题互相独立又共同驱动</h3>
+      <p><strong>核心判断：</strong>数据分散、查询变慢、口径混乱、结果追不回是四个并列问题，不是一条因果链。</p>
+      <span class="src-quote">原文依据（第2页）：四个小节并列罗列，每节一个问题和一句解释。</span>
+      <p><span class="tag fact">事实</span> 为什么重要：面试/汇报时不要硬编「因为分散所以慢」这类假因果。误读：把并列写成因果。</p>
+    </div>
+    <div class="card">
+      <h3>判断3：架构演进由数据使用问题驱动</h3>
+      <p><strong>核心判断：</strong>技术不是为炫而变，每次演进都在解决更复杂的数据使用问题。</p>
+      <span class="src-quote">原文依据（第3页）：「每一次技术演进，都是在解决更复杂的数据使用问题。」</span>
+      <p><span class="tag judge">判断</span> 为什么重要：评估新技术先问它解决什么使用问题。误读：以为演进是「换更新更火的组件」。</p>
+    </div>
+    <div class="card">
+      <h3>判断4：分层为了可复核，不是为了专业感</h3>
+      <p><strong>核心判断：</strong>ODS/DWD/DWS/ADS 四层存在的理由是让每一步可复核。</p>
+      <span class="src-quote">原文依据（第4页）：「分层不是为了显得专业，而是为了让每一步能复核。」</span>
+      <p><span class="tag judge">判断</span> 为什么重要：数仓设计评审的准绳。误读：为了分层而分层，多层没人用。</p>
+    </div>
+    <div class="card">
+      <h3>判断5：批/流/OLAP 是分工不是替代</h3>
+      <p><strong>核心判断：</strong>离线、实时和 OLAP 分别承担不同查询和加工压力，选型先看时效要求（T+1、小时级、分钟级）。</p>
+      <span class="src-quote">原文依据（第5页）：「离线、实时和 OLAP 不是互相替代……」「课堂重点：不要只背 Lambda / Kappa，先判断业务要 T+1、小时级还是分钟级。」</span>
+      <p><span class="tag judge">判断</span> 为什么重要：防止「全都上实时」的资源浪费。误读：背架构名词当学完。</p>
+    </div>
+    <div class="card">
+      <h3>判断6：AI 时代对数据底座的要求是「更可复核」</h3>
+      <p><strong>核心判断：</strong>AI 输出的是看起来顺的结论，所以数据底座要能支撑证据链（原始证据、指标引用、模型批次、质量校验、血缘链路、复核入口）。</p>
+      <span class="src-quote">原文依据（第6页）：「AI 给的不再只是数字，而是一段看起来很顺的结论，所以数据底座要更可复核。」</span>
+      <p><span class="tag judge">判断</span> 为什么重要：这是三讲通向「未来展望」的伏笔。误读：以为 AI 会降低对数据质量的要求。</p>
+    </div>
+  </section>
+
+  <section id="m06">
+    <div class="sec-head"><span class="sec-id">06</span><h2>关键概念拆解 <button class="voice-btn" data-voice-id="ch6">🎧 听这节</button></h2></div>
+    <div class="card">
+      <h3>ODS（原始接入层）</h3>
+      <p>作者用法：尽量保留业务表原貌，做原始接入。人话：业务库数据的「复印件」，不做加工。</p>
+      <span class="concept-rel">ODS --整理成事实明细--> DWD --沉淀公共统计--> DWS --面向页面报表/AI--> ADS</span>
+      <span class="src-quote">原文依据（第4页）：「ODS 原始接入层，尽量保留业务表原貌。」</span>
+      <p>不要误解成：可以直接给业务查询的「快表层」。</p>
+    </div>
+    <div class="card">
+      <h3>DWD（明细层）</h3>
+      <p>作者用法：把原始数据整理成可分析的事实明细。人话：清洗、标准化后的一条条事件记录。</p>
+      <span class="src-quote">原文依据（第4页）：「DWD 明细层，把原始数据整理成可分析的事实明细。」</span>
+      <p>不要误解成：又一份原始拷贝——它已按分析口径整理。</p>
+    </div>
+    <div class="card">
+      <h3>DWS（主题汇总层）</h3>
+      <p>作者用法：沉淀常用公共统计。人话：大家都要算的数，算一次存好，别每张报表重算。</p>
+      <span class="src-quote">原文依据（第4页）：「DWS 主题汇总层，沉淀常用公共统计。」</span>
+      <p>不要误解成：所有汇总都往这层堆——只放「公共」统计。</p>
+    </div>
+    <div class="card">
+      <h3>ADS（应用层）</h3>
+      <p>作者用法：面向页面、报表、客户交付和 AI 分析。人话：给最终消费场景直接读的结果层。</p>
+      <span class="src-quote">原文依据（第4页）：「ADS 应用层，面向页面、报表、客户交付和 AI 分析。」</span>
+      <p>不要误解成：只能服务报表——AI 分析也是它的出口。</p>
+    </div>
+    <div class="card">
+      <h3>批流架构（离线 / 实时 / OLAP）</h3>
+      <p>作者用法：按时效和复杂度分工。人话：隔夜算批的、秒级算流的、灵活多维查询走 OLAP。</p>
+      <span class="src-quote">原文依据（第5页）：「离线、实时和 OLAP 不是互相替代，而是分别承担不同查询和加工压力。」</span>
+      <p><span class="tag bg">背景补充</span> OLAP = 联机分析处理，面向多维聚合查询的引擎类型。不要误解成：一个引擎打天下。</p>
+    </div>
+    <div class="card">
+      <h3>证据链</h3>
+      <p>作者用法：六要素——原始证据、指标引用、模型批次、质量校验、血缘链路、复核入口。</p>
+      <span class="src-quote">原文依据（第6页六节并列）。</span>
+      <p>类比（仅辅助理解）：像实验报告的「材料-方法-数据-结论」四段，缺一段就不可信。它帮助理解：完整可追溯；它不能代表：一条数据库外键链。</p>
+    </div>
+  </section>
+
+  <section id="m07">
+    <div class="sec-head"><span class="sec-id">07</span><h2>苏格拉底式阅读关卡 <button class="voice-btn" data-voice-id="ch7">🎧 听这节</button></h2></div>
+    <div class="task" data-task="ch12-q1" data-answer="B"
+         data-ok="对。原文第2页把「大数据不是 Excel 打不开」放在最前面，并说真正的问题是稳定看数、解释数、复用数——问题定义在业务侧不在文件侧。"
+         data-no="答错可能还停留在「数据大=大数据」的直觉。回到判断1复习：原文明确说问题不是文件有多大。"
+         data-src="原文：真正的问题不是文件有多大，而是业务能不能稳定看数、解释数、复用数。"
+         data-review="回到「05 核心判断与依据 · 判断1」复习">
+      <div class="q">Q1 作者把「大数据不是 Excel 打不开」放在开篇，真正想纠正的直觉是什么？</div>
+      <div class="opts">
+        <button class="opt" data-val="A">A. 数据量大到 Excel 打不开时就要换工具</button>
+        <button class="opt" data-val="B">B. 大数据的核心问题是业务能否稳定看数、解释数、复用数，不是文件大小</button>
+        <button class="opt" data-val="C">C. Excel 性能差，所有公司都该换成数据库</button>
+      </div>
+      <button class="check">检查</button>
+      <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+    </div>
+    <div class="task" data-task="ch12-q2" data-answer="A,C,D" data-multi="true"
+         data-ok="对。数据分散、口径混乱、结果追不回都直接影响「解释数/复用数/追回结果」；查询变慢是负载问题，与追溯无关，原文四个问题是并列关系，不是因果链。"
+         data-no="可能把「查询变慢」也归为追溯类问题。回到模块04看结构图：四个问题各自独立并列。"
+         data-src="原文：数据分散/查询变慢/口径混乱/结果追不回，四节并列。"
+         data-review="回到「04 原文结构地图」复习">
+      <div class="q">Q2（多选）四个业务问题中，哪几个属于「让数字说不清/追不回」类问题？</div>
+      <div class="opts">
+        <button class="opt" data-val="A">A. 口径混乱</button>
+        <button class="opt" data-val="B">B. 查询变慢</button>
+        <button class="opt" data-val="C">C. 结果追不回</button>
+        <button class="opt" data-val="D">D. 数据分散</button>
+      </div>
+      <button class="check">检查</button>
+      <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+    </div>
+    <div class="task" data-task="ch12-q3" data-answer="C"
+         data-ok="对。原文原话：「分层不是为了显得专业，而是为了让每一步能复核。」复核才是分层的功能理由。"
+         data-no="答错说明把分层当成了组织美观手段。复习判断4。"
+         data-src="原文：分层不是为了显得专业，而是为了让每一步能复核。"
+         data-review="回到「05 核心判断与依据 · 判断4」复习">
+      <div class="q">Q3 数仓分层（ODS→ADS）在原文里的存在理由是什么？</div>
+      <div class="opts">
+        <button class="opt" data-val="A">A. 层越多越专业，显得团队有水平</button>
+        <button class="opt" data-val="B">B. 分层可以加快 SQL 执行速度</button>
+        <button class="opt" data-val="C">C. 让每一步能复核</button>
+      </div>
+      <button class="check">检查</button>
+      <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+    </div>
+  </section>
+
+  <section id="m08">
+    <div class="sec-head"><span class="sec-id">08</span><h2>闯关式任务 <button class="voice-btn" data-voice-id="ch8">🎧 听这节</button></h2></div>
+    <div class="task" data-task="ch12-q4" data-type="selects"
+         data-ok="全对。ODS 保留原貌、DWD 出明细、DWS 沉淀公共统计、ADS 面向页面/报表/客户交付/AI 分析——四层职责一条不混。"
+         data-no="有配错。注意 DWS 只放「公共统计」，面向消费场景的是 ADS。"
+         data-src="原文第4页四层定义。"
+         data-review="回到「06 关键概念拆解」复习">
+      <div class="q">Q4（匹配）把数仓分层和它的职责配对：</div>
+      保留业务表原貌 <select class="match" data-correct="ODS"><option value="">选择</option><option>ODS</option><option>DWD</option><option>DWS</option><option>ADS</option></select><br>
+      可分析的事实明细 <select class="match" data-correct="DWD"><option value="">选择</option><option>ODS</option><option>DWD</option><option>DWS</option><option>ADS</option></select><br>
+      常用公共统计 <select class="match" data-correct="DWS"><option value="">选择</option><option>ODS</option><option>DWD</option><option>DWS</option><option>ADS</option></select><br>
+      面向页面、报表、客户交付和 AI 分析 <select class="match" data-correct="ADS"><option value="">选择</option><option>ODS</option><option>DWD</option><option>DWS</option><option>ADS</option></select>
+      <br><button class="check">检查</button>
+      <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+    </div>
+    <div class="task" data-task="ch12-q5" data-answer="B"
+         data-ok="对。原文课堂重点原话：「不要只背 Lambda / Kappa，先判断业务要 T+1、小时级还是分钟级。」时效需求决定架构选型。"
+         data-no="答错说明顺序反了——原文强调先判断业务时效，再谈架构，不是先选架构再适配。"
+         data-src="原文：不要只背 Lambda / Kappa，先判断业务要 T+1、小时级还是分钟级。"
+         data-review="回到「05 核心判断与依据 · 判断5」复习">
+      <div class="q">Q5 原文说选批流架构时的第一判断依据是什么？</div>
+      <div class="opts">
+        <button class="opt" data-val="A">A. 先背熟 Lambda / Kappa 架构图再选</button>
+        <button class="opt" data-val="B">B. 先判断业务要 T+1、小时级还是分钟级时效</button>
+        <button class="opt" data-val="C">C. 全部上实时，越快越好</button>
+      </div>
+      <button class="check">检查</button>
+      <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+    </div>
+    <div class="task" data-task="ch12-q6" data-answer="A,B,D,E,F" data-multi="true"
+         data-ok="对。六要素齐了：原始证据、指标引用、模型批次、质量校验、血缘链路、复核入口（C「老板签字」是编的）。"
+         data-no="注意证据链六要素全部来自第6页原文，「审批签字」不在其中。"
+         data-src="原文第6页六节：原始证据/指标引用/模型批次/质量校验/血缘链路/复核入口。"
+         data-review="回到「06 关键概念拆解 · 证据链」复习">
+      <div class="q">Q6（多选）原文列出的证据链要素包括哪些？</div>
+      <div class="opts">
+        <button class="opt" data-val="A">A. 原始证据</button>
+        <button class="opt" data-val="B">B. 指标引用</button>
+        <button class="opt" data-val="C">C. 老板签字</button>
+        <button class="opt" data-val="D">D. 模型批次</button>
+        <button class="opt" data-val="E">E. 血缘链路</button>
+        <button class="opt" data-val="F">F. 复核入口</button>
+      </div>
+      <button class="check">检查</button>
+      <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+    </div>
+    <div class="task" data-task="ch12-q7" data-answer="B"
+         data-ok="对。原文收束第一条：「大数据不是技术栈堆叠，是让业务稳定看数、解释数、用数。」"
+         data-no="答错可能把本章记成了组件清单。复习模块11的收束三句。"
+         data-src="原文第7页：大数据不是技术栈堆叠，是让业务稳定看数、解释数、用数。"
+         data-review="回到「05 核心判断与依据」整体复习">
+      <div class="q">Q7（复述选择）哪句话最不改变原意地复述了本章主旨？</div>
+      <div class="opts">
+        <button class="opt" data-val="A">A. 大数据就是把 Hadoop、Flink、Doris 等技术栈堆起来</button>
+        <button class="opt" data-val="B">B. 大数据是让业务能稳定看数、解释数、用数的体系，而不是技术栈堆叠</button>
+        <button class="opt" data-val="C">C. 大数据的目标是让报表变得更漂亮</button>
+      </div>
+      <button class="check">检查</button>
+      <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+    </div>
+    <div class="task" data-task="ch12-q8" data-answer="A"
+         data-ok="对。原文第6页：「AI 给的不再只是数字，而是一段看起来很顺的结论，所以数据底座要更可复核。」越顺越要能回查。"
+         data-no="答错方向反了——AI 结论看起来顺，恰恰是更需要可复核的理由。"
+         data-src="原文：AI 给的不再只是数字，而是一段看起来很顺的结论，所以数据底座要更可复核。"
+         data-review="回到「05 核心判断与依据 · 判断6」复习">
+      <div class="q">Q8（迁移）如果 AI 客服分析给你一段「客户满意度下降 12%」的流畅结论，按本章观点你第一步该问什么？</div>
+      <div class="opts">
+        <button class="opt" data-val="A">A. 证据链在哪：样本范围、指标口径、模型批次、能不能回查原文</button>
+        <button class="opt" data-val="B">B. 结论写得多流畅、多有说服力</button>
+        <button class="opt" data-val="C">C. 立刻把结论发给客户，抢占先机</button>
+      </div>
+      <button class="check">检查</button>
+      <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+    </div>
+  </section>
+
+  <section id="m09">
+    <div class="sec-head"><span class="sec-id">09</span><h2>误解与边界 <button class="voice-btn" data-voice-id="ch9">🎧 听这节</button></h2></div>
+    <div class="mis">
+      <h3>误解1：大数据 = 数据量大，买够机器就行</h3>
+      <p>为什么容易误解：字面直觉。原文真正说了：「真正的问题不是文件有多大」；没说：数据量不重要。避免方法：先问业务能不能解释数、复用数。</p>
+    </div>
+    <div class="mis">
+      <h3>误解2：四个痛点是一条因果链（分散→慢→乱→追不回）</h3>
+      <p>为什么容易误解：叙事惯性。原文是四节并列，各自独立成立。原文没说「因为分散所以查询慢」。避免方法：引用时逐条分开说。</p>
+    </div>
+    <div class="mis">
+      <h3>误解3：数仓分层是为了「专业」或绩效</h3>
+      <p>为什么容易误解：分层看起来像形式主义。原文明确否定：「分层不是为了显得专业，而是为了让每一步能复核」。避免方法：评审数仓设计时只问「这层能不能被复核」。</p>
+    </div>
+    <div class="mis">
+      <h3>误解4：上了实时架构就比离线先进</h3>
+      <p>为什么容易误解：实时听起来更高级。原文说批/流/OLAP「不是互相替代」，课堂重点是先判断时效要求。避免方法：从业务时效反推架构，不从技术先进性正推。</p>
+    </div>
+  </section>
+
+  <section id="m10">
+    <div class="sec-head"><span class="sec-id">10</span><h2>背景知识缺口 <button class="voice-btn" data-voice-id="ch10">🎧 听这节</button></h2></div>
+    <div class="card paper">
+      <h3>缺口1：架构演进总览图的具体内容（现在可先不补）</h3>
+      <p>第3页的演进总览是引用的架构图，原文未展开各阶段细节。为什么重要：想了解「从查表到数据底座」中间发生了什么（如 Hadoop→MPP→湖仓一体）需要额外材料。</p>
+      <p>下一步问题：主流架构范式各自解决什么问题？</p>
+    </div>
+    <div class="card paper">
+      <h3>缺口2：Lambda / Kappa 架构细节（原文明确说先别背）</h3>
+      <p>原文只要求先判断时效需求，架构细节属于延伸阅读。下一步问题：什么业务该用 Kappa 而不是 Lambda？</p>
+    </div>
+    <div class="card paper">
+      <h3>缺口3：OLAP 引擎选型与微盛用的 Doris（第13章会接触）</h3>
+      <p>本章只提 OLAP 分工，未讲引擎。下一步问题：Doris 慢查询治理是怎么做的？</p>
+    </div>
+  </section>
+
+  <section id="m11">
+    <div class="sec-head"><span class="sec-id">11</span><h2>复盘与学习报告 <button class="voice-btn" data-voice-id="ch11">🎧 听这节</button></h2></div>
+    <div class="card">
+      <h3><img class="sticker" src="https://lyzbcy.github.io/weshoto-study/img/sticker/final.png" alt="">本章收束（原文第7页）</h3>
+      <p>• 大数据不是技术栈堆叠，是让业务稳定看数、解释数、用数。<br>• 架构越往后走，越强调复用、治理、质量和证据链。<br>• 进入 AI 阶段后，数据底座要能支撑模型安全地吃数。</p>
+    </div>
+    <div id="wrongBox"><li style="color:#888;list-style:none">还没有错题。答错的题会自动收集到这里。</li></div>
+    <textarea id="report" readonly>点击「生成学习报告」看看你掌握了什么。</textarea>
+    <div class="btn-row">
+      <button id="genReport">生成学习报告</button>
+      <button id="copyReport">复制报告</button>
+    </div>
+    <p style="font-size:.85rem;margin-top:.8rem">仍不确定的地方建议追问：我们团队的指标口径有没有成文的对齐机制？血缘能不能支撑客户问数时回查？下一章进入微盛真实实践。</p>
+  </section>
+
+  <footer>
+    由 <a href="https://lyzbcy.github.io/" target="_blank" rel="noopener" style="color:#1d70b8;text-decoration:underline;font-weight:700">捞鱼</a> 制作 · 这个工具能帮你预习难啃的干货，但不能代替完整学习。学习愉快
+  </footer>
+</main>
+</div>
+<button id="voiceFab" aria-label="打开后台语音"><span class="fab-icon">🎧</span><span class="fab-text">后台语音</span></button>
+<div id="voicePlayer">
+  <button class="vp-close" aria-label="关闭">✕</button>
+  <div class="vp-head">🎧 后台语音 · 连续播放</div>
+  <div class="vp-title">—</div>
+  <div class="vp-controls">
+    <button class="vp-prev" aria-label="上一章">⏮</button>
+    <button class="vp-play" aria-label="播放/暂停">▶</button>
+    <button class="vp-next" aria-label="下一章">⏭</button>
+  </div>
+  <input class="vp-seek" type="range" min="0" max="1000" value="0" aria-label="进度">
+  <div class="vp-time"><span class="vp-cur">00:00</span><span class="vp-dur">00:00</span></div>
+  <div class="vp-sub">点开播放后，这里会同步显示字幕</div>
+</div>
+<script>
+(function(){
+  "use strict";
+  function $all(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));}
+  function selectedVals(t){return $all('.opt.selected',t).map(function(o){return o.getAttribute('data-val');}).sort();}
+  function setFb(t,state,html){var fb=t.querySelector('.feedback');if(!fb)return;fb.className='feedback'+(state?(' '+state):'');fb.innerHTML=html;}
+  function updateBar(){
+    var all=$all('.task'),done=$all('.task[data-answered="1"]');
+    var fill=document.getElementById('barFill'),num=document.getElementById('barNum');
+    if(fill)fill.style.width=all.length?(done.length/all.length*100)+'%':'0%';
+    if(num)num.textContent=done.length+' / '+all.length;
+  }
+  function renderWrong(){
+    var box=document.getElementById('wrongBox');if(!box)return;
+    var wrong=$all('.task[data-answered="1"][data-correct="0"]');
+    if(!wrong.length){box.innerHTML='<li style="color:#888">还没有错题。答错的题会自动收集到这里。</li>';return;}
+    box.innerHTML='';
+    wrong.forEach(function(t){var li=document.createElement('li');li.textContent='【'+(t.getAttribute('data-task')||'')+'】'+(t.getAttribute('data-review')||'回到对应模块复习');box.appendChild(li);});
+  }
+  function check(t){
+    var type=t.getAttribute('data-type'),ok=false;
+    if(type==='selects'){
+      var sels=$all('select.match',t),allok=true,empty=false;
+      sels.forEach(function(s){if(!s.value)empty=true;if(s.value!==s.getAttribute('data-correct'))allok=false;});
+      if(empty){setFb(t,'no','请先把每一项都选好再检查。');return;}
+      ok=allok;
+    }else{
+      var sel=selectedVals(t);
+      if(!sel.length){setFb(t,'no','请先选择一个选项再检查。');return;}
+      var ans=(t.getAttribute('data-answer')||'').split(',').map(function(x){return x.trim();}).sort();
+      ok=(sel.join('|')===ans.join('|'));
+    }
+    var body=ok?(t.getAttribute('data-ok')||'回答正确。'):(t.getAttribute('data-no')||'再想想。');
+    var src=t.getAttribute('data-src');
+    setFb(t,ok?'ok':'no',(ok?'✅ ':'❌ ')+body+(src?('<span class="src">'+src+'</span>'):''));
+    t.setAttribute('data-answered','1');t.setAttribute('data-correct',ok?'1':'0');
+    updateBar();renderWrong();
+  }
+  function genReport(){
+    var box=document.getElementById('report');if(!box)return;
+    var all=$all('.task'),done=$all('.task[data-answered="1"]'),right=$all('.task[data-answered="1"][data-correct="1"]');
+    var lines=['=== 学习报告 ===','完成题目：'+done.length+' / '+all.length,'答对：'+right.length+' 题',''];
+    var wrong=$all('.task[data-answered="1"][data-correct="0"]');
+    if(wrong.length){lines.push('我答错的题（建议复习）：');wrong.forEach(function(t){lines.push('- '+(t.getAttribute('data-task')||'')+'：'+(t.getAttribute('data-review')||''));});}
+    else{lines.push('暂无错题。');}
+    box.textContent=lines.join('\n');
+  }
+  document.addEventListener('click',function(e){
+    var c=e.target.closest?e.target:null;
+    var opt=c&&e.target.closest('.opt');
+    if(opt){var t=opt.closest('.task');if(!t)return;
+      if(t.getAttribute('data-multi')==='true'){opt.classList.toggle('selected');}
+      else{$all('.opt',t).forEach(function(o){o.classList.remove('selected');});opt.classList.add('selected');}
+      return;}
+    var btn=c&&e.target.closest('.check');
+    if(btn){var tk=btn.closest('.task');if(tk)check(tk);return;}
+    if(e.target&&e.target.id==='genReport'){genReport();return;}
+    if(e.target&&e.target.id==='copyReport'){var r=document.getElementById('report');if(r&&navigator.clipboard)navigator.clipboard.writeText(r.textContent);return;}
+  });
+  function init(){updateBar();renderWrong();}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+<script>
+(function(){
+  "use strict";
+  if(window.__voiceEngine) return;
+  window.__voiceEngine = true;
+  var listNode = document.getElementById('voicePlaylist');
+  if(!listNode){ return; }
+  var TRACKS = [];
+  try { TRACKS = JSON.parse(listNode.textContent.trim()); } catch(e){ return; }
+  if(!TRACKS.length) return;
+  var player = document.getElementById('voicePlayer');
+  var fab = document.getElementById('voiceFab');
+  var audio = new Audio(); audio.preload = 'metadata';
+  var cur = 0;
+  var ranges = [];
+  var total = 0;
+  var seeking = false;
+  function $(s){ return player ? player.querySelector(s) : null; }
+  function fmt(s){ s=Math.max(0,Math.floor(s||0)); var m=Math.floor(s/60), x=s%60;
+    return (m<10?'0':'')+m+':'+(x<10?'0':'')+x; }
+  var probe = TRACKS.map(function(){ return {dur:0}; });
+  function tryFinalize(){
+    if(probe.some(function(p){return !p.dur;})) return;
+    ranges = []; total = 0;
+    probe.forEach(function(p){ ranges.push({dur:p.dur, start:total}); total += p.dur; });
+    var d = $('.vp-dur'); if(d) d.textContent = fmt(total);
+    var sk = $('.vp-seek'); if(sk){ sk.max = Math.max(1000, Math.floor(total*10)); }
+  }
+  TRACKS.forEach(function(t, i){
+    var a = new Audio(); a.preload = 'metadata'; a.src = t.src;
+    a.addEventListener('loadedmetadata', function(){
+      probe[i].dur = a.duration || 0; tryFinalize();
+    });
+    a.addEventListener('error', function(){ probe[i].dur = 0; tryFinalize(); });
+  });
+  function load(i){
+    cur = i; audio.src = TRACKS[i].src;
+    var ti = $('.vp-title'); if(ti) ti.textContent = TRACKS[i].title || ('第 '+(i+1)+' 段');
+    markBtn(i);
+  }
+  function play(){ audio.play().then(function(){ show(); setPlayIcon(true); if(fab) fab.classList.add('beat'); }).catch(function(){}); }
+  function pause(){ audio.pause(); setPlayIcon(false); if(fab) fab.classList.remove('beat'); }
+  function toggle(){ audio.paused ? play() : pause(); }
+  function next(){ if(cur < TRACKS.length-1){ load(cur+1); play(); } else { pause(); } }
+  function prev(){
+    var abs = absTime();
+    if(cur > 0 && abs - ranges[cur].start < 3){ load(cur-1); play(); }
+    else { audio.currentTime = 0; }
+  }
+  function absTime(){ return ranges[cur] ? ranges[cur].start + (audio.currentTime||0) : (audio.currentTime||0); }
+  function setPlayIcon(on){ var b=$('.vp-play'); if(b) b.textContent = on ? '⏸' : '▶'; }
+  function show(){ if(player) player.classList.add('show'); }
+  function hide(){ if(player) player.classList.remove('show'); }
+  function markBtn(i){
+    document.querySelectorAll('.voice-btn[data-voice-id]').forEach(function(b){
+      b.classList.toggle('active', b.getAttribute('data-voice-id') === TRACKS[i].id);
+    });
+  }
+  audio.addEventListener('timeupdate', function(){
+    if(seeking) return;
+    if(!ranges[cur]) return;
+    var abs = absTime(); var sk = $('.vp-seek'); var c = $('.vp-cur');
+    if(sk && total) sk.value = Math.round(abs / total * (sk.max||1000));
+    if(c) c.textContent = fmt(abs);
+  });
+  audio.addEventListener('ended', function(){ if(cur < TRACKS.length-1){ load(cur+1); play(); }
+    else { setPlayIcon(false); if(fab) fab.classList.remove('beat'); } });
+  function seekToFraction(frac){
+    if(!total) return;
+    var target = Math.max(0, Math.min(total, frac * total));
+    var i = 0; while(i < ranges.length-1 && ranges[i].start + ranges[i].dur < target){ i++; }
+    if(i !== cur){ cur = i; audio.src = TRACKS[i].src;
+      var ti=$('.vp-title'); if(ti) ti.textContent = TRACKS[i].title||('第 '+(i+1)+' 段'); markBtn(i); }
+    audio.currentTime = target - ranges[i].start;
+    var c=$('.vp-cur'); if(c) c.textContent = fmt(target);
+  }
+  document.addEventListener('click', function(e){
+    var t = e.target;
+    var vb = t.closest ? t.closest('.voice-btn[data-voice-id]') : null;
+    if(vb){
+      var id = vb.getAttribute('data-voice-id'), idx = -1;
+      TRACKS.forEach(function(tr, k){ if(tr.id === id) idx = k; });
+      if(idx >= 0){ load(idx); play(); }
+      return;
+    }
+    if(t.id === 'voiceFab'){ show(); if(audio.paused && !audio.src){ load(0); } if(audio.paused){ play(); } return; }
+    if(!player || !player.contains(t)) return;
+    if(t.classList.contains('vp-play')){ toggle(); return; }
+    if(t.classList.contains('vp-prev')){ prev(); return; }
+    if(t.classList.contains('vp-next')){ next(); return; }
+    if(t.classList.contains('vp-close')){ pause(); hide(); return; }
+  });
+  var sk = $('.vp-seek');
+  if(sk){
+    sk.addEventListener('input', function(){ seeking = true;
+      if(total){ var c=$('.vp-cur'); if(c) c.textContent = fmt((sk.value/(sk.max||1000))*total); } });
+    sk.addEventListener('change', function(){ seekToFraction(sk.value/(sk.max||1000)); seeking = false; });
+  }
+})();
+</script>
+<script>
+(function(){
+  "use strict";
+  if(window.__subEngine) return;
+  window.__subEngine = true;
+  var listNode = document.getElementById("voicePlaylist");
+  if(!listNode) return;
+  var subBox = document.querySelector("#voicePlayer .vp-sub");
+  var curEl = document.querySelector("#voicePlayer .vp-cur");
+  var titleEl = document.querySelector("#voicePlayer .vp-title");
+  if(!subBox) return;
+  var subs = [];
+  var subCache = {};
+  var curSrc = "";
+  function esc(s){ var d=document.createElement("div"); d.textContent=s; return d.innerHTML; }
+  function mp3ToJson(src){
+    var m = src.replace(/^.*?([a-zA-Z0-9_\/.\-]+\.mp3)(?:\?.*)?$/i, "$1");
+    return m.replace(/\.mp3$/i, ".json");
+  }
+  function loadSubFor(src){
+    if(!src || src === curSrc) return;
+    curSrc = src;
+    var jsonUrl = mp3ToJson(src);
+    if(subCache[jsonUrl]){ subs = subCache[jsonUrl]; return; }
+    fetch(jsonUrl).then(function(r){
+      if(!r.ok) throw new Error(r.status);
+      return r.json();
+    }).then(function(arr){
+      subCache[jsonUrl] = Array.isArray(arr) ? arr : [];
+      subs = subCache[jsonUrl];
+    }).catch(function(){ subs = []; });
+  }
+  function parseTime(text){
+    var p = String(text).trim().split(":");
+    if(p.length === 2){
+      var m = parseInt(p[0], 10) || 0;
+      var s = parseInt(p[1], 10) || 0;
+      return m * 60 + s;
+    }
+    return parseFloat(text) || 0;
+  }
+  function renderSub(t){
+    if(!subs.length) return;
+    var hit = null, idx = -1;
+    for(var i = 0; i < subs.length; i++){
+      if(t >= subs[i].start && t < subs[i].end){ hit = subs[i]; idx = i; break; }
+    }
+    if(!hit){
+      var prev = null;
+      for(var j = 0; j < subs.length; j++){
+        if(subs[j].start <= t) prev = subs[j]; else break;
+      }
+      subBox.classList.remove("active");
+      subBox.innerHTML = prev ? esc(prev.text) : "";
+      return;
+    }
+    subBox.classList.add("active");
+    var prevHtml = idx > 0
+      ? '<span style="opacity:.45">' + esc(subs[idx - 1].text) + "</span> "
+      : "";
+    subBox.innerHTML = prevHtml + '<span class="cur">' + esc(hit.text) + "</span>";
+  }
+  function tick(){
+    if(!curEl) return;
+    var sec = parseTime(curEl.textContent);
+    renderSub(sec);
+  }
+  function onTitleChange(){
+    var TRACKS = [];
+    try { TRACKS = JSON.parse(listNode.textContent.trim()); } catch(e){ return; }
+    var title = titleEl ? titleEl.textContent.trim() : "";
+    for(var i = 0; i < TRACKS.length; i++){
+      if(TRACKS[i].title === title){ loadSubFor(TRACKS[i].src); return; }
+    }
+  }
+  if(window.MutationObserver){
+    var obs = new MutationObserver(function(){ tick(); onTitleChange(); });
+    if(curEl) obs.observe(curEl, { childList:true, characterData:true, subtree:true });
+    if(titleEl) obs.observe(titleEl, { childList:true, characterData:true, subtree:true });
+  } else {
+    setInterval(function(){ tick(); onTitleChange(); }, 300);
+  }
+  setTimeout(tick, 500);
+})();
+</script>
+</body>
+</html>

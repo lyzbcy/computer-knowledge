@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>大数据模拟卷三 · 未来展望 · 研发岗管培生</title>
+<style>
+:root{
+  --primary:#2563eb; --primary-dark:#1e40af; --success:#16a34a; --danger:#dc2626;
+  --warn:#d97706; --bg:#f1f5f9; --card:#ffffff; --text:#1e293b; --muted:#64748b;
+  --border:#e2e8f0; --correct:#f0fdf4; --wrong:#fef2f2;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);line-height:1.7;}
+.wrap{max-width:880px;margin:0 auto;padding:24px 16px 80px;}
+/* header */
+.header{background:linear-gradient(135deg,#1e3a8a,#2563eb);color:#fff;border-radius:16px;padding:32px 28px;margin-bottom:20px;box-shadow:0 8px 24px rgba(37,99,235,.25);}
+.header h1{font-size:26px;margin-bottom:8px;}
+.header .sub{opacity:.9;font-size:14px;}
+.header .meta{display:flex;gap:16px;flex-wrap:wrap;margin-top:16px;font-size:13px;}
+.header .meta span{background:rgba(255,255,255,.15);padding:4px 12px;border-radius:999px;}
+/* notice */
+.notice{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 22px;margin-bottom:20px;font-size:14px;}
+.notice h3{font-size:15px;margin-bottom:10px;color:var(--primary-dark);}
+.notice li{margin-left:20px;margin-bottom:4px;color:var(--muted);}
+.notice b{color:var(--text);}
+/* sticky bar */
+.sticky{position:sticky;top:0;z-index:50;background:rgba(241,245,249,.95);backdrop-filter:blur(8px);padding:10px 0;margin-bottom:16px;}
+.sticky-inner{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;box-shadow:0 2px 8px rgba(0,0,0,.05);}
+.sticky .info{font-size:13px;color:var(--muted);}
+.sticky .spacer{flex:1;}
+.timer{font-variant-numeric:tabular-nums;font-weight:700;color:var(--primary);font-size:15px;}
+.btn{border:none;cursor:pointer;border-radius:8px;padding:9px 22px;font-size:14px;font-weight:600;transition:.15s;}
+.btn-primary{background:var(--primary);color:#fff;}
+.btn-primary:hover{background:var(--primary-dark);}
+.btn-ghost{background:#fff;color:var(--primary);border:1px solid var(--primary);}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+/* answer sheet */
+.sheet{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 18px;margin-bottom:20px;}
+.sheet h4{font-size:13px;color:var(--muted);margin-bottom:10px;font-weight:600;}
+.sheet-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(40px,1fr));gap:6px;}
+.sheet-item{width:40px;height:36px;border-radius:8px;border:1px solid var(--border);background:#fff;font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.12s;color:var(--muted);}
+.sheet-item.done{background:var(--primary);color:#fff;border-color:var(--primary);}
+.sheet-item.correct{background:var(--success);color:#fff;border-color:var(--success);}
+.sheet-item.wrong{background:var(--danger);color:#fff;border-color:var(--danger);}
+.sheet-item.partial{background:var(--warn);color:#fff;border-color:var(--warn);}
+.sheet-item.pending{background:#cbd5e1;color:#fff;border-color:#cbd5e1;}
+.sheet-item:hover{transform:scale(1.08);}
+/* question card */
+.q-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px 24px;margin-bottom:18px;}
+.q-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;}
+.q-num{background:var(--primary);color:#fff;border-radius:8px;min-width:34px;height:28px;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;padding:0 8px;}
+.q-type{font-size:12px;padding:2px 10px;border-radius:999px;font-weight:600;}
+.t-single{background:#dbeafe;color:#1d4ed8;}
+.t-multi{background:#fce7f3;color:#be185d;}
+.t-judge{background:#fef3c7;color:#b45309;}
+.t-match{background:#ede9fe;color:#6d28d9;}
+.t-short{background:#d1fae5;color:#047857;}
+.q-chap{font-size:12px;color:var(--muted);}
+.q-pts{font-size:12px;color:var(--muted);margin-left:auto;}
+.q-text{font-size:15.5px;font-weight:600;margin-bottom:14px;white-space:pre-wrap;}
+.opts{display:flex;flex-direction:column;gap:8px;}
+.opt{display:flex;gap:10px;align-items:flex-start;border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;cursor:pointer;transition:.12s;font-size:14.5px;background:#fff;}
+.opt:hover{border-color:var(--primary);background:#f8faff;}
+.opt.sel{border-color:var(--primary);background:#eff6ff;}
+.opt .k{font-weight:700;color:var(--primary);flex-shrink:0;}
+.opt.ok{border-color:var(--success);background:var(--correct);}
+.opt.ok .k{color:var(--success);}
+.opt.bad{border-color:var(--danger);background:var(--wrong);}
+.opt.bad .k{color:var(--danger);}
+.opt.lock{cursor:default;}
+/* judge */
+.judge-row{display:flex;gap:10px;}
+.judge-row .opt{flex:1;justify-content:center;font-weight:600;}
+/* match */
+.match-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.match-col h5{font-size:13px;color:var(--muted);margin-bottom:8px;}
+.match-item{border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:8px;font-size:14px;background:#fff;}
+.match-item b{color:var(--primary);}
+.match-item input{width:52px;padding:4px 8px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;text-align:center;font-weight:700;color:var(--primary);}
+.match-item input:focus{outline:none;border-color:var(--primary);}
+.match-item.ok{border-color:var(--success);background:var(--correct);}
+.match-item.bad{border-color:var(--danger);background:var(--wrong);}
+/* short answer */
+.short-ta{width:100%;min-height:150px;border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;font-size:14px;font-family:inherit;resize:vertical;line-height:1.7;}
+.short-ta:focus{outline:none;border-color:var(--primary);}
+.self-grade{margin-top:12px;display:none;align-items:center;gap:10px;background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:12px 14px;font-size:14px;flex-wrap:wrap;}
+.self-grade.show{display:flex;}
+.self-grade select{padding:6px 10px;border-radius:8px;border:1.5px solid var(--border);font-size:14px;}
+/* explain */
+.explain{display:none;margin-top:14px;border-radius:10px;padding:12px 16px;font-size:13.5px;border-left:4px solid var(--primary);background:#f8fafc;}
+.explain.show{display:block;}
+.explain .ans-line{font-weight:700;margin-bottom:6px;}
+.explain.ok{border-left-color:var(--success);background:var(--correct);}
+.explain.bad{border-left-color:var(--danger);background:var(--wrong);}
+.explain .src{color:var(--muted);margin-top:6px;font-size:13px;}
+/* result panel */
+.result-panel{display:none;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:20px;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.06);}
+.result-panel.show{display:block;}
+.score-big{font-size:52px;font-weight:800;color:var(--primary);margin:6px 0;}
+.score-sub{color:var(--muted);font-size:14px;margin-bottom:14px;}
+.stat-row{display:flex;justify-content:center;gap:26px;flex-wrap:wrap;margin:14px 0;}
+.stat-row div{font-size:13px;color:var(--muted);}
+.stat-row b{display:block;font-size:22px;color:var(--text);}
+.footer-note{text-align:center;color:var(--muted);font-size:12px;margin-top:30px;}
+@media(max-width:640px){.match-grid{grid-template-columns:1fr;}.header h1{font-size:20px;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <h1>大数据模拟卷三 · 未来展望 · 研发岗管培生</h1>
+    <div class="sub">侧重第三讲《未来展望》：智能中枢四层 / AI Native 六步 / 证据链六要素 · 考"应用判断"，不考背概念</div>
+    <div class="meta">
+      <span>方向：大数据</span>
+      <span>建议时长：40 分钟</span>
+      <span>题数：20 题 · 总分 80 分</span>
+      <span>题型：单选 12 / 多选 6 / 简答 2</span>
+    </div>
+  </div>
+
+  <div class="notice">
+    <h3>考试说明</h3>
+    <ul>
+      <li>本卷面向<b>大数据方向管培生</b>，重点考查《未来展望》专项：给业务场景，判断四层归属、六步流程、证据链要素错在哪。</li>
+      <li><b>单选 12 题 × 3 分</b>；<b>多选 6 题 × 4 分</b>（漏选得 1 分，错选不得分）；<b>简答 2 题 × 10 分</b>（提交后对照参考答案自评给分）。</li>
+      <li>点击下方答题卡格子可快速跳转到对应题目；已作答题目会高亮。</li>
+      <li>全部作答完后点击「提交判分」，系统自动评分并展示每题解析（含答案解析 + 出题原因，引用培训 PPT 原文）；简答题需按参考要点自行评分并计入总分。</li>
+    </ul>
+  </div>
+
+  <div class="sticky">
+    <div class="sticky-inner">
+      <div class="info">已答 <b id="doneCnt">0</b> / 20</div>
+      <div class="info">用时 <span class="timer" id="timer">00:00</span></div>
+      <div class="spacer"></div>
+      <button class="btn btn-primary" id="submitBtn" onclick="submitExam()">提交判分</button>
+    </div>
+  </div>
+
+  <div class="sheet">
+    <h4>答题卡（点击跳转）</h4>
+    <div class="sheet-grid" id="sheetGrid"></div>
+  </div>
+
+  <div class="result-panel" id="resultPanel">
+    <h2 id="resTitle"></h2>
+    <div class="score-big" id="resScore">0</div>
+    <div class="score-sub" id="resSub"></div>
+    <div class="stat-row" id="resStat"></div>
+    <button class="btn btn-ghost" onclick="location.reload()">重新作答</button>
+  </div>
+
+  <div id="quizArea"></div>
+
+  <div class="footer-note">大数据模拟卷三 · 未来展望 · 研发岗管培生 · 出题依据：大数据培训 01/02/03 三讲知识库（侧重 03 讲）· 每题解析附原文出处与出题原因</div>
+</div>
+
+<script>
+const EXAM_TITLE = "大数据模拟卷三 · 未来展望 · 研发岗管培生";
+
+const questions = [
+// ================= 单选 12 题 × 3分 =================
+{ id:1, type:"single", chap:"智能中枢四层", points:3,
+  q:"某集团新任数据负责人规划未来三年建设，启动会上说：“我们先让 AI 分析和智能质检跑起来出亮点，再去治理口径和血缘，最后补分层和稳定产出。”按未来能力地图，这个规划的问题在哪？",
+  opts:[
+    {k:"A",t:"顺序颠倒：应先有数据底座，再治理可信，然后支撑智能，最后连接行动"},
+    {k:"B",t:"完全正确：先出 AI 亮点更容易争取资源，四层顺序本来就可以灵活调换"},
+    {k:"C",t:"少了一层：能力地图只有治理、智能、行动三层，数据底座不算独立的一层"},
+    {k:"D",t:"层级错配：智能质检属于治理层的工作内容，不应该放到智能层去规划"}
+  ],
+  answer:["A"],
+  explain:"答案解析：03 讲原文「未来能力地图：数据底座、治理层、智能层、行动层」，排序逻辑是「数据先有底座，再治理可信，然后支撑智能分析，最终连接运营动作」。规划把智能放在底座之前，恰好把顺序整个倒过来。B 错在四层是能力递进关系而非可随意调换的并列选项——底座不稳则治理无从谈起，不治理则 AI 分析不可信；C 错在数据底座是明确的第一层（分层、链路、稳定产出）；D 错在智能层的职责正是「AI 分析、智能质检」，归属本身没放错层。<br>📌 出题原因：考"用递进逻辑检验实施路线"的能力。管培生参与规划讨论时最常见的错误就是"先做看得见的智能、后补看不见的底座"，这个考点决定建设顺序是否成立。"
+},
+{ id:2, type:"single", chap:"AI Native六步", points:3,
+  q:"AI Native 流程第一步“识别需求”要求把自然语言先拆成四个要素。对需求“统计最近一个月各部门员工的客户触达效果”，下列拆解完整覆盖四要素的是：",
+  opts:[
+    {k:"A",t:"业务实体=员工与客户，指标=触达效果，粒度=按部门按员工，窗口=最近一个月"},
+    {k:"B",t:"候选表=触达明细表，指标=打开率，粒度=按天，窗口=完整日边界如何取"},
+    {k:"C",t:"业务实体=会话记录，指标=会话总量，粒度=按客户，窗口=按统计日汇总到租户"},
+    {k:"D",t:"候选表=订单原始表，指标=成交量，粒度=按部门，窗口=订单创建时间范围"}
+  ],
+  answer:["A"],
+  explain:"答案解析：03 讲原文「识别需求：自然语言需求先拆业务实体、指标、粒度和窗口」，四要素缺一不可。A 四项齐备且与需求对应。B 和 D 的第一项都是"候选表"——探查候选表是第二步的内容，不是第一步的拆解要素，属于流程步骤错配；C 虽然形式上像四要素，但"指标=会话总量""窗口=按统计日汇总到租户"答非所问（需求问的是触达效果和一个月窗口，且"汇总到租户"是粒度不是窗口）。<br>📌 出题原因：考"拿到一句话需求能不能正确拆口径"的能力。四要素拆错或与第二步混淆，后面生成的 SQL 从源头就是错的，这是 AI Native 流程的地基。"
+},
+{ id:3, type:"single", chap:"AI Native六步", points:3,
+  q:"团队讨论引入 AI 生成 SQL 的风险。下列哪个场景最能说明 PPT 的核心观点“AI 写 SQL 不难，难的是知道这条 SQL 什么时候不该写”？",
+  opts:[
+    {k:"A",t:"AI 生成的 SQL 在测试环境执行报语法错误，人工修改两个关键词后顺利跑通"},
+    {k:"B",t:"AI 半分钟就写出一张日报 SQL，而数据同学手写同样逻辑要花上半小时"},
+    {k:"C",t:"AI 秒速生成一张口径未对齐、选表凭记忆的报表 SQL，并准备直接发布到生产"},
+    {k:"D",t:"AI 记不住上个月新建表的结构，查询了一下 DDL 才把字段名称补全"}
+  ],
+  answer:["C"],
+  explain:"答案解析：核心观点的难点在"语义和边界之外"的风险——口径没对齐、选错表、没验证就上生产，C 把这三类风险同时暴露出来，且"直接发布生产"违反"人工审批，不由 AI 绕过边界"。A 是语法问题——语法正确率已经很高，语法恰恰"不难"；B 是速度问题——速度从来不是难点；D 是查 DDL 的正常动作，恰好符合第二步"探查候选表：看字段、注释、DDL"的要求，不是风险场景。<br>📌 出题原因：考"区分 AI 的能力问题与边界问题"的判断力。把关注点从"AI 写得对不对、快不快"转到"该不该写、该不该发"，是理解整套受控流程存在理由的前提。"
+},
+{ id:4, type:"single", chap:"证据链六要素", points:3,
+  q:"数据团队在整理 AI 分析报告的归档规范。下列哪项的“要素—内容”搭配是完全正确的？",
+  opts:[
+    {k:"A",t:"原始证据：记录本次任务是哪次运行、哪轮模型、哪一版提示词产出的"},
+    {k:"B",t:"质量校验：记录 JSON 合规、证据缺失率、失败率和重复率的检查结果"},
+    {k:"C",t:"复核入口：记录从源表到目标表、再到报告结论的完整上下游链路"},
+    {k:"D",t:"指标引用：记录用户追问时能够回看原始数据和会话原文的通道地址"}
+  ],
+  answer:["B"],
+  explain:"答案解析：01 讲证据链六要素中「质量校验：JSON 合规、证据缺失率、失败率、重复率」，B 完全对应。A 错配——"哪次任务、哪轮模型、哪版提示词"是"模型批次"的内容；C 错配——"从源表到目标表再到结论"是"血缘链路"的内容，复核入口是给用户回查的通道；D 错配——"回看数据和原文的通道"是"复核入口"的内容，指标引用是每个结论对应的统计口径和指标值。三个干扰项全部用真实要素的内容互相调包，只有熟悉各自定义才能识破。<br>📌 出题原因：考"证据链要素的精确归属"。归档时把模型批次当原始证据、把血缘当复核入口，客户追问时就会发现关键材料缺失、次要材料一堆。"
+},
+{ id:5, type:"single", chap:"堆报表困境", points:3,
+  q:"某团队两年里表从 80 张涨到 400 张、任务越跑越密、报表每周新增 3 张，但“哪张表能复用、哪个指标最权威”没人说得清，业务也越来越不敢用数。下列判断最符合 PPT 观点的是：",
+  opts:[
+    {k:"A",t:"应继续加大报表产出量，规模上去之后复用与权威的问题会随着数量自然解决"},
+    {k:"B",t:"说明算力资源不足，多买几台机器、扩容集群之后结果就能重新变得可解释"},
+    {k:"C",t:"表多任务密报表勤不等于建设到位，真正要解决的是稳定复用、权威指标、影响判断、敢相信"},
+    {k:"D",t:"问题出在报表模板视觉风格不统一，先做一套统一美观的报表模板就能治本"}
+  ],
+  answer:["C"],
+  explain:"答案解析：03 讲原文「如果只是多表、多任务、多报表，团队会越来越忙，但结果越来越难解释」，四个真正要解决的问题是：哪张表能复用不能靠口口相传、哪个指标最权威不能到客户问数时才讨论、哪个任务失败会影响客户要能提前判断、AI 结论能不能被信任要看背后证据链——C 完整概括。A 与原文相反（"用数量换质量"正是被否定的做法）；B 错在原文明说「未来不是多买几台机器」，机器解决不了复用与信任；D 是视觉问题，不属于数据建设层面的解法。<br>📌 出题原因：考"从建设量识别建设质量"的能力。管培生进团队后最容易以"又上线了多少张报表"作为产出证明，这个考点纠正以数量代替可信的评估习惯。"
+},
+{ id:6, type:"single", chap:"核心痛点", points:3,
+  q:"运营要还原“一个客户从加好友到成交的完整旅程”，但客户、订单、会话数据分别在企微业务库、交易系统和营销系统里，每次分析都要人工导出再拼 Excel。这最直接暴露的痛点是：",
+  opts:[
+    {k:"A",t:"数据分散：数据分布在多个系统里，单表查询无法还原业务全貌"},
+    {k:"B",t:"查询变慢：业务库不适合长期承受半年报表和复杂分析查询"},
+    {k:"C",t:"口径混乱：同一个客户数、会话数可能存在多种不同的算法"},
+    {k:"D",t:"结果追不回：客户问数字怎么来的，没人能回查到出处和证据"}
+  ],
+  answer:["A"],
+  explain:"答案解析：01 讲四大痛点之一「数据分散：客户、订单、会话、任务配置分布在多个系统里，单表查询无法还原业务全貌」，典型场景正是"做经营分析要人工导出三个系统的表再拼 Excel"，与题干完全一致。B 的干扰在于数据确实"在多个系统查起来麻烦"，但题干没说查询慢、没说拖垮业务库；C/D 是真实痛点，但场景里既没有算法打架、也没有客户质疑数字来源，不能脑补。<br>📌 出题原因：考"按场景证据归类痛点"而不是按感觉归类。痛点判断是所有后续方案（建底座、分层、证据链）的起点，判断错则方案全错。"
+},
+{ id:7, type:"single", chap:"数仓分层", points:3,
+  q:"团队在评审数仓分层设计，四位同学对四层职责的描述中，正确的是：",
+  opts:[
+    {k:"A",t:"ODS 面向页面、报表、客户交付和 AI 分析，产出应用侧直接消费的结果"},
+    {k:"B",t:"DWD 把原始数据整理成可分析的事实明细，明细可数、可对账"},
+    {k:"C",t:"DWS 尽量保留业务表原貌，出问题可回到与源系统一致的这一层重跑"},
+    {k:"D",t:"ADS 沉淀常用公共统计，让同一统计不重复开发、口径天然统一"}
+  ],
+  answer:["B"],
+  explain:"答案解析：01 讲分层职责表：「DWD 明细层：把原始数据整理成可分析的事实明细（事件级）」，验证时"明细可数、可对账（如 90 个事件行）"，B 正确。A 是 ADS 的职责错装到 ODS 头上；C 是 ODS 的职责（保留原貌、贴源）错装到 DWS；D 是 DWS 的职责（沉淀常用公共统计、口径统一）错装到 ADS。三个干扰项都是真实职责的真实描述，只是层位互换——靠"最长像答案"的直觉做不对，必须真懂各层分工。<br>📌 出题原因：考四层职责的精确区分。分层是"让每一步能复核"的载体，层职责混淆会直接导致对账对象选错（拿 ADS 行数去对 DWD 事件数就是典型后果）。"
+},
+{ id:8, type:"single", chap:"口径翻译", points:3,
+  q:"业务方要看“上个月员工一共给客户打了多少次标签”。小王没有多问，直接统计打标签接口的请求数 420 次就上报了；而核对后发现当月成功新增标签事件有 500 个。数字对不上的最可能原因是：",
+  opts:[
+    {k:"A",t:"请求数把失败的请求也统计了进去，剔除失败请求数后两个数字必然相等"},
+    {k:"B",t:"一个请求可能包含多个标签动作，请求数天然会低于真实的动作次数"},
+    {k:"C",t:"成功新增标签事件数对动作做了去重处理，所以数字反而比请求数更大"},
+    {k:"D",t:"请求数统计的是用了多少种标签，回答的是与动作次数不同的业务问题"}
+  ],
+  answer:["B"],
+  explain:"答案解析：02 讲口径表明确写着「请求数：一个请求可能包含多个标签动作」，所以 420 个请求完全可能承载 500 个标签动作，请求数会低估动作量，B 正确。A 的"剔除失败必然相等"没有依据——即使全部成功，一个请求仍可含多个动作；C 说反了——事件数是逐次记录的动作，"去重"恰恰是组合数、去重客户数这些口径的特征；D 错配——"用了多少种标签"是去重标签数的回答对象。知识库同时强调最终采用的口径是「成功新增标签事件数：最贴近员工打标签这个动作」。<br>📌 出题原因：考五口径中"请求数陷阱"的机理理解。这是最容易被当成"现成好统计"的口径，错用它上报会让所有部门排行集体失真。"
+},
+{ id:9, type:"single", chap:"AI Native六步", points:3,
+  q:"AI 助手深夜自动巡检时发现一张 ADS 汇总表数据异常，它生成了修复 SQL，并以“避免影响早上报表产出”为理由，跳过流程直接在生产环境执行了。按 AI Native 受控开发的要求，这最主要违反了什么？",
+  opts:[
+    {k:"A",t:"违反“人工审批”：生产发布必须进入受保护系统，不由 AI 绕过边界，人是最后一道 gate"},
+    {k:"B",t:"违反“识别需求”：修改数据之前必须先拆业务实体、指标、粒度和窗口这四个要素"},
+    {k:"C",t:"违反“test preview”：任何修复 SQL 都必须先在测试环境验证语法正确后再执行"},
+    {k:"D",t:"没有违反流程：自动巡检后自动修数属于行动层职责，本来就是免审批的场景"}
+  ],
+  answer:["A"],
+  explain:"答案解析：03 讲六步流程的终点是「人工审批：生产发布进入受保护系统，不由 AI 绕过边界」——AI 自己找理由（哪怕是"为报表好"的理由）直接改生产，正是这条红线要防的场景，A 正确。B/D 是干扰：B 的四要素拆解确实存在，但本题违规点不在需求拆解；D 把"行动层的自动巡检"偷换成"自动改生产数据"——行动层连接运营动作不等于 AI 可以绕过审批改受保护系统。C 缩小了问题——preview 验证的是"结构、数据和质量风险"，不只是语法。<br>📌 出题原因：考"人机边界"的判断。AI 越能干，"它自己决定动生产"的诱惑越大，这道题检验学生是否把人工审批当作不可谈判的最后一道关卡。"
+},
+{ id:10, type:"single", chap:"智能中枢四层", points:3,
+  q:"年中汇报上，关于“报表”在未来大数据建设中的定位，下列说法正确的是：",
+  opts:[
+    {k:"A",t:"报表是数据唯一的出口，只要报表体系建好建全，大数据的建设就算到位了"},
+    {k:"B",t:"报表将不再重要，未来 AI 分析会完全取代报表，成为唯一的数据消费出口"},
+    {k:"C",t:"报表仍然重要但它只是出口之一，AI 分析、运营动作、客户洞察、自动巡检都会成为数据出口"},
+    {k:"D",t:"报表的价值主要体现在页面美观上，出口数量的多少取决于可视化模板丰富度"}
+  ],
+  answer:["C"],
+  explain:"答案解析：03 讲原文「报表仍然重要，但它只是出口之一。数据还要连接 AI、运营动作和用户洞察」，收束页又强调「AI 分析、运营动作、客户洞察、自动巡检都会成为数据出口」，C 与原文完全一致。A 是"报表唯一出口论"，被原文明确否定；B 走向另一个极端——原文说报表"仍然重要"，没有被取代；D 把出口问题降格成视觉模板问题，与数据流向无关。<br>📌 出题原因：考"出口多元化"的认知。只盯报表的团队会把智能中枢建死在第一层，看不到行动层和智能层的业务价值，这是规划视野题。"
+},
+{ id:11, type:"single", chap:"运维与治理", points:3,
+  q:"因合规要求需要删除某批客户的会话数据。工程师只在 DWD 层删掉了原始消息就提交结单。按 PPT 对“会话删除治理”的要求，这个处理的问题在于：",
+  opts:[
+    {k:"A",t:"删除顺序不对：应该从 ODS 开始逐层向下删，DWD 先删会破坏与源系统的一致性"},
+    {k:"B",t:"删得不完整：不能只删 DWD 原始消息，上层 DWS、ADS 和报表也要同步处理或重算"},
+    {k:"C",t:"会话属于原始证据：任何一层都无权物理删除，只能做脱敏和掩码处理"},
+    {k:"D",t:"DWD 是面向应用的一层：它上面的 DWS、ADS 都是明细层，删除后下游不受影响"}
+  ],
+  answer:["B"],
+  explain:"答案解析：03 讲原文「会话删除治理：不能只删 DWD 原始消息，上层 DWS、ADS 和报表也要同步处理或重算」——一处删除、层层联动，B 正确。A 编造了"从 ODS 逐层向下删"的顺序规则，原文没有此要求；C 编造了"只能脱敏不能删"的限制，原文讨论的就是删除场景如何做全；D 直接颠倒了 DWD（明细层）与 ADS（应用层）的职责，属于分层错配。<br>📌 出题原因：考"分层是有代价的：跨层联动"的理解。学生通常只记得分层的好处，忽略一处变更会层层传导——这恰是血缘与影响分析要解决的核心场景。"
+},
+{ id:12, type:"single", chap:"运维与治理", points:3,
+  q:"上周集群推送了 300 多条告警，值班同学全部已读但一条没处理，大家吐槽“告警发了等于没发”。按 PPT 观点，告警改进的正确方向是：",
+  opts:[
+    {k:"A",t:"提高告警的发送频率，把每个任务的每次心跳和波动都及时推送到群里"},
+    {k:"B",t:"大幅降低告警总量，只保留凌晨批处理任务失败这一类最重要的再推送"},
+    {k:"C",t:"让告警更准：每条都带影响范围、原因线索和建议动作，而不是把群消息发得更多"},
+    {k:"D",t:"把告警群按数据表拆成 10 个分组群，让海量消息分散到不同渠道去消化"}
+  ],
+  answer:["C"],
+  explain:"答案解析：03 讲原文「告警要更准：不是把群消息发得更多，而是带影响范围、原因线索和建议动作」，C 是原文的直接对应。A 与原文方向完全相反；B 看似"降噪"，但简单砍量会漏掉数据延迟、慢查询、资源高这些同样要管的对象（原文列举的运维自动化范围包括任务失败、数据延迟、Doris 慢查询、资源持续高、补跑影响范围）；D 只是把噪音换个地方分发，没有增加任何判断信息。<br>📌 出题原因：考"从噪音治理到信息密度"的思路转变。告警改进的直觉答案多是"发更多"或"发更少"，原文给出的是第三条路——每条告警自带可执行的判断依据。"
+},
+// ================= 多选 6 题 × 4分 =================
+{ id:13, type:"multi", chap:"智能中枢四层", points:4,
+  q:"【多选】某公司发布未来三年数据能力规划书，其中关于智能中枢四层的表述，与“未来能力地图”含义相符的有：（漏选得 1 分，错选不得分）",
+  opts:[
+    {k:"A",t:"数据底座：先解决分层、链路和稳定产出，是其余各层得以成立的前提"},
+    {k:"B",t:"治理层：让口径权威、血缘清晰、能做影响分析，把数据治理得可信"},
+    {k:"C",t:"智能层：直接承接运营动作和自动巡检，把洞察自动执行到业务一线"},
+    {k:"D",t:"行动层：连接运营动作与自动巡检，让智能层产出的洞察产生业务价值"}
+  ],
+  answer:["A","B","D"],
+  explain:"答案解析：03 讲四层地图——数据底座（1，分层、链路、稳定产出）、治理层（2，口径权威、血缘、影响分析）、智能层（3，AI 分析、智能质检）、行动层（4，运营动作、自动巡检）。A、B、D 分别与各层定义对应。C 的错配很隐蔽：智能层的职责是"支撑 AI 分析、智能质检"，而"承接运营动作、自动巡检、把洞察执行到位"是行动层的职责——C 把行动层的活安到了智能层头上，前半句"智能层"三个字是真的，后半句归属是错的。<br>📌 出题原因：考四层"层名—职责"的精确归属。多选强干扰设计：C 的每个词都来自知识库，只有层位判断错误，必须真懂递进关系才能识破。"
+},
+{ id:14, type:"multi", chap:"AI Native六步", points:4,
+  q:"【多选】关于 AI Native 受控开发六步流程，下列说法正确的有：（漏选得 1 分，错选不得分）",
+  opts:[
+    {k:"A",t:"第一步识别需求：自然语言需求先拆业务实体、指标、粒度和窗口四要素"},
+    {k:"B",t:"第二步探查候选表：看字段、注释、DDL、已有 SQL、调度和样例数据，不凭记忆选表"},
+    {k:"C",t:"第五步独立 Review：让生成 SQL 的同一个 AI 自查口径、依赖、权限、补跑和证据链即可"},
+    {k:"D",t:"第六步人工审批：生产发布进入受保护系统，不由 AI 绕过边界，人是最后一道 gate"}
+  ],
+  answer:["A","B","D"],
+  explain:"答案解析：A 对应原文「识别需求：自然语言需求先拆业务实体、指标、粒度和窗口」；B 对应「探查候选表：看字段、注释、DDL、已有 SQL、调度和样例数据」；D 对应「人工审批：生产发布进入受保护系统，不由 AI 绕过边界」。C 的陷阱在"独立"二字——独立 Review 的价值在于「独立于生成方，防自说自话」，检查项（口径、依赖、权限、补跑、证据链）列得全对，但"由生成方自己查"恰好摧毁了这一步存在的意义，属于细节处见真伪的强干扰项。<br>📌 出题原因：考六步流程中"谁来做"与"做什么"的双重记忆。检查项背得出、执行主体搞错，流程就形同虚设——这是受控流程最容易被偷偷破坏的地方。"
+},
+{ id:15, type:"multi", chap:"证据链六要素", points:4,
+  q:"【多选·场景】客户在季度汇报上质疑 AI 客户之声分析的结论：“‘售后响应慢是 Top1 痛点’这个结论凭什么成立？”按证据链要求，下列哪些材料能支撑客户完成复核？（漏选得 1 分，错选不得分）",
+  opts:[
+    {k:"A",t:"该结论的统计口径、样本范围、占比和明细数（指标引用）"},
+    {k:"B",t:"支撑结论的会话原文片段和样本，以及本次任务、模型、提示词的批次版本"},
+    {k:"C",t:"这批分析的质量校验结果（失败率、空结果、证据缺失率）和任务运行日志"},
+    {k:"D",t:"AI 给出的置信度分数、模型参数量，以及报告页面可视化美观度的评分"}
+  ],
+  answer:["A","B","C"],
+  explain:"答案解析：证据链六要素中，A 覆盖「指标引用（统计口径、样本范围、占比和明细数）」，B 覆盖「原文证据（会话片段和样本）」和「模型批次（模型、提示词、任务批次和版本）」，C 覆盖「质量校验（失败率、空结果、证据缺失率）」和「运行记录（任务日志）」。D 是双重陷阱：置信度分数和模型参数量是技术参数，不构成业务证据；美观度评分正是原文警惕的「没有证据链的 AI 结论，越流畅越容易让人放松警惕」——越漂亮越要追问数据从哪来。<br>📌 出题原因：考"客户质疑现场能不能拿出正确材料"的实战能力。D 类材料在真实汇报里最常被拿来救场，这道题训练学生识别"技术指标冒充业务证据"。"
+},
+{ id:16, type:"multi", chap:"运维与治理", points:4,
+  q:"【多选】关于“运维和治理：从事后处理变成影响分析”，下列说法或做法符合 PPT 观点的有：（漏选得 1 分，错选不得分）",
+  opts:[
+    {k:"A",t:"字段变更、会话删除、口径调整之前，先通过血缘知道下游波及面，判断是否需要重算"},
+    {k:"B",t:"任务失败、数据延迟、Doris 慢查询、资源持续高、补跑影响范围，都应纳入运维自动化"},
+    {k:"C",t:"告警把群消息发得越多越勤，就越能说明这套系统的运维自动化水平高"},
+    {k:"D",t:"会话删除只需删掉 DWD 原始消息即可，上层 DWS、ADS 与报表等次日重跑自然恢复正确"}
+  ],
+  answer:["A","B"],
+  explain:"答案解析：A 对应原文「任务失败、数据删除、字段变更、口径调整，都应该先知道影响范围」，影响分析依赖血缘链路；B 对应运维自动化的原文范围「任务失败、数据延迟、Doris 慢查询、资源持续高、补跑影响范围」。C 与原文「告警要更准：不是把群消息发得更多，而是带影响范围、原因线索和建议动作」完全相反；D 与原文「不能只删 DWD 原始消息，上层 DWS、ADS 和报表也要同步处理或重算」相反——"等重跑自然恢复"是编造的安抚性说法，不删上层已产出的错误数字，报表会一直错下去。<br>📌 出题原因：考"从事后救火到事前判断"的治理范式。C/D 都用听起来合理的偷懒方案做干扰，检验学生是否记住"先知道影响范围"这根主线。"
+},
+{ id:17, type:"multi", chap:"证据链六要素", points:4,
+  q:"【多选】01 讲与 03 讲都给出了证据链六要素，对照两版表述，下列说法正确的有：（漏选得 1 分，错选不得分）",
+  opts:[
+    {k:"A",t:"两版核心一致：每个 AI 结论都能回溯到数据、原文、模型和运行记录"},
+    {k:"B",t:"03 讲把 01 讲的“血缘链路”要素表述换成了“运行记录”，并细化了各要素的内容"},
+    {k:"C",t:"指标引用、模型批次、质量校验、复核入口这四个要素在两版六要素中都有出现"},
+    {k:"D",t:"证据链只是 01 讲的过渡性说法，03 讲已经用“人工审批”环节替代了证据链要求"}
+  ],
+  answer:["A","B","C"],
+  explain:"答案解析：知识库明确指出两处对照记忆的方法：01 讲为「原始证据/指标引用/模型批次/质量校验/血缘链路/复核入口」，03 讲为「指标引用/原文证据/模型批次/质量校验/运行记录/复核入口」，「核心不变：每个 AI 结论可回溯到数据、原文、模型和运行记录」——A 对；「03 讲将'血缘链路'换成'运行记录'并细化表述」——B 对；两版交集四要素（指标引用/模型批次/质量校验/复核入口）——C 对。D 是概念错配的强干扰：人工审批是 AI Native 六步流程的第六步，证据链是智能分析结论的配套要求，两者并行不悖，不存在替代关系。<br>📌 出题原因：考跨章节对照整合能力。两处表述略有差异，只会背其中一版的学生遇到另一版就会怀疑"教材打架"，这道题检验是否抓住"结论可回溯"这一不变内核。"
+},
+{ id:18, type:"multi", chap:"未来方向收束", points:4,
+  q:"【多选】关于大数据的未来方向，下列说法符合 03 讲收束观点的有：（漏选得 1 分，错选不得分）",
+  opts:[
+    {k:"A",t:"未来的大数据不是更大，而是更可信、更自动、更可复用"},
+    {k:"B",t:"真正的目标是让数据能说清楚自己是谁、从哪里来、为什么可信"},
+    {k:"C",t:"AI 分析、运营动作、客户洞察、自动巡检都会成为数据出口，报表只是出口之一"},
+    {k:"D",t:"只要数据规模持续变大、机器越买越多，平台就自然会走向智能中枢"}
+  ],
+  answer:["A","B","C"],
+  explain:"答案解析：A 对应收束要点「未来的大数据不是更大，而是更可信、更自动、更可复用」；B 对应「真正的目标：让数据说清楚自己是谁、从哪里来、为什么可信」；C 对应「AI 分析、运营动作、客户洞察、自动巡检都会成为数据出口」与「报表仍然重要，但它只是出口之一」。D 与堆报表困境的原文判断相反：「如果只是多表、多任务、多报表，团队会越来越忙，但结果越来越难解释」「未来不是多买几台机器」——规模堆砌不仅不会自然走向智能中枢，反而会加剧不可解释。<br>📌 出题原因：考"发展方向是质变而非量变"的总判断。D 代表了"加机器解决一切"的流行错觉，用收束观点反制规模迷信，是第三讲的价值主轴。"
+},
+// ================= 简答 2 题 × 10分 =================
+{ id:19, type:"short", chap:"证据链六要素", points:10,
+  q:"【简答·自评】AI 分析报告在客户月度汇报上被质疑：“这个结论凭什么让我信？”请列出证据链六要素中至少 4 个要素，并分别说明每个要素在“让客户敢复核、敢相信”这件事上起什么作用。",
+  refAnswer:"证据链六要素（01 讲版本：原始证据 / 指标引用 / 模型批次 / 质量校验 / 血缘链路 / 复核入口；03 讲将血缘链路表述为运行记录，核心一致）：① 原始证据（会话原文、样本范围、过滤规则）——让结论能回到原始材料，客户不用“信”而能自己看；② 指标引用（每个结论对应的统计口径和指标值）——说清数字是怎么算出来的，排除口径歧义；③ 模型批次（哪次任务、哪轮模型、哪版提示词）——锁定结论是哪一次运行产出的，可精确复现；④ 质量校验（JSON 合规、证据缺失率、失败率、重复率）——证明这批产出本身质量可控，不是带着伤上会的；⑤ 血缘链路 / 运行记录（从源表到目标表到结论 / 任务日志、重试、人工修正）——支持逐层回查，任何一环出问题都能定位；⑥ 复核入口（客户追问时能回看数据和原文）——给客户一条自助回查的通道，而不是每次都要找工程师。评分：每个“要素 + 作用说明”2.5 分，答出任意 4 个且作用说明正确即得满分 10 分；只列要素名不说明作用每个最多得 1 分。",
+  explain:"答案解析：本题考查证据链六要素的内容与各自的作用，出处为 01 讲「AI 时代更需要证据链」六要素表与 03 讲「智能分析必须带证据链」六要素表（两版核心一致：结论可回溯）。<br>📌 出题原因：考"从背要素到用要素"的转化。客户质疑是微盛场景里最高频的实战时刻（对应痛点"结果追不回"），能当场按要素组织出复核材料，才算真正理解证据链为什么存在。"
+},
+{ id:20, type:"short", chap:"AI Native六步", points:10,
+  q:"【简答·流程设计】需求来了：“让 AI 每周一自动生成上周各部门‘新增好友与打标签动作’的周报 SQL，并产出汇总表。”请按 AI Native 受控开发六步流程，逐步说明每一步在这个需求里具体要做什么。",
+  refAnswer:"参考答案（六步逐条）：① 识别需求：把自然语言拆成四要素——业务实体（部门/员工/客户/标签动作）、指标（新增好友数、打标签动作量即“成功新增标签事件数”）、粒度（按部门、按租户、按周）、窗口（上周的完整日边界如何取）；② 探查候选表：查看好友关系表、标签事件相关表的字段、注释、DDL、已有 SQL、调度信息和样例数据，不凭记忆选表；③ 生成设计：输出表间血缘、任务 DAG、幂等规则（重跑覆盖）和校验规则（粒度重复为 0、空部门为 0、上下游对账）；④ test preview：先在测试环境验证表结构、数据和质量风险，不直接碰生产；⑤ 独立 Review：由独立于生成方的人/角色检查口径、依赖、权限、补跑方案和证据链是否齐备；⑥ 人工审批：人工确认后生产发布，AI 不绕过边界。评分：每步约 1.5-2 分，六步全部写出且每步落到本需求的具体动作（而不是只抄步骤名）给满分；只写步骤名不结合需求每步最多 0.5 分；能点出“指标最终采用成功新增标签事件数而非请求数”等口径细节可酌情补足分数。",
+  explain:"答案解析：本题把 03 讲六步流程（识别需求→探查候选表→生成设计→test preview→独立 Review→人工审批）与 02 讲口径知识（五口径、最终采用成功新增标签事件数）、对账要求（粒度重复为 0、空部门为 0）串联考核，出处为 03 讲第 4 页与 02 讲第 4、5 页。<br>📌 出题原因：考"流程落地"能力——学生不是背六步名词，而是把一个具体需求放进六步里走通，这正是未来 AI Native 开发场景下研发岗的日常工作形态。"
+}
+];
+
+// ============ state ============
+const state = { answers:{}, match:{}, short:{}, submitted:false };
+const TYPE_NAME = {single:"单选",multi:"多选",judge:"判断",match:"匹配",short:"简答"};
+
+// ============ render ============
+function render(){
+  const area = document.getElementById("quizArea");
+  let html = "";
+  questions.forEach(q=>{
+    html += `<div class="q-card" id="q${q.id}">`;
+    html += `<div class="q-head"><span class="q-num">${q.id}</span><span class="q-type t-${q.type}">${TYPE_NAME[q.type]}</span><span class="q-chap">${q.chap}</span><span class="q-pts">${q.points} 分</span></div>`;
+    html += `<div class="q-text">${q.q}</div>`;
+    if(q.type==="single"||q.type==="multi"||q.type==="judge"){
+      const multi = q.type==="multi";
+      html += `<div class="${q.type==='judge'?'judge-row':'opts'}">`;
+      q.opts.forEach(o=>{
+        html += `<div class="opt" data-q="${q.id}" data-k="${o.k}" onclick="pick(${q.id},'${o.k}',${multi})"><span class="k">${o.k}</span><span>${o.t}</span></div>`;
+      });
+      html += `</div>`;
+    } else if(q.type==="match"){
+      html += `<div class="match-grid"><div class="match-col"><h5>典型场景（左侧）</h5>`;
+      q.matchLeft.forEach((m,i)=>{
+        html += `<div class="match-item" id="mi${q.id}_${i}"><b>${i+1}.</b> ${m.label}　→　类型编号：<input maxlength="1" inputmode="numeric" oninput="matchInput(${q.id},${i},this.value)"></div>`;
+      });
+      html += `</div><div class="match-col"><h5>需求类型（右侧候选）</h5>`;
+      [["1","统计报表：员工标签统计、部门排行等"],["2","运营分析：运营看板、触达效果等"],["3","AI 分析：VOC 月报、智能质检等"],["4","客户交付：数据迁移、历史核查等"]].forEach(p=>{
+        html += `<div class="match-item"><b>${p[0]}</b> ${p[1]}</div>`;
+      });
+      html += `</div></div>`;
+    } else if(q.type==="short"){
+      html += `<textarea class="short-ta" id="shortTa${q.id}" placeholder="在此作答……" oninput="state.short['${q.id}']=this.value;updateSheet()"></textarea>`;
+      html += `<div class="self-grade" id="selfGrade${q.id}"><span>对照参考答案，自评给分（0-${q.points}）：</span><select id="selfScore${q.id}" onchange="applySelf(${q.id})"><option value="">选择分数</option>`;
+      for(let i=0;i<=q.points;i++) html += `<option value="${i}">${i} 分</option>`;
+      html += `</select><span id="selfTotal${q.id}" style="font-weight:700;color:var(--warn)"></span></div>`;
+    }
+    html += `<div class="explain" id="ex${q.id}"></div>`;
+    html += `</div>`;
+  });
+  area.innerHTML = html;
+  renderSheet();
+}
+
+function renderSheet(){
+  const grid = document.getElementById("sheetGrid");
+  grid.innerHTML = questions.map(q=>`<div class="sheet-item" id="sh${q.id}" onclick="document.getElementById('q${q.id}').scrollIntoView({behavior:'smooth',block:'center'})">${q.id}</div>`).join("");
+  updateSheet();
+}
+
+function isDone(q){
+  if(q.type==="single"||q.type==="multi"||q.type==="judge") return !!(state.answers[q.id]&&state.answers[q.id].length);
+  if(q.type==="match") return q.matchLeft.every((m,i)=>state.match[q.id+"_"+i]);
+  if(q.type==="short") return !!((state.short[q.id]||"").trim().length>0);
+  return false;
+}
+function updateSheet(){
+  let done=0;
+  questions.forEach(q=>{
+    const el=document.getElementById("sh"+q.id);
+    if(el) el.className="sheet-item"+(isDone(q)?" done":"");
+    if(isDone(q)) done++;
+  });
+  document.getElementById("doneCnt").textContent=done;
+}
+
+function pick(id,k,multi){
+  if(state.submitted) return;
+  if(!state.answers[id]) state.answers[id]=[];
+  const arr=state.answers[id];
+  const i=arr.indexOf(k);
+  if(multi){ i>=0?arr.splice(i,1):arr.push(k); }
+  else { arr.length=0; arr.push(k); }
+  document.querySelectorAll(`.opt[data-q="${id}"]`).forEach(o=>o.classList.toggle("sel",arr.includes(o.dataset.k)));
+  updateSheet();
+}
+function matchInput(id,i,v){
+  if(state.submitted){render();return;}
+  state.match[id+"_"+i]=v;
+  updateSheet();
+}
+
+// ============ grading ============
+function gradeQ(q){
+  if(q.type==="single"||q.type==="judge"){
+    const a=(state.answers[q.id]||[])[0];
+    return {score: a===q.answer[0]?q.points:0, correct: a===q.answer[0], user:a??"未作答"};
+  }
+  if(q.type==="multi"){
+    const sel=state.answers[q.id]||[];
+    const user=sel.slice().sort().join("")||"未作答";
+    if(!sel.length) return {score:0, correct:false, user};
+    const hasWrong=sel.some(k=>!q.answer.includes(k));
+    const hasMissed=q.answer.some(k=>!sel.includes(k));
+    if(!hasWrong&&!hasMissed) return {score:q.points, correct:true, user};
+    if(!hasWrong&&hasMissed) return {score:1, correct:false, partial:true, user}; // 漏选得1分
+    return {score:0, correct:false, user}; // 错选不得分
+  }
+  if(q.type==="match"){
+    let hit=0;
+    q.matchLeft.forEach((m,i)=>{ if(String(state.match[q.id+"_"+i]||"").trim()===m.expect) hit++; });
+    const per=q.points/q.matchLeft.length;
+    return {score:hit*per, correct:hit===q.matchLeft.length, partial:hit>0&&hit<q.matchLeft.length, user:"见题面"};
+  }
+  return {score:0, correct:null, user:"自评"};
+}
+
+function submitExam(){
+  const unanswered = questions.filter(q=>!isDone(q)).length;
+  if(!state.submitted && unanswered>0 && !confirm(`还有 ${unanswered} 题未作答，确定提交判分吗？`)) return;
+  state.submitted=true;
+  document.getElementById("submitBtn").disabled=true;
+
+  let auto=0, autoFull=0, autoQ=0, correctCnt=0;
+  questions.forEach(q=>{
+    const g=gradeQ(q);
+    if(q.type!=="short"){
+      auto+=g.score; autoQ++;
+      if(g.correct) correctCnt++;
+      if(g.score===q.points) autoFull++;
+    }
+    showExplain(q,g);
+  });
+
+  const panel=document.getElementById("resultPanel");
+  const autoTotal = questions.filter(q=>q.type!=="short").reduce((s,q)=>s+q.points,0);
+  const shortQs = questions.filter(q=>q.type==="short");
+  const shortPts = shortQs.reduce((s,q)=>s+q.points,0);
+  const TOTAL = questions.reduce((s,q)=>s+q.points,0);
+  const saveBtn = `<button class="btn btn-primary" style="margin-left:12px" onclick="applySelfAll(${auto},${TOTAL})">已自评简答，计入总分</button>`;
+  document.getElementById("resTitle").textContent = auto>=autoTotal*0.8?"成绩不错！":"已提交判分";
+  document.getElementById("resScore").textContent = `${auto} / ${TOTAL}`;
+  document.getElementById("resSub").innerHTML = `客观题（单选/多选）自动判分：<b>${auto} / ${autoTotal}</b>（多选漏选得 1 分、错选不得分）；简答题共 ${shortPts} 分（题 ${shortQs.map(q=>q.id).join("、")}），请对照参考答案逐题自评。${saveBtn}`;
+  document.getElementById("resStat").innerHTML = `<div><b>${correctCnt}/${autoQ}</b>客观题全对</div><div><b>${autoFull}/${autoQ}</b>拿满分</div><div><b>${TOTAL}</b>卷面总分</div>`;
+  panel.classList.add("show");
+  panel.scrollIntoView({behavior:"smooth"});
+
+  // reveal short self-grade
+  shortQs.forEach(q=>document.getElementById("selfGrade"+q.id).classList.add("show"));
+  // lock inputs
+  document.querySelectorAll(".opt").forEach(o=>o.classList.add("lock"));
+  updateSheetAfter(auto);
+  window._autoScore = auto; window._totalScore = TOTAL;
+}
+
+function applySelfAll(auto,total){
+  let self=0;
+  questions.filter(q=>q.type==="short").forEach(q=>{
+    const el=document.getElementById("selfScore"+q.id);
+    if(el&&el.value) self+=Number(el.value);
+  });
+  const fin = auto + self;
+  document.getElementById("resScore").textContent = `${fin} / ${total}`;
+  document.getElementById("resSub").innerHTML = `客观题 ${auto} 分 + 简答自评 ${self} 分 = 最终得分 <b>${fin} / ${total}</b>。`;
+  questions.filter(q=>q.type==="short").forEach(q=>{
+    const el=document.getElementById("selfScore"+q.id);
+    if(el) document.getElementById("selfTotal"+q.id).textContent = `已计入：本题自评 ${el.value||0} 分`;
+  });
+}
+function applySelf(id){
+  const el=document.getElementById("selfScore"+id);
+  const v=Number((el&&el.value)||0);
+  const t=document.getElementById("selfTotal"+id);
+  if(t) t.textContent=`自评 ${v} 分（点上方按钮计入总分）`;
+}
+
+function showExplain(q,g){
+  const ex=document.getElementById("ex"+q.id);
+  let ansText="";
+  if(q.type==="single"||q.type==="judge") ansText=`正确答案：${q.answer[0]}`;
+  else if(q.type==="multi") ansText=`正确答案：${q.answer.join("")}`;
+  else if(q.type==="match") ansText=`正确答案：${q.matchLeft.map((m,i)=>`${i+1}→${m.expect}`).join("；")}`;
+  else ansText=`参考答案要点（自评）：`;
+  let extra="";
+  if(q.type==="short") extra=`<div style="margin-top:8px;background:#fff;padding:10px;border-radius:8px;border:1px solid #fde68a"><b>参考答案：</b>${q.refAnswer}</div>`;
+  if(q.type==="match") extra=`<div>你的作答：${q.matchLeft.map((m,i)=>`${i+1}→${String(state.match[q.id+"_"+i]||"?").trim()||"?"}`).join("；")}</div>`;
+  ex.className="explain show "+(g.correct===true?"ok":g.correct===false?"bad":"");
+  ex.innerHTML=`<div class="ans-line">${ansText}　<span style="color:var(--muted);font-weight:400">（你的作答：${g.user}，本题得 ${g.score} / ${q.points} 分）</span></div>${extra}<div class="src">${q.explain}</div>`;
+  // option coloring for choice questions
+  if(q.type==="single"||q.type==="multi"||q.type==="judge"){
+    document.querySelectorAll(`.opt[data-q="${q.id}"]`).forEach(o=>{
+      o.classList.remove("sel");
+      if(q.answer.includes(o.dataset.k)) o.classList.add("ok");
+      else if((state.answers[q.id]||[]).includes(o.dataset.k)) o.classList.add("bad");
+    });
+  }
+  if(q.type==="match"){
+    q.matchLeft.forEach((m,i)=>{
+      const el=document.getElementById(`mi${q.id}_${i}`);
+      const v=String(state.match[q.id+"_"+i]||"").trim();
+      el.classList.add(v===m.expect?"ok":"bad");
+      const inp=el.querySelector("input"); if(inp) inp.disabled=true;
+    });
+  }
+}
+
+function updateSheetAfter(){
+  questions.forEach(q=>{
+    const g=gradeQ(q);
+    const el=document.getElementById("sh"+q.id);
+    if(!el) return;
+    if(g.correct===true) el.className="sheet-item correct";
+    else if(g.correct===false&&g.score>0) el.className="sheet-item partial";
+    else if(g.correct===false) el.className="sheet-item wrong";
+    else el.className="sheet-item pending";
+  });
+}
+
+// ============ timer ============
+let sec=0;
+setInterval(()=>{
+  sec++;
+  const m=String(Math.floor(sec/60)).padStart(2,"0"), s=String(sec%60).padStart(2,"0");
+  document.getElementById("timer").textContent=`${m}:${s}`;
+},1000);
+
+render();
+</script>
+</body>
+</html>

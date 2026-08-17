@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>大数据考试 · 研发岗管培生</title>
+<style>
+:root{
+  --primary:#2563eb; --primary-dark:#1e40af; --success:#16a34a; --danger:#dc2626;
+  --warn:#d97706; --bg:#f1f5f9; --card:#ffffff; --text:#1e293b; --muted:#64748b;
+  --border:#e2e8f0; --correct:#f0fdf4; --wrong:#fef2f2;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);line-height:1.7;}
+.wrap{max-width:880px;margin:0 auto;padding:24px 16px 80px;}
+/* header */
+.header{background:linear-gradient(135deg,#1e3a8a,#2563eb);color:#fff;border-radius:16px;padding:32px 28px;margin-bottom:20px;box-shadow:0 8px 24px rgba(37,99,235,.25);}
+.header h1{font-size:26px;margin-bottom:8px;}
+.header .sub{opacity:.9;font-size:14px;}
+.header .meta{display:flex;gap:16px;flex-wrap:wrap;margin-top:16px;font-size:13px;}
+.header .meta span{background:rgba(255,255,255,.15);padding:4px 12px;border-radius:999px;}
+/* notice */
+.notice{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 22px;margin-bottom:20px;font-size:14px;}
+.notice h3{font-size:15px;margin-bottom:10px;color:var(--primary-dark);}
+.notice li{margin-left:20px;margin-bottom:4px;color:var(--muted);}
+.notice b{color:var(--text);}
+/* sticky bar */
+.sticky{position:sticky;top:0;z-index:50;background:rgba(241,245,249,.95);backdrop-filter:blur(8px);padding:10px 0;margin-bottom:16px;}
+.sticky-inner{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;box-shadow:0 2px 8px rgba(0,0,0,.05);}
+.sticky .info{font-size:13px;color:var(--muted);}
+.sticky .spacer{flex:1;}
+.timer{font-variant-numeric:tabular-nums;font-weight:700;color:var(--primary);font-size:15px;}
+.btn{border:none;cursor:pointer;border-radius:8px;padding:9px 22px;font-size:14px;font-weight:600;transition:.15s;}
+.btn-primary{background:var(--primary);color:#fff;}
+.btn-primary:hover{background:var(--primary-dark);}
+.btn-ghost{background:#fff;color:var(--primary);border:1px solid var(--primary);}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+/* answer sheet */
+.sheet{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 18px;margin-bottom:20px;}
+.sheet h4{font-size:13px;color:var(--muted);margin-bottom:10px;font-weight:600;}
+.sheet-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(40px,1fr));gap:6px;}
+.sheet-item{width:40px;height:36px;border-radius:8px;border:1px solid var(--border);background:#fff;font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.12s;color:var(--muted);}
+.sheet-item.done{background:var(--primary);color:#fff;border-color:var(--primary);}
+.sheet-item.correct{background:var(--success);color:#fff;border-color:var(--success);}
+.sheet-item.wrong{background:var(--danger);color:#fff;border-color:var(--danger);}
+.sheet-item.partial{background:var(--warn);color:#fff;border-color:var(--warn);}
+.sheet-item.pending{background:#cbd5e1;color:#fff;border-color:#cbd5e1;}
+.sheet-item:hover{transform:scale(1.08);}
+/* question card */
+.q-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px 24px;margin-bottom:18px;}
+.q-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;}
+.q-num{background:var(--primary);color:#fff;border-radius:8px;min-width:34px;height:28px;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;padding:0 8px;}
+.q-type{font-size:12px;padding:2px 10px;border-radius:999px;font-weight:600;}
+.t-single{background:#dbeafe;color:#1d4ed8;}
+.t-multi{background:#fce7f3;color:#be185d;}
+.t-judge{background:#fef3c7;color:#b45309;}
+.t-match{background:#ede9fe;color:#6d28d9;}
+.t-short{background:#d1fae5;color:#047857;}
+.q-chap{font-size:12px;color:var(--muted);}
+.q-pts{font-size:12px;color:var(--muted);margin-left:auto;}
+.q-text{font-size:15.5px;font-weight:600;margin-bottom:14px;white-space:pre-wrap;}
+.opts{display:flex;flex-direction:column;gap:8px;}
+.opt{display:flex;gap:10px;align-items:flex-start;border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;cursor:pointer;transition:.12s;font-size:14.5px;background:#fff;}
+.opt:hover{border-color:var(--primary);background:#f8faff;}
+.opt.sel{border-color:var(--primary);background:#eff6ff;}
+.opt .k{font-weight:700;color:var(--primary);flex-shrink:0;}
+.opt.ok{border-color:var(--success);background:var(--correct);}
+.opt.ok .k{color:var(--success);}
+.opt.bad{border-color:var(--danger);background:var(--wrong);}
+.opt.bad .k{color:var(--danger);}
+.opt.lock{cursor:default;}
+/* judge */
+.judge-row{display:flex;gap:10px;}
+.judge-row .opt{flex:1;justify-content:center;font-weight:600;}
+/* match */
+.match-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.match-col h5{font-size:13px;color:var(--muted);margin-bottom:8px;}
+.match-item{border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:8px;font-size:14px;background:#fff;}
+.match-item b{color:var(--primary);}
+.match-item input{width:52px;padding:4px 8px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;text-align:center;font-weight:700;color:var(--primary);}
+.match-item input:focus{outline:none;border-color:var(--primary);}
+.match-item.ok{border-color:var(--success);background:var(--correct);}
+.match-item.bad{border-color:var(--danger);background:var(--wrong);}
+/* short answer */
+.short-ta{width:100%;min-height:150px;border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;font-size:14px;font-family:inherit;resize:vertical;line-height:1.7;}
+.short-ta:focus{outline:none;border-color:var(--primary);}
+.self-grade{margin-top:12px;display:none;align-items:center;gap:10px;background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:12px 14px;font-size:14px;flex-wrap:wrap;}
+.self-grade.show{display:flex;}
+.self-grade select{padding:6px 10px;border-radius:8px;border:1.5px solid var(--border);font-size:14px;}
+/* explain */
+.explain{display:none;margin-top:14px;border-radius:10px;padding:12px 16px;font-size:13.5px;border-left:4px solid var(--primary);background:#f8fafc;}
+.explain.show{display:block;}
+.explain .ans-line{font-weight:700;margin-bottom:6px;}
+.explain.ok{border-left-color:var(--success);background:var(--correct);}
+.explain.bad{border-left-color:var(--danger);background:var(--wrong);}
+.explain .src{color:var(--muted);margin-top:6px;font-size:13px;}
+/* result panel */
+.result-panel{display:none;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:20px;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.06);}
+.result-panel.show{display:block;}
+.score-big{font-size:52px;font-weight:800;color:var(--primary);margin:6px 0;}
+.score-sub{color:var(--muted);font-size:14px;margin-bottom:14px;}
+.stat-row{display:flex;justify-content:center;gap:26px;flex-wrap:wrap;margin:14px 0;}
+.stat-row div{font-size:13px;color:var(--muted);}
+.stat-row b{display:block;font-size:22px;color:var(--text);}
+.footer-note{text-align:center;color:var(--muted);font-size:12px;margin-top:30px;}
+@media(max-width:640px){.match-grid{grid-template-columns:1fr;}.header h1{font-size:20px;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <h1>大数据考试 · 研发岗管培生</h1>
+    <div class="sub">范围：大数据基础与演进 / 微盛大数据实践 / 未来展望 · 考"应用判断"，不考背概念</div>
+    <div class="meta">
+      <span>方向：大数据</span>
+      <span>建议时长：35 分钟</span>
+      <span>题数：20 题 · 总分 65 分</span>
+      <span>题型：单选 / 多选 / 判断 / 匹配 / 简答</span>
+    </div>
+  </div>
+
+  <div class="notice">
+    <h3>考试说明</h3>
+    <ul>
+      <li>本卷面向<b>大数据方向管培生</b>，重点考查场景应用判断：给业务场景，判断该用什么口径、走哪层数仓、违反了什么原则。</li>
+      <li><b>单选 9 题 × 3 分</b>；<b>多选 5 题 × 4 分</b>（多选/漏选均不得分）；<b>判断 4 题 × 2 分</b>；<b>匹配 1 题 × 4 分</b>（每空 1 分）；<b>简答 1 题 × 6 分</b>（提交后对照参考答案自评给分）。</li>
+      <li>点击下方答题卡格子可快速跳转到对应题目；已作答题目会高亮。</li>
+      <li>全部作答完后点击「提交判分」，系统自动评分并展示每题解析（解析引用培训 PPT 原文）；简答题需按参考要点自行评分并计入总分。</li>
+    </ul>
+  </div>
+
+  <div class="sticky">
+    <div class="sticky-inner">
+      <div class="info">已答 <b id="doneCnt">0</b> / 20</div>
+      <div class="info">用时 <span class="timer" id="timer">00:00</span></div>
+      <div class="spacer"></div>
+      <button class="btn btn-primary" id="submitBtn" onclick="submitExam()">提交判分</button>
+    </div>
+  </div>
+
+  <div class="sheet">
+    <h4>答题卡（点击跳转）</h4>
+    <div class="sheet-grid" id="sheetGrid"></div>
+  </div>
+
+  <div class="result-panel" id="resultPanel">
+    <h2 id="resTitle"></h2>
+    <div class="score-big" id="resScore">0</div>
+    <div class="score-sub" id="resSub"></div>
+    <div class="stat-row" id="resStat"></div>
+    <button class="btn btn-ghost" onclick="location.reload()">重新作答</button>
+  </div>
+
+  <div id="quizArea"></div>
+
+  <div class="footer-note">大数据考试 · 研发岗管培生 · 出题依据：大数据培训 01/02/03 三讲 PPT · 每题解析附原文出处</div>
+</div>
+
+<script>
+const EXAM_TITLE = "大数据考试 · 研发岗管培生";
+
+const questions = [
+// ================= 单选 9 题 × 3分 =================
+{ id:1, type:"single", chap:"基础演进", points:3,
+  q:"新入职的分析同学说：“数据量超过 100G，Excel 打不开了，所以我们才需要大数据平台。”下列哪项最准确地指出了这句话的问题？",
+  opts:[
+    {k:"A",t:"没问题，大数据的核心定义就是数据量超过单机处理能力"},
+    {k:"B",t:"问题不在文件多大，而在业务能不能稳定看数、解释数、复用数"},
+    {k:"C",t:"Excel 其实能打开 100G，所以前提就错了"},
+    {k:"D",t:"大数据平台的意义是让报表页面更好看"}
+  ],
+  answer:["B"],
+  explain:"PPT 原文（01 第2页）：「大数据不是 Excel 打不开。真正的问题不是文件有多大，而是业务能不能稳定看数、解释数、复用数。」数据量只是表象，数据分散、查询变慢、口径混乱、结果追不回才是真问题。"
+},
+{ id:2, type:"single", chap:"基础演进", points:3,
+  q:"某团队把客户表、订单表、会话表分别存在三个系统里，每次做经营分析都要人工导出再拼 Excel。这直接对应大数据要解决的哪一类痛点？",
+  opts:[
+    {k:"A",t:"查询变慢：业务库不适合复杂分析查询"},
+    {k:"B",t:"数据分散：单表查询无法还原业务全貌"},
+    {k:"C",t:"口径混乱：同一指标有不同算法"},
+    {k:"D",t:"结果追不回：无法回到来源表和原始证据"}
+  ],
+  answer:["B"],
+  explain:"PPT 原文（01 第2页）：「数据分散：客户、订单、会话、任务配置分布在多个系统里，单表查询无法还原业务全貌。」题目场景是数据分布多系统、需人工拼接，正是数据分散。"
+},
+{ id:3, type:"single", chap:"基础演进", points:3,
+  q:"关于数仓分层（ODS / DWD / DWS / ADS）的目的，下列说法最准确的是：",
+  opts:[
+    {k:"A",t:"分层是为了显得专业、对标业界标准架构"},
+    {k:"B",t:"分层是为了让每一步能复核，把问题拆开"},
+    {k:"C",t:"分层主要是为了减少存储成本，越分层越省磁盘"},
+    {k:"D",t:"分层是为了让 SQL 写起来更简短"}
+  ],
+  answer:["B"],
+  explain:"PPT 原文（01 第4页）：「数仓分层把问题拆开。分层不是为了显得专业，而是为了让每一步能复核。」ODS 保留业务表原貌，DWD 整理成可分析的事实明细，DWS 沉淀常用公共统计，ADS 面向页面、报表、客户交付和 AI 分析。"
+},
+{ id:4, type:"single", chap:"微盛实践", points:3,
+  q:"需求方提出：“把每天凌晨跑好的 T+1 销售汇总给老板看，同时老板还希望随时查某个客户近半年的订单明细。”如果业务库已经因为这类查询明显变慢，正确的做法是：",
+  opts:[
+    {k:"A",t:"给业务库加索引和读库，继续在业务库上支撑两类查询"},
+    {k:"B",t:"报表走离线数仓 T+1，明细查询走分析引擎（OLAP），业务库专注在线操作"},
+    {k:"C",t:"让老板等到第二天看 T+1 明细报表"},
+    {k:"D",t:"把半年数据同步到 Excel 本地查询"}
+  ],
+  answer:["B"],
+  explain:"PPT 原文（01 第2、5页）：「查询变慢：业务库适合在线操作，不适合长期承受半年报表和复杂分析查询」「离线、实时和 OLAP 不是互相替代，而是分别承担不同查询和加工压力」，且「先判断业务要 T+1、小时级还是分钟级」。不同时效和复杂度的需求应由不同链路承担。"
+},
+{ id:5, type:"single", chap:"微盛实践", points:3,
+  q:"业务方提需求：“按部门统计员工给客户打标签的数量。”数据同学没问口径，直接按“去重客户数”写完上线，结果业务方说数字不对。这件事的核心教训是：",
+  opts:[
+    {k:"A",t:"SQL 写得不够快，应该用更高效的引擎"},
+    {k:"B",t:"一句需求可能有多种算法，必须先把口径对齐再动手"},
+    {k:"C",t:"应该先上线，等业务反馈后再慢慢改"},
+    {k:"D",t:"去重客户数这个算法本身是错的，永远不该用"}
+  ],
+  answer:["B"],
+  explain:"PPT 原文（02 第4页）：「一句需求不能直接写 SQL。‘按部门统计员工给客户打标签的数量’至少有五种算法，必须先定口径。」去重客户数、去重标签数、客户-标签组合数、请求数、成功新增标签事件数各有含义，没有对错，只有是否回答了业务问题。"
+},
+{ id:6, type:"single", chap:"微盛实践", points:3,
+  q:"同上需求，团队最终采用了“成功新增标签事件数”作为口径。上线后要验证任务是否正确，下列哪种验收方式符合 PPT 的做法？",
+  opts:[
+    {k:"A",t:"目标表有数据、行数不为 0 就算通过"},
+    {k:"B",t:"用上下游对账：ADS 汇总指标合计能对上 DWD 明细事件数，且粒度重复为 0"},
+    {k:"C",t:"把结果给业务方看一眼，没有投诉就算通过"},
+    {k:"D",t:"比对上周的数字，波动不大就算通过"}
+  ],
+  answer:["B"],
+  explain:"PPT 原文（02 第5页）：「目标表有数据不算通过，关键是能证明明细和汇总对得上。验证逻辑：6 行 ADS 指标合计仍然等于上游 90 个成功新增标签事件」，且「目标粒度重复为 0，空部门为 0」。上下游对账 + 粒度校验才是可验证的验收。"
+},
+{ id:7, type:"single", chap:"未来展望", points:3,
+  q:"关于 AI 写 SQL，PPT 的核心观点是“AI 写 SQL 不难，难的是知道这条 SQL 什么时候不该写”。下列哪项最能体现这个难点被解决？",
+  opts:[
+    {k:"A",t:"AI 生成的 SQL 语法完全正确，执行不报错"},
+    {k:"B",t:"AI 生成速度比人快十倍"},
+    {k:"C",t:"先拆业务实体、指标、粒度和窗口，探查候选表，经 test preview、独立 Review 和人工审批后才进生产"},
+    {k:"D",t:"AI 能记住所有历史表结构，不用查 DDL"}
+  ],
+  answer:["C"],
+  explain:"PPT 原文（03 第4页）：「AI Native 开发必须受控」，流程为：识别需求（拆业务实体、指标、粒度和窗口）→ 探查候选表 → 生成设计 → test preview → 独立 Review → 人工审批，「生产发布进入受保护系统，不由 AI 绕过边界」。"
+},
+{ id:8, type:"single", chap:"未来展望", points:3,
+  q:"客户在月度汇报上质疑 AI 分析报告的结论。按“智能分析必须带证据链”的要求，下列哪组要素能支撑客户复核这个结论？",
+  opts:[
+    {k:"A",t:"结论文字 + 漂亮的数据可视化图表"},
+    {k:"B",t:"统计口径与样本范围、支撑结论的会话原文片段、模型与提示词批次、运行记录和复核入口"},
+    {k:"C",t:"AI 的置信度分数和模型参数量"},
+    {k:"D",t:"报告生成的日期和作者署名"}
+  ],
+  answer:["B"],
+  explain:"PPT 原文（03 第6页）：「没有证据链的 AI 结论，越流畅越容易让人放松警惕。」证据链包括：指标引用（统计口径、样本范围、占比和明细数）、原文证据（会话片段和样本）、模型批次（模型、提示词、任务批次和版本）、质量校验、运行记录、复核入口（用户追问时能回看数据和原文）。"
+},
+{ id:9, type:"single", chap:"未来展望", points:3,
+  q:"“大数据要变成智能中枢”中，关于未来能力地图的四层，下列排序和含义正确的是：",
+  opts:[
+    {k:"A",t:"数据底座 → 治理层 → 智能层 → 行动层"},
+    {k:"B",t:"治理层 → 数据底座 → 行动层 → 智能层"},
+    {k:"C",t:"智能层 → 行动层 → 数据底座 → 治理层"},
+    {k:"D",t:"行动层 → 智能层 → 治理层 → 数据底座"}
+  ],
+  answer:["A"],
+  explain:"PPT 原文（03 第3页）：「未来能力地图：数据底座、治理层、智能层、行动层。」数据先有底座，再治理可信，然后支撑智能分析，最终连接运营动作——报表只是出口之一。"
+},
+// ================= 多选 5 题 × 4分 =================
+{ id:10, type:"multi", chap:"基础演进", points:4,
+  q:"【多选】下列场景中，哪些属于 PPT 总结的大数据要解决的核心痛点？（多选，错选漏选均不得分）",
+  opts:[
+    {k:"A",t:"同一个“客户数”，销售用成交口径、客服用加好友口径，每次开会都要吵一遍"},
+    {k:"B",t:"半年报表 SQL 一跑二十分钟，还把在线下单拖慢了"},
+    {k:"C",t:"报表模板的字体不符合公司 VI 规范"},
+    {k:"D",t:"客户问“这个数怎么来的”，没人能回查到来源表、任务和批次"}
+  ],
+  answer:["A","B","D"],
+  explain:"PPT 原文（01 第2页）四大痛点：数据分散、查询变慢、口径混乱、结果追不回。A 对应口径混乱（「同一个客户数、会话数、标签数可能有不同算法，不先对齐就会反复返工」），B 对应查询变慢（「业务库适合在线操作，不适合长期承受半年报表和复杂分析查询」），D 对应结果追不回（「必须能回到来源表、任务、批次和原始证据」）。C 是视觉规范问题，不属于数据痛点。"
+},
+{ id:11, type:"multi", chap:"微盛实践", points:4,
+  q:"【多选·场景辨析】运营同学提需求：“我要一个看板，能按客户所属行业看员工触达客户后的效果，比如打开率、回复率，用来优化触达策略。”这个需求属于哪类？做口径翻译时至少要先定哪些要素？（多选）",
+  opts:[
+    {k:"A",t:"属于“运营分析”类需求（对应运营看板、客户触达效果）"},
+    {k:"B",t:"属于“统计报表”类需求，因为最终会展示成报表"},
+    {k:"C",t:"要先定义“触达”的业务动作和指标口径（什么算一次触达、什么算打开）"},
+    {k:"D",t:"要定统计粒度和时间窗口（按客户/按员工/按天/按周）"}
+  ],
+  answer:["A","C","D"],
+  explain:"PPT 原文（02 第2页）：运营分析的典型场景是「运营看板、客户列表、员工行为分析、客户触达效果」，故 A 对、B 错；且「看起来是四类需求，实际都绕不开同一件事：先翻译口径」（02 第2页），口径要素参照 03 第4页「识别需求：自然语言需求先拆业务实体、指标、粒度和窗口」。"
+},
+{ id:12, type:"multi", chap:"微盛实践", points:4,
+  q:"【多选】“按部门统计员工给客户打标签的数量”一句需求存在多种候选口径。关于各口径回答的问题，下列说法正确的有：（多选）",
+  opts:[
+    {k:"A",t:"去重客户数回答的是“多少客户被打过标签”，不是动作次数"},
+    {k:"B",t:"去重标签数回答的是“用了多少种标签”"},
+    {k:"C",t:"客户-标签组合数会合并真实的多次动作"},
+    {k:"D",t:"请求数最贴近“员工打标签”这个动作，所以最终采用它"}
+  ],
+  answer:["A","B","C"],
+  explain:"PPT 原文（02 第4页）口径判断表：「去重客户数：回答的是多少客户被打过标签，不是动作次数」「去重标签数：回答的是用了多少种标签」「客户-标签组合数：会合并真实多次动作」「请求数：一个请求可能包含多个标签动作」「成功新增标签事件数：最贴近员工打标签这个动作，最终采用」。D 错在最终采用的是“成功新增标签事件数”而非请求数。"
+},
+{ id:13, type:"multi", chap:"基础演进", points:4,
+  q:"【多选】AI 时代的数据底座被要求“更可复核”。下列哪些要素属于 PPT 列出的证据链内容？（多选）",
+  opts:[
+    {k:"A",t:"原始证据：会话原文、样本范围、过滤规则"},
+    {k:"B",t:"指标引用：每个结论对应的统计口径和指标值"},
+    {k:"C",t:"模型批次：哪次任务、哪轮模型、哪版提示词"},
+    {k:"D",t:"血缘链路：从源表到目标表，再到报告结论"}
+  ],
+  answer:["A","B","C","D"],
+  explain:"PPT 原文（01 第6页）「AI 时代更需要证据链」列出六要素：原始证据、指标引用、模型批次、质量校验（JSON 合规、证据缺失率、失败率、重复率）、血缘链路、复核入口（客户追问时能回查原文和运行记录）。四项全部在列。"
+},
+{ id:14, type:"multi", chap:"未来展望", points:4,
+  q:"【多选·场景辨析】某团队一年内表越建越多、任务越跑越密、报表越出越勤，但内部却越来越乱：不知道哪张表能复用、哪个指标最权威。下列判断符合 PPT 观点的有：（多选）",
+  opts:[
+    {k:"A",t:"这说明“未来不是多买几台机器”——只堆表、堆任务、堆报表，团队会越来越忙，但结果越来越难解释"},
+    {k:"B",t:"哪张表能复用不能靠口口相传，哪个指标最权威不能到客户问数时才讨论"},
+    {k:"C",t:"哪个任务失败会影响客户，要能提前判断"},
+    {k:"D",t:"解决办法是继续加大报表产出量，用数量换质量"}
+  ],
+  answer:["A","B","C"],
+  explain:"PPT 原文（03 第2页）：「如果只是多表、多任务、多报表，团队会越来越忙，但结果越来越难解释。哪张表能复用，不能靠口口相传。哪个指标最权威，不能到客户问数时才讨论。哪个任务失败会影响客户，要能提前判断。」真正要解决的是「数据能否稳定复用、自动发现问题、支撑 AI，并让内部和用户都敢相信」，而非继续堆报表。"
+},
+// ================= 判断 4 题 × 2分 =================
+{ id:15, type:"judge", chap:"基础演进", points:2,
+  q:"判断：大数据的核心就是“数据量大”，只要数据规模够大就需要大数据平台。",
+  opts:[{k:"对",t:"对"},{k:"错",t:"错"}],
+  answer:["错"],
+  explain:"PPT 原文（01 第2页）：「大数据不是 Excel 打不开。真正的问题不是文件有多大，而是业务能不能稳定看数、解释数、复用数。」数据量只是表象，核心是稳定看数、解释数、复用数。"
+},
+{ id:16, type:"judge", chap:"微盛实践", points:2,
+  q:"判断：口径可以先按自己理解写 SQL 跑起来，业务方觉得不对再改，反正迭代很快。",
+  opts:[{k:"对",t:"对"},{k:"错",t:"错"}],
+  answer:["错"],
+  explain:"PPT 原文（02 第4页）：「一句需求不能直接写 SQL……必须先定口径」；01 第2页也强调口径混乱时「不先对齐就会反复返工」。先跑再定只会反复返工、口径漂移。"
+},
+{ id:17, type:"judge", chap:"未来展望", points:2,
+  q:"判断：只要把报表做好，大数据建设就到位了，报表是数据唯一的出口。",
+  opts:[{k:"对",t:"对"},{k:"错",t:"错"}],
+  answer:["错"],
+  explain:"PPT 原文（03 第3页）：「报表仍然重要，但它只是出口之一。数据还要连接 AI、运营动作和用户洞察」；03 第7页：「AI 分析、运营动作、客户洞察、自动巡检都会成为数据出口」。"
+},
+{ id:18, type:"judge", chap:"未来展望", points:2,
+  q:"判断：AI 写 SQL 的真正难点不是语法，而是知道这条 SQL 什么时候不该写。",
+  opts:[{k:"对",t:"对"},{k:"错",t:"错"}],
+  answer:["对"],
+  explain:"PPT 原文（03 第4页）：「AI 写 SQL 不难，难的是知道这条 SQL 什么时候不该写。」所以要经过识别需求、探查候选表、test preview、独立 Review、人工审批的受控流程，「不由 AI 绕过边界」。"
+},
+// ================= 匹配 1 题 × 4分 =================
+{ id:19, type:"match", chap:"微盛实践", points:4,
+  q:"【匹配】将四类需求与其典型场景一一对应。在每行输入框中填写左侧场景对应的类型编号（1=统计报表，2=运营分析，3=AI 分析，4=客户交付）。",
+  matchLeft:[
+    {label:"员工标签统计、部门排行", expect:"1"},
+    {label:"运营看板、客户触达效果分析", expect:"2"},
+    {label:"vivo VOC 月报、痛痒爽分析、智能质检", expect:"3"},
+    {label:"私有化数据迁移、客户定制报表、历史核查", expect:"4"}
+  ],
+  explain:"PPT 原文（02 第2页）：统计报表——「员工标签统计、新增好友与会话统计、商机明细日统计、部门排行」；运营分析——「运营看板、客户列表、员工行为分析、客户触达效果」；AI 分析——「vivo VOC 月报、痛痒爽分析、智能质检、话题洞察」；客户交付——「私有化数据迁移、客户定制报表、历史核查、问数解释」。"
+},
+// ================= 简答 1 题 × 6分 =================
+{ id:20, type:"short", chap:"微盛实践", points:6,
+  q:"【简答·自评】业务方丢来一句需求：“按部门统计员工给客户打标签的数量。”请回答：(1) 为什么不能拿到这句话就直接写 SQL？(2) 动手前必须先和业务方对齐哪些口径要素？请至少写出 5 个。",
+  refAnswer:"(1) 因为这句话至少存在五种算法（去重客户数/去重标签数/客户-标签组合数/请求数/成功新增标签事件数），不同算法回答的是完全不同的问题，不先对齐口径就会反复返工、口径漂移。(2) 至少要对齐：① 业务实体（统计谁：员工、客户、标签动作）；② 指标定义（打标签的数量到底指什么动作，最终采用“成功新增标签事件数”）；③ 统计粒度（按部门/租户/统计日汇总）；④ 时间窗口（哪个统计日、完整日边界如何取）；⑤ 去重与过滤规则（成功才计入、粒度重复为 0、空部门为 0、失败/删除是否排除）。答对“不能直接写 SQL 的原因”给 2 分，口径要素每条 1 分（至多 4 分），共 6 分。",
+  explain:"PPT 原文（02 第4页）：「‘按部门统计员工给客户打标签的数量’至少有五种算法，必须先定口径」；02 第5页对账要求「按统计日、租户、部门汇总」「目标粒度重复为 0，空部门为 0」；03 第4页：「自然语言需求先拆业务实体、指标、粒度和窗口」。"
+}
+];
+
+// ============ state ============
+const state = { answers:{}, match:{}, short:"", submitted:false };
+const TYPE_NAME = {single:"单选",multi:"多选",judge:"判断",match:"匹配",short:"简答"};
+
+// ============ render ============
+function render(){
+  const area = document.getElementById("quizArea");
+  let html = "";
+  questions.forEach(q=>{
+    html += `<div class="q-card" id="q${q.id}">`;
+    html += `<div class="q-head"><span class="q-num">${q.id}</span><span class="q-type t-${q.type}">${TYPE_NAME[q.type]}</span><span class="q-chap">${q.chap}</span><span class="q-pts">${q.points} 分</span></div>`;
+    html += `<div class="q-text">${q.q}</div>`;
+    if(q.type==="single"||q.type==="multi"||q.type==="judge"){
+      const multi = q.type==="multi";
+      html += `<div class="${q.type==='judge'?'judge-row':'opts'}">`;
+      q.opts.forEach(o=>{
+        html += `<div class="opt" data-q="${q.id}" data-k="${o.k}" onclick="pick(${q.id},'${o.k}',${multi})"><span class="k">${o.k}</span><span>${o.t}</span></div>`;
+      });
+      html += `</div>`;
+    } else if(q.type==="match"){
+      html += `<div class="match-grid"><div class="match-col"><h5>典型场景（左侧）</h5>`;
+      q.matchLeft.forEach((m,i)=>{
+        html += `<div class="match-item" id="mi${q.id}_${i}"><b>${i+1}.</b> ${m.label}　→　类型编号：<input maxlength="1" inputmode="numeric" oninput="matchInput(${q.id},${i},this.value)"></div>`;
+      });
+      html += `</div><div class="match-col"><h5>需求类型（右侧候选）</h5>`;
+      [["1","统计报表：员工标签统计、部门排行等"],["2","运营分析：运营看板、触达效果等"],["3","AI 分析：VOC 月报、智能质检等"],["4","客户交付：数据迁移、历史核查等"]].forEach(p=>{
+        html += `<div class="match-item"><b>${p[0]}</b> ${p[1]}</div>`;
+      });
+      html += `</div></div>`;
+    } else if(q.type==="short"){
+      html += `<textarea class="short-ta" id="shortTa" placeholder="在此作答……" oninput="state.short=this.value;updateSheet()"></textarea>`;
+      html += `<div class="self-grade" id="selfGrade"><span>对照参考答案，自评给分：</span><select id="selfScore" onchange="applySelf()"><option value="">选择分数</option>`;
+      for(let i=0;i<=q.points;i++) html += `<option value="${i}">${i} 分</option>`;
+      html += `</select><span id="selfTotal" style="font-weight:700;color:var(--warn)"></span></div>`;
+    }
+    html += `<div class="explain" id="ex${q.id}"></div>`;
+    html += `</div>`;
+  });
+  area.innerHTML = html;
+  renderSheet();
+}
+
+function renderSheet(){
+  const grid = document.getElementById("sheetGrid");
+  grid.innerHTML = questions.map(q=>`<div class="sheet-item" id="sh${q.id}" onclick="document.getElementById('q${q.id}').scrollIntoView({behavior:'smooth',block:'center'})">${q.id}</div>`).join("");
+  updateSheet();
+}
+
+function isDone(q){
+  if(q.type==="single"||q.type==="multi"||q.type==="judge") return !!(state.answers[q.id]&&state.answers[q.id].length);
+  if(q.type==="match") return q.matchLeft.every((m,i)=>state.match[q.id+"_"+i]);
+  if(q.type==="short") return state.short.trim().length>0;
+  return false;
+}
+function updateSheet(){
+  let done=0;
+  questions.forEach(q=>{
+    const el=document.getElementById("sh"+q.id);
+    if(el) el.className="sheet-item"+(isDone(q)?" done":"");
+    if(isDone(q)) done++;
+  });
+  document.getElementById("doneCnt").textContent=done;
+}
+
+function pick(id,k,multi){
+  if(state.submitted) return;
+  if(!state.answers[id]) state.answers[id]=[];
+  const arr=state.answers[id];
+  const i=arr.indexOf(k);
+  if(multi){ i>=0?arr.splice(i,1):arr.push(k); }
+  else { arr.length=0; arr.push(k); }
+  document.querySelectorAll(`.opt[data-q="${id}"]`).forEach(o=>o.classList.toggle("sel",arr.includes(o.dataset.k)));
+  updateSheet();
+}
+function matchInput(id,i,v){
+  if(state.submitted){render();return;}
+  state.match[id+"_"+i]=v;
+  updateSheet();
+}
+
+// ============ grading ============
+function gradeQ(q){
+  if(q.type==="single"||q.type==="judge"){
+    const a=(state.answers[q.id]||[])[0];
+    return {score: a===q.answer[0]?q.points:0, correct: a===q.answer[0], user:a??"未作答"};
+  }
+  if(q.type==="multi"){
+    const a=(state.answers[q.id]||[]).slice().sort().join("");
+    const c=q.answer.slice().sort().join("");
+    const ok=a===c;
+    return {score: ok?q.points:0, correct:ok, user:a||"未作答"};
+  }
+  if(q.type==="match"){
+    let hit=0;
+    q.matchLeft.forEach((m,i)=>{ if(String(state.match[q.id+"_"+i]||"").trim()===m.expect) hit++; });
+    const per=q.points/q.matchLeft.length;
+    return {score:hit*per, correct:hit===q.matchLeft.length, partial:hit>0&&hit<q.matchLeft.length, user:"见题面"};
+  }
+  return {score:0, correct:null, user:"自评"};
+}
+
+function submitExam(){
+  const unanswered = questions.filter(q=>!isDone(q)).length;
+  if(!state.submitted && unanswered>0 && !confirm(`还有 ${unanswered} 题未作答，确定提交判分吗？`)) return;
+  state.submitted=true;
+  document.getElementById("submitBtn").disabled=true;
+
+  let auto=0, autoFull=0, autoQ=0, correctCnt=0;
+  questions.forEach(q=>{
+    const g=gradeQ(q);
+    if(q.type!=="short"){
+      auto+=g.score; autoQ++;
+      if(g.correct) correctCnt++;
+      if(g.score===q.points) autoFull++;
+    }
+    showExplain(q,g);
+  });
+
+  const panel=document.getElementById("resultPanel");
+  const autoTotal = questions.filter(q=>q.type!=="short").reduce((s,q)=>s+q.points,0);
+  const shortQ = questions.find(q=>q.type==="short");
+  const TOTAL = questions.reduce((s,q)=>s+q.points,0);
+  const saveBtn = `<button class="btn btn-primary" style="margin-left:12px" onclick="applySelfAll(${auto},${TOTAL})">已自评简答，计入总分</button>`;
+  document.getElementById("resTitle").textContent = auto>=autoTotal*0.8?"成绩不错！":"已提交判分";
+  document.getElementById("resScore").textContent = `${auto} / ${TOTAL}`;
+  document.getElementById("resSub").innerHTML = `客观题（单选/多选/判断/匹配）自动判分：<b>${auto} / ${autoTotal}</b>；简答题 ${shortQ.points} 分请对照参考答案在题 ${shortQ.id} 处自评。${saveBtn}`;
+  document.getElementById("resStat").innerHTML = `<div><b>${correctCnt}/${autoQ}</b>客观题全对</div><div><b>${autoFull}/${autoQ}</b>拿满分</div><div><b>${TOTAL}</b>卷面总分</div>`;
+  panel.classList.add("show");
+  panel.scrollIntoView({behavior:"smooth"});
+
+  // reveal short self-grade
+  document.getElementById("selfGrade").classList.add("show");
+  // lock inputs
+  document.querySelectorAll(".opt").forEach(o=>o.classList.add("lock"));
+  updateSheetAfter(auto);
+  window._autoScore = auto; window._totalScore = TOTAL;
+}
+
+function applySelfAll(auto,total){
+  const v=document.getElementById("selfScore").value;
+  const fin = auto + (v?Number(v):0);
+  document.getElementById("resScore").textContent = `${fin} / ${total}`;
+  document.getElementById("resSub").innerHTML = `客观题 ${auto} 分 + 简答自评 ${v?Number(v):0} 分 = 最终得分 <b>${fin} / ${total}</b>。`;
+  document.getElementById("selfTotal").textContent = `已计入：简答 ${v||0} 分`;
+}
+function applySelf(){
+  const v=Number(document.getElementById("selfScore").value||0);
+  document.getElementById("selfTotal").textContent = `自评 ${v} 分（点上方按钮计入总分）`;
+}
+
+function showExplain(q,g){
+  const ex=document.getElementById("ex"+q.id);
+  let ansText="";
+  if(q.type==="single"||q.type==="judge") ansText=`正确答案：${q.answer[0]}`;
+  else if(q.type==="multi") ansText=`正确答案：${q.answer.join("")}`;
+  else if(q.type==="match") ansText=`正确答案：${q.matchLeft.map((m,i)=>`${i+1}→${m.expect}`).join("；")}`;
+  else ansText=`参考答案要点（自评）：`;
+  let extra="";
+  if(q.type==="short") extra=`<div style="margin-top:8px;background:#fff;padding:10px;border-radius:8px;border:1px solid #fde68a"><b>参考答案：</b>${q.refAnswer}</div>`;
+  if(q.type==="match") extra=`<div>你的作答：${q.matchLeft.map((m,i)=>`${i+1}→${String(state.match[q.id+"_"+i]||"?").trim()||"?"}`).join("；")}</div>`;
+  ex.className="explain show "+(g.correct===true?"ok":g.correct===false?"bad":"");
+  ex.innerHTML=`<div class="ans-line">${ansText}　<span style="color:var(--muted);font-weight:400">（你的作答：${g.user}，本题得 ${g.score} / ${q.points} 分）</span></div>${extra}<div class="src">${q.explain}</div>`;
+  // option coloring for choice questions
+  if(q.type==="single"||q.type==="multi"||q.type==="judge"){
+    document.querySelectorAll(`.opt[data-q="${q.id}"]`).forEach(o=>{
+      o.classList.remove("sel");
+      if(q.answer.includes(o.dataset.k)) o.classList.add("ok");
+      else if((state.answers[q.id]||[]).includes(o.dataset.k)) o.classList.add("bad");
+    });
+  }
+  if(q.type==="match"){
+    q.matchLeft.forEach((m,i)=>{
+      const el=document.getElementById(`mi${q.id}_${i}`);
+      const v=String(state.match[q.id+"_"+i]||"").trim();
+      el.classList.add(v===m.expect?"ok":"bad");
+      const inp=el.querySelector("input"); if(inp) inp.disabled=true;
+    });
+  }
+}
+
+function updateSheetAfter(){
+  questions.forEach(q=>{
+    const g=gradeQ(q);
+    const el=document.getElementById("sh"+q.id);
+    if(!el) return;
+    if(g.correct===true) el.className="sheet-item correct";
+    else if(g.correct===false&&g.score>0) el.className="sheet-item partial";
+    else if(g.correct===false) el.className="sheet-item wrong";
+    else el.className="sheet-item pending";
+  });
+}
+
+// ============ timer ============
+let sec=0;
+setInterval(()=>{
+  sec++;
+  const m=String(Math.floor(sec/60)).padStart(2,"0"), s=String(sec%60).padStart(2,"0");
+  document.getElementById("timer").textContent=`${m}:${s}`;
+},1000);
+
+render();
+</script>
+</body>
+</html>

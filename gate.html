@@ -145,7 +145,7 @@ setTimeout(function(){input&&input.focus();},300);
 <script>
 // 版本检测：用带时间戳的 URL 强制绕缓存（替代已废弃的 reload(true)）
 (function(){
-  var PAGE_V = 5;
+  var PAGE_V = 6;
   fetch("version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.json();}).then(function(d){
     if(PAGE_V!==d.v){
       var key = 'ck-gate-refresh:' + d.v;

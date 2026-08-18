@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>大数据押题卷一 · 基础与演进 · 研发岗管培生</title>
+<style>
+:root{
+  --primary:#2563eb; --primary-dark:#1e40af; --success:#16a34a; --danger:#dc2626;
+  --warn:#d97706; --bg:#f1f5f9; --card:#ffffff; --text:#1e293b; --muted:#64748b;
+  --border:#e2e8f0; --correct:#f0fdf4; --wrong:#fef2f2;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);line-height:1.7;}
+.wrap{max-width:880px;margin:0 auto;padding:24px 16px 80px;}
+/* header */
+.header{background:linear-gradient(135deg,#1e3a8a,#2563eb);color:#fff;border-radius:16px;padding:32px 28px;margin-bottom:20px;box-shadow:0 8px 24px rgba(37,99,235,.25);}
+.header h1{font-size:26px;margin-bottom:8px;}
+.header .sub{opacity:.9;font-size:14px;}
+.header .meta{display:flex;gap:16px;flex-wrap:wrap;margin-top:16px;font-size:13px;}
+.header .meta span{background:rgba(255,255,255,.15);padding:4px 12px;border-radius:999px;}
+/* notice */
+.notice{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 22px;margin-bottom:20px;font-size:14px;}
+.notice h3{font-size:15px;margin-bottom:10px;color:var(--primary-dark);}
+.notice li{margin-left:20px;margin-bottom:4px;color:var(--muted);}
+.notice b{color:var(--text);}
+/* sticky bar */
+.sticky{position:sticky;top:0;z-index:50;background:rgba(241,245,249,.95);backdrop-filter:blur(8px);padding:10px 0;margin-bottom:16px;}
+.sticky-inner{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;box-shadow:0 2px 8px rgba(0,0,0,.05);}
+.sticky .info{font-size:13px;color:var(--muted);}
+.sticky .spacer{flex:1;}
+.timer{font-variant-numeric:tabular-nums;font-weight:700;color:var(--primary);font-size:15px;}
+.btn{border:none;cursor:pointer;border-radius:8px;padding:9px 22px;font-size:14px;font-weight:600;transition:.15s;}
+.btn-primary{background:var(--primary);color:#fff;}
+.btn-primary:hover{background:var(--primary-dark);}
+.btn-ghost{background:#fff;color:var(--primary);border:1px solid var(--primary);}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+/* answer sheet */
+.sheet{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 18px;margin-bottom:20px;}
+.sheet h4{font-size:13px;color:var(--muted);margin-bottom:10px;font-weight:600;}
+.sheet-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(40px,1fr));gap:6px;}
+.sheet-item{width:40px;height:36px;border-radius:8px;border:1px solid var(--border);background:#fff;font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.12s;color:var(--muted);}
+.sheet-item.done{background:var(--primary);color:#fff;border-color:var(--primary);}
+.sheet-item.correct{background:var(--success);color:#fff;border-color:var(--success);}
+.sheet-item.wrong{background:var(--danger);color:#fff;border-color:var(--danger);}
+.sheet-item.partial{background:var(--warn);color:#fff;border-color:var(--warn);}
+.sheet-item.pending{background:#cbd5e1;color:#fff;border-color:#cbd5e1;}
+.sheet-item:hover{transform:scale(1.08);}
+/* question card */
+.q-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px 24px;margin-bottom:18px;}
+.q-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;}
+.q-num{background:var(--primary);color:#fff;border-radius:8px;min-width:34px;height:28px;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;padding:0 8px;}
+.q-type{font-size:12px;padding:2px 10px;border-radius:999px;font-weight:600;}
+.t-single{background:#dbeafe;color:#1d4ed8;}
+.t-multi{background:#fce7f3;color:#be185d;}
+.t-judge{background:#fef3c7;color:#b45309;}
+.t-match{background:#ede9fe;color:#6d28d9;}
+.t-short{background:#d1fae5;color:#047857;}
+.q-chap{font-size:12px;color:var(--muted);}
+.q-pts{font-size:12px;color:var(--muted);margin-left:auto;}
+.q-text{font-size:15.5px;font-weight:600;margin-bottom:14px;white-space:pre-wrap;}
+.opts{display:flex;flex-direction:column;gap:8px;}
+.opt{display:flex;gap:10px;align-items:flex-start;border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;cursor:pointer;transition:.12s;font-size:14.5px;background:#fff;}
+.opt:hover{border-color:var(--primary);background:#f8faff;}
+.opt.sel{border-color:var(--primary);background:#eff6ff;}
+.opt .k{font-weight:700;color:var(--primary);flex-shrink:0;}
+.opt.ok{border-color:var(--success);background:var(--correct);}
+.opt.ok .k{color:var(--success);}
+.opt.bad{border-color:var(--danger);background:var(--wrong);}
+.opt.bad .k{color:var(--danger);}
+.opt.lock{cursor:default;}
+/* judge */
+.judge-row{display:flex;gap:10px;}
+.judge-row .opt{flex:1;justify-content:center;font-weight:600;}
+/* match */
+.match-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.match-col h5{font-size:13px;color:var(--muted);margin-bottom:8px;}
+.match-item{border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:8px;font-size:14px;background:#fff;}
+.match-item b{color:var(--primary);}
+.match-item input{width:52px;padding:4px 8px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;text-align:center;font-weight:700;color:var(--primary);}
+.match-item input:focus{outline:none;border-color:var(--primary);}
+.match-item.ok{border-color:var(--success);background:var(--correct);}
+.match-item.bad{border-color:var(--danger);background:var(--wrong);}
+/* short answer */
+.short-ta{width:100%;min-height:150px;border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;font-size:14px;font-family:inherit;resize:vertical;line-height:1.7;}
+.short-ta:focus{outline:none;border-color:var(--primary);}
+.self-grade{margin-top:12px;display:none;align-items:center;gap:10px;background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:12px 14px;font-size:14px;flex-wrap:wrap;}
+.self-grade.show{display:flex;}
+.self-grade select{padding:6px 10px;border-radius:8px;border:1.5px solid var(--border);font-size:14px;}
+/* explain */
+.explain{display:none;margin-top:14px;border-radius:10px;padding:12px 16px;font-size:13.5px;border-left:4px solid var(--primary);background:#f8fafc;}
+.explain.show{display:block;}
+.explain .ans-line{font-weight:700;margin-bottom:6px;}
+.explain.ok{border-left-color:var(--success);background:var(--correct);}
+.explain.bad{border-left-color:var(--danger);background:var(--wrong);}
+.explain .src{color:var(--muted);margin-top:6px;font-size:13px;}
+/* result panel */
+.result-panel{display:none;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:20px;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.06);}
+.result-panel.show{display:block;}
+.score-big{font-size:52px;font-weight:800;color:var(--primary);margin:6px 0;}
+.score-sub{color:var(--muted);font-size:14px;margin-bottom:14px;}
+.stat-row{display:flex;justify-content:center;gap:26px;flex-wrap:wrap;margin:14px 0;}
+.stat-row div{font-size:13px;color:var(--muted);}
+.stat-row b{display:block;font-size:22px;color:var(--text);}
+.footer-note{text-align:center;color:var(--muted);font-size:12px;margin-top:30px;}
+@media(max-width:640px){.match-grid{grid-template-columns:1fr;}.header h1{font-size:20px;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <h1>大数据押题卷一 · 基础与演进 · 研发岗管培生</h1>
+    <div class="sub">对应新版闭卷考试 · 自学手册第一部分：建数仓起点 / 六阶段演进 / 流式四概念 / 各系统分工</div>
+    <div class="meta">
+      <span>方向：大数据 · 新版闭卷格式</span>
+      <span>建议时长：45 分钟</span>
+      <span>题数：12 题 · 总分 100 分</span>
+      <span>题型：单选 5 · 判断 5 · 综合设计 2</span>
+    </div>
+  </div>
+
+  <div class="notice">
+    <h3>考试说明</h3>
+    <ul>
+      <li>本卷为<b>押题卷一（基础与演进专项）</b>，依据 2026-08-18《大数据培训·自学手册》第一部分出题，模拟新版闭卷考试格式：给业务场景，判断演进阶段、流式概念边界和系统分工。</li>
+      <li><b>单选 5 题 × 6 分</b>；<b>判断 5 题 × 4 分</b>；<b>综合设计 2 题 × 25 分</b>（提交后对照参考答案自评给分）。</li>
+      <li>点击下方答题卡格子可快速跳转到对应题目；已作答题目会高亮。</li>
+      <li>全部作答完后点击「提交判分」，系统自动评分并展示每题解析（含答案解析与押题理由）；综合设计题需按参考要点自行评分并计入总分。</li>
+    </ul>
+  </div>
+
+  <div class="sticky">
+    <div class="sticky-inner">
+      <div class="info">已答 <b id="doneCnt">0</b> / 12</div>
+      <div class="info">用时 <span class="timer" id="timer">00:00</span></div>
+      <div class="spacer"></div>
+      <button class="btn btn-primary" id="submitBtn" onclick="submitExam()">提交判分</button>
+    </div>
+  </div>
+
+  <div class="sheet">
+    <h4>答题卡（点击跳转）</h4>
+    <div class="sheet-grid" id="sheetGrid"></div>
+  </div>
+
+  <div class="result-panel" id="resultPanel">
+    <h2 id="resTitle"></h2>
+    <div class="score-big" id="resScore">0</div>
+    <div class="score-sub" id="resSub"></div>
+    <div class="stat-row" id="resStat"></div>
+    <button class="btn btn-ghost" onclick="location.reload()">重新作答</button>
+  </div>
+
+  <div id="quizArea"></div>
+
+  <div class="footer-note">大数据押题卷一 · 基础与演进 · 研发岗管培生 · 出题依据：《大数据培训·自学手册》(2026-08-18) 第一部分 · 每题解析附答案解析与押题理由</div>
+</div>
+
+<script>
+const EXAM_TITLE = "大数据押题卷一 · 基础与演进 · 研发岗管培生";
+
+const questions = [
+{"id":1,"type":"single","chap":"基础·演进起点","points":6,"q":"CTO 在季度会上说：“我们订单库才 80G，等数据量涨到 1TB 再考虑建数据平台也不迟。”按自学手册的观点，这句话最核心的问题在于：","opts":[{"k":"A","t":"他说得对，大数据平台本来就是以数据量达到某个数字为起点"},{"k":"B","t":"错在把“数据量数字”当成建数仓的起点；真正的信号是业务库查询影响在线业务、历史数据难以保存、跨系统指标难以统一"},{"k":"C","t":"错在 80G 也太大了，应该立刻把所有系统迁上 Hadoop 集群"},{"k":"D","t":"错在估算保守了，应该按 10 倍冗余提前采购集群"}],"answer":["B"],"explain":"答案解析：自学手册第 2 页：「大数据平台并不以数据量达到某个数字为起点。业务库查询开始影响在线业务、历史数据难以保存、跨系统指标难以统一，才需要把分析任务移到独立的数据平台。」A 把体积当门槛与原文相反；C/D 都是“为技术而技术/堆机器”思路，且 C 无视了“先看信号再谈演进”的顺序。<br><br>📌 押题理由：这是手册第一部分开篇的立论句，AI 出卷几乎必考“建数仓的起点判断”，且惯用“等数据量到 XX 再建”的场景干扰。"},
+{"id":2,"type":"single","chap":"基础·六阶段","points":6,"q":"某团队自建 Hadoop 三年，运维同学每周都在装机器、扩容、升级组件、处理集群故障，业务方还总抱怨任务排不上队。按六阶段演进模型，下一步最合理的升级方向和它主要改善的问题是：","opts":[{"k":"A","t":"升级到实时流处理，改善计算时效"},{"k":"B","t":"升级到云上 EMR，改善集群交付和弹性"},{"k":"C","t":"升级到流批一体，改善口径一致和补数"},{"k":"D","t":"直接升级到 AI 化数据平台，新增问数能力"}],"answer":["B"],"explain":"答案解析：自学手册第 4-5 页升级动因表：「自建 Hadoop → EMR：团队花大量时间安装、扩容、升级和处理集群故障」，EMR 阶段「云平台托管 Hadoop、Spark、Hive 等组件……改善：集群交付和弹性」。题干通篇是集群运维负担，没有时效诉求（A）、没有两套任务口径之痛（C）、更没有问数需求（D）——升级要对应上一阶段的真实痛点。<br><br>📌 押题理由：六阶段表是第一部分的主干，手册特意为每个转换写了“为什么要升级”，“给现状选下一阶段”是这张表最自然的考法。"},
+{"id":3,"type":"single","chap":"基础·事件时间","points":6,"q":"反诈系统统计“23:00-24:00 自然小时窗口”的交易。一笔交易在 23:59:58 发生，因网络重试 00:00:03 才被服务器收到。按“事件时间”计算，这笔交易应计入哪个窗口？","opts":[{"k":"A","t":"计入 23:00-24:00 窗口，因为事件时间按业务事件真正发生的时间计算，不能只看服务器收到消息的时间"},{"k":"B","t":"计入 00:00-01:00 窗口，因为服务器 00:00:03 才收到"},{"k":"C","t":"两个窗口各计一次，网络重试本来就可能重复"},{"k":"D","t":"跨窗口事件直接丢弃，保证数字干净"}],"answer":["A"],"explain":"答案解析：自学手册第 5 页：「事件时间：按业务事件真正发生的时间计算窗口，不能只看服务器收到消息的时间。」B 混淆了处理时间与事件时间；C 是重复计算——重复要靠“按事件 ID 或业务主键去重”解决，而不是两个窗口都算；D 丢弃会漏算风险交易。<br><br>📌 押题理由：流式四概念是手册第一部分唯一逐条展开的工程概念，AI 出题爱用“跨窗口迟到事件”这种具体时间数字做场景题。"},
+{"id":4,"type":"single","chap":"基础·Checkpoint","points":6,"q":"新同学配置 Flink 任务时说：“我设了 Checkpoint，重复消息和迟到数据就都不用管了。”下列哪项正确指出了这句话的问题？","opts":[{"k":"A","t":"Checkpoint 确实能自动去重，也能自动决定迟到数据的处理策略"},{"k":"B","t":"Checkpoint 只保存计算状态供任务重启后恢复；它不能代替事件去重，也不能替团队决定迟到数据怎样处理"},{"k":"C","t":"Checkpoint 连计算状态都不保存，只做监控埋点"},{"k":"D","t":"问题不大，去重和迟到处理本来就不是流式任务的职责"}],"answer":["B"],"explain":"答案解析：自学手册第 5 页：「Checkpoint：它保存计算状态，供任务重启后恢复；它不能代替事件去重，也不能替团队决定迟到数据怎样处理。」手册原文连用两个“不能”划边界——去重要按事件 ID 或业务主键做，迟到数据策略（补算/丢弃/侧输出）要团队自己约定。<br><br>📌 押题理由：手册为 Checkpoint 专门写了“两个不能”的边界句，这是 AI 出判断/单选时最爱的“工具越界”陷阱。"},
+{"id":5,"type":"single","chap":"基础·系统分工","points":6,"q":"按自学手册“各系统的分工”，下列说法正确的是：","opts":[{"k":"A","t":"业务库负责分析查询，Doris 负责在线操作，两者角色可以互换"},{"k":"B","t":"业务库负责在线操作，数仓保存历史数据并统一指标，Doris 提供分析查询"},{"k":"C","t":"数仓负责在线操作和实时交易，业务库只做备份"},{"k":"D","t":"AI 直接读业务库做问数和预测，不需要口径、权限和运行记录"}],"answer":["B"],"explain":"答案解析：自学手册第 3 页：「业务库负责在线操作，数仓保存历史数据并统一指标，Doris 提供分析查询。AI 使用这些数据进行问数、预测和推荐时，还要使用统一口径、权限、质量检查结果和任务运行记录。」D 是关键干扰——AI 用数不是直连业务库“裸奔”，前提是统一口径、权限、质量结果和运行记录。<br><br>📌 押题理由：分工表是第一部分的收束页，把前后概念串成一句话，AI 出卷喜欢考这种“总括句”的正误辨析。"},
+{"id":6,"type":"judge","chap":"基础·口径治理","points":4,"q":"判断：团队把自建 Hadoop 迁到云上 EMR、又做了流批一体之后，指标口径和数据质量规则就由平台自动统一了，不需要团队再明确定义。","opts":[{"k":"对","t":"对"},{"k":"错","t":"错"}],"answer":["错"],"explain":"答案解析：自学手册第 5 页警示框：「EMR 主要减少集群安装和运维工作。流批一体主要减少两套计算链路。指标怎样算、数据质量怎样验、谁能看哪些数据，仍然需要团队明确定义。」平台升级解决的是交付和链路问题，口径、质量、权限永远要团队自己定义。<br><br>📌 押题理由：这是第一部分最醒目的警示框标题（“EMR 和流批一体不会自动解决口径问题”），AI 出卷对其几乎必出判断题。"},
+{"id":7,"type":"judge","chap":"基础·Watermark","points":4,"q":"判断：Watermark 的作用是系统据此判断事件时间推进到哪里，并按约定处理乱序和迟到数据。","opts":[{"k":"对","t":"对"},{"k":"错","t":"错"}],"answer":["对"],"explain":"答案解析：自学手册第 5 页：「Watermark：系统据此判断事件时间推进到哪里，并按约定处理乱序和迟到数据。」注意“按约定”三个字——Watermark 只提供推进依据，处理策略仍是团队约定。<br><br>📌 押题理由：四概念定义句的手册原文照录，判断题送分点，但干扰版会改成“自动删除迟到数据”（错）。"},
+{"id":8,"type":"judge","chap":"基础·去重","points":4,"q":"判断：消息可能被重复发送，流式任务需要按事件 ID 或业务主键避免重复计算。","opts":[{"k":"对","t":"对"},{"k":"错","t":"错"}],"answer":["对"],"explain":"答案解析：自学手册第 5 页：「去重：消息可能被重复发送，任务需要按事件 ID 或业务主键避免重复计算。」<br><br>📌 押题理由：去重定义原文，与 Checkpoint 边界题配套出现，考察“去重靠自己、恢复靠 Checkpoint”的分工。"},
+{"id":9,"type":"judge","chap":"基础·流批一体","points":4,"q":"判断：流批一体让批处理和流处理共用存储、表格式、指标定义或计算逻辑，主要改善口径一致和补数。","opts":[{"k":"对","t":"对"},{"k":"错","t":"错"}],"answer":["对"],"explain":"答案解析：自学手册第 4 页：「流批一体……改善：口径一致和补数」，背景是「同一指标分别实现实时和离线任务，容易出现两个结果」。<br><br>📌 押题理由：六阶段表中“流批一体”一行的原文，考“改善什么”与“解决什么”（流式才是解决风控监控）的对应关系。"},
+{"id":10,"type":"judge","chap":"基础·学习小结","points":4,"q":"判断：技术选型时应优先采用最新的架构名词，团队用上流批一体和湖仓一体才显得先进，学习小结也支持这个观点。","opts":[{"k":"对","t":"对"},{"k":"错","t":"错"}],"answer":["错"],"explain":"答案解析：自学手册第 13 页学习小结第 1 条：「技术演进由业务问题推动。EMR、流式处理和流批一体各自解决不同问题，不需要为了技术名词盲目升级。」<br><br>📌 押题理由：学习小结是 AI 出卷的“考点清单”，第 1 条直接否定“为名词升级”，判断题高频。"},
+{"id":11,"type":"short","chap":"综合·演进路线设计","points":25,"q":"【综合设计·自评】某电商公司现状：① 订单、会员、售后数据分属三个业务库，月报靠分析师从三个系统导出 Excel 人工拼接；② 年底财务直接在订单库跑全年聚合 SQL，大促期间下单接口频繁超时；③ 明年风控部门要求交易风险事件 10 秒内告警；④ 后年规划“运营直接用中文问数”。请回答：(1) 该公司当前处于六个发展阶段的哪个阶段？场景①②分别暴露了什么问题？(2) 设计后续演进路线：依次经过哪些阶段，每个阶段解决/改善什么问题（对应③④的需求）？(3) 升级到云上 EMR 和流批一体之后，团队分别仍要自己做什么？","refAnswer":"(1) 现状定位（6 分）：当前处于阶段 1「业务库直接出报表」（开发写 SQL、运营导出 Excel）。①暴露“一个用户的数据分在几个系统”（数据分散，跨系统要人工关联）；②暴露“报表查询拖慢业务库”（业务库要先保证在线操作，长周期统计和多表关联应移到分析系统）。(2) 演进路线（12 分，每阶段 3 分）：→ 阶段 2 自建 Hadoop 离线数仓（HDFS+Hive+按天跑批，解决海量存储和 T+1 分析，承接①②的分析负载）；→ 阶段 3 云上 EMR（托管组件、按任务扩缩容，改善集群交付和弹性）；→ 阶段 4 实时流处理（Kafka 接事件、Flink 按事件时间/窗口/状态实时计算，满足③的秒级风控告警）；→ 阶段 5 流批一体（批流共用存储/表格式/指标定义，改善口径一致和补数）；→ 阶段 6 AI 化数据平台（指标、元数据、特征、模型和运行记录统一管理，支持④的智能问数、预测决策和个性化推荐）。(3) 升级后自己的功课（7 分）：EMR 后仍要选实例、控制成本、调作业参数、管理数据权限；流批一体后仍要确定统一表模型、补数方案、结果一致性和服务等级——且指标口径、数据质量、数据权限任何时候都要团队明确定义，平台不会自动解决。评分：定位 6 分 + 路线每阶段 3 分共 12 分 + 功课 7 分；只写阶段名不写“解决什么”每个最多 1.5 分。","explain":"答案解析：六阶段演进（手册第 4-5 页）+ 升级动因表（为什么升级/升级后仍要自己做什么）+ 各系统分工。路线设计的完整逻辑是“问题推动演进”：分散和负载问题→数仓，运维负担→EMR，秒级时效→流式，两套口径→流批一体，问数需求→AI 化。<br><br>📌 押题理由：综合设计题最可能的形态就是“给现状设计演进路线”——它一张表考完六阶段+动因+仍要做什么三个维度，手册该表每个格子都是得分点。"},
+{"id":12,"type":"short","chap":"综合·流式正确性设计","points":25,"q":"【综合设计·自评】你负责一个 Flink 实时会话量统计任务：按自然分钟窗口统计各租户会话数。已知：消息可能重复发送；移动端消息可能乱序、迟到几分钟；任务可能因机器故障重启。请回答：(1) 事件时间、Watermark、去重、Checkpoint 四个概念在该任务中分别怎么用？(2) Checkpoint 不能代替什么？(3) “迟到 5 分钟以上的消息如何处理”这个决定为什么不能交给 Checkpoint 或 Watermark，团队需要自己约定什么？","refAnswer":"(1) 四概念落地（16 分，每个 4 分）：事件时间——按消息里业务发生时间（而非服务器收到时间）归入对应的自然分钟窗口；Watermark——据此判断事件时间推进到哪里，容忍几分钟乱序，按约定让窗口在 watermark 越过窗口结束点后触发计算；去重——按事件 ID 或业务主键（会话消息 ID）过滤重复发送的消息，避免重复计数；Checkpoint——定期保存计算状态，任务故障重启后从检查点恢复，不丢不算错。(2) Checkpoint 的边界（4 分）：只负责状态保存与恢复，不能代替事件去重，也不能替团队决定迟到数据怎样处理。(3) 迟到策略要团队约定（5 分）：Watermark 只提供“推进到哪里”的依据，Checkpoint 只管恢复；迟到数据是“补算进原窗口、记入侧输出单独统计、还是超过阈值丢弃”属于业务口径决策（影响报表数字与服务等级），必须由团队按业务约定并写进口径文档。评分：四概念各 4 分 + 边界 4 分 + 迟到决策 5 分；概念只写名词不落到本任务场景的每个最多 2 分。","explain":"答案解析：自学手册第 5 页「流式任务还要处理时间、重复和故障恢复」四节原文：事件时间（按业务事件真正发生的时间计算窗口）、Watermark（判断事件时间推进，按约定处理乱序迟到）、去重（按事件 ID 或业务主键）、Checkpoint（保存状态供恢复；不能代替去重、不能替团队决定迟到数据处理）。<br><br>📌 押题理由：手册第一部分唯一的“工程机制”小节，四个概念两两成对（时间类/正确性类），综合设计题考“四个概念怎么配合”是 AI 最顺手的出法。"}
+];
+
+// ============ state ============
+const state = { answers:{}, shorts:{}, submitted:false };
+const TYPE_NAME = {single:"单选",multi:"多选",judge:"判断",match:"匹配",short:"综合设计"};
+
+// ============ render ============
+function render(){
+  const area = document.getElementById("quizArea");
+  let html = "";
+  questions.forEach(q=>{
+    html += `<div class="q-card" id="q${q.id}">`;
+    html += `<div class="q-head"><span class="q-num">${q.id}</span><span class="q-type t-${q.type}">${TYPE_NAME[q.type]}</span><span class="q-chap">${q.chap}</span><span class="q-pts">${q.points} 分</span></div>`;
+    html += `<div class="q-text">${q.q}</div>`;
+    if(q.type==="single"||q.type==="multi"||q.type==="judge"){
+      const multi = q.type==="multi";
+      html += `<div class="${q.type==='judge'?'judge-row':'opts'}">`;
+      q.opts.forEach(o=>{
+        html += `<div class="opt" data-q="${q.id}" data-k="${o.k}" onclick="pick(${q.id},'${o.k}',${multi})"><span class="k">${o.k}</span><span>${o.t}</span></div>`;
+      });
+      html += `</div>`;
+    } else if(q.type==="short"){
+      html += `<textarea class="short-ta" id="shortTa_${q.id}" placeholder="在此作答……" oninput="state.shorts[${q.id}]=this.value;updateSheet()"></textarea>`;
+      html += `<div class="self-grade" id="selfGrade_${q.id}"><span>对照参考答案，自评给分：</span><select id="selfScore_${q.id}" onchange="applySelf(${q.id})"><option value="">选择分数</option>`;
+      for(let i=0;i<=q.points;i++) html += `<option value="${i}">${i} 分</option>`;
+      html += `</select><span id="selfTotal_${q.id}" style="font-weight:700;color:var(--warn)"></span></div>`;
+    }
+    html += `<div class="explain" id="ex${q.id}"></div>`;
+    html += `</div>`;
+  });
+  area.innerHTML = html;
+  renderSheet();
+}
+
+function renderSheet(){
+  const grid = document.getElementById("sheetGrid");
+  grid.innerHTML = questions.map(q=>`<div class="sheet-item" id="sh${q.id}" onclick="document.getElementById('q${q.id}').scrollIntoView({behavior:'smooth',block:'center'})">${q.id}</div>`).join("");
+  updateSheet();
+}
+
+function isDone(q){
+  if(q.type==="single"||q.type==="multi"||q.type==="judge") return !!(state.answers[q.id]&&state.answers[q.id].length);
+  if(q.type==="match") return q.matchLeft.every((m,i)=>state.match[q.id+"_"+i]);
+  if(q.type==="short") return (state.shorts[q.id]||"").trim().length>0;
+  return false;
+}
+function updateSheet(){
+  let done=0;
+  questions.forEach(q=>{
+    const el=document.getElementById("sh"+q.id);
+    if(el) el.className="sheet-item"+(isDone(q)?" done":"");
+    if(isDone(q)) done++;
+  });
+  document.getElementById("doneCnt").textContent=done;
+}
+
+function pick(id,k,multi){
+  if(state.submitted) return;
+  if(!state.answers[id]) state.answers[id]=[];
+  const arr=state.answers[id];
+  const i=arr.indexOf(k);
+  if(multi){ i>=0?arr.splice(i,1):arr.push(k); }
+  else { arr.length=0; arr.push(k); }
+  document.querySelectorAll(`.opt[data-q="${id}"]`).forEach(o=>o.classList.toggle("sel",arr.includes(o.dataset.k)));
+  updateSheet();
+}
+
+// ============ grading ============
+function gradeQ(q){
+  if(q.type==="single"||q.type==="judge"){
+    const a=(state.answers[q.id]||[])[0];
+    return {score: a===q.answer[0]?q.points:0, correct: a===q.answer[0], user:a??"未作答"};
+  }
+  if(q.type==="multi"){
+    const sel=(state.answers[q.id]||[]).slice().sort();
+    const ok=sel.join("")===q.answer.slice().sort().join("");
+    let score=0;
+    if(ok) score=q.points;
+    else if(sel.length>0 && sel.every(k=>q.answer.includes(k))) score=1; // 漏选得1分
+    return {score, correct:ok, partial:!ok&&score>0, user:sel.join("")||"未作答"};
+  }
+  return {score:0, correct:null, user:"自评"};
+}
+
+function submitExam(){
+  const unanswered = questions.filter(q=>!isDone(q)).length;
+  if(!state.submitted && unanswered>0 && !confirm(`还有 ${unanswered} 题未作答，确定提交判分吗？`)) return;
+  state.submitted=true;
+  document.getElementById("submitBtn").disabled=true;
+
+  let auto=0, autoFull=0, autoQ=0, correctCnt=0;
+  questions.forEach(q=>{
+    const g=gradeQ(q);
+    if(q.type!=="short"){
+      auto+=g.score; autoQ++;
+      if(g.correct) correctCnt++;
+      if(g.score===q.points) autoFull++;
+    }
+    showExplain(q,g);
+  });
+
+  const panel=document.getElementById("resultPanel");
+  const autoTotal = questions.filter(q=>q.type!=="short").reduce((s,q)=>s+q.points,0);
+  const shortQs = questions.filter(q=>q.type==="short");
+  const shortPts = shortQs.reduce((s,q)=>s+q.points,0);
+  const TOTAL = questions.reduce((s,q)=>s+q.points,0);
+  const saveBtn = `<button class="btn btn-primary" style="margin-left:12px" onclick="applySelfAll(${auto},${TOTAL})">已自评设计题，计入总分</button>`;
+  document.getElementById("resTitle").textContent = auto>=autoTotal*0.8?"成绩不错！":"已提交判分";
+  document.getElementById("resScore").textContent = `${auto} / ${TOTAL}`;
+  document.getElementById("resSub").innerHTML = `客观题（单选/判断）自动判分：<b>${auto} / ${autoTotal}</b>；综合设计 ${shortQs.length} 题（题 ${shortQs.map(q=>q.id).join("、")}）共 ${shortPts} 分，请对照参考答案逐题自评后点击下方按钮计入总分。${saveBtn}`;
+  document.getElementById("resStat").innerHTML = `<div><b>${correctCnt}/${autoQ}</b>客观题全对</div><div><b>${autoFull}/${autoQ}</b>拿满分</div><div><b>${TOTAL}</b>卷面总分</div>`;
+  panel.classList.add("show");
+  panel.scrollIntoView({behavior:"smooth"});
+
+  // reveal all short self-grade panels
+  document.querySelectorAll(".self-grade").forEach(e=>e.classList.add("show"));
+  // lock inputs
+  document.querySelectorAll(".opt").forEach(o=>o.classList.add("lock"));
+  updateSheetAfter(auto);
+  window._autoScore = auto; window._totalScore = TOTAL;
+}
+
+function applySelfAll(auto,total){
+  let self=0;
+  questions.filter(q=>q.type==="short").forEach(q=>{
+    const v=document.getElementById("selfScore_"+q.id).value;
+    if(v) self+=Number(v);
+  });
+  const fin = auto + self;
+  document.getElementById("resScore").textContent = `${fin} / ${total}`;
+  document.getElementById("resSub").innerHTML = `客观题 ${auto} 分 + 设计题自评合计 ${self} 分 = 最终得分 <b>${fin} / ${total}</b>。`;
+  questions.filter(q=>q.type==="short").forEach(q=>{
+    document.getElementById("selfTotal_"+q.id).textContent = `已计入`;
+  });
+}
+function applySelf(id){
+  const v=Number(document.getElementById("selfScore_"+id).value||0);
+  document.getElementById("selfTotal_"+id).textContent = `自评 ${v} 分（点上方按钮计入总分）`;
+}
+
+function showExplain(q,g){
+  const ex=document.getElementById("ex"+q.id);
+  let ansText="";
+  if(q.type==="single"||q.type==="judge") ansText=`正确答案：${q.answer[0]}`;
+  else if(q.type==="multi") ansText=`正确答案：${q.answer.join("")}`;
+  else ansText=`参考答案要点（自评）：`;
+  let extra="";
+  if(q.type==="short") extra=`<div style="margin-top:8px;background:#fff;padding:10px;border-radius:8px;border:1px solid #fde68a"><b>参考答案：</b>${q.refAnswer}</div>`;
+  ex.className="explain show "+(g.correct===true?"ok":g.correct===false?"bad":"");
+  ex.innerHTML=`<div class="ans-line">${ansText}　<span style="color:var(--muted);font-weight:400">（你的作答：${g.user}，本题得 ${g.score} / ${q.points} 分）</span></div>${extra}<div class="src">${q.explain}</div>`;
+  // option coloring for choice questions
+  if(q.type==="single"||q.type==="multi"||q.type==="judge"){
+    document.querySelectorAll(`.opt[data-q="${q.id}"]`).forEach(o=>{
+      o.classList.remove("sel");
+      if(q.answer.includes(o.dataset.k)) o.classList.add("ok");
+      else if((state.answers[q.id]||[]).includes(o.dataset.k)) o.classList.add("bad");
+    });
+  }
+}
+
+function updateSheetAfter(){
+  questions.forEach(q=>{
+    const g=gradeQ(q);
+    const el=document.getElementById("sh"+q.id);
+    if(!el) return;
+    if(g.correct===true) el.className="sheet-item correct";
+    else if(g.correct===false&&g.score>0) el.className="sheet-item partial";
+    else if(g.correct===false) el.className="sheet-item wrong";
+    else el.className="sheet-item pending";
+  });
+}
+
+// ============ timer ============
+let sec=0;
+setInterval(()=>{
+  sec++;
+  const m=String(Math.floor(sec/60)).padStart(2,"0"), s=String(sec%60).padStart(2,"0");
+  document.getElementById("timer").textContent=`${m}:${s}`;
+},1000);
+
+render();
+</script>
+</body>
+</html>

@@ -297,6 +297,16 @@ footer a{color:var(--brick);font-weight:700;text-decoration:underline;}
         <div class="go">进入模拟卷合集 →</div>
       </div>
     </a>
+
+    <a class="card" href="exam/大数据押题卷.html">
+      <div class="thumb">🎯</div>
+      <div class="body">
+        <span class="tag">押题卷 · 新版闭卷格式</span>
+        <h3>大数据押题卷 · 四套</h3>
+        <p>依据 2026-08 自学手册押题，模拟新版闭卷考试：每套 单选 5 + 判断 5 + 综合设计 2 · 100 分 · 45 分钟，每题含押题理由。</p>
+        <div class="go">进入押题卷合集 →</div>
+      </div>
+    </a>
     </div>
   </div>
 
@@ -398,7 +408,7 @@ footer a{color:var(--brick);font-weight:700;text-decoration:underline;}
 <script>
 // 版本检测
 (function(){
-  var PAGE_V = 10;
+  var PAGE_V = 11;
   fetch("version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.json();}).then(function(d){
     if(PAGE_V!==d.v){
       var last=0; try{last=parseInt(sessionStorage.getItem("ck_refreshed")||"0");}catch(e){}

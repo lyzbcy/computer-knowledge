@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>大数据押题卷二 · 微盛大数据实践 · 研发岗管培生</title>
+<style>
+:root{
+  --primary:#2563eb; --primary-dark:#1e40af; --success:#16a34a; --danger:#dc2626;
+  --warn:#d97706; --bg:#f1f5f9; --card:#ffffff; --text:#1e293b; --muted:#64748b;
+  --border:#e2e8f0; --correct:#f0fdf4; --wrong:#fef2f2;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);line-height:1.7;}
+.wrap{max-width:880px;margin:0 auto;padding:24px 16px 80px;}
+/* header */
+.header{background:linear-gradient(135deg,#1e3a8a,#2563eb);color:#fff;border-radius:16px;padding:32px 28px;margin-bottom:20px;box-shadow:0 8px 24px rgba(37,99,235,.25);}
+.header h1{font-size:26px;margin-bottom:8px;}
+.header .sub{opacity:.9;font-size:14px;}
+.header .meta{display:flex;gap:16px;flex-wrap:wrap;margin-top:16px;font-size:13px;}
+.header .meta span{background:rgba(255,255,255,.15);padding:4px 12px;border-radius:999px;}
+/* notice */
+.notice{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 22px;margin-bottom:20px;font-size:14px;}
+.notice h3{font-size:15px;margin-bottom:10px;color:var(--primary-dark);}
+.notice li{margin-left:20px;margin-bottom:4px;color:var(--muted);}
+.notice b{color:var(--text);}
+/* sticky bar */
+.sticky{position:sticky;top:0;z-index:50;background:rgba(241,245,249,.95);backdrop-filter:blur(8px);padding:10px 0;margin-bottom:16px;}
+.sticky-inner{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;box-shadow:0 2px 8px rgba(0,0,0,.05);}
+.sticky .info{font-size:13px;color:var(--muted);}
+.sticky .spacer{flex:1;}
+.timer{font-variant-numeric:tabular-nums;font-weight:700;color:var(--primary);font-size:15px;}
+.btn{border:none;cursor:pointer;border-radius:8px;padding:9px 22px;font-size:14px;font-weight:600;transition:.15s;}
+.btn-primary{background:var(--primary);color:#fff;}
+.btn-primary:hover{background:var(--primary-dark);}
+.btn-ghost{background:#fff;color:var(--primary);border:1px solid var(--primary);}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+/* answer sheet */
+.sheet{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 18px;margin-bottom:20px;}
+.sheet h4{font-size:13px;color:var(--muted);margin-bottom:10px;font-weight:600;}
+.sheet-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(40px,1fr));gap:6px;}
+.sheet-item{width:40px;height:36px;border-radius:8px;border:1px solid var(--border);background:#fff;font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.12s;color:var(--muted);}
+.sheet-item.done{background:var(--primary);color:#fff;border-color:var(--primary);}
+.sheet-item.correct{background:var(--success);color:#fff;border-color:var(--success);}
+.sheet-item.wrong{background:var(--danger);color:#fff;border-color:var(--danger);}
+.sheet-item.partial{background:var(--warn);color:#fff;border-color:var(--warn);}
+.sheet-item.pending{background:#cbd5e1;color:#fff;border-color:#cbd5e1;}
+.sheet-item:hover{transform:scale(1.08);}
+/* question card */
+.q-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px 24px;margin-bottom:18px;}
+.q-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;}
+.q-num{background:var(--primary);color:#fff;border-radius:8px;min-width:34px;height:28px;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;padding:0 8px;}
+.q-type{font-size:12px;padding:2px 10px;border-radius:999px;font-weight:600;}
+.t-single{background:#dbeafe;color:#1d4ed8;}
+.t-multi{background:#fce7f3;color:#be185d;}
+.t-judge{background:#fef3c7;color:#b45309;}
+.t-match{background:#ede9fe;color:#6d28d9;}
+.t-short{background:#d1fae5;color:#047857;}
+.q-chap{font-size:12px;color:var(--muted);}
+.q-pts{font-size:12px;color:var(--muted);margin-left:auto;}
+.q-text{font-size:15.5px;font-weight:600;margin-bottom:14px;white-space:pre-wrap;}
+.opts{display:flex;flex-direction:column;gap:8px;}
+.opt{display:flex;gap:10px;align-items:flex-start;border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;cursor:pointer;transition:.12s;font-size:14.5px;background:#fff;}
+.opt:hover{border-color:var(--primary);background:#f8faff;}
+.opt.sel{border-color:var(--primary);background:#eff6ff;}
+.opt .k{font-weight:700;color:var(--primary);flex-shrink:0;}
+.opt.ok{border-color:var(--success);background:var(--correct);}
+.opt.ok .k{color:var(--success);}
+.opt.bad{border-color:var(--danger);background:var(--wrong);}
+.opt.bad .k{color:var(--danger);}
+.opt.lock{cursor:default;}
+/* judge */
+.judge-row{display:flex;gap:10px;}
+.judge-row .opt{flex:1;justify-content:center;font-weight:600;}
+/* match */
+.match-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.match-col h5{font-size:13px;color:var(--muted);margin-bottom:8px;}
+.match-item{border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:8px;font-size:14px;background:#fff;}
+.match-item b{color:var(--primary);}
+.match-item input{width:52px;padding:4px 8px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;text-align:center;font-weight:700;color:var(--primary);}
+.match-item input:focus{outline:none;border-color:var(--primary);}
+.match-item.ok{border-color:var(--success);background:var(--correct);}
+.match-item.bad{border-color:var(--danger);background:var(--wrong);}
+/* short answer */
+.short-ta{width:100%;min-height:150px;border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;font-size:14px;font-family:inherit;resize:vertical;line-height:1.7;}
+.short-ta:focus{outline:none;border-color:var(--primary);}
+.self-grade{margin-top:12px;display:none;align-items:center;gap:10px;background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:12px 14px;font-size:14px;flex-wrap:wrap;}
+.self-grade.show{display:flex;}
+.self-grade select{padding:6px 10px;border-radius:8px;border:1.5px solid var(--border);font-size:14px;}
+/* explain */
+.explain{display:none;margin-top:14px;border-radius:10px;padding:12px 16px;font-size:13.5px;border-left:4px solid var(--primary);background:#f8fafc;}
+.explain.show{display:block;}
+.explain .ans-line{font-weight:700;margin-bottom:6px;}
+.explain.ok{border-left-color:var(--success);background:var(--correct);}
+.explain.bad{border-left-color:var(--danger);background:var(--wrong);}
+.explain .src{color:var(--muted);margin-top:6px;font-size:13px;}
+/* result panel */
+.result-panel{display:none;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:20px;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.06);}
+.result-panel.show{display:block;}
+.score-big{font-size:52px;font-weight:800;color:var(--primary);margin:6px 0;}
+.score-sub{color:var(--muted);font-size:14px;margin-bottom:14px;}
+.stat-row{display:flex;justify-content:center;gap:26px;flex-wrap:wrap;margin:14px 0;}
+.stat-row div{font-size:13px;color:var(--muted);}
+.stat-row b{display:block;font-size:22px;color:var(--text);}
+.footer-note{text-align:center;color:var(--muted);font-size:12px;margin-top:30px;}
+@media(max-width:640px){.match-grid{grid-template-columns:1fr;}.header h1{font-size:20px;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <h1>大数据押题卷二 · 微盛大数据实践 · 研发岗管培生</h1>
+    <div class="sub">对应新版闭卷考试 · 自学手册第二部分：数据链路 CDC/DataX/Doris/ES / 数仓分层 / 三条规则 / 五项检查</div>
+    <div class="meta">
+      <span>方向：大数据 · 新版闭卷格式</span>
+      <span>建议时长：45 分钟</span>
+      <span>题数：12 题 · 总分 100 分</span>
+      <span>题型：单选 5 · 判断 5 · 综合设计 2</span>
+    </div>
+  </div>
+
+  <div class="notice">
+    <h3>考试说明</h3>
+    <ul>
+      <li>本卷为<b>押题卷二（微盛实践专项）</b>，依据 2026-08-18《大数据培训·自学手册》第二部分出题，模拟新版闭卷考试格式：数据链路一条线、分层职责、开发规则与任务检查。</li>
+      <li><b>单选 5 题 × 6 分</b>；<b>判断 5 题 × 4 分</b>；<b>综合设计 2 题 × 25 分</b>（提交后对照参考答案自评给分）。</li>
+      <li>点击下方答题卡格子可快速跳转到对应题目；已作答题目会高亮。</li>
+      <li>全部作答完后点击「提交判分」，系统自动评分并展示每题解析（含答案解析与押题理由）；综合设计题需按参考要点自行评分并计入总分。</li>
+    </ul>
+  </div>
+
+  <div class="sticky">
+    <div class="sticky-inner">
+      <div class="info">已答 <b id="doneCnt">0</b> / 12</div>
+      <div class="info">用时 <span class="timer" id="timer">00:00</span></div>
+      <div class="spacer"></div>
+      <button class="btn btn-primary" id="submitBtn" onclick="submitExam()">提交判分</button>
+    </div>
+  </div>
+
+  <div class="sheet">
+    <h4>答题卡（点击跳转）</h4>
+    <div class="sheet-grid" id="sheetGrid"></div>
+  </div>
+
+  <div class="result-panel" id="resultPanel">
+    <h2 id="resTitle"></h2>
+    <div class="score-big" id="resScore">0</div>
+    <div class="score-sub" id="resSub"></div>
+    <div class="stat-row" id="resStat"></div>
+    <button class="btn btn-ghost" onclick="location.reload()">重新作答</button>
+  </div>
+
+  <div id="quizArea"></div>
+
+  <div class="footer-note">大数据押题卷二 · 微盛大数据实践 · 研发岗管培生 · 出题依据：《大数据培训·自学手册》(2026-08-18) 第二部分 · 每题解析附答案解析与押题理由</div>
+</div>
+
+<script>
+const EXAM_TITLE = "大数据押题卷二 · 微盛大数据实践 · 研发岗管培生";
+
+const questions = [
+{"id":1,"type":"single","chap":"实践·引擎分工","points":6,"q":"两个需求同时进来：(甲) 运营看板要按部门、日期、渠道多维下钻会话量报表；(乙) 客服质检要输入关键词搜出原始会话文案。按微盛数据链路的分工，正确的做法是：","opts":[{"k":"A","t":"甲乙都走 Doris，Doris 是唯一分析引擎"},{"k":"B","t":"甲走 Doris（多维分析），乙走 Elasticsearch（会话检索）"},{"k":"C","t":"甲走 Elasticsearch，乙走 Doris"},{"k":"D","t":"甲乙都走 Elasticsearch，反正都是查询"}],"answer":["B"],"explain":"答案解析：自学手册第 6 页：「查询与检索：Doris 承担多维分析，Elasticsearch 承担会话检索。」多维聚合下钻是 OLAP 负载找 Doris；按关键词搜原文是全文检索负载找 ES——分工按负载类型，不按“都是查询”。<br><br>📌 押题理由：Doris/ES 分工是第二部分链路图里唯一的双引擎节点，AI 出卷爱用“两个需求选引擎”的场景题考它。"},
+{"id":2,"type":"single","chap":"实践·ODS 职责","points":6,"q":"关于 ODS 层的职责，下列说法与自学手册一致的是：","opts":[{"k":"A","t":"尽量保留业务源表原貌，不做复杂 Join 和指标计算，像“刚进仓库的原材料”"},{"k":"B","t":"为了下游方便，可以在 ODS 做跨表 Join 和指标预计算"},{"k":"C","t":"ODS 主要负责清洗、去重和主键处理，是“已经切好的配菜”"},{"k":"D","t":"ODS 面向具体页面、报表和 AI 应用直接交付"}],"answer":["A"],"explain":"答案解析：自学手册第 6 页分层表：「ODS：尽量保留业务源表原貌，不做复杂 Join 和指标计算。简单理解：刚进仓库的原材料。」C 描述的是 DWD（整理为可审计的事实明细，处理清洗、去重和主键=切好的配菜）；D 描述的是 ADS（端上桌的菜）。<br><br>📌 押题理由：分层表+厨房比喻是第二部分的核心表，“原材料/配菜/半成品/上桌”四选一的错位配对是 AI 最省事的考法。"},
+{"id":3,"type":"single","chap":"实践·数据来源","points":6,"q":"下列哪项不属于自学手册列出的微盛数据链路“数据来源”？","opts":[{"k":"A","t":"企微会话"},{"k":"B","t":"SCRM 业务库"},{"k":"C","t":"订单、门店、VOC"},{"k":"D","t":"竞品公司的销量爬虫数据"}],"answer":["D"],"explain":"答案解析：自学手册第 6 页：「数据来源：企微会话、SCRM 业务库、订单、门店、VOC」。竞品爬虫数据不在链路来源之列——反向选择题是 AI 检查“来源清单是否记全”的惯用手法。<br><br>📌 押题理由：来源五类是链路第一环，AI 出卷常用“找出不属于的”来考清单记忆，干扰项越离谱越考细节。"},
+{"id":4,"type":"single","chap":"实践·采集工具","points":6,"q":"把业务库的数据送进数仓，自学手册列出的采集与整理环节是：","opts":[{"k":"A","t":"CDC、DataX、调度任务，再进入 ODS、DWD、DWS、ADS"},{"k":"B","t":"只有 DataX 一种方式，所有数据都靠批量同步"},{"k":"C","t":"前端埋点直写 ADS 层"},{"k":"D","t":"Doris 负责采集，ES 负责调度"}],"answer":["A"],"explain":"答案解析：自学手册第 6 页：「采集与整理：CDC、DataX、调度任务，再进入 ODS、DWD、DWS、ADS」。背景补充：CDC（变更数据捕获）负责抓业务库增删改、时效高；DataX 负责批量同步；调度任务负责编排依赖和定时执行。<br><br>📌 押题理由：链路第二环的组件名单，AI 出卷要么考“填空式”选组件（本题），要么在综合题里让你为场景选采集方式。"},
+{"id":5,"type":"single","chap":"实践·五项检查","points":6,"q":"数据任务上线后，QA 提出：“同一时间范围把任务再跑一遍，看看行数和指标会不会变。”这项检查对应五项检查中的哪一项、考察什么性质？","opts":[{"k":"A","t":"上下游核对——汇总能否从明细重算"},{"k":"B","t":"重复运行——幂等性，重跑后结果应保持一致"},{"k":"C","t":"业务主键——目标粒度是否重复"},{"k":"D","t":"关键字段——主键、时间、金额是否空值"}],"answer":["B"],"explain":"答案解析：自学手册第 7 页五项检查表：「重复运行：同一时间范围再次运行时，行数和指标是否保持一致。」这就是幂等——补数、重跑场景下结果不变。A 的上下游核对是“汇总能从明细重算、明细能查回源数据”，对象不同。<br><br>📌 押题理由：五项检查表是第二部分的压轴清单，“给检查动作反推检查项”比正着背更难，AI 出卷两种方向都会出。"},
+{"id":6,"type":"judge","chap":"实践·ODS 边界","points":4,"q":"判断：为了节省下游开发量，可以在 ODS 层直接做跨系统复杂 Join 和指标预计算。","opts":[{"k":"对","t":"对"},{"k":"错","t":"错"}],"answer":["错"],"explain":"答案解析：自学手册第 6 页：「ODS：尽量保留业务源表原貌，不做复杂 Join 和指标计算。」在 ODS 做加工会破坏“原材料”的可回溯性——出问题时无法回到与源一致的原始层重跑。<br><br>📌 押题理由：手册“不做复杂 Join 和指标计算”是加粗级约束，判断题反着说即可成题。"},
+{"id":7,"type":"judge","chap":"实践·三条规则","points":4,"q":"判断：报表查询不要长期压在业务库上；ODS 尽量保留源表原貌；报表和 AI 结果要能查回上游数据和本次运行记录——这三条是开发时要守住的规则。","opts":[{"k":"对","t":"对"},{"k":"错","t":"错"}],"answer":["对"],"explain":"答案解析：自学手册第 7 页：「开发时要守住三条规则：报表查询不要长期压在业务库上。ODS 尽量保留源表原貌。报表和 AI 结果要能查回上游数据和本次运行记录。」原文三条完整照录。<br><br>📌 押题理由：三条规则是第二部分的行为准则清单，AI 出卷可以整体出判断（本题），也可以拆成三条分别出场景题。"},
+{"id":8,"type":"judge","chap":"实践·分层比喻","points":4,"q":"判断：DWS 层整理用户、员工、部门等常用主题数据，像“可重复使用的半成品”。","opts":[{"k":"对","t":"对"},{"k":"错","t":"错"}],"answer":["对"],"explain":"答案解析：自学手册第 6 页：「DWS：整理用户、员工、部门等常用主题数据。简单理解：可重复使用的半成品。」<br><br>📌 押题理由：厨房比喻四层（原材料/配菜/半成品/上桌）与四层的对应关系是第二部分必考记忆点。"},
+{"id":9,"type":"judge","chap":"实践·五项检查","points":4,"q":"判断：上下游核对的要求是：汇总结果能从明细重算，明细能查回源数据。","opts":[{"k":"对","t":"对"},{"k":"错","t":"错"}],"answer":["对"],"explain":"答案解析：自学手册第 7 页：「上下游核对：汇总结果能否从明细重算，明细能否查回源数据。」这是“结果追不回”痛点在验收环节的落地。<br><br>📌 押题理由：五项检查表逐条都可能出判断，上下游核对的“双向”要求（汇总↔明细↔源）是原文表述，易被改成单向干扰。"},
+{"id":10,"type":"judge","chap":"实践·引擎分工","points":4,"q":"判断：在微盛数据链路中，Elasticsearch 承担多维分析，Doris 承担会话检索。","opts":[{"k":"对","t":"对"},{"k":"错","t":"错"}],"answer":["错"],"explain":"答案解析：自学手册第 6 页：「Doris 承担多维分析，Elasticsearch 承担会话检索。」题目把两个引擎的职责对调了——判断题里最典型的“换头”干扰。<br><br>📌 押题理由：分工句正反两个方向都要练，AI 出卷对同一知识点常正反各出一题。"},
+{"id":11,"type":"short","chap":"综合·链路设计","points":25,"q":"【综合设计·自评】新需求“门店服务质量月报”要接入微盛数据平台：原始数据在门店业务库（订单、服务记录）和企微会话里；产出既要支撑运营看板按门店/日期/问题类型多维下钻，又要能按关键词搜出涉诉会话原文给质检复核。请回答：(1) 描述从数据来源到页面使用的完整链路（每一环节用什么组件/分层）；(2) 说明 ODS、DWD、DWS、ADS 各层在这个需求里分别放什么、对应哪个比喻；(3) 多维下钻和关键词搜原文分别走什么引擎、为什么？","refAnswer":"(1) 完整链路（12 分）：数据来源=门店业务库（订单、服务记录）+ 企微会话 → 采集与整理=CDC/DataX 同步 + 调度任务编排 → 进入 ODS→DWD→DWS→ADS 四层加工 → 查询与检索=多维下钻走 Doris、会话原文检索走 Elasticsearch → 页面和分析使用=运营看板、明细查询、质检复核。(2) 各层内容与比喻（9 分，每层约 2 分）：ODS=门店订单表、服务记录表、会话原始贴源，不做复杂 Join 和指标计算（刚进仓库的原材料）；DWD=清洗、去重、主键处理后的可审计事实明细，如“一条服务事件一行”（已经切好的配菜）；DWS=按门店/日期/问题类型整理的常用主题统计（可重复使用的半成品）；ADS=面向月报页面和质检交付的最终结果（端上桌的菜）。(3) 引擎选择（4 分）：多维下钻是 OLAP 聚合负载走 Doris（承担多维分析）；按关键词搜会话原文是全文检索负载走 Elasticsearch（承担会话检索）——按负载类型分工，不混用。评分：链路 12 分（四环各 3 分）+ 分层 9 分 + 引擎 4 分；漏写调度任务或把加工逻辑塞进 ODS 的酌情扣 2-3 分。","explain":"答案解析：自学手册第 6 页链路四段（数据来源→采集与整理→查询与检索→页面和分析使用）+ 分层表（职责+比喻）+ 引擎分工。链路题的完整答案就是“四段一条线 + 每段组件”。<br><br>📌 押题理由：第二部分的综合设计题几乎必然考“把链路一条线画出来”——手册只用一页就把链路讲完，出综合题时这是最完整的骨架，且能顺带考分层和引擎分工。"},
+{"id":12,"type":"short","chap":"综合·验收方案","points":25,"q":"【综合设计·自评】你负责的“按部门统计员工给客户打标签数量”任务今晚上线（口径：成功新增标签事件数）。请写一份上线验收清单：(1) 把五项检查逐项落成可执行的检查动作（写清每项查什么、怎么判通过）；(2) 指出开发阶段就应守住的三条规则，并说明本需求分别如何体现；(3) 为什么“目标表有数据、行数不为 0”不能作为通过标准？","refAnswer":"(1) 五项检查落地（15 分，每项 3 分）：①行数和时间范围——目标表数据量与预期量级吻合，统计日期既没多算也没漏算（如只含完整日）；②业务主键——按“统计日+租户+部门”目标粒度查重复记录，重复数应为 0；③关键字段——主键、统计时间、指标值等关键字段不应有空值（空值行数=0）；④上下游核对——ADS 汇总指标合计能从 DWD 明细重算得出（如 6 行 ADS 合计=上游成功新增标签事件数），明细能查回源数据；⑤重复运行——同一时间范围重跑一遍，行数和指标保持一致（幂等）。(2) 三条规则（6 分）：①报表查询不长期压业务库——统计在数仓跑，不在业务库跑长周期聚合；②ODS 尽量保留源表原貌——标签事件贴源接入，不做复杂 Join；③报表和 AI 结果要能查回上游数据和本次运行记录——每个数字能回溯到来源表、加工任务和运行批次。(3) 为什么非空不等于通过（4 分）：非空只是存在性检查，不能证明正确——可能多算漏算日期、粒度重复、关键字段空值、汇总与明细对不上、重跑不一致；只有五项检查全过，才是“可证明的正确”。评分：检查动作每项 3 分（只写检查名不写动作每项最多 1 分）+ 规则 6 分 + 判断 4 分。","explain":"答案解析：自学手册第 7 页五项检查表（行数和时间范围/业务主键/关键字段/上下游核对/重复运行）+ 三条开发规则。「目标表有数据不算通过」是旧版考试已验证过的经典考点，在新手册里升级为五项检查的完整清单。<br><br>📌 押题理由：五项检查是第二部分唯一带“要回答的问题”列表的表格，天然就是验收清单题的题干——AI 出综合设计题时，“把表格落成方案”是最直接的出题路径。"}
+];
+
+// ============ state ============
+const state = { answers:{}, shorts:{}, submitted:false };
+const TYPE_NAME = {single:"单选",multi:"多选",judge:"判断",match:"匹配",short:"综合设计"};
+
+// ============ render ============
+function render(){
+  const area = document.getElementById("quizArea");
+  let html = "";
+  questions.forEach(q=>{
+    html += `<div class="q-card" id="q${q.id}">`;
+    html += `<div class="q-head"><span class="q-num">${q.id}</span><span class="q-type t-${q.type}">${TYPE_NAME[q.type]}</span><span class="q-chap">${q.chap}</span><span class="q-pts">${q.points} 分</span></div>`;
+    html += `<div class="q-text">${q.q}</div>`;
+    if(q.type==="single"||q.type==="multi"||q.type==="judge"){
+      const multi = q.type==="multi";
+      html += `<div class="${q.type==='judge'?'judge-row':'opts'}">`;
+      q.opts.forEach(o=>{
+        html += `<div class="opt" data-q="${q.id}" data-k="${o.k}" onclick="pick(${q.id},'${o.k}',${multi})"><span class="k">${o.k}</span><span>${o.t}</span></div>`;
+      });
+      html += `</div>`;
+    } else if(q.type==="short"){
+      html += `<textarea class="short-ta" id="shortTa_${q.id}" placeholder="在此作答……" oninput="state.shorts[${q.id}]=this.value;updateSheet()"></textarea>`;
+      html += `<div class="self-grade" id="selfGrade_${q.id}"><span>对照参考答案，自评给分：</span><select id="selfScore_${q.id}" onchange="applySelf(${q.id})"><option value="">选择分数</option>`;
+      for(let i=0;i<=q.points;i++) html += `<option value="${i}">${i} 分</option>`;
+      html += `</select><span id="selfTotal_${q.id}" style="font-weight:700;color:var(--warn)"></span></div>`;
+    }
+    html += `<div class="explain" id="ex${q.id}"></div>`;
+    html += `</div>`;
+  });
+  area.innerHTML = html;
+  renderSheet();
+}
+
+function renderSheet(){
+  const grid = document.getElementById("sheetGrid");
+  grid.innerHTML = questions.map(q=>`<div class="sheet-item" id="sh${q.id}" onclick="document.getElementById('q${q.id}').scrollIntoView({behavior:'smooth',block:'center'})">${q.id}</div>`).join("");
+  updateSheet();
+}
+
+function isDone(q){
+  if(q.type==="single"||q.type==="multi"||q.type==="judge") return !!(state.answers[q.id]&&state.answers[q.id].length);
+  if(q.type==="match") return q.matchLeft.every((m,i)=>state.match[q.id+"_"+i]);
+  if(q.type==="short") return (state.shorts[q.id]||"").trim().length>0;
+  return false;
+}
+function updateSheet(){
+  let done=0;
+  questions.forEach(q=>{
+    const el=document.getElementById("sh"+q.id);
+    if(el) el.className="sheet-item"+(isDone(q)?" done":"");
+    if(isDone(q)) done++;
+  });
+  document.getElementById("doneCnt").textContent=done;
+}
+
+function pick(id,k,multi){
+  if(state.submitted) return;
+  if(!state.answers[id]) state.answers[id]=[];
+  const arr=state.answers[id];
+  const i=arr.indexOf(k);
+  if(multi){ i>=0?arr.splice(i,1):arr.push(k); }
+  else { arr.length=0; arr.push(k); }
+  document.querySelectorAll(`.opt[data-q="${id}"]`).forEach(o=>o.classList.toggle("sel",arr.includes(o.dataset.k)));
+  updateSheet();
+}
+
+// ============ grading ============
+function gradeQ(q){
+  if(q.type==="single"||q.type==="judge"){
+    const a=(state.answers[q.id]||[])[0];
+    return {score: a===q.answer[0]?q.points:0, correct: a===q.answer[0], user:a??"未作答"};
+  }
+  if(q.type==="multi"){
+    const sel=(state.answers[q.id]||[]).slice().sort();
+    const ok=sel.join("")===q.answer.slice().sort().join("");
+    let score=0;
+    if(ok) score=q.points;
+    else if(sel.length>0 && sel.every(k=>q.answer.includes(k))) score=1; // 漏选得1分
+    return {score, correct:ok, partial:!ok&&score>0, user:sel.join("")||"未作答"};
+  }
+  return {score:0, correct:null, user:"自评"};
+}
+
+function submitExam(){
+  const unanswered = questions.filter(q=>!isDone(q)).length;
+  if(!state.submitted && unanswered>0 && !confirm(`还有 ${unanswered} 题未作答，确定提交判分吗？`)) return;
+  state.submitted=true;
+  document.getElementById("submitBtn").disabled=true;
+
+  let auto=0, autoFull=0, autoQ=0, correctCnt=0;
+  questions.forEach(q=>{
+    const g=gradeQ(q);
+    if(q.type!=="short"){
+      auto+=g.score; autoQ++;
+      if(g.correct) correctCnt++;
+      if(g.score===q.points) autoFull++;
+    }
+    showExplain(q,g);
+  });
+
+  const panel=document.getElementById("resultPanel");
+  const autoTotal = questions.filter(q=>q.type!=="short").reduce((s,q)=>s+q.points,0);
+  const shortQs = questions.filter(q=>q.type==="short");
+  const shortPts = shortQs.reduce((s,q)=>s+q.points,0);
+  const TOTAL = questions.reduce((s,q)=>s+q.points,0);
+  const saveBtn = `<button class="btn btn-primary" style="margin-left:12px" onclick="applySelfAll(${auto},${TOTAL})">已自评设计题，计入总分</button>`;
+  document.getElementById("resTitle").textContent = auto>=autoTotal*0.8?"成绩不错！":"已提交判分";
+  document.getElementById("resScore").textContent = `${auto} / ${TOTAL}`;
+  document.getElementById("resSub").innerHTML = `客观题（单选/判断）自动判分：<b>${auto} / ${autoTotal}</b>；综合设计 ${shortQs.length} 题（题 ${shortQs.map(q=>q.id).join("、")}）共 ${shortPts} 分，请对照参考答案逐题自评后点击下方按钮计入总分。${saveBtn}`;
+  document.getElementById("resStat").innerHTML = `<div><b>${correctCnt}/${autoQ}</b>客观题全对</div><div><b>${autoFull}/${autoQ}</b>拿满分</div><div><b>${TOTAL}</b>卷面总分</div>`;
+  panel.classList.add("show");
+  panel.scrollIntoView({behavior:"smooth"});
+
+  // reveal all short self-grade panels
+  document.querySelectorAll(".self-grade").forEach(e=>e.classList.add("show"));
+  // lock inputs
+  document.querySelectorAll(".opt").forEach(o=>o.classList.add("lock"));
+  updateSheetAfter(auto);
+  window._autoScore = auto; window._totalScore = TOTAL;
+}
+
+function applySelfAll(auto,total){
+  let self=0;
+  questions.filter(q=>q.type==="short").forEach(q=>{
+    const v=document.getElementById("selfScore_"+q.id).value;
+    if(v) self+=Number(v);
+  });
+  const fin = auto + self;
+  document.getElementById("resScore").textContent = `${fin} / ${total}`;
+  document.getElementById("resSub").innerHTML = `客观题 ${auto} 分 + 设计题自评合计 ${self} 分 = 最终得分 <b>${fin} / ${total}</b>。`;
+  questions.filter(q=>q.type==="short").forEach(q=>{
+    document.getElementById("selfTotal_"+q.id).textContent = `已计入`;
+  });
+}
+function applySelf(id){
+  const v=Number(document.getElementById("selfScore_"+id).value||0);
+  document.getElementById("selfTotal_"+id).textContent = `自评 ${v} 分（点上方按钮计入总分）`;
+}
+
+function showExplain(q,g){
+  const ex=document.getElementById("ex"+q.id);
+  let ansText="";
+  if(q.type==="single"||q.type==="judge") ansText=`正确答案：${q.answer[0]}`;
+  else if(q.type==="multi") ansText=`正确答案：${q.answer.join("")}`;
+  else ansText=`参考答案要点（自评）：`;
+  let extra="";
+  if(q.type==="short") extra=`<div style="margin-top:8px;background:#fff;padding:10px;border-radius:8px;border:1px solid #fde68a"><b>参考答案：</b>${q.refAnswer}</div>`;
+  ex.className="explain show "+(g.correct===true?"ok":g.correct===false?"bad":"");
+  ex.innerHTML=`<div class="ans-line">${ansText}　<span style="color:var(--muted);font-weight:400">（你的作答：${g.user}，本题得 ${g.score} / ${q.points} 分）</span></div>${extra}<div class="src">${q.explain}</div>`;
+  // option coloring for choice questions
+  if(q.type==="single"||q.type==="multi"||q.type==="judge"){
+    document.querySelectorAll(`.opt[data-q="${q.id}"]`).forEach(o=>{
+      o.classList.remove("sel");
+      if(q.answer.includes(o.dataset.k)) o.classList.add("ok");
+      else if((state.answers[q.id]||[]).includes(o.dataset.k)) o.classList.add("bad");
+    });
+  }
+}
+
+function updateSheetAfter(){
+  questions.forEach(q=>{
+    const g=gradeQ(q);
+    const el=document.getElementById("sh"+q.id);
+    if(!el) return;
+    if(g.correct===true) el.className="sheet-item correct";
+    else if(g.correct===false&&g.score>0) el.className="sheet-item partial";
+    else if(g.correct===false) el.className="sheet-item wrong";
+    else el.className="sheet-item pending";
+  });
+}
+
+// ============ timer ============
+let sec=0;
+setInterval(()=>{
+  sec++;
+  const m=String(Math.floor(sec/60)).padStart(2,"0"), s=String(sec%60).padStart(2,"0");
+  document.getElementById("timer").textContent=`${m}:${s}`;
+},1000);
+
+render();
+</script>
+</body>
+</html>

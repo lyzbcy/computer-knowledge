@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>大数据押题卷三 · AI 应用与 DB Agent · 研发岗管培生</title>
+<style>
+:root{
+  --primary:#2563eb; --primary-dark:#1e40af; --success:#16a34a; --danger:#dc2626;
+  --warn:#d97706; --bg:#f1f5f9; --card:#ffffff; --text:#1e293b; --muted:#64748b;
+  --border:#e2e8f0; --correct:#f0fdf4; --wrong:#fef2f2;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);line-height:1.7;}
+.wrap{max-width:880px;margin:0 auto;padding:24px 16px 80px;}
+/* header */
+.header{background:linear-gradient(135deg,#1e3a8a,#2563eb);color:#fff;border-radius:16px;padding:32px 28px;margin-bottom:20px;box-shadow:0 8px 24px rgba(37,99,235,.25);}
+.header h1{font-size:26px;margin-bottom:8px;}
+.header .sub{opacity:.9;font-size:14px;}
+.header .meta{display:flex;gap:16px;flex-wrap:wrap;margin-top:16px;font-size:13px;}
+.header .meta span{background:rgba(255,255,255,.15);padding:4px 12px;border-radius:999px;}
+/* notice */
+.notice{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 22px;margin-bottom:20px;font-size:14px;}
+.notice h3{font-size:15px;margin-bottom:10px;color:var(--primary-dark);}
+.notice li{margin-left:20px;margin-bottom:4px;color:var(--muted);}
+.notice b{color:var(--text);}
+/* sticky bar */
+.sticky{position:sticky;top:0;z-index:50;background:rgba(241,245,249,.95);backdrop-filter:blur(8px);padding:10px 0;margin-bottom:16px;}
+.sticky-inner{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;box-shadow:0 2px 8px rgba(0,0,0,.05);}
+.sticky .info{font-size:13px;color:var(--muted);}
+.sticky .spacer{flex:1;}
+.timer{font-variant-numeric:tabular-nums;font-weight:700;color:var(--primary);font-size:15px;}
+.btn{border:none;cursor:pointer;border-radius:8px;padding:9px 22px;font-size:14px;font-weight:600;transition:.15s;}
+.btn-primary{background:var(--primary);color:#fff;}
+.btn-primary:hover{background:var(--primary-dark);}
+.btn-ghost{background:#fff;color:var(--primary);border:1px solid var(--primary);}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+/* answer sheet */
+.sheet{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 18px;margin-bottom:20px;}
+.sheet h4{font-size:13px;color:var(--muted);margin-bottom:10px;font-weight:600;}
+.sheet-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(40px,1fr));gap:6px;}
+.sheet-item{width:40px;height:36px;border-radius:8px;border:1px solid var(--border);background:#fff;font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.12s;color:var(--muted);}
+.sheet-item.done{background:var(--primary);color:#fff;border-color:var(--primary);}
+.sheet-item.correct{background:var(--success);color:#fff;border-color:var(--success);}
+.sheet-item.wrong{background:var(--danger);color:#fff;border-color:var(--danger);}
+.sheet-item.partial{background:var(--warn);color:#fff;border-color:var(--warn);}
+.sheet-item.pending{background:#cbd5e1;color:#fff;border-color:#cbd5e1;}
+.sheet-item:hover{transform:scale(1.08);}
+/* question card */
+.q-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px 24px;margin-bottom:18px;}
+.q-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;}
+.q-num{background:var(--primary);color:#fff;border-radius:8px;min-width:34px;height:28px;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;padding:0 8px;}
+.q-type{font-size:12px;padding:2px 10px;border-radius:999px;font-weight:600;}
+.t-single{background:#dbeafe;color:#1d4ed8;}
+.t-multi{background:#fce7f3;color:#be185d;}
+.t-judge{background:#fef3c7;color:#b45309;}
+.t-match{background:#ede9fe;color:#6d28d9;}
+.t-short{background:#d1fae5;color:#047857;}
+.q-chap{font-size:12px;color:var(--muted);}
+.q-pts{font-size:12px;color:var(--muted);margin-left:auto;}
+.q-text{font-size:15.5px;font-weight:600;margin-bottom:14px;white-space:pre-wrap;}
+.opts{display:flex;flex-direction:column;gap:8px;}
+.opt{display:flex;gap:10px;align-items:flex-start;border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;cursor:pointer;transition:.12s;font-size:14.5px;background:#fff;}
+.opt:hover{border-color:var(--primary);background:#f8faff;}
+.opt.sel{border-color:var(--primary);background:#eff6ff;}
+.opt .k{font-weight:700;color:var(--primary);flex-shrink:0;}
+.opt.ok{border-color:var(--success);background:var(--correct);}
+.opt.ok .k{color:var(--success);}
+.opt.bad{border-color:var(--danger);background:var(--wrong);}
+.opt.bad .k{color:var(--danger);}
+.opt.lock{cursor:default;}
+/* judge */
+.judge-row{display:flex;gap:10px;}
+.judge-row .opt{flex:1;justify-content:center;font-weight:600;}
+/* match */
+.match-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.match-col h5{font-size:13px;color:var(--muted);margin-bottom:8px;}
+.match-item{border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:8px;font-size:14px;background:#fff;}
+.match-item b{color:var(--primary);}
+.match-item input{width:52px;padding:4px 8px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;text-align:center;font-weight:700;color:var(--primary);}
+.match-item input:focus{outline:none;border-color:var(--primary);}
+.match-item.ok{border-color:var(--success);background:var(--correct);}
+.match-item.bad{border-color:var(--danger);background:var(--wrong);}
+/* short answer */
+.short-ta{width:100%;min-height:150px;border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;font-size:14px;font-family:inherit;resize:vertical;line-height:1.7;}
+.short-ta:focus{outline:none;border-color:var(--primary);}
+.self-grade{margin-top:12px;display:none;align-items:center;gap:10px;background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:12px 14px;font-size:14px;flex-wrap:wrap;}
+.self-grade.show{display:flex;}
+.self-grade select{padding:6px 10px;border-radius:8px;border:1.5px solid var(--border);font-size:14px;}
+/* explain */
+.explain{display:none;margin-top:14px;border-radius:10px;padding:12px 16px;font-size:13.5px;border-left:4px solid var(--primary);background:#f8fafc;}
+.explain.show{display:block;}
+.explain .ans-line{font-weight:700;margin-bottom:6px;}
+.explain.ok{border-left-color:var(--success);background:var(--correct);}
+.explain.bad{border-left-color:var(--danger);background:var(--wrong);}
+.explain .src{color:var(--muted);margin-top:6px;font-size:13px;}
+/* result panel */
+.result-panel{display:none;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:20px;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.06);}
+.result-panel.show{display:block;}
+.score-big{font-size:52px;font-weight:800;color:var(--primary);margin:6px 0;}
+.score-sub{color:var(--muted);font-size:14px;margin-bottom:14px;}
+.stat-row{display:flex;justify-content:center;gap:26px;flex-wrap:wrap;margin:14px 0;}
+.stat-row div{font-size:13px;color:var(--muted);}
+.stat-row b{display:block;font-size:22px;color:var(--text);}
+.footer-note{text-align:center;color:var(--muted);font-size:12px;margin-top:30px;}
+@media(max-width:640px){.match-grid{grid-template-columns:1fr;}.header h1{font-size:20px;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <h1>大数据押题卷三 · AI 应用与 DB Agent · 研发岗管培生</h1>
+    <div class="sub">对应新版闭卷考试 · 自学手册第三部分（方向 1 · DB Agent 重点）：六步流程 / 语义层 / 五种实现思路 / 六项控制 / 预测与推荐</div>
+    <div class="meta">
+      <span>方向：大数据 · 新版闭卷格式</span>
+      <span>建议时长：45 分钟</span>
+      <span>题数：12 题 · 总分 100 分</span>
+      <span>题型：单选 5 · 判断 5 · 综合设计 2</span>
+    </div>
+  </div>
+
+  <div class="notice">
+    <h3>考试说明</h3>
+    <ul>
+      <li>本卷为<b>押题卷三（AI 应用专项）</b>，依据 2026-08-18《大数据培训·自学手册》第三部分出题。自学手册明确「DB Agent 是业务人员最直接的入口，也是本节需要重点掌握的内容」，本卷按此加大 DB Agent 权重。</li>
+      <li><b>单选 5 题 × 6 分</b>；<b>判断 5 题 × 4 分</b>；<b>综合设计 2 题 × 25 分</b>（提交后对照参考答案自评给分）。</li>
+      <li>点击下方答题卡格子可快速跳转到对应题目；已作答题目会高亮。</li>
+      <li>全部作答完后点击「提交判分」，系统自动评分并展示每题解析（含答案解析与押题理由）；综合设计题需按参考要点自行评分并计入总分。</li>
+    </ul>
+  </div>
+
+  <div class="sticky">
+    <div class="sticky-inner">
+      <div class="info">已答 <b id="doneCnt">0</b> / 12</div>
+      <div class="info">用时 <span class="timer" id="timer">00:00</span></div>
+      <div class="spacer"></div>
+      <button class="btn btn-primary" id="submitBtn" onclick="submitExam()">提交判分</button>
+    </div>
+  </div>
+
+  <div class="sheet">
+    <h4>答题卡（点击跳转）</h4>
+    <div class="sheet-grid" id="sheetGrid"></div>
+  </div>
+
+  <div class="result-panel" id="resultPanel">
+    <h2 id="resTitle"></h2>
+    <div class="score-big" id="resScore">0</div>
+    <div class="score-sub" id="resSub"></div>
+    <div class="stat-row" id="resStat"></div>
+    <button class="btn btn-ghost" onclick="location.reload()">重新作答</button>
+  </div>
+
+  <div id="quizArea"></div>
+
+  <div class="footer-note">大数据押题卷三 · AI 应用与 DB Agent · 研发岗管培生 · 出题依据：《大数据培训·自学手册》(2026-08-18) 第三部分 · 每题解析附答案解析与押题理由</div>
+</div>
+
+<script>
+const EXAM_TITLE = "大数据押题卷三 · AI 应用与 DB Agent · 研发岗管培生";
+
+const questions = [
+{"id":1,"type":"single","chap":"AI应用·三类分工","points":6,"q":"业务方提出：“给每个客户排一个跟进优先级，并告诉我下一步该做什么动作。”按三类 AI 应用的分工，这属于哪个方向、主要输出是什么？","opts":[{"k":"A","t":"DB Agent——输出数字、表格、SQL 和指标口径"},{"k":"B","t":"预测分析与实时智能决策——输出预测分数、风险等级、告警或触发动作"},{"k":"C","t":"个性化推荐与决策优化——输出推荐列表、推荐分数、主要理由和建议动作"},{"k":"D","t":"传统报表——输出固定格式看板"}],"answer":["C"],"explain":"答案解析：自学手册第 12 页三类分工表：「个性化推荐与决策优化：给当前用户推荐什么，下一步先做什么 → 推荐列表、推荐分数、主要理由和建议动作」。题干“排优先级+下一步动作”正是推荐排序的典型问法；B 干扰在于预测回答“接下来可能发生什么”，题干问的是“该做什么”。<br><br>📌 押题理由：三类分工表是第三部分的总纲表，“给需求选方向”是 AI 出卷的第一选题型。"},
+{"id":2,"type":"single","chap":"DBAgent·六步流程","points":6,"q":"DB Agent 完成一次问数的六步流程，正确顺序是：","opts":[{"k":"A","t":"理解问题 → 选择实现路径 → 形成查询计划 → 校验权限与风险 → 执行并校验 → 返回并留痕"},{"k":"B","t":"理解问题 → 执行并校验 → 校验权限 → 形成查询计划 → 选择路径 → 返回"},{"k":"C","t":"校验权限 → 理解问题 → 执行 → 选择路径 → 形成计划 → 返回"},{"k":"D","t":"理解问题 → 形成查询计划 → 执行 → 返回（没有权限校验和留痕）"}],"answer":["A"],"explain":"答案解析：自学手册第 8 页「DB Agent 怎样完成一次问数」：1 理解问题（拆时间范围/统计对象/指标/维度/排序，信息不全先追问）→ 2 选择实现路径（语义层/查询 API/SQL 模板/Text-to-SQL）→ 3 形成查询计划 → 4 校验权限与风险 → 5 执行并校验（只读账号查 Doris）→ 6 返回并留痕。D 是危险干扰——“没有权限校验和留痕”的简化流程正是手册要防的。<br><br>📌 押题理由：手册给六步编了号并配图，是第三部分结构最强的考点，排序题/填空题两种形态都可能出现。"},
+{"id":3,"type":"single","chap":"DBAgent·先追问","points":6,"q":"运营在 DB Agent 里问：“最近新客怎么样？”时间范围和“新客”的指标含义都不明确。按手册要求，系统正确的做法是：","opts":[{"k":"A","t":"按系统默认口径（近 7 天+首次加好友）直接出数，效率优先"},{"k":"B","t":"先按字面猜测一个口径跑出结果，运营觉得不对再改"},{"k":"C","t":"先追问时间范围和指标含义，确认后再生成查询计划；不能自行猜测口径"},{"k":"D","t":"直接拒绝回答，让运营自己写 SQL"}],"answer":["C"],"explain":"答案解析：自学手册第 8 页：「如果时间范围、统计对象或指标含义不清楚，系统应先追问，不能自行猜测口径。」A/B 都是“猜口径”——数字出来了但口径可能是错的，业务方拿到数字反而更危险；D 走向另一个极端，违背问数产品的初衷。<br><br>📌 押题理由：手册在方向 1 正文里用条件句专门强调“先追问”，这是 DB Agent 与“口径先行”原则的连接点，AI 出卷必考。"},
+{"id":4,"type":"single","chap":"DBAgent·实现思路","points":6,"q":"自学手册把「混合路由」列为推荐的 DB Agent 实现思路，主要原因是：","opts":[{"k":"A","t":"混合路由实现最简单，不需要维护任何规则"},{"k":"B","t":"按问题类型分流——固定指标走语义层、高风险查询走 API、半固定走模板、长尾走 Text-to-SQL——兼顾稳定性和覆盖范围"},{"k":"C","t":"全部问题都交给模型生成 SQL，覆盖面最大最省事"},{"k":"D","t":"只封装查询 API，其余问题一律不回答，最安全"}],"answer":["B"],"explain":"答案解析：自学手册第 10 页：「混合路由（推荐）：先判断问题类型：固定指标走语义层，高风险查询走 API，半固定查询走模板，长尾问题再走 Text-to-SQL。兼顾稳定性和覆盖范围，适合真实生产系统；需要维护路由规则和统一审计。」C 是手册点名否定的做法（生产系统不会把所有问题都直接交给模型生成 SQL）；D 只剩安全没有覆盖。<br><br>📌 押题理由：五种实现思路对比表里唯一标注“（推荐）”的一行，AI 出卷对“推荐项+理由”几乎必考。"},
+{"id":5,"type":"single","chap":"预测·结果四要素","points":6,"q":"反诈预测模型上线后，每次预测触发的记录至少要保留哪些内容？","opts":[{"k":"A","t":"预测分数、判断阈值、模型版本、触发动作"},{"k":"B","t":"只保留预测分数，其余都是多余的"},{"k":"C","t":"预测报告的截图和经办人签字"},{"k":"D","t":"只保留告警群消息的截图"}],"answer":["A"],"explain":"答案解析：自学手册第 11 页：「结果至少要保留预测分数、判断阈值、模型版本和触发动作。」这是预测链路的“证据链”最小集——没有阈值无法解释为什么触发，没有模型版本无法追溯是哪版模型算的。<br><br>📌 押题理由：手册用了“至少要保留”这种清单式表述，AI 出卷最爱把清单拆成单选（选出完整组合）。"},
+{"id":6,"type":"judge","chap":"DBAgent·语义层边界","points":4,"q":"判断：语义层是 DB Agent 的必经层，所有问题都必须先经过语义层才能查询。","opts":[{"k":"对","t":"对"},{"k":"错","t":"错"}],"answer":["错"],"explain":"答案解析：自学手册第 9 页：「语义层不是 DB Agent 的必经层，也不是数仓新增的 DWS／ADS 层。」DB Agent 可以走语义层、查询 API、SQL 模板、Text-to-SQL等多条路线，混合路由才是常态。<br><br>📌 押题理由：手册为语义层写了两个“不是”，是概念边界的原文级考点，判断题两个方向（必经层/新分层）都可能出。"},
+{"id":7,"type":"judge","chap":"DBAgent·语义层定位","points":4,"q":"判断：语义层是数仓新增的 DWS／ADS 之间的物理分层，建语义层就是多建一层表。","opts":[{"k":"对","t":"对"},{"k":"错","t":"错"}],"answer":["错"],"explain":"答案解析：自学手册第 9 页：「它是一份可以被系统执行的业务词典，把‘新增用户’‘活跃客户’‘成交率’等说法，映射成统一的指标算法、维度、字段、关联关系和权限规则。」语义层可以由指标平台、元数据服务、YAML/JSON 配置或查询 API 实现——是逻辑词典，不是物理分层。<br><br>📌 押题理由：与第 6 题构成“两个不是”的成对判断，AI 出卷常连续两题考同一个概念的两种误读。"},
+{"id":8,"type":"judge","chap":"DBAgent·六项控制","points":4,"q":"判断：DB Agent 上线前，只要把单次返回行数限制住（比如最多返回 1000 行），安全就到位了。","opts":[{"k":"对","t":"对"},{"k":"错","t":"错"}],"answer":["错"],"explain":"答案解析：自学手册第 11 页：「上线前六项控制要一起生效：指标定义、表白名单、只读账号、租户和用户权限、超时控制、审计日志。只限制返回行数不能解决指标算错、越权查询和写入数据等问题。」<br><br>📌 押题理由：手册原文点名的否定句（“只限制返回行数不能解决……”），是判断题的现成题干。"},
+{"id":9,"type":"judge","chap":"DBAgent·只读执行","points":4,"q":"判断：DB Agent 执行查询时应使用只读账号查询 Doris，并检查空结果、异常值、重复行和统计范围。","opts":[{"k":"对","t":"对"},{"k":"错","t":"错"}],"answer":["对"],"explain":"答案解析：自学手册第 8 页第 5 步：「执行并校验：用只读账号查询 Doris；检查空结果、异常值、重复行和统计范围。」只读账号从源头杜绝写入风险。<br><br>📌 押题理由：第 5 步的原文完整照录，判断题送分点，但会与“写账号也可以”的干扰版本交替出现。"},
+{"id":10,"type":"judge","chap":"推荐·反馈闭环","points":4,"q":"判断：推荐系统上线后，点击、购买、忽略、拒绝和投诉等反馈要重新进入数据平台，用于调整特征、规则和模型。","opts":[{"k":"对","t":"对"},{"k":"错","t":"错"}],"answer":["对"],"explain":"答案解析：自学手册第 12 页：「推荐结果还要持续校正：点击、购买、忽略、拒绝和投诉等反馈要重新进入数据平台，用于调整特征、规则和模型。」推荐不是一次性排序，而是反馈闭环。<br><br>📌 押题理由：方向 3 的核心机制句，与预测的“离线训练实时使用”并列，AI 出卷在方向 2/3 各放一道判断的概率很高。"},
+{"id":11,"type":"short","chap":"综合·DB Agent 方案设计","points":25,"q":"【综合设计·自评】公司要为运营团队上线一个 DB Agent，已知问题分布：约 60% 是“上周/本月各部门新增用户数”这类固定经营指标；15% 是高危的删除类/导全量类请求；15% 是“按行业+时间段看触达效果”这类半固定分析；10% 是长尾探索问题。请回答：(1) 为四类问题分别设计实现路线，并说明整体属于手册推荐的哪种思路；(2) 写出一次完整问数的六个步骤；(3) 列出上线前必须一起生效的六项控制；(4) 为什么不能把所有问题都直接交给模型生成 SQL？","refAnswer":"(1) 路线设计（10 分）：固定经营指标（60%）走指标语义层——口径稳定、容易审计，适合经营指标和正式报表；高危请求（15%）走查询 API/Tool——最安全最稳定，把危险操作挡在接口层；半固定分析（15%）走参数化 SQL 模板——只允许替换时间、部门、商品等受控参数，成本低、结果可控；长尾探索（10%）走 Schema 检索+Text-to-SQL——先检索相关表、字段、样例 SQL 和口径说明再生成只读 SQL。整体即手册推荐的「混合路由」：按问题类型分流，兼顾稳定性和覆盖范围，需维护路由规则和统一审计。(2) 六步（8 分，漏一步扣 1-2 分）：理解问题（拆时间范围/统计对象/指标/维度/排序，信息不全先追问）→ 选择实现路径 → 形成查询计划（指标、维度、过滤条件、关联路径、时间粒度、结果格式）→ 校验权限与风险（租户、用户、表白名单、敏感字段、查询成本、超时限制）→ 执行并校验（只读账号查 Doris，检查空结果/异常值/重复行/统计范围）→ 返回并留痕（返回数字、表格、SQL、指标口径，保存问题、查询计划、结果和审计日志）。(3) 六项控制（4 分）：指标定义、表白名单、只读账号、租户和用户权限、超时控制、审计日志——六项要一起生效。(4) 为什么不能全交给模型生成 SQL（3 分）：Text-to-SQL 更依赖模型和元数据质量，存在口径算错、越权查询、成本失控等风险，覆盖长尾可以，全量接管不可控；生产系统通常不会把所有问题都直接交给模型生成 SQL。评分：路线 10 分（四类各 2 分+指出混合路由 2 分）+ 六步 8 分 + 六项 4 分 + 理由 3 分。","explain":"答案解析：自学手册第 10 页五种实现思路对比表（语义层/API/模板/Text-to-SQL/混合路由-推荐）+ 第 8 页六步流程 + 第 11 页六项控制。本题就是第三部分三大考点的串联。<br><br>📌 押题理由：手册明确 DB Agent 是“重点中的重点”，综合设计题最大概率就是“设计一个 DB Agent”——路线分流、六步、六项控制正好构成 25 分的三个采分块。"},
+{"id":12,"type":"short","chap":"综合·语义层落地","points":25,"q":"【综合设计·自评】运营在 DB Agent 里问：“上周华南区域新增用户数是多少？”该问题走语义层路线。请回答：(1) 按手册示例，从指标、时间、维度、数据与权限四个方面说明这个问题怎样落到数据表；(2) 语义层本身包含哪六个方面；(3) 一次查询应返回什么、为什么数据人员也要能看到 SQL 和指标口径？(4) 指出关于语义层的两个“不是”。","refAnswer":"(1) 四方面落地（12 分，每方面 3 分）：指标——新增用户数=首次注册时间落在统计期内的去重用户数；时间——“上周”按公司自然周解释，并转换为明确的开始、结束时间；维度——“华南区域”映射到组织区域维度，使用统一的区域编码过滤；数据与权限——查询指定 DWS／ADS 表，并自动追加当前租户和用户可见范围。(2) 六个方面（6 分，每个 1 分）：业务术语与别名（新增用户/新增客户/拉新人数是否同一件事）、指标定义（计算公式、去重键、统计粒度、适用范围）、时间规则（自然周、滚动 7 天、数据日期和业务发生时间）、维度与关联（部门、区域、员工、商品怎样分组，表之间怎样 Join）、物理映射（哪张表、哪个字段、默认过滤条件）、权限与版本（谁能看哪个租户，指标变更从哪天开始生效）。(3) 返回内容与理由（4 分）：一次查询应返回数字、表格、SQL 和指标口径；业务人员看结果，数据人员可以检查 SQL 和统计口径——口径可审计，客户/领导追问时能解释数字怎么算出来的。(4) 两个“不是”（3 分）：语义层不是 DB Agent 的必经层；也不是数仓新增的 DWS/ADS 层（它是一份可以被系统执行的业务词典，可由指标平台、元数据服务、YAML/JSON 配置或查询 API 实现）。评分：四方面 12 分 + 六方面 6 分 + 返回与理由 4 分 + 两个不是 3 分。","explain":"答案解析：自学手册第 9 页语义层六方面表格 + 「采用语义层时，‘上周华南区域新增用户数’怎样落到数据表」示例（指标/时间/维度/数据与权限）+ 第 8 页「一次查询应返回什么：数字/表格/SQL/指标口径」。<br><br>📌 押题理由：手册在语义层小节直接给了“上周华南区域新增用户数”的完整落表示例——AI 出综合题时几乎会原样拿来当题干（示例即考题），四方面+六方面+两个不是正好凑满一道 25 分设计题。"}
+];
+
+// ============ state ============
+const state = { answers:{}, shorts:{}, submitted:false };
+const TYPE_NAME = {single:"单选",multi:"多选",judge:"判断",match:"匹配",short:"综合设计"};
+
+// ============ render ============
+function render(){
+  const area = document.getElementById("quizArea");
+  let html = "";
+  questions.forEach(q=>{
+    html += `<div class="q-card" id="q${q.id}">`;
+    html += `<div class="q-head"><span class="q-num">${q.id}</span><span class="q-type t-${q.type}">${TYPE_NAME[q.type]}</span><span class="q-chap">${q.chap}</span><span class="q-pts">${q.points} 分</span></div>`;
+    html += `<div class="q-text">${q.q}</div>`;
+    if(q.type==="single"||q.type==="multi"||q.type==="judge"){
+      const multi = q.type==="multi";
+      html += `<div class="${q.type==='judge'?'judge-row':'opts'}">`;
+      q.opts.forEach(o=>{
+        html += `<div class="opt" data-q="${q.id}" data-k="${o.k}" onclick="pick(${q.id},'${o.k}',${multi})"><span class="k">${o.k}</span><span>${o.t}</span></div>`;
+      });
+      html += `</div>`;
+    } else if(q.type==="short"){
+      html += `<textarea class="short-ta" id="shortTa_${q.id}" placeholder="在此作答……" oninput="state.shorts[${q.id}]=this.value;updateSheet()"></textarea>`;
+      html += `<div class="self-grade" id="selfGrade_${q.id}"><span>对照参考答案，自评给分：</span><select id="selfScore_${q.id}" onchange="applySelf(${q.id})"><option value="">选择分数</option>`;
+      for(let i=0;i<=q.points;i++) html += `<option value="${i}">${i} 分</option>`;
+      html += `</select><span id="selfTotal_${q.id}" style="font-weight:700;color:var(--warn)"></span></div>`;
+    }
+    html += `<div class="explain" id="ex${q.id}"></div>`;
+    html += `</div>`;
+  });
+  area.innerHTML = html;
+  renderSheet();
+}
+
+function renderSheet(){
+  const grid = document.getElementById("sheetGrid");
+  grid.innerHTML = questions.map(q=>`<div class="sheet-item" id="sh${q.id}" onclick="document.getElementById('q${q.id}').scrollIntoView({behavior:'smooth',block:'center'})">${q.id}</div>`).join("");
+  updateSheet();
+}
+
+function isDone(q){
+  if(q.type==="single"||q.type==="multi"||q.type==="judge") return !!(state.answers[q.id]&&state.answers[q.id].length);
+  if(q.type==="match") return q.matchLeft.every((m,i)=>state.match[q.id+"_"+i]);
+  if(q.type==="short") return (state.shorts[q.id]||"").trim().length>0;
+  return false;
+}
+function updateSheet(){
+  let done=0;
+  questions.forEach(q=>{
+    const el=document.getElementById("sh"+q.id);
+    if(el) el.className="sheet-item"+(isDone(q)?" done":"");
+    if(isDone(q)) done++;
+  });
+  document.getElementById("doneCnt").textContent=done;
+}
+
+function pick(id,k,multi){
+  if(state.submitted) return;
+  if(!state.answers[id]) state.answers[id]=[];
+  const arr=state.answers[id];
+  const i=arr.indexOf(k);
+  if(multi){ i>=0?arr.splice(i,1):arr.push(k); }
+  else { arr.length=0; arr.push(k); }
+  document.querySelectorAll(`.opt[data-q="${id}"]`).forEach(o=>o.classList.toggle("sel",arr.includes(o.dataset.k)));
+  updateSheet();
+}
+
+// ============ grading ============
+function gradeQ(q){
+  if(q.type==="single"||q.type==="judge"){
+    const a=(state.answers[q.id]||[])[0];
+    return {score: a===q.answer[0]?q.points:0, correct: a===q.answer[0], user:a??"未作答"};
+  }
+  if(q.type==="multi"){
+    const sel=(state.answers[q.id]||[]).slice().sort();
+    const ok=sel.join("")===q.answer.slice().sort().join("");
+    let score=0;
+    if(ok) score=q.points;
+    else if(sel.length>0 && sel.every(k=>q.answer.includes(k))) score=1; // 漏选得1分
+    return {score, correct:ok, partial:!ok&&score>0, user:sel.join("")||"未作答"};
+  }
+  return {score:0, correct:null, user:"自评"};
+}
+
+function submitExam(){
+  const unanswered = questions.filter(q=>!isDone(q)).length;
+  if(!state.submitted && unanswered>0 && !confirm(`还有 ${unanswered} 题未作答，确定提交判分吗？`)) return;
+  state.submitted=true;
+  document.getElementById("submitBtn").disabled=true;
+
+  let auto=0, autoFull=0, autoQ=0, correctCnt=0;
+  questions.forEach(q=>{
+    const g=gradeQ(q);
+    if(q.type!=="short"){
+      auto+=g.score; autoQ++;
+      if(g.correct) correctCnt++;
+      if(g.score===q.points) autoFull++;
+    }
+    showExplain(q,g);
+  });
+
+  const panel=document.getElementById("resultPanel");
+  const autoTotal = questions.filter(q=>q.type!=="short").reduce((s,q)=>s+q.points,0);
+  const shortQs = questions.filter(q=>q.type==="short");
+  const shortPts = shortQs.reduce((s,q)=>s+q.points,0);
+  const TOTAL = questions.reduce((s,q)=>s+q.points,0);
+  const saveBtn = `<button class="btn btn-primary" style="margin-left:12px" onclick="applySelfAll(${auto},${TOTAL})">已自评设计题，计入总分</button>`;
+  document.getElementById("resTitle").textContent = auto>=autoTotal*0.8?"成绩不错！":"已提交判分";
+  document.getElementById("resScore").textContent = `${auto} / ${TOTAL}`;
+  document.getElementById("resSub").innerHTML = `客观题（单选/判断）自动判分：<b>${auto} / ${autoTotal}</b>；综合设计 ${shortQs.length} 题（题 ${shortQs.map(q=>q.id).join("、")}）共 ${shortPts} 分，请对照参考答案逐题自评后点击下方按钮计入总分。${saveBtn}`;
+  document.getElementById("resStat").innerHTML = `<div><b>${correctCnt}/${autoQ}</b>客观题全对</div><div><b>${autoFull}/${autoQ}</b>拿满分</div><div><b>${TOTAL}</b>卷面总分</div>`;
+  panel.classList.add("show");
+  panel.scrollIntoView({behavior:"smooth"});
+
+  // reveal all short self-grade panels
+  document.querySelectorAll(".self-grade").forEach(e=>e.classList.add("show"));
+  // lock inputs
+  document.querySelectorAll(".opt").forEach(o=>o.classList.add("lock"));
+  updateSheetAfter(auto);
+  window._autoScore = auto; window._totalScore = TOTAL;
+}
+
+function applySelfAll(auto,total){
+  let self=0;
+  questions.filter(q=>q.type==="short").forEach(q=>{
+    const v=document.getElementById("selfScore_"+q.id).value;
+    if(v) self+=Number(v);
+  });
+  const fin = auto + self;
+  document.getElementById("resScore").textContent = `${fin} / ${total}`;
+  document.getElementById("resSub").innerHTML = `客观题 ${auto} 分 + 设计题自评合计 ${self} 分 = 最终得分 <b>${fin} / ${total}</b>。`;
+  questions.filter(q=>q.type==="short").forEach(q=>{
+    document.getElementById("selfTotal_"+q.id).textContent = `已计入`;
+  });
+}
+function applySelf(id){
+  const v=Number(document.getElementById("selfScore_"+id).value||0);
+  document.getElementById("selfTotal_"+id).textContent = `自评 ${v} 分（点上方按钮计入总分）`;
+}
+
+function showExplain(q,g){
+  const ex=document.getElementById("ex"+q.id);
+  let ansText="";
+  if(q.type==="single"||q.type==="judge") ansText=`正确答案：${q.answer[0]}`;
+  else if(q.type==="multi") ansText=`正确答案：${q.answer.join("")}`;
+  else ansText=`参考答案要点（自评）：`;
+  let extra="";
+  if(q.type==="short") extra=`<div style="margin-top:8px;background:#fff;padding:10px;border-radius:8px;border:1px solid #fde68a"><b>参考答案：</b>${q.refAnswer}</div>`;
+  ex.className="explain show "+(g.correct===true?"ok":g.correct===false?"bad":"");
+  ex.innerHTML=`<div class="ans-line">${ansText}　<span style="color:var(--muted);font-weight:400">（你的作答：${g.user}，本题得 ${g.score} / ${q.points} 分）</span></div>${extra}<div class="src">${q.explain}</div>`;
+  // option coloring for choice questions
+  if(q.type==="single"||q.type==="multi"||q.type==="judge"){
+    document.querySelectorAll(`.opt[data-q="${q.id}"]`).forEach(o=>{
+      o.classList.remove("sel");
+      if(q.answer.includes(o.dataset.k)) o.classList.add("ok");
+      else if((state.answers[q.id]||[]).includes(o.dataset.k)) o.classList.add("bad");
+    });
+  }
+}
+
+function updateSheetAfter(){
+  questions.forEach(q=>{
+    const g=gradeQ(q);
+    const el=document.getElementById("sh"+q.id);
+    if(!el) return;
+    if(g.correct===true) el.className="sheet-item correct";
+    else if(g.correct===false&&g.score>0) el.className="sheet-item partial";
+    else if(g.correct===false) el.className="sheet-item wrong";
+    else el.className="sheet-item pending";
+  });
+}
+
+// ============ timer ============
+let sec=0;
+setInterval(()=>{
+  sec++;
+  const m=String(Math.floor(sec/60)).padStart(2,"0"), s=String(sec%60).padStart(2,"0");
+  document.getElementById("timer").textContent=`${m}:${s}`;
+},1000);
+
+render();
+</script>
+</body>
+</html>

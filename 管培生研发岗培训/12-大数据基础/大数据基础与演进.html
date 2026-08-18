@@ -156,18 +156,18 @@ footer{border-top:2px solid var(--forest);margin-top:2rem;padding-top:1rem;font-
 <main class="main">
   <div class="hero">
     <img class="mascot" src="https://lyzbcy.github.io/weshoto-study/img/sticker/mascot.png" alt="">
-    <span class="chip">大数据 01 / 培训拆分版</span>
+    <span class="chip">大数据 01 / 培训拆分版 · 含 2026-08-18 自学手册增补</span>
     <h1>大数据基础与演进</h1>
-    <p>先讲清楚为什么需要大数据，再讲技术为什么一步步变成数据底座。本章你将学会：判断业务真正的大数据问题是什么、数仓为什么要分层、AI 时代为什么更需要证据链。</p>
+    <p>先讲清楚为什么需要大数据，再讲技术为什么一步步变成数据底座。本章你将学会：判断业务真正的大数据问题是什么、平台从业务库直查到 AI 化的六个发展阶段、流式任务的四个核心概念、数仓为什么要分层、AI 时代为什么更需要证据链。</p>
   </div>
 
   <section id="m01">
     <div class="sec-head"><span class="sec-id">01</span><h2>学习目标与阅读路径 <button class="voice-btn" data-voice-id="ch1">🎧 听这节</button></h2></div>
     <div class="goal"><span class="gno">目标1</span><div>能说出培训认为「需要大数据」的四个真实业务问题（数据分散、查询变慢、口径混乱、结果追不回）</div></div>
     <div class="goal"><span class="gno">目标2</span><div>能复述 ODS / DWD / DWS / ADS 四层各自的职责，并解释「分层是为了每一步能复核」</div></div>
-    <div class="goal"><span class="gno">目标3</span><div>能区分至少 3 个核心判断和它们的原文依据</div></div>
-    <div class="goal"><span class="gno">目标4</span><div>能指出至少 2 个容易误解的地方（如「大数据=文件大」）</div></div>
-    <div class="goal"><span class="gno">目标5</span><div>能提出 1 个后续追问（比如：我们团队的批流时效选型该怎么做）</div></div>
+    <div class="goal"><span class="gno">目标3</span><div>📖 能按顺序说出大数据平台的六个发展阶段（业务库直查→自建 Hadoop→云上 EMR→实时流处理→流批一体→AI 化），并说明每阶段「为什么升级」和「升级后仍要自己做什么」</div></div>
+    <div class="goal"><span class="gno">目标4</span><div>📖 能解释流式任务四个概念：事件时间、Watermark、去重、Checkpoint，以及 Checkpoint 不能代替什么</div></div>
+    <div class="goal"><span class="gno">目标5</span><div>能区分至少 3 个核心判断和它们的原文依据；能指出至少 2 个容易误解的地方（如「大数据=文件大」「EMR 自动解决口径」）</div></div>
   </section>
 
   <section id="m02">
@@ -235,6 +235,24 @@ footer{border-top:2px solid var(--forest);margin-top:2rem;padding-top:1rem;font-
         ▼
 AI 时代更需要证据链（六要素）                  [第6页]
   「AI 给的不再只是数字，而是一段看起来很顺的结论」</div>
+    <p style="font-size:.88rem;margin:.9rem 0 .6rem"><strong>📖 自学手册增补：六个发展阶段</strong>（每一次演进都在解决上一阶段的问题，「为什么升级」和「升级后仍要自己做什么」成对）。</p>
+    <div class="structure">① 业务库直接出报表 ─ MySQL/PostgreSQL 写 SQL 导 Excel；适合数据量小、统计简单
+        │ 报表影响在线业务、历史数据难保存
+        ▼
+② 自建 Hadoop 离线数仓 ─ HDFS+Hive+MapReduce/Spark 按天跑批
+        │ 自己管机器太累（安装/扩容/升级/故障）
+        ▼
+③ 云上 EMR ─ 云托管 Hadoop/Spark/Hive，按任务扩缩容
+        │ 反诈、风控、运维告警不能等到第二天
+        ▼
+④ 实时流处理 ─ Kafka 接事件，Flink 按事件时间/窗口/状态实时算
+        │ 同一指标两套任务容易出现两个结果
+        ▼
+⑤ 流批一体 ─ 批流共用存储/表格式/指标定义，改善口径一致和补数
+        │ 业务想直接问数，团队要更快排查问题
+        ▼
+⑥ AI 化数据平台 ─ 指标/元数据/特征/模型/运行记录统一管理
+   → 支持智能问数、预测决策、个性化推荐</div>
   </section>
 
   <section id="m05">
@@ -274,6 +292,24 @@ AI 时代更需要证据链（六要素）                  [第6页]
       <p><strong>核心判断：</strong>AI 输出的是看起来顺的结论，所以数据底座要能支撑证据链（原始证据、指标引用、模型批次、质量校验、血缘链路、复核入口）。</p>
       <span class="src-quote">原文依据（第6页）：「AI 给的不再只是数字，而是一段看起来很顺的结论，所以数据底座要更可复核。」</span>
       <p><span class="tag judge">判断</span> 为什么重要：这是三讲通向「未来展望」的伏笔。误读：以为 AI 会降低对数据质量的要求。</p>
+    </div>
+    <div class="card">
+      <h3>📖 判断7：EMR 和流批一体不会自动解决口径问题</h3>
+      <p><strong>核心判断：</strong>EMR 主要减少集群安装和运维工作，流批一体主要减少两套计算链路；指标怎样算、数据质量怎样验、谁能看哪些数据，仍然需要团队明确定义。</p>
+      <span class="src-quote">自学手册依据：「EMR 主要减少集群安装和运维工作。流批一体主要减少两套计算链路。指标怎样算、数据质量怎样验、谁能看哪些数据，仍然需要团队明确定义。」</span>
+      <p><span class="tag judge">判断</span> 为什么重要：升级平台≠治理完成，每一阶段都有「仍要自己做什么」。误读：以为上了 EMR/流批一体，口径就自动统一了。</p>
+    </div>
+    <div class="card">
+      <h3>📖 判断8：大数据平台不以数据量为起点</h3>
+      <p><strong>核心判断：</strong>大数据平台并不以数据量达到某个数字为起点；业务库查询开始影响在线业务、历史数据难以保存、跨系统指标难以统一，才需要把分析任务移到独立的数据平台。</p>
+      <span class="src-quote">自学手册依据（第2页）：「大数据平台并不以数据量达到某个数字为起点。」</span>
+      <p><span class="tag judge">判断</span> 与判断1（大数据≠数据量大）互为表里：一个讲本质，一个讲建仓时机。误读：攒够多少 TB 再建数仓。</p>
+    </div>
+    <div class="card">
+      <h3>📖 判断9：流式任务要自己处理时间、重复和故障恢复</h3>
+      <p><strong>核心判断：</strong>事件时间按业务发生时刻算窗口；Watermark 处理乱序迟到；去重按事件 ID/业务主键；Checkpoint 保存状态供重启恢复——但 Checkpoint 不能代替去重，也不能替团队决定迟到数据怎样处理。</p>
+      <span class="src-quote">自学手册依据（第5页）：「Checkpoint：它保存计算状态，供任务重启后恢复；它不能代替事件去重，也不能替团队决定迟到数据怎样处理。」</span>
+      <p><span class="tag judge">判断</span> 为什么重要：实时链路的工程难点不在「快」，而在正确性。误读：以为 Flink/Kafka 自带一切正确性保证。</p>
     </div>
   </section>
 
@@ -315,6 +351,25 @@ AI 时代更需要证据链（六要素）                  [第6页]
       <p>作者用法：六要素——原始证据、指标引用、模型批次、质量校验、血缘链路、复核入口。</p>
       <span class="src-quote">原文依据（第6页六节并列）。</span>
       <p>类比（仅辅助理解）：像实验报告的「材料-方法-数据-结论」四段，缺一段就不可信。它帮助理解：完整可追溯；它不能代表：一条数据库外键链。</p>
+    </div>
+    <div class="card">
+      <h3>📖 EMR（云上托管 Hadoop）</h3>
+      <p>自学手册用法：云平台托管 Hadoop、Spark、Hive 等组件，团队按任务扩缩容，减少集群安装和维护工作。人话：把「自己养机房」外包给云，但选实例、控成本、调参数、管权限仍是自己的事。</p>
+      <span class="src-quote">自学手册依据（第4页）：「改善：集群交付和弹性」。</span>
+      <p>不要误解成：EMR 帮你把口径、质量、权限也管好了。</p>
+    </div>
+    <div class="card">
+      <h3>📖 流批一体</h3>
+      <p>自学手册用法：批处理和流处理共用存储、表格式、指标定义或计算逻辑，减少同一指标维护两套任务。人话：一个指标一套逻辑，批和流都跑它，结果自然对得上。</p>
+      <span class="src-quote">自学手册依据（第4页）：「改善：口径一致和补数」。</span>
+      <p>不要误解成：流批一体后就不需要对账——结果一致性仍要自己定义和验证。</p>
+    </div>
+    <div class="card">
+      <h3>📖 流式四概念：事件时间 / Watermark / 去重 / Checkpoint</h3>
+      <p>事件时间：按业务事件<strong>真正发生的时间</strong>计算窗口，不能只看服务器收到消息的时间。Watermark：系统据此判断事件时间推进到哪里，按约定处理乱序和迟到数据。去重：消息可能被重复发送，按<strong>事件 ID 或业务主键</strong>避免重复计算。Checkpoint：保存计算状态供任务重启后恢复。</p>
+      <span class="concept-rel">事件发生(事件时间) → Watermark 推进/容忍乱序 → 按主键去重 → Checkpoint 兜底恢复</span>
+      <span class="src-quote">自学手册依据（第5页）四节并列。</span>
+      <p>不要误解成：Checkpoint 能代替去重、或能替团队决定迟到数据怎样处理——它只管状态恢复。</p>
     </div>
   </section>
 
@@ -439,6 +494,34 @@ AI 时代更需要证据链（六要素）                  [第6页]
       <button class="check">检查</button>
       <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
     </div>
+    <div class="task" data-task="ch12-q9" data-answer="C"
+         data-ok="对。自学手册第4页：业务库直查→自建 Hadoop（解决海量存储和 T+1）→云上 EMR（改善集群交付和弹性）→实时流处理（解决风控监控实时看板）→流批一体（改善口径一致和补数）→AI 化数据平台（新增问数预测推荐）。"
+         data-no="顺序记错了。记忆锚点：先解决「存得下」（Hadoop），再解决「管得省」（EMR），再解决「算得快」（流式），再解决「对得上」（流批一体），最后「会问数」（AI 化）。"
+         data-src="自学手册第4页：大数据平台的六个发展阶段。"
+         data-review="回到「04 原文结构地图 · 六个发展阶段」复习">
+      <div class="q">📖 Q9（新版）大数据平台六个发展阶段的正确顺序是？</div>
+      <div class="opts">
+        <button class="opt" data-val="A">A. 业务库直查 → 云上 EMR → 自建 Hadoop → 流批一体 → 实时流处理 → AI 化</button>
+        <button class="opt" data-val="B">B. 自建 Hadoop → 业务库直查 → 实时流处理 → 云上 EMR → AI 化 → 流批一体</button>
+        <button class="opt" data-val="C">C. 业务库直查 → 自建 Hadoop → 云上 EMR → 实时流处理 → 流批一体 → AI 化数据平台</button>
+      </div>
+      <button class="check">检查</button>
+      <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+    </div>
+    <div class="task" data-task="ch12-q10" data-answer="B" 
+         data-ok="对。事件时间按业务事件真正发生的时间计算窗口；Checkpoint 只保存计算状态供重启恢复，不能代替去重，也不能替团队决定迟到数据怎样处理。"
+         data-no="注意区分四个概念的分工：事件时间管「按什么时间算」，Watermark 管「乱序迟到」，去重管「重复消息」，Checkpoint 管「故障恢复」。"
+         data-src="自学手册第5页：流式任务还要处理时间、重复和故障恢复。"
+         data-review="回到「06 关键概念拆解 · 流式四概念」复习">
+      <div class="q">📖 Q10（新版）关于流式任务的四个概念，下列说法正确的是？</div>
+      <div class="opts">
+        <button class="opt" data-val="A">A. 事件时间就是服务器收到消息的时间</button>
+        <button class="opt" data-val="B">B. 事件时间按业务事件真正发生的时间计算窗口；Checkpoint 不能代替事件去重</button>
+        <button class="opt" data-val="C">C. Watermark 的作用是删除迟到数据；Checkpoint 能替团队决定迟到数据怎样处理</button>
+      </div>
+      <button class="check">检查</button>
+      <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+    </div>
   </section>
 
   <section id="m09">
@@ -483,6 +566,10 @@ AI 时代更需要证据链（六要素）                  [第6页]
     <div class="card">
       <h3><img class="sticker" src="https://lyzbcy.github.io/weshoto-study/img/sticker/final.png" alt="">本章收束（原文第7页）</h3>
       <p>• 大数据不是技术栈堆叠，是让业务稳定看数、解释数、用数。<br>• 架构越往后走，越强调复用、治理、质量和证据链。<br>• 进入 AI 阶段后，数据底座要能支撑模型安全地吃数。</p>
+    </div>
+    <div class="card paper">
+      <h3>📖 新版自学手册收束（第一部分）</h3>
+      <p>• 六个阶段各解决一个问题：Hadoop 解决海量存储和 T+1，EMR 改善集群交付和弹性，流式解决风控/监控/实时看板，流批一体改善口径一致和补数，AI 化新增问数/预测/推荐。<br>• 每次升级后仍有自己的功课：分层/调度/质量规则、成本/参数/权限、事件时间/乱序/检查点、统一表模型/补数方案、指标/元数据/血缘统一。<br>• 各系统分工：业务库管在线操作，数仓存历史统一指标，Doris 管分析查询；AI 用数还要用统一口径、权限、质量结果和运行记录。</p>
     </div>
     <div id="wrongBox"><li style="color:#888;list-style:none">还没有错题。答错的题会自动收集到这里。</li></div>
     <textarea id="report" readonly>点击「生成学习报告」看看你掌握了什么。</textarea>

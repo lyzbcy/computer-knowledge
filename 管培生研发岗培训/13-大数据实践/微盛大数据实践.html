@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>第13章 大数据基础与演进 · 学习地图</title>
+<title>第13章 微盛大数据实践 · 学习地图</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Poppins:wght@400;600;700&family=Roboto+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -156,9 +156,9 @@ footer{border-top:2px solid var(--forest);margin-top:2rem;padding-top:1rem;font-
 <main class="main">
   <div class="hero">
     <img class="mascot" src="https://lyzbcy.github.io/weshoto-study/img/sticker/mascot.png" alt="">
-    <span class="chip">大数据 02 / 培训拆分版</span>
+    <span class="chip">大数据 02 / 培训拆分版 · 含 2026-08-18 自学手册增补</span>
     <h1>微盛大数据实践</h1>
-    <p>用真实开发链路讲清楚：一句业务需求如何变成口径、血缘、任务和验证结果。本章重点：把业务话翻译成可验证的数据话。</p>
+    <p>用真实开发链路讲清楚：一句业务需求如何变成口径、血缘、任务和验证结果。本章重点：把业务话翻译成可验证的数据话；📖 新版增补：微盛数据链路（CDC/DataX/Doris/ES）、数仓分层比喻、开发三条规则和数据任务五项检查。</p>
   </div>
 
   <section id="m01">
@@ -167,7 +167,8 @@ footer{border-top:2px solid var(--forest);margin-top:2rem;padding-top:1rem;font-
     <div class="goal"><span class="gno">目标2</span><div>能复述「按部门统计员工给客户打标签的数量」的五种候选口径及最终采用哪一种、为什么</div></div>
     <div class="goal"><span class="gno">目标3</span><div>能解释上下游对账验证的逻辑（90 个 DWD 事件行 → 6 行 ADS 汇总，粒度重复为 0）</div></div>
     <div class="goal"><span class="gno">目标4</span><div>能说出 harness 五件产物（需求.md / 方案.md / 任务设计.json / 执行计划.json / run-log.jsonl）各自留下什么</div></div>
-    <div class="goal"><span class="gno">目标5</span><div>能提出 1 个追问（比如：我们现有需求的口径评审卡点在哪）</div></div>
+    <div class="goal"><span class="gno">目标5</span><div>📖 能画出微盛数据链路四段（数据来源→采集与整理→查询与检索→页面和分析使用），并说出 Doris 与 ES 的分工</div></div>
+    <div class="goal"><span class="gno">目标6</span><div>📖 能背出数据任务完成后的五项检查（行数和时间范围/业务主键/关键字段/上下游核对/重复运行）和开发三条规则</div></div>
   </section>
 
   <section id="m02">
@@ -233,6 +234,17 @@ footer{border-top:2px solid var(--forest);margin-top:2rem;padding-top:1rem;font-
         │ 过程如何沉淀
         ▼
 harness 五件产物把判断过程留下来                    [第6页]</div>
+    <p style="font-size:.88rem;margin:.9rem 0 .6rem"><strong>📖 自学手册增补：微盛数据链路一条线</strong>（业务数据怎样进数仓，再供给页面和分析任务）。</p>
+    <div class="structure">数据来源              企微会话 · SCRM 业务库 · 订单 · 门店 · VOC
+        │ CDC / DataX / 调度任务
+        ▼
+采集与整理            ODS（原材料）→ DWD（切好的配菜）→ DWS（半成品）→ ADS（端上桌的菜）
+        │
+        ▼
+查询与检索            Doris 承担多维分析 · Elasticsearch 承担会话检索
+        │
+        ▼
+页面和分析使用        运营看板 · 明细查询 · VOC · 质检 · 用户交付</div>
   </section>
 
   <section id="m05">
@@ -272,6 +284,18 @@ harness 五件产物把判断过程留下来                    [第6页]</div>
       <p><strong>核心判断：</strong>微盛大数据实践的重点不是写得快；口径、选表、分层、幂等、验证和 Review 风险必须成套出现。</p>
       <span class="src-quote">原文依据（第7页）：「重点不是写得快，而是说得清、查得到、跑得稳。」「口径、选表、分层、幂等、验证和 Review 风险必须成套出现。」</span>
       <p><span class="tag judge">判断</span> 为什么重要：评价数据开发质量的标准。误读：以开发速度论英雄。</p>
+    </div>
+    <div class="card">
+      <h3>📖 判断7：Doris 管多维分析，ES 管会话检索，分工不混</h3>
+      <p><strong>核心判断：</strong>查询与检索环节由两个引擎分担——Doris 承担多维分析（报表、聚合、看板），Elasticsearch 承担会话检索（按原文搜会话）。</p>
+      <span class="src-quote">自学手册依据（第6页）：「Doris 承担多维分析，Elasticsearch 承担会话检索。」</span>
+      <p><span class="tag fact">事实</span> 为什么重要：选错引擎=拿短板扛负载。误读：一个引擎打天下，或把 ES 当分析库跑聚合报表。</p>
+    </div>
+    <div class="card">
+      <h3>📖 判断8：数据任务完成≠通过，至少检查五项</h3>
+      <p><strong>核心判断：</strong>行数和时间范围、业务主键、关键字段、上下游核对、重复运行——五项检查一起构成「可证明的正确」，其中「重复运行」对应幂等（同一时间范围再跑，行数和指标一致）。</p>
+      <span class="src-quote">自学手册依据（第7页）：「数据任务完成后至少检查五项。」</span>
+      <p><span class="tag judge">判断</span> 与旧版「对账验收」（90 事件=6 行汇总）一脉相承：对账只是五项中的「上下游核对」。误读：跑完任务看目标表非空就提交。</p>
     </div>
   </section>
 
@@ -314,6 +338,26 @@ harness 五件产物把判断过程留下来                    [第6页]</div>
       <p>作者用法：数据来源、采集同步、数仓分层、分析引擎、平台自动化、业务消费六段不能混在一起讲。人话：讨论问题时先定位在链路哪一段，别串台。</p>
       <span class="src-quote">原文依据（第3页）。</span>
       <p>不要误解成：六段由六个团队各管一摊互不相干——边界是职责边界不是墙。</p>
+    </div>
+    <div class="card">
+      <h3>📖 CDC / DataX（采集与整理）</h3>
+      <p>自学手册用法：CDC（变更数据捕获）抓业务库的增删改，DataX 做批量同步，再由调度任务编排放进 ODS。人话：CDC 像「监听插销」，DataX 像「定期搬运工」。</p>
+      <span class="src-quote">自学手册依据（第6页）：「CDC、DataX、调度任务，再进入 ODS、DWD、DWS、ADS。」</span>
+      <p>不要误解成：采集工具能顺带把口径也统一——进仓后的清洗、去重、主键处理在 DWD 做。</p>
+    </div>
+    <div class="card">
+      <h3>📖 数仓分层厨房比喻（ODS→ADS）</h3>
+      <p>ODS＝刚进仓库的原材料（保留原貌，不做复杂 Join 和指标计算）；DWD＝已经切好的配菜（可审计的事实明细，处理清洗、去重和主键）；DWS＝可重复使用的半成品（用户、员工、部门等常用主题数据）；ADS＝端上桌的菜（面向页面、报表、交付和 AI 应用）。</p>
+      <span class="concept-rel">原材料(ODS) → 配菜(DWD) → 半成品(DWS) → 上桌(ADS)</span>
+      <span class="src-quote">自学手册依据（第6页）分层表格「简单理解」列。</span>
+      <p>不要误解成：DWS 是「低质量中间层」——它是被反复复用的公共资产。</p>
+    </div>
+    <div class="card">
+      <h3>📖 开发三条规则 + 五项检查</h3>
+      <p>三条规则：①报表查询不要长期压在业务库上；②ODS 尽量保留源表原貌；③报表和 AI 结果要能查回上游数据和本次运行记录。</p>
+      <p>五项检查：<strong>行数和时间范围</strong>（是否多算漏算日期）、<strong>业务主键</strong>（粒度是否重复）、<strong>关键字段</strong>（主键/时间/金额是否有不应有的空值）、<strong>上下游核对</strong>（汇总能从明细重算、明细能查回源数据）、<strong>重复运行</strong>（再跑一遍行数指标是否一致）。</p>
+      <span class="src-quote">自学手册依据（第7页）：「开发时要守住三条规则」「数据任务完成后至少检查五项」。</span>
+      <p>不要误解成：五项检查只在上线时做一次——补数、重跑后同样要过一遍。</p>
     </div>
   </section>
 
@@ -436,6 +480,37 @@ harness 五件产物把判断过程留下来                    [第6页]</div>
       <button class="check">检查</button>
       <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
     </div>
+    <div class="task" data-task="ch13-q9" data-answer="B,C,D,E,F" data-multi="true"
+         data-ok="对。五项检查：行数和时间范围、业务主键、关键字段、上下游核对、重复运行。「界面配色」不在检查清单里。"
+         data-no="注意五项检查都是数据正确性检查，界面/视觉问题不在其中；「上下游核对」和「重复运行」缺一不可。"
+         data-src="自学手册第7页：数据任务完成后至少检查五项。"
+         data-review="回到「06 关键概念拆解 · 开发三条规则 + 五项检查」复习">
+      <div class="q">📖 Q9（新版·多选）数据任务完成后至少检查哪五项？</div>
+      <div class="opts">
+        <button class="opt" data-val="A">A. 看板界面配色是否符合规范</button>
+        <button class="opt" data-val="B">B. 行数和时间范围（是否多算漏算日期）</button>
+        <button class="opt" data-val="C">C. 业务主键（目标粒度是否重复）</button>
+        <button class="opt" data-val="D">D. 关键字段（主键/时间/金额是否有不应有的空值）</button>
+        <button class="opt" data-val="E">E. 上下游核对（汇总能从明细重算，明细能查回源数据）</button>
+        <button class="opt" data-val="F">F. 重复运行（同一时间范围再跑，行数和指标一致）</button>
+      </div>
+      <button class="check">检查</button>
+      <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+    </div>
+    <div class="task" data-task="ch13-q10" data-answer="C"
+         data-ok="对。自学手册第6页：Doris 承担多维分析，Elasticsearch 承担会话检索——按负载类型分工，不混用。"
+         data-no="分清两类负载：多维聚合分析找 Doris；按关键词搜会话原文找 ES。"
+         data-src="自学手册第6页：Doris 承担多维分析，Elasticsearch 承担会话检索。"
+         data-review="回到「05 核心判断与依据 · 判断7」复习">
+      <div class="q">📖 Q10（新版）「运营看板的多维聚合分析」和「按关键词搜会话原文」分别该走哪个引擎？</div>
+      <div class="opts">
+        <button class="opt" data-val="A">A. 都走 Doris，ES 只做备份</button>
+        <button class="opt" data-val="B">B. 都走 ES，Doris 只做离线导出</button>
+        <button class="opt" data-val="C">C. 多维聚合分析走 Doris，会话原文检索走 Elasticsearch</button>
+      </div>
+      <button class="check">检查</button>
+      <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+    </div>
   </section>
 
   <section id="m09">
@@ -479,6 +554,10 @@ harness 五件产物把判断过程留下来                    [第6页]</div>
     <div class="card">
       <h3><img class="sticker" src="https://lyzbcy.github.io/weshoto-study/img/sticker/final.png" alt="">本章收束（原文第7页）</h3>
       <p>• 微盛大数据实践的重点不是写得快，而是说得清、查得到、跑得稳。<br>• 口径、选表、分层、幂等、验证和 Review 风险必须成套出现。<br>• harness 的价值是降低漏项、口径漂移和交接成本。</p>
+    </div>
+    <div class="card paper">
+      <h3>📖 新版自学手册收束（第二部分）</h3>
+      <p>• 数据链路一条线：企微会话/SCRM/订单/门店/VOC →（CDC、DataX、调度）→ ODS/DWD/DWS/ADS →（Doris 多维分析、ES 会话检索）→ 看板/明细/VOC/质检/交付。<br>• 开发守住三条规则：报表不压业务库、ODS 保留原貌、结果能查回上游和运行记录。<br>• 任务完成查五项：行数和时间范围、业务主键、关键字段、上下游核对、重复运行。</p>
     </div>
     <div id="wrongBox"><li style="color:#888;list-style:none">还没有错题。答错的题会自动收集到这里。</li></div>
     <textarea id="report" readonly>点击「生成学习报告」看看你掌握了什么。</textarea>

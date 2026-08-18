@@ -274,18 +274,18 @@ footer a{color:var(--brick);font-weight:700;text-decoration:underline;}
     </div>
     <div class="grid">
       <a class="card soon-card" href="12-大数据基础/大数据基础与演进.html">
-        <div class="thumb">🏗️</div><div class="body"><span class="tag soon">已上线</span><h3>01 大数据基础与演进</h3><p>大数据概念、技术演进、Lambda/Kappa 架构、核心组件。</p><div class="go">进入学习地图 →</div></div>
+        <div class="thumb">🏗️</div><div class="body"><span class="tag soon">已上线</span><h3>01 大数据基础与演进</h3><p>四大痛点、六阶段演进（Hadoop/EMR/流式/流批一体/AI 化）、事件时间与 Watermark、数仓分层。</p><div class="go">进入学习地图 →</div></div>
       </a>
       <a class="card soon-card" href="13-大数据实践/微盛大数据实践.html">
-        <div class="thumb">⚙️</div><div class="body"><span class="tag soon">已上线</span><h3>02 微盛大数据实践</h3><p>微盛内部大数据平台、数据链路、典型应用场景。</p><div class="go">进入学习地图 →</div></div>
+        <div class="thumb">⚙️</div><div class="body"><span class="tag soon">已上线</span><h3>02 微盛大数据实践</h3><p>数据链路（CDC/DataX/Doris/ES）、ODS-DWD-DWS-ADS 分层、口径翻译、五项数据检查。</p><div class="go">进入学习地图 →</div></div>
       </a>
       <a class="card soon-card" href="14-未来展望/未来展望.html">
-        <div class="thumb">🔮</div><div class="body"><span class="tag soon">已上线</span><h3>03 未来展望</h3><p>实时数仓、Data+AI、湖仓一体等趋势方向。</p><div class="go">进入学习地图 →</div></div>
+        <div class="thumb">🔮</div><div class="body"><span class="tag soon">已上线</span><h3>03 未来展望 · AI 应用</h3><p>DB Agent 智能问数（六步流程/语义层/五种实现思路/六项控制）、预测分析、个性化推荐。</p><div class="go">进入学习地图 →</div></div>
       </a>
 
       <!-- 大数据考试入口 -->
       <a class="card exam-card" href="exam/building.html?cat=大数据&sub=大数据考试&type=exam">
-        <div class="thumb">📝</div><div class="body"><span class="tag exam">8 月考试</span><h3>大数据考试</h3><p>本方向知识考试（20题，场景应用题为主），已上线。</p><div class="go">考试筹备中 →</div></div>
+        <div class="thumb">📝</div><div class="body"><span class="tag exam">8 月考试</span><h3>大数据考试</h3><p>新版闭卷考试：5 单选 + 5 判断 + 2 综合设计题（依据 2026-08 自学手册）；另有 20 题旧版题库可作模拟练习。</p><div class="go">考试筹备中 →</div></div>
       </a>
 
     <a class="card" href="exam/大数据模拟卷.html">
@@ -398,7 +398,7 @@ footer a{color:var(--brick);font-weight:700;text-decoration:underline;}
 <script>
 // 版本检测
 (function(){
-  var PAGE_V = 6;
+  var PAGE_V = 10;
   fetch("version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.json();}).then(function(d){
     if(PAGE_V!==d.v){
       var last=0; try{last=parseInt(sessionStorage.getItem("ck_refreshed")||"0");}catch(e){}

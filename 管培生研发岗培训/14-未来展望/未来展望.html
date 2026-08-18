@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>第14章 大数据基础与演进 · 学习地图</title>
+<title>第14章 未来展望 · 学习地图</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Poppins:wght@400;600;700&family=Roboto+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -156,9 +156,9 @@ footer{border-top:2px solid var(--forest);margin-top:2rem;padding-top:1rem;font-
 <main class="main">
   <div class="hero">
     <img class="mascot" src="https://lyzbcy.github.io/weshoto-study/img/sticker/mascot.png" alt="">
-    <span class="chip">大数据 03 / 培训拆分版</span>
+    <span class="chip">大数据 03 / 培训拆分版 · 含 2026-08-18 自学手册增补</span>
     <h1>未来展望</h1>
-    <p>大数据下一步不是更大，而是更可信、更自动、更能支撑 AI 和业务动作。从报表底座走向智能中枢。本章你将学会：未来能力地图四层、AI Native 受控开发六步、影响分析式运维治理。</p>
+    <p>大数据下一步不是更大，而是更可信、更自动、更能支撑 AI 和业务动作。从报表底座走向智能中枢。本章你将学会：未来能力地图四层、AI Native 受控开发六步、影响分析式运维治理；📖 新版增补：三类 AI 应用——DB Agent 智能问数（重点：六步流程、语义层、五种实现思路、上线前六项控制）、预测分析与实时智能决策、个性化推荐与决策优化。</p>
   </div>
 
   <section id="m01">
@@ -167,7 +167,8 @@ footer{border-top:2px solid var(--forest);margin-top:2rem;padding-top:1rem;font-
     <div class="goal"><span class="gno">目标2</span><div>能复述 AI Native 受控开发六步：识别需求→探查候选表→生成设计→test preview→独立 Review→人工审批</div></div>
     <div class="goal"><span class="gno">目标3</span><div>能区分「事后处理」和「影响分析」两种运维治理姿态，并说出告警变准的标准</div></div>
     <div class="goal"><span class="gno">目标4</span><div>能解释「没有证据链的 AI 结论，越流畅越容易让人放松警惕」并指出至少 2 个误解</div></div>
-    <div class="goal"><span class="gno">目标5</span><div>能提出 1 个追问（比如：我们会话删除治理现在做到哪一步）</div></div>
+    <div class="goal"><span class="gno">目标5</span><div>📖 能完整说出 DB Agent 完成一次问数的六步（理解问题→选择实现路径→形成查询计划→校验权限与风险→执行并校验→返回并留痕），并解释为什么信息不全时要先追问</div></div>
+    <div class="goal"><span class="gno">目标6</span><div>📖 能对比 DB Agent 五种实现思路的优劣并说明为什么「混合路由」被推荐；能背出上线前六项控制；能区分预测分析与个性化推荐分别输出什么</div></div>
   </section>
 
   <section id="m02">
@@ -191,6 +192,16 @@ footer{border-top:2px solid var(--forest);margin-top:2rem;padding-top:1rem;font-
       <h3><span class="tag bg">背景补充</span> 数据治理</h3>
       <p>对数据资产做管理：口径统一、权限脱敏、生命周期、质量监控。目的是让数据「敢被相信、敢被复用」。</p>
       <p>为什么现在需要知道：治理层是未来能力地图四层之一。</p>
+    </div>
+    <div class="card">
+      <h3><span class="tag bg">背景补充</span> 📖 DB Agent（智能问数）</h3>
+      <p>业务人员用自然语言提问，系统自动选择查询路线（语义层/查询 API/SQL 模板/Text-to-SQL）、校验权限、执行查询并返回数字+表格+SQL+指标口径的产品形态。参考：Microsoft Fabric Data Agent。</p>
+      <p>为什么现在需要知道：新版自学手册把 DB Agent 列为三类 AI 应用的重点方向。</p>
+    </div>
+    <div class="card">
+      <h3><span class="tag bg">背景补充</span> 📖 Text-to-SQL 与语义层</h3>
+      <p>Text-to-SQL：把自然语言直接转成 SQL，覆盖面广但依赖模型和元数据质量。语义层：把「新增用户」「活跃客户」等业务说法映射成统一指标算法、维度、字段和权限的「可执行业务词典」。</p>
+      <p>为什么现在需要知道：DB Agent 的核心选型问题是「什么问题走语义层、什么问题走 Text-to-SQL」。</p>
     </div>
   </section>
 
@@ -230,6 +241,23 @@ footer{border-top:2px solid var(--forest);margin-top:2rem;padding-top:1rem;font-
         │    运维自动化+治理自动化+告警更准+会话删除治理
         └─ ③ 智能分析必须带证据链（六要素）       [第6页]
              指标引用/原文证据/模型批次/质量校验/运行记录/复核入口</div>
+    <p style="font-size:.88rem;margin:.9rem 0 .6rem"><strong>📖 自学手册增补：大数据的三类 AI 应用</strong>（分别解决查数、预测、推荐三个问题，共用同一套平台基础）。</p>
+    <div class="structure">三类 AI 应用（方向1 为重点）
+  ├─ ① DB Agent／智能问数 ★重点
+  │    运营中文提问 → 选路线（语义层/查询API/SQL模板/Text-to-SQL）
+  │    → 六步：理解问题→选择实现路径→形成查询计划→
+  │      校验权限与风险→执行并校验→返回并留痕
+  │    输出：数字、表格、SQL、指标口径
+  ├─ ② 预测分析与实时智能决策
+  │    反诈风控/客户流失/业务量预测；离线训练+实时使用
+  │    输出：预测分数、风险等级、告警或触发动作
+  └─ ③ 个性化推荐与决策优化
+       商品内容权益/跟进顺序/服务方案推荐；反馈回流校正
+       输出：推荐列表、推荐分数、主要理由和建议动作
+        │ 共用平台基础
+        ▼
+  指标口径 · 数据质量 · 特征定义 · 租户和用户权限
+  · 模型版本 · 运行日志 · 审计记录（统一管理）</div>
   </section>
 
   <section id="m05">
@@ -269,6 +297,30 @@ footer{border-top:2px solid var(--forest);margin-top:2rem;padding-top:1rem;font-
       <p><strong>核心判断：</strong>没有证据链的 AI 结论，越流畅越容易让人放松警惕；证据链包括指标引用、原文证据、模型批次、质量校验、运行记录、复核入口。</p>
       <span class="src-quote">原文依据（第6页）：「没有证据链的 AI 结论，越流畅越容易让人放松警惕。」</span>
       <p><span class="tag judge">判断</span> 为什么重要：AI 分析的信任底线。误读：流畅=可靠。</p>
+    </div>
+    <div class="card">
+      <h3>📖 判断7：DB Agent 信息不全时先追问，不能自行猜测口径</h3>
+      <p><strong>核心判断：</strong>如果时间范围、统计对象或指标含义不清楚，系统应先追问；一次查询应返回数字、表格、SQL 和指标口径（业务人员看结果，数据人员可检查 SQL 和口径）。</p>
+      <span class="src-quote">自学手册依据（第8页）：「如果时间范围、统计对象或指标含义不清楚，系统应先追问，不能自行猜测口径。」</span>
+      <p><span class="tag judge">判断</span> 这是旧版「口径先行」在问数场景的落地。误读：让 Agent 自己挑一个口径跑出数来「先看看」。</p>
+    </div>
+    <div class="card">
+      <h3>📖 判断8：生产系统不把所有问题都直接交给模型生成 SQL，混合路由被推荐</h3>
+      <p><strong>核心判断：</strong>语义层稳但覆盖窄、查询 API 最安全但受限、模板可控但数量膨胀、Text-to-SQL 覆盖长尾但风险高；混合路由按问题类型分流（固定指标走语义层，高风险走 API，半固定走模板，长尾走 Text-to-SQL），兼顾稳定性和覆盖范围。</p>
+      <span class="src-quote">自学手册依据（第10页）：「混合路由（推荐）：先判断问题类型……适合真实生产系统；需要维护路由规则和统一审计。」</span>
+      <p><span class="tag judge">判断</span> 为什么重要：这是 DB Agent 综合设计题的标准答案框架。误读：All-in Text-to-SQL 图省事。</p>
+    </div>
+    <div class="card">
+      <h3>📖 判断9：上线前六项控制要一起生效，只限制返回行数不够</h3>
+      <p><strong>核心判断：</strong>指标定义、表白名单、只读账号、租户和用户权限、超时控制、审计日志六项一起生效；只限制返回行数不能解决指标算错、越权查询和写入数据等问题。</p>
+      <span class="src-quote">自学手册依据（第11页）：「上线前六项控制要一起生效」「只限制返回行数不能解决指标算错、越权查询和写入数据等问题。」</span>
+      <p><span class="tag judge">判断</span> 为什么重要：DB Agent 的安全底线。误读：加个 limit 就算安全上线。</p>
+    </div>
+    <div class="card">
+      <h3>📖 判断10：预测离线训练实时使用，推荐要反馈闭环</h3>
+      <p><strong>核心判断：</strong>预测模型用历史数据离线训练，Kafka/Flink 流式链路实时调用；结果至少保留预测分数、判断阈值、模型版本和触发动作。推荐系统输出排序列表+分数+理由+建议动作，点击、购买、忽略、拒绝和投诉等反馈要重新进入数据平台，用于调整特征、规则和模型。</p>
+      <span class="src-quote">自学手册依据（第11-12页）：「离线训练，实时使用」「推荐结果还要持续校正」。</span>
+      <p><span class="tag judge">判断</span> 为什么重要：两类应用的价值都在「持续校正」。误读：模型上线即一劳永逸。</p>
     </div>
   </section>
 
@@ -310,6 +362,32 @@ footer{border-top:2px solid var(--forest);margin-top:2rem;padding-top:1rem;font-
       <p>作者用法：指标引用、原文证据、模型批次、质量校验、运行记录、复核入口。</p>
       <span class="src-quote">原文依据（第6页六节并列）。</span>
       <p>与第12章证据链六要素对照：结构一致、措辞略有差异（运行记录 vs 血缘链路），核心都是「能回查」。不要误解成：给 AI 结论盖一个「已审核」章就算证据链。</p>
+    </div>
+    <div class="card">
+      <h3>📖 DB Agent 完成一次问数的六步</h3>
+      <p>①理解问题：拆出时间范围、统计对象、指标、维度和排序要求，信息不全时先追问；②选择实现路径：语义层/查询 API/SQL 模板/Text-to-SQL；③形成查询计划：指标、维度、过滤条件、关联路径、时间粒度和结果格式；④校验权限与风险：租户、用户、表白名单、敏感字段、查询成本和超时限制；⑤执行并校验：<strong>只读账号</strong>查 Doris，检查空结果、异常值、重复行和统计范围；⑥返回并留痕：数字/表格/SQL/指标口径+问题、查询计划、结果和审计日志。</p>
+      <span class="concept-rel">理解问题 → 选路径 → 查询计划 → 权限风险 → 只读执行校验 → 返回留痕</span>
+      <span class="src-quote">自学手册依据（第8页）六节编号。</span>
+      <p>不要误解成：六步里任何一步可以让模型「自由发挥」——路径受控、账号只读、全程留痕。</p>
+    </div>
+    <div class="card">
+      <h3>📖 语义层：一份可以被系统执行的业务词典</h3>
+      <p>六个方面：业务术语与别名（新增用户/新增客户/拉新人数是否同一件事）、指标定义（公式、去重键、粒度、适用范围）、时间规则（自然周/滚动 7 天/数据日期 vs 业务发生时间）、维度与关联（部门区域员工商品怎么分组、表怎么 Join）、物理映射（哪张表哪个字段、默认过滤条件）、权限与版本（谁能看哪个租户、指标变更从哪天生效）。</p>
+      <span class="src-quote">自学手册依据（第9页）六节并列。</span>
+      <p>两个「不是」：不是 DB Agent 的必经层；不是数仓新增的 DWS/ADS 层。它可以由指标平台、元数据服务、YAML/JSON 配置或查询 API 实现。</p>
+    </div>
+    <div class="card">
+      <h3>📖 DB Agent 五种实现思路对比</h3>
+      <p><strong>指标语义层</strong>：口径稳定、容易审计，适合经营指标和正式报表，前期要整理指标资产。<strong>查询 API/Tool</strong>：最安全最稳定，适合高频高风险场景，受接口范围限制。<strong>参数化 SQL 模板</strong>：建设成本低、结果可控，适合半固定分析，复杂问题要加模板。<strong>Schema 检索+Text-to-SQL</strong>：覆盖长尾问题，依赖模型和元数据质量，必须加权限、成本和结果校验。<strong>混合路由（推荐）</strong>：按问题类型分流，兼顾稳定性和覆盖范围，需维护路由规则和统一审计。</p>
+      <span class="src-quote">自学手册依据（第10页）五种做法对比表。</span>
+      <p>示例：「上周华南区域新增用户数」→ 指标=首次注册落在统计期内的去重用户数；时间=公司自然周转明确起止；维度=华南区域映射统一区域编码；数据与权限=查 DWS/ADS 表并自动追加租户和用户可见范围。</p>
+    </div>
+    <div class="card">
+      <h3>📖 预测分析与个性化推荐</h3>
+      <p>预测分析：传统报表回答「已经发生了什么」，预测模型回答「接下来可能发生什么」——反诈风控（交易事件进流式任务，秒级告警拦截）、客户流失预测、业务量预测（提前安排人员和容量）。<strong>离线训练，实时使用</strong>；结果至少保留预测分数、判断阈值、模型版本和触发动作。</p>
+      <p>个性化推荐：按用户标签、历史行为、当前场景和业务约束对候选商品/内容/动作<strong>评分和排序</strong>——商品内容权益推荐、客户跟进顺序、服务方案/导购话术。输出推荐列表+分数+理由+建议动作；点击、购买、忽略、拒绝、投诉等反馈要回流数据平台，调整特征、规则和模型。</p>
+      <span class="src-quote">自学手册依据（第11-12页）方向 2、方向 3。</span>
+      <p>不要误解成：预测=报表加个趋势线；推荐=一次性排序——两者都依赖反馈持续校正。</p>
     </div>
   </section>
 
@@ -435,6 +513,51 @@ footer{border-top:2px solid var(--forest);margin-top:2rem;padding-top:1rem;font-
       <button class="check">检查</button>
       <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
     </div>
+    <div class="task" data-task="ch14-q9" data-answer="C"
+         data-ok="对。自学手册第8页：如果时间范围、统计对象或指标含义不清楚，系统应先追问，不能自行猜测口径。"
+         data-no="自行挑口径、先跑再看、直接拒绝都不对——正确动作是先追问补全信息。"
+         data-src="自学手册：如果时间范围、统计对象或指标含义不清楚，系统应先追问，不能自行猜测口径。"
+         data-review="回到「05 核心判断与依据 · 判断7」复习">
+      <div class="q">📖 Q9（新版）业务同学问 DB Agent：「最近新客怎么样？」——时间范围和「新客」定义都不明确，系统正确的做法是？</div>
+      <div class="opts">
+        <button class="opt" data-val="A">A. 按系统默认的「近 7 天+首次加好友」口径直接出数</button>
+        <button class="opt" data-val="B">B. 先按猜测跑一个结果，用户觉得不对再改</button>
+        <button class="opt" data-val="C">C. 先追问时间范围和「新客」的指标含义，确认后再生成查询计划</button>
+      </div>
+      <button class="check">检查</button>
+      <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+    </div>
+    <div class="task" data-task="ch14-q10" data-answer="A,B,C,E,F" data-multi="true"
+         data-ok="对。六项控制：指标定义、表白名单、只读账号、租户和用户权限、超时控制、审计日志。「限制返回行数」不在其中——它解决不了指标算错、越权查询和写入数据等问题。"
+         data-no="对照六项：指标定义/表白名单/只读账号/租户和用户权限/超时控制/审计日志。只限制返回行数恰恰是手册点名不够的做法。"
+         data-src="自学手册第11页：上线前六项控制要一起生效。"
+         data-review="回到「06 关键概念拆解」复习六项控制">
+      <div class="q">📖 Q10（新版·多选）DB Agent 上线前，哪几项控制要一起生效？</div>
+      <div class="opts">
+        <button class="opt" data-val="A">A. 指标定义</button>
+        <button class="opt" data-val="B">B. 表白名单</button>
+        <button class="opt" data-val="C">C. 只读账号</button>
+        <button class="opt" data-val="D">D. 限制单次返回行数就够了</button>
+        <button class="opt" data-val="E">E. 超时控制</button>
+        <button class="opt" data-val="F">F. 审计日志</button>
+      </div>
+      <button class="check">检查</button>
+      <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+    </div>
+    <div class="task" data-task="ch14-q11" data-answer="B"
+         data-ok="对。混合路由被推荐的原因：固定指标走语义层、高风险走 API、半固定走模板、长尾走 Text-to-SQL——兼顾稳定性和覆盖范围，代价是维护路由规则和统一审计。"
+         data-no="All-in Text-to-SQL 覆盖广但风险高；只用 API 最稳但答不了长尾问题。手册推荐的是按问题类型分流的混合路由。"
+         data-src="自学手册第10页：混合路由（推荐）——兼顾稳定性和覆盖范围，适合真实生产系统。"
+         data-review="回到「06 关键概念拆解 · DB Agent 五种实现思路对比」复习">
+      <div class="q">📖 Q11（新版）真实生产系统的 DB Agent，自学手册推荐哪种实现思路？为什么？</div>
+      <div class="opts">
+        <button class="opt" data-val="A">A. 全部走 Text-to-SQL，覆盖面最大最省事</button>
+        <button class="opt" data-val="B">B. 混合路由：固定指标走语义层，高风险走 API，半固定走模板，长尾走 Text-to-SQL</button>
+        <button class="opt" data-val="C">C. 只封装固定查询 API，其他问题一律不答</button>
+      </div>
+      <button class="check">检查</button>
+      <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+    </div>
   </section>
 
   <section id="m09">
@@ -478,6 +601,10 @@ footer{border-top:2px solid var(--forest);margin-top:2rem;padding-top:1rem;font-
     <div class="card">
       <h3><img class="sticker" src="https://lyzbcy.github.io/weshoto-study/img/sticker/final.png" alt="">本章收束（原文第7页）</h3>
       <p>• 未来的大数据不是更大，而是更可信、更自动、更可复用。<br>• AI 分析、运营动作、客户洞察、自动巡检都会成为数据出口。<br>• 真正的目标是让数据说清楚自己是谁、从哪里来、为什么可信。<br>• 三讲合起来：为什么需要大数据、微盛怎么做、接下来往哪里走。</p>
+    </div>
+    <div class="card paper">
+      <h3>📖 新版自学手册收束（第三部分 + 学习小结）</h3>
+      <p>• 三类 AI 应用分工：DB Agent 用于查数（输出数字/表格/SQL/口径），预测模型用于识别风险和趋势（输出预测分数/风险等级/触发动作），推荐系统用于选择合适的内容和动作（输出推荐列表/分数/理由/建议动作）——三类应用都依赖统一指标、数据质量、权限和运行记录。<br>• DB Agent 六步 + 五种实现思路（推荐混合路由）+ 上线前六项控制一起生效。<br>• 学习小结三条：技术演进由业务问题推动，不为技术名词盲目升级；数据开发先确认统计对象、时间范围、数据粒度和算法再动手；三类 AI 应用共用同一套平台基础。</p>
     </div>
     <div id="wrongBox"><li style="color:#888;list-style:none">还没有错题。答错的题会自动收集到这里。</li></div>
     <textarea id="report" readonly>点击「生成学习报告」看看你掌握了什么。</textarea>

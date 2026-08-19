@@ -1508,7 +1508,7 @@ footer a{ color:var(--brick); text-decoration:underline; font-weight:700; }
 <script>
 // 版本检测：内联版本号 vs version.json，不一致就刷新（解决CDN缓存旧HTML）
 (function(){
-  var PAGE_V = 6;
+  var PAGE_V = 7;
   fetch("../../version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.json();}).then(function(d){
     if(PAGE_V!==d.v){
       var last=0; try{last=parseInt(sessionStorage.getItem("ck_refreshed")||"0");}catch(e){}

@@ -418,7 +418,7 @@ footer a{color:var(--brick);font-weight:700;text-decoration:underline;}
 <script>
 // 版本检测
 (function(){
-  var PAGE_V = 11;
+  var PAGE_V = 7;
   fetch("version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.json();}).then(function(d){
     if(PAGE_V!==d.v){
       var last=0; try{last=parseInt(sessionStorage.getItem("ck_refreshed")||"0");}catch(e){}

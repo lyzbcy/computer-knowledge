@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第17章 Harness 工程底座 · 学习地图</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Poppins:wght@400;600;700&family=Roboto+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#FAF6EB; --paper:#F3EDDD; --forest:#1E3A24; --sky:#BCD8EE; --sage:#AFCDA8;
+  --ink:#1A2018; --marker:#F5E08A; --brick:#B5482A;
+  --correct:#2F7D46; --wrong:#B5482A;
+  --font-display:"Archivo Black","Noto Sans SC","PingFang SC",sans-serif;
+  --font-head:"Poppins","Noto Sans SC","PingFang SC",sans-serif;
+  --font-body:-apple-system,"PingFang SC","Noto Sans SC",sans-serif;
+  --font-mono:"Roboto Mono","JetBrains Mono",monospace;
+  --radius-pill:999px; --radius-card:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--cream);color:var(--ink);font-family:var(--font-body);line-height:1.7}
+.layout{display:flex;min-height:100vh}
+/* ---- 左侧固定侧边栏 ---- */
+.sidebar{width:280px;flex-shrink:0;background:var(--forest);color:var(--cream);padding:1.6rem 1.3rem;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sidebar .brand{font-family:var(--font-display);font-size:1.05rem;line-height:1.35;color:var(--marker);margin-bottom:.4rem}
+.sidebar .sub{font-size:.78rem;opacity:.75;margin-bottom:1.2rem}
+.progress-wrap{background:rgba(255,255,255,.08);border-radius:var(--radius-pill);padding:.7rem .9rem;margin-bottom:1.2rem}
+.progress-wrap .plabel{font-size:.75rem;letter-spacing:.05em;opacity:.85;margin-bottom:.35rem}
+.pbar{background:rgba(255,255,255,.15);height:8px;border-radius:var(--radius-pill);overflow:hidden}
+#barFill{display:block;height:100%;width:0%;background:var(--marker);border-radius:var(--radius-pill);transition:width .3s}
+#barNum{font-family:var(--font-mono);font-size:.8rem;color:var(--marker)}
+.sidebar nav a{display:block;color:var(--cream);text-decoration:none;font-size:.82rem;padding:.34rem .5rem;border-radius:8px;opacity:.82}
+.sidebar nav a:hover{background:rgba(255,255,255,.12);opacity:1}
+.sidebar .nav-title{font-family:var(--font-head);font-weight:700;font-size:.78rem;letter-spacing:.12em;color:var(--sage);margin:.6rem 0 .3rem}
+/* ---- 主区单列 ---- */
+.main{flex:1;min-width:0;padding:2.2rem clamp(1rem,4vw,3.2rem) 4rem;max-width:860px}
+.hero{border:2px solid var(--forest);border-radius:var(--radius-card);background:var(--paper);padding:1.6rem 1.5rem;margin-bottom:2rem}
+.hero .chip{display:inline-block;background:var(--forest);color:var(--cream);font:600 .72rem/1 var(--font-head);letter-spacing:.1em;padding:.42em .9em;border-radius:var(--radius-pill);margin-bottom:.8rem}
+.hero h1{font-family:var(--font-display);font-size:clamp(1.5rem,4vw,2.2rem);line-height:1.25;margin-bottom:.5rem}
+.hero p{font-size:.95rem}
+.hero .mascot{float:right;width:72px;margin-left:1rem}
+section{margin-bottom:2.4rem}
+.sec-head{display:flex;align-items:baseline;gap:.7rem;border-bottom:2px solid var(--forest);padding-bottom:.5rem;margin-bottom:1.1rem}
+.sec-id{font-family:var(--font-mono);font-weight:600;font-size:.78rem;background:var(--sky);color:var(--forest);padding:.2em .6em;border-radius:var(--radius-pill)}
+.sec-head h2{font-family:var(--font-head);font-weight:700;font-size:1.15rem;color:var(--forest)}
+.card{background:#fff;border:1.5px solid var(--forest);border-radius:var(--radius-card);padding:1.1rem 1.2rem;margin-bottom:1rem}
+.card.paper{background:var(--paper)}
+.card h3{font-family:var(--font-head);font-size:.98rem;color:var(--forest);margin-bottom:.45rem}
+.card p{font-size:.92rem;margin-bottom:.45rem}
+.tag{display:inline-block;font:600 .7rem/1.4 var(--font-head);padding:.15em .7em;border-radius:var(--radius-pill);vertical-align:middle}
+.tag.bg{background:var(--sky);color:var(--forest)}
+.tag.fact{background:var(--sage);color:var(--forest)}
+.tag.judge{background:var(--marker);color:var(--ink)}
+.tag.inf{background:#E8DCC8;color:var(--ink)}
+.tag.eg{background:#F0C9B8;color:var(--brick)}
+.src-quote{display:block;background:var(--paper);border-left:4px solid var(--forest);padding:.5rem .8rem;font-size:.85rem;margin:.45rem 0;border-radius:0 8px 8px 0}
+.src{display:block;margin-top:.4rem;font-size:.8rem;color:var(--forest);background:var(--sky);border-radius:6px;padding:.15rem .6rem}
+.goal{display:flex;gap:.7rem;align-items:flex-start;background:#fff;border:1.5px solid var(--forest);border-radius:var(--radius-card);padding:.85rem 1rem;margin-bottom:.7rem}
+.goal .gno{font-family:var(--font-mono);font-weight:600;color:var(--brick);flex-shrink:0}
+.structure{font-family:var(--font-mono);font-size:.82rem;background:var(--forest);color:var(--cream);border-radius:var(--radius-card);padding:1rem 1.2rem;overflow-x:auto;white-space:pre;line-height:1.8}
+.concept-rel{font-size:.85rem;background:var(--marker);border-radius:8px;padding:.5rem .8rem;display:inline-block;margin:.3rem 0}
+/* ---- 互动题 ---- */
+.task{background:#fff;border:2px solid var(--forest);border-radius:var(--radius-card);padding:1.1rem 1.2rem;margin-bottom:1.2rem}
+.task .q{font-weight:600;font-size:.95rem;margin-bottom:.7rem}
+.task .opts{display:flex;flex-direction:column;gap:.5rem;margin-bottom:.8rem}
+.task .opt{text-align:left;border:1.5px solid var(--forest);background:var(--cream);border-radius:10px;padding:.5rem .8rem;font:inherit;font-size:.88rem;cursor:pointer}
+.task .opt:hover{background:var(--sky)}
+.task .opt.selected{background:var(--forest);color:var(--cream)}
+.task .check{border:2px solid var(--forest);background:var(--marker);color:var(--ink);font:700 .85rem var(--font-head);padding:.45em 1.3em;border-radius:var(--radius-pill);cursor:pointer}
+.task .feedback{display:block;margin-top:.8rem;font-size:.86rem;background:var(--paper);border-radius:8px;padding:.6rem .8rem}
+.task .feedback.ok{background:var(--sage)}
+.task .feedback.no{background:#F0C9B8}
+.task .feedback .src{display:block;margin-top:.35rem}
+select.match{font:inherit;font-size:.85rem;padding:.3rem .5rem;border:1.5px solid var(--forest);border-radius:8px;background:#fff;margin:.2rem .3rem .2rem 0}
+/* ---- 误解 ---- */
+.mis{background:#fff;border-left:5px solid var(--brick);border-radius:0 var(--radius-card) var(--radius-card) 0;padding:.9rem 1.1rem;margin-bottom:.9rem;box-shadow:none;border-top:1px solid #E5DEC9;border-right:1px solid #E5DEC9;border-bottom:1px solid #E5DEC9}
+.mis h3{color:var(--brick);font-size:.92rem;margin-bottom:.35rem}
+/* ---- 报告 ---- */
+#wrongBox{background:#fff;border:1.5px dashed var(--brick);border-radius:var(--radius-card);padding:.8rem 1rem;font-size:.85rem;margin-bottom:1rem}
+#report{width:100%;min-height:9rem;background:var(--forest);color:var(--cream);font-family:var(--font-mono);font-size:.8rem;border:none;border-radius:var(--radius-card);padding:.9rem 1rem;white-space:pre-wrap;margin-bottom:.7rem}
+.btn-row{display:flex;gap:.7rem;flex-wrap:wrap}
+.btn-row button{border:2px solid var(--forest);background:var(--marker);font:700 .85rem var(--font-head);padding:.5em 1.2em;border-radius:var(--radius-pill);cursor:pointer}
+footer{border-top:2px solid var(--forest);margin-top:2rem;padding-top:1rem;font-size:.82rem;color:var(--ink)}
+.sticker{width:40px;vertical-align:middle;margin-right:.4rem}
+/* ---- 语音 ---- */
+.voice-btn{display:inline-block;vertical-align:middle;margin-left:.6em;padding:.25em .8em;border:1px solid var(--forest);border-radius:var(--radius-pill);background:var(--cream);color:var(--forest);font:600 .8rem/1.2 var(--font-body);cursor:pointer;transition:background .15s}
+.voice-btn:hover{background:var(--sage)}
+.voice-btn.active{background:var(--forest);color:var(--cream)}
+#voiceFab{position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:9998;display:flex;align-items:center;flex-direction:row;background:var(--forest);color:var(--cream);border:none;cursor:pointer;height:5em;padding:0 .55em;border-radius:16px 0 0 16px;box-shadow:-4px 0 14px rgba(0,0,0,.18);font-family:var(--font-head);font-size:.85rem;overflow:hidden;transition:width .42s cubic-bezier(.4,0,.2,1),box-shadow .3s ease;width:1.9em}
+#voiceFab .fab-icon{font-size:1.15rem;writing-mode:vertical-rl;text-orientation:upright;letter-spacing:.1em;white-space:nowrap;flex-shrink:0}
+#voiceFab .fab-text{white-space:nowrap;opacity:0;margin-left:.6em;transition:opacity .28s ease .12s}
+#voiceFab:hover{width:8.6em;box-shadow:-6px 0 22px rgba(0,0,0,.25)}
+#voiceFab:hover .fab-text{opacity:1}
+#voiceFab.beat{animation:voiceBeat 1.6s ease-in-out infinite}
+@keyframes voiceBeat{0%,100%{box-shadow:-4px 0 14px rgba(0,0,0,.18)}50%{box-shadow:-4px 0 20px rgba(181,72,42,.5)}}
+#voicePlayer{position:fixed;left:50%;bottom:1rem;transform:translateX(-50%) translateY(140%);width:min(92vw,380px);padding:1rem 1.1rem 1.1rem;background:var(--cream);border:2px solid var(--forest);border-radius:26px;box-shadow:0 8px 28px rgba(0,0,0,.16);z-index:9999;transition:transform .28s ease;text-align:center;font-family:var(--font-body)}
+#voicePlayer.show{transform:translateX(-50%) translateY(0)}
+#voicePlayer .vp-head{font-size:.75rem;color:var(--forest);opacity:.8;letter-spacing:.05em}
+#voicePlayer .vp-title{font:700 1rem/1.35 var(--font-body);color:var(--ink);margin:.25rem 0 .7rem;padding:0 .2rem;word-break:break-word}
+#voicePlayer .vp-play{width:3.6rem;height:3.6rem;border:none;border-radius:50%;background:var(--forest);color:var(--cream);font-size:1.3rem;cursor:pointer;margin:0 auto .7rem;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 0 #142710;transition:transform .1s,box-shadow .1s}
+#voicePlayer .vp-play:active{transform:translateY(2px);box-shadow:0 1px 0 #142710}
+#voicePlayer .vp-prev,#voicePlayer .vp-next{width:2.3rem;height:2.3rem;border:1.5px solid var(--forest);border-radius:50%;background:var(--cream);color:var(--forest);font-size:.9rem;cursor:pointer}
+#voicePlayer .vp-controls{display:flex;align-items:center;justify-content:center;gap:1.2rem;margin-bottom:.7rem}
+#voicePlayer .vp-seek{width:100%;margin:.2rem 0;cursor:pointer;accent-color:var(--forest)}
+#voicePlayer .vp-time{display:flex;justify-content:space-between;font:600 .72rem/1 var(--font-mono);color:var(--ink);opacity:.75}
+#voicePlayer .vp-close{position:absolute;top:.5rem;right:.6rem;width:1.5rem;height:1.5rem;border:none;background:transparent;color:var(--ink);font-size:1rem;cursor:pointer;opacity:.5}
+#voicePlayer .vp-sub{min-height:2.6em;max-height:3.9em;overflow:hidden;font:.85rem/1.5 var(--font-body);color:var(--ink);opacity:.55;margin:.2rem 0 .5rem;padding:0 .3rem;transition:opacity .2s;text-align:center}
+#voicePlayer .vp-sub.active{opacity:1}
+#voicePlayer .vp-sub .cur{color:var(--forest);font-weight:600}
+@media(max-width:820px){
+  .layout{flex-direction:column}
+  .sidebar{position:static;width:100%;height:auto}
+  .hero .mascot{float:none;display:block;margin:0 0 .8rem}
+}
+</style>
+</head>
+<body>
+<script type="application/json" id="voicePlaylist">
+[
+ {"id":"ch1","title":"学习目标与阅读路径","src":"audio-ai3/ch1.mp3"},
+ {"id":"ch2","title":"零基础背景包","src":"audio-ai3/ch2.mp3"},
+ {"id":"ch3","title":"原文问题定位","src":"audio-ai3/ch3.mp3"},
+ {"id":"ch4","title":"原文结构地图","src":"audio-ai3/ch4.mp3"},
+ {"id":"ch5","title":"核心判断与依据","src":"audio-ai3/ch5.mp3"},
+ {"id":"ch6","title":"关键概念拆解","src":"audio-ai3/ch6.mp3"},
+ {"id":"ch7","title":"苏格拉底式阅读关卡","src":"audio-ai3/ch7.mp3"},
+ {"id":"ch8","title":"闯关式任务","src":"audio-ai3/ch8.mp3"},
+ {"id":"ch9","title":"误解与边界","src":"audio-ai3/ch9.mp3"},
+ {"id":"ch10","title":"背景知识缺口","src":"audio-ai3/ch10.mp3"},
+ {"id":"ch11","title":"复盘与学习报告","src":"audio-ai3/ch11.mp3"}
+]
+</script>
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand">AI · 第17章<br>Harness 工程底座</div>
+  <div class="sub">微盛研发管培生 · AI 方向 03</div>
+  <div class="progress-wrap">
+    <div class="plabel">任务进度 <span id="barNum">0 / 8</span></div>
+    <div class="pbar"><span id="barFill"></span></div>
+  </div>
+  <nav>
+    <div class="nav-title">本章路线</div>
+    <a href="#m01">01 学习目标与阅读路径</a>
+    <a href="#m02">02 零基础背景包</a>
+    <a href="#m03">03 原文问题定位</a>
+    <a href="#m04">04 原文结构地图</a>
+    <a href="#m05">05 核心判断与依据</a>
+    <a href="#m06">06 关键概念拆解</a>
+    <a href="#m07">07 苏格拉底式关卡</a>
+    <a href="#m08">08 闯关式任务</a>
+    <a href="#m09">09 误解与边界</a>
+    <a href="#m10">10 背景知识缺口</a>
+    <a href="#m11">11 复盘与学习报告</a>
+  </nav>
+</aside>
+<main class="main">
+  <div class="hero">
+    <img class="mascot" src="https://lyzbcy.github.io/weshoto-study/img/sticker/mascot.png" alt="">
+    <span class="chip">AI 03 / 培训拆分版</span>
+    <h1>Harness 工程底座</h1>
+    <p>从模型能力到可靠系统：为什么模型输出只是「提议」，Harness 怎么把提议变成受约束、可验证、可追踪的行动。运行时、工具、记忆、编排、安全与评估的一体化方法。</p>
+  </div>
+
+  <section id="m01">
+    <div class="sec-head"><span class="sec-id">01</span><h2>学习目标与阅读路径 <button class="voice-btn" data-voice-id="ch1">🎧 听这节</button></h2></div>
+    <div class="goal"><span class="gno">目标1</span><div>能说出 Harness 的定位：模型输出是「提议」，底座负责适配、约束、验证、跟踪和恢复</div></div>
+    <div class="goal"><span class="gno">目标2</span><div>能复述能力公式「可交付能力 = 模型能力 × 工具可用性 × 执行可靠性 × 治理覆盖率」并解释乘法含义</div></div>
+    <div class="goal"><span class="gno">目标3</span><div>能区分权限与沙箱、临时性/永久性/未知性错误、控制/执行/数据三平面</div></div>
+    <div class="goal"><span class="gno">目标4</span><div>能指出至少 2 个容易误解的地方（如「上下文越长越好」「只看最终成功率」）</div></div>
+    <div class="goal"><span class="gno">目标5</span><div>能提出 1 个后续追问（比如：我们现有工具的接口离「好接口」标准差什么）</div></div>
+  </section>
+
+  <section id="m02">
+    <div class="sec-head"><span class="sec-id">02</span><h2>零基础背景包 <button class="voice-btn" data-voice-id="ch2">🎧 听这节</button></h2></div>
+    <div class="card">
+      <h3><span class="tag bg">背景补充</span> Harness（工程底座）</h3>
+      <p>英文原词 harness 本义是「马具/挽具」，在 AI 工程里指包裹在模型外面、约束和驱动它干活的整套工程系统：运行时、工具接入、权限、日志等。圈内保留原词，译作「工程底座」。</p>
+      <p>为什么现在需要知道：本章主角就是它。</p>
+    </div>
+    <div class="card">
+      <h3><span class="tag bg">背景补充</span> Agent（智能体）</h3>
+      <p>能多轮「观察—行动」、调用工具、持续执行任务的 AI 程序。与一次性问答的区别：它可能修改真实系统，要对端到端结果负责。</p>
+      <p>为什么现在需要知道：Harness 就是为 Agent 运行过程设计的约束层。</p>
+    </div>
+    <div class="card">
+      <h3><span class="tag bg">背景补充</span> 幂等性（Idempotent）</h3>
+      <p>同一操作执行一次和执行多次效果相同。比如「设置状态为 X」是幂等的，「创建一条记录」不是——重复执行会创建多条。</p>
+      <p>为什么现在需要知道：重试安全的前提是幂等键。它不是本文的主张，只是帮助你读懂原文。</p>
+    </div>
+    <div class="card">
+      <h3><span class="tag bg">背景补充</span> 提示注入（Prompt Injection）</h3>
+      <p>攻击者在输入或外部数据里藏入指令，诱导模型执行违背原意的行为。间接注入常藏在网页、文档等模型读取的内容里。</p>
+      <p>为什么现在需要知道：它是 Harness 威胁模型的第一类攻击面。</p>
+    </div>
+    <div class="card">
+      <h3><span class="tag bg">背景补充</span> 可观测性（Observability）</h3>
+      <p>通过指标（Metrics）、日志（Logs）、链路追踪（Traces）三种数据，回答「系统为什么这样运行」。不只是记最终答案。</p>
+      <p>为什么现在需要知道：它是贯穿 Harness 全程的横切保障之一。</p>
+    </div>
+  </section>
+
+  <section id="m03">
+    <div class="sec-head"><span class="sec-id">03</span><h2>原文问题定位 <button class="voice-btn" data-voice-id="ch3">🎧 听这节</button></h2></div>
+    <div class="card">
+      <h3>表面在讲什么</h3>
+      <p>30 页的 Harness 工程培训：架构、三平面、运行时、工具、记忆、上下文、编排、安全、评估、上线清单。<span class="tag fact">事实</span></p>
+    </div>
+    <div class="card">
+      <h3>深层在回答什么问题</h3>
+      <p>「模型能回答 ≠ 系统能稳定完成任务——中间差的那段工程是什么？」原文的回答：差的就是 Harness，它把模型输出的「提议」转换成受约束、可验证、可追踪的行动。<span class="tag judge">判断</span></p>
+      <span class="src-quote">原文依据（第1页）：「模型或 Agent 输出只是‘提议’；Harness 负责把提议转换成受约束、可验证、可追踪的行动。」</span>
+    </div>
+    <div class="card">
+      <h3>如果只记一个问题</h3>
+      <p>记这个：<strong>系统设计的重点，是让模型「更敢做」还是让每一步「更可控」？</strong>——原文的回答是后者。</p>
+    </div>
+  </section>
+
+  <section id="m04">
+    <div class="sec-head"><span class="sec-id">04</span><h2>原文结构地图 <button class="voice-btn" data-voice-id="ch4">🎧 听这节</button></h2></div>
+    <p style="font-size:.88rem;margin-bottom:.6rem">结构类型判断：<strong>论证结构 + 机制流程混合型</strong>，按 Why → What → How → Control → Verify 五段推进。</p>
+    <div class="structure">Why：为什么需要底座
+  ├─ 从模型调用到 Agent 运行：风险同步放大     [第2页]
+  └─ 可交付能力 = 模型×工具×执行×治理（乘法） [第4页]
+        │ 递进：What：底座是什么
+        ▼
+定义与边界 + 参考架构 + 三平面（控制/执行/数据）[第3,5,6页]
+  「该做什么由应用和模型决定；能否做、如何安全地做、
+   做完怎样证明由工程底座负责」
+        │ 递进：How：核心能力怎么做
+        ▼
+五大核心能力 + 两项横切保障                  [第7页]
+  运行时循环/恢复预算 → 工具抽象/流水线       [第9-14页]
+  → 记忆/上下文组装 → 路由/输出门控 → 编排    [第14-20页]
+        │ 递进：Control：安全治理
+        ▼
+威胁模型 + 纵深防御（权限/沙箱/注入防护）     [第26,27页]
+  「权限回答是否允许，沙箱回答即使出错最多影响什么」
+        │ 递进：Verify：评估上线
+        ▼
+三级评估 + 综合案例与上线检查清单             [第28,29页]
+  「只看最终成功率，会掩盖低效轨迹和高成本」</div>
+  </section>
+
+  <section id="m05">
+    <div class="sec-head"><span class="sec-id">05</span><h2>核心判断与依据 <button class="voice-btn" data-voice-id="ch5">🎧 听这节</button></h2></div>
+    <div class="card">
+      <h3>判断1：模型输出只是「提议」</h3>
+      <p><strong>核心判断：</strong>模型或 Agent 的输出不能直接当行动执行；Harness 负责把它转换成受约束、可验证、可追踪的行动。</p>
+      <span class="src-quote">原文依据（第1页课程主线）：「模型或 Agent 输出只是‘提议’；Harness 负责把提议转换成受约束、可验证、可追踪的行动。」</span>
+      <p><span class="tag judge">判断</span> 为什么重要：这是全篇的纲领，输出治理、门控、审批全部由此展开。误读：把模型回答直接当最终结果。</p>
+    </div>
+    <div class="card">
+      <h3>判断2：可交付能力是乘法，任一项近零整体显著下降</h3>
+      <p><strong>核心判断：</strong>可交付能力 = 模型能力 × 工具可用性 × 执行可靠性 × 治理覆盖率。模型决定能力上限，工程系统决定能力能否以可接受的风险和成本落地。</p>
+      <span class="src-quote">原文依据（第4页）：「可交付能力 = 模型能力 × 工具可用性 × 执行可靠性 × 治理覆盖率。任何一项接近零，整体能力都会显著下降。」</span>
+      <p><span class="tag judge">判断</span> 为什么重要：短板决定成败，优化方向看最弱一项。误读：只升级模型就能交付。</p>
+    </div>
+    <div class="card">
+      <h3>判断3：系统设计的重点是让每一步更可控，不是让模型更敢做</h3>
+      <p><strong>核心判断：</strong>Agent 化放大能力也同步放大风险（错误变真实操作、偏差级联扩散、成本持续增长）；设计的重点是用确定性约束和证据维持边界。</p>
+      <span class="src-quote">原文依据（第2页）：「系统设计的重点，不是让模型‘更敢做’，而是让每一步都更可控。」（第8页）：「面对非确定性决策，系统要用确定性的约束和证据维持边界。」</span>
+      <p><span class="tag judge">判断</span> 为什么重要：给「要不要放开自主权」提供准绳。误读：自主性越高系统越先进。</p>
+    </div>
+    <div class="card">
+      <h3>判断4：权限回答「是否允许」，沙箱回答「即使出错最多影响什么」</h3>
+      <p><strong>核心判断：</strong>权限与沙箱是两道不同的防线；加上「不要只靠黑名单」，构成纵深防御：入口规范化→风险分级最小权限→护栏审批→隔离执行→审计撤销。</p>
+      <span class="src-quote">原文依据（第27页）：「权限回答‘是否允许’，沙箱回答‘即使出错，最多能影响什么’。」「命令和编码变体难以穷举；白名单、结构化参数、沙箱和审计必须共同存在。」</span>
+      <p><span class="tag judge">判断</span> 为什么重要：安全设计的基础分野。误读：有了权限检查就不需要沙箱。</p>
+    </div>
+    <div class="card">
+      <h3>判断5：长任务的主要风险是持续偏离，错误分类优先于重试次数</h3>
+      <p><strong>核心判断：</strong>长任务的主要风险不是一次失败，而是持续偏离目标却仍在消耗资源；重试前先分类：临时性退避重试、永久性修正升级、未知性隔离人工复核。</p>
+      <span class="src-quote">原文依据（第11页）：「长任务的主要风险不是一次失败，而是持续偏离目标却仍在消耗资源。」「错误分类优先于重试次数。」</span>
+      <p><span class="tag judge">判断</span> 为什么重要：盲重试会放大副作用和成本。误读：失败就重试三次。</p>
+    </div>
+    <div class="card">
+      <h3>判断6：模型输出是候选结果，任一关键门控失败一票否决</h3>
+      <p><strong>核心判断：</strong>输出要过格式、能力、业务、安全、事实五层门控；任一关键门控失败即阻止副作用，返回可修正错误；纠正优于沉默。</p>
+      <span class="src-quote">原文依据（第17页）：「模型输出首先是候选结果，只有通过解析、验证和授权后才能成为系统行动。」「任一关键门控失败即阻止副作用，返回可修正错误。」「纠正优于沉默。」</span>
+      <p><span class="tag judge">判断</span> 为什么重要：把「提议→行动」的闸门标准化。误读：格式对就行。</p>
+    </div>
+    <div class="card">
+      <h3>判断7：更长的上下文不等于更好的上下文</h3>
+      <p><strong>核心判断：</strong>优先级、相关性和证据密度比长度更重要；上下文分固定保护区（安全策略、当前目标、完成条件）和动态竞争区（可压缩淘汰），压缩要保留决定、约束、错误经验和来源指针。</p>
+      <span class="src-quote">原文依据（第15页）：「更长的上下文不等于更好的上下文；优先级、相关性和证据密度更重要。」</span>
+      <p><span class="tag judge">判断</span> 为什么重要：上下文是成本也是噪音源。误读：窗口大就尽量多塞。</p>
+    </div>
+    <div class="card">
+      <h3>判断8：只看最终成功率会掩盖低效轨迹和危险中间行为</h3>
+      <p><strong>核心判断：</strong>评估要分步骤级（工具选择/参数正确率）、轨迹级（重复率、恢复质量、关键检查点）、任务级（目标达成、成本、安全事件）三层。</p>
+      <span class="src-quote">原文依据（第28页）：「只看最终成功率，会掩盖低效轨迹、高成本和危险的中间行为。」</span>
+      <p><span class="tag judge">判断</span> 为什么重要：评估层决定改进方向。误读：成功率达标就万事大吉。</p>
+    </div>
+  </section>
+
+  <section id="m06">
+    <div class="sec-head"><span class="sec-id">06</span><h2>关键概念拆解 <button class="voice-btn" data-voice-id="ch6">🎧 听这节</button></h2></div>
+    <div class="card">
+      <h3>Harness（工程底座）</h3>
+      <p>作者用法：位于模型与执行环境之间，承担适配、约束、验证、跟踪和恢复；不替代模型的领域推理、工具内部实现和业务流程规则。</p>
+      <span class="concept-rel">「该做什么」由应用和模型决定 ｜ 「能否做、如何安全地做、做完怎样证明」由底座负责</span>
+      <span class="src-quote">原文依据（第3页边界判断）。</span>
+      <p>不要误解成：又一个中间件框架——它的核心职能是治理与执行协调。</p>
+    </div>
+    <div class="card">
+      <h3>三平面（控制 / 执行 / 数据）</h3>
+      <p>作者用法：控制平面放策略、权限、配置、审批（决定怎么运行）；执行平面放任务循环、工具调用、重试（真正执行动作）；数据平面放会话、记忆、日志、审计（保存事实与证据）。观测结果反哺控制策略。</p>
+      <span class="src-quote">原文依据（第6页）：「按变化速度和责任拆分系统，比按代码目录拆分更稳定。」「分层的目的……让关键策略能够独立变化、独立测试、独立回滚。」</span>
+      <p>不要误解成：多拆几层组件——原文反例是「权限规则写死在工具代码中、状态只在进程内存里」这类耦合。</p>
+    </div>
+    <div class="card">
+      <h3>运行循环（Runtime Loop）</h3>
+      <p>作者用法：有预算、有出口、有检查点的状态机：observe → decide → validate → act → record → checkpoint；每轮必须回答目标、预算、新事实、继续还是暂停。</p>
+      <span class="src-quote">原文依据（第9页）：「运行时不是一个无限循环，而是一台有预算、有出口、有检查点的状态机。」</span>
+      <p>不要误解成：while true 死循环调模型。</p>
+    </div>
+    <div class="card">
+      <h3>工具抽象与执行流水线</h3>
+      <p>作者用法：工具接口是能力说明+安全合同+观测边界；执行走六步流水线：发现→授权→校验→执行→处理→记录；早失败原则——前置门控失败立即停止。</p>
+      <span class="concept-rel">好接口 = 清晰名称 + 严格 Schema + 有界副作用 + 可操作错误 + 完整追踪</span>
+      <span class="src-quote">原文依据（第12/13页）。</span>
+      <p>不要误解成：接口只要功能对就行——危险信号包括「自由文本参数直接进入命令」「成功返回缺少可验证证据」。</p>
+    </div>
+    <div class="card">
+      <h3>多层记忆</h3>
+      <p>作者用法：工作记忆（当前轮、高频小容量）、短期记忆（会话摘要）、长期记忆（稳定事实、持久可治理）；写入要有复用价值、可记录来源、可回滚；凭据和未验证猜测不写入。</p>
+      <span class="concept-rel">记忆条目 = 内容 + 来源 + 时间 + 类型 + 置信度 + 权限 + 版本</span>
+      <span class="src-quote">原文依据（第14页）。</span>
+      <p>不要误解成：完整保存一切对话——记忆是「在正确时间提供足够且可信的信息」。</p>
+    </div>
+    <div class="card">
+      <h3>风险评估公式</h3>
+      <p>作者用法：风险 = 可达性 × 影响范围 × 可逆性 × 发现难度；不只看「会不会发生」。低=只读可撤销，中=有限写入可补偿，高=外部发布、删除、转账、权限变更。</p>
+      <span class="src-quote">原文依据（第26页）。</span>
+      <p>不要误解成：概率低=风险低——不可逆的高影响操作即使罕见也是高风险。</p>
+    </div>
+  </section>
+
+  <section id="m07">
+    <div class="sec-head"><span class="sec-id">07</span><h2>苏格拉底式阅读关卡 <button class="voice-btn" data-voice-id="ch7">🎧 听这节</button></h2></div>
+    <div class="task" data-task="ch17-q1" data-answer="B"
+         data-ok="对。「模型或 Agent 输出只是提议；Harness 负责把提议转换成受约束、可验证、可追踪的行动」——这是全篇的纲领句。"
+         data-no="A 把提议直接当结论，恰恰是原文反对的；C 颠倒了职责，底座不替代模型推理。"
+         data-src="原文（第1页）：模型或 Agent 输出只是‘提议’；Harness 负责把提议转换成受约束、可验证、可追踪的行动。"
+         data-review="回到「05 核心判断与依据 · 判断1」复习">
+      <div class="q">Q1 原文说「模型输出只是提议」，这句话真正想纠正的直觉是什么？</div>
+      <div class="opts">
+        <button class="opt" data-val="A">A. 模型回答质量不行，需要换更强的模型</button>
+        <button class="opt" data-val="B">B. 模型输出不能直接当行动执行，要先经过约束、验证和授权</button>
+        <button class="opt" data-val="C">C. 模型不需要工程系统，直接调用 API 就够</button>
+      </div>
+      <button class="check">检查</button>
+      <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+    </div>
+    <div class="task" data-task="ch17-q2" data-answer="C"
+         data-ok="对。乘法的含义：任何一项接近零，整体能力都显著下降。工具再好、模型再强，治理覆盖率为零时危险操作无法阻止，能力照样不可交付。"
+         data-no="加法的直觉是「都有一点就行」；乘法意味着短板会把其他所有投入打折扣。"
+         data-src="原文（第4页）：可交付能力 = 模型能力 × 工具可用性 × 执行可靠性 × 治理覆盖率。任何一项接近零，整体能力都会显著下降。"
+         data-review="回到「05 核心判断与依据 · 判断2」复习">
+      <div class="q">Q2 能力公式用乘法而不是加法，含义上的差别是什么？</div>
+      <div class="opts">
+        <button class="opt" data-val="A">A. 没有差别，只是写法不同</button>
+        <button class="opt" data-val="B">B. 乘法说明四项都平均发展就行</button>
+        <button class="opt" data-val="C">C. 乘法意味着任何一项接近零（如治理缺失），整体能力会显著下降</button>
+      </div>
+      <button class="check">检查</button>
+      <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+    </div>
+    <div class="task" data-task="ch17-q3" data-answer="B"
+         data-ok="对。权限回答「是否允许」（准入决策），沙箱回答「即使出错，最多能影响什么」（损害遏制）——两道独立的防线。"
+         data-no="权限管准入、沙箱管爆炸半径，二者不可互相替代。"
+         data-src="原文（第27页）：权限回答‘是否允许’，沙箱回答‘即使出错，最多能影响什么’。"
+         data-review="回到「05 核心判断与依据 · 判断4」复习">
+      <div class="q">Q3 按原文，权限和沙箱各自回答的问题是什么？</div>
+      <div class="opts">
+        <button class="opt" data-val="A">A. 权限管读，沙箱管写</button>
+        <button class="opt" data-val="B">B. 权限回答「是否允许」，沙箱回答「即使出错最多能影响什么」</button>
+        <button class="opt" data-val="C">C. 权限是事前检查，沙箱是事后审计</button>
+      </div>
+      <button class="check">检查</button>
+      <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+    </div>
+  </section>
+
+  <section id="m08">
+    <div class="sec-head"><span class="sec-id">08</span><h2>闯关式任务 <button class="voice-btn" data-voice-id="ch8">🎧 听这节</button></h2></div>
+    <div class="task" data-task="ch17-q4" data-type="selects"
+         data-ok="全对。控制平面决定怎么运行（策略/权限/审批），执行平面真正执行动作（循环/调用/重试），数据平面保存事实与证据（会话/记忆/日志/审计）。"
+         data-no="记住口诀：控制=决定怎么运行，执行=真正做动作，数据=保存证据。"
+         data-src="原文（第6页）三平面对照表。"
+         data-review="回到「06 关键概念拆解 · 三平面」复习">
+      <div class="q">Q4（匹配）把职责和所属平面配对：</div>
+      策略、权限、配置、审批 <select class="match" data-correct="控制平面"><option value="">选择</option><option>控制平面</option><option>执行平面</option><option>数据平面</option></select><br>
+      任务循环、工具调用、重试 <select class="match" data-correct="执行平面"><option value="">选择</option><option>控制平面</option><option>执行平面</option><option>数据平面</option></select><br>
+      会话、记忆、日志、审计记录 <select class="match" data-correct="数据平面"><option value="">选择</option><option>控制平面</option><option>执行平面</option><option>数据平面</option></select>
+      <br><button class="check">检查</button>
+      <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+    </div>
+    <div class="task" data-task="ch17-q5" data-answer="A,C,E" data-multi="true"
+         data-ok="对。临时性错误（限流、短时网络故障）退避重试加抖动；权限不足属永久性错误，盲重试无效应修正或升级；内存溢出属未知性异常应隔离与人工复核。"
+         data-no="重试前先做错误分类：临时性→重试，永久性→修正或升级，未知性→隔离人工复核。"
+         data-src="原文（第11页）错误分类表：错误分类优先于重试次数。"
+         data-review="回到「05 核心判断与依据 · 判断5」复习">
+      <div class="q">Q5（多选）按错误分类表，以下处理正确的有哪些？</div>
+      <div class="opts">
+        <button class="opt" data-val="A">A. 接口限流 → 退避重试并加抖动</button>
+        <button class="opt" data-val="B">B. 权限不足 → 连续重试 5 次总能过</button>
+        <button class="opt" data-val="C">C. 参数无效 → 修正参数或升级处理</button>
+        <button class="opt" data-val="D">D. 所有错误 → 一律自动重试</button>
+        <button class="opt" data-val="E">E. 状态不一致的未知异常 → 隔离并人工复核，保留证据</button>
+      </div>
+      <button class="check">检查</button>
+      <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+    </div>
+    <div class="task" data-task="ch17-q6" data-answer="B,C,E,F" data-multi="true"
+         data-ok="对。固定保护区：系统边界与安全策略、用户当前目标、输出格式和完成条件、高置信度关键事实；工具 Schema 和中间结果属动态竞争区（可压缩淘汰）。"
+         data-no="A、D 属于动态竞争区，是可被压缩或淘汰的内容；保护区放的是绝不能丢的约束与目标。"
+         data-src="原文（第15页）：固定保护区 vs 动态竞争区。"
+         data-review="回到「05 核心判断与依据 · 判断7」复习">
+      <div class="q">Q6（多选）上下文的「固定保护区」应包含哪些内容？</div>
+      <div class="opts">
+        <button class="opt" data-val="A">A. 工具 Schema 和示例</button>
+        <button class="opt" data-val="B">B. 系统边界与安全策略</button>
+        <button class="opt" data-val="C">C. 用户当前目标</button>
+        <button class="opt" data-val="D">D. 中间结果与工件摘要</button>
+        <button class="opt" data-val="E">E. 输出格式和完成条件</button>
+        <button class="opt" data-val="F">F. 高置信度关键事实</button>
+      </div>
+      <button class="check">检查</button>
+      <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+    </div>
+    <div class="task" data-task="ch17-q7" data-answer="A"
+         data-ok="对。「只看最终成功率，会掩盖低效轨迹、高成本和危险的中间行为」——三级评估（步骤/轨迹/任务）才能暴露重复调用、无效重试这类浪费。"
+         data-no="原文恰恰把「只看最终结果」列为评估的反面教材。"
+         data-src="原文（第28页）：只看最终成功率，会掩盖低效轨迹、高成本和危险的中间行为。"
+         data-review="回到「05 核心判断与依据 · 判断8」复习">
+      <div class="q">Q7（纠错）同事说「我们的 Agent 任务成功率 95%，系统已经很可靠了」。按本章观点，这句话漏了什么？</div>
+      <div class="opts">
+        <button class="opt" data-val="A">A. 漏了轨迹级和步骤级：成功率掩盖了低效轨迹、高成本和危险的中间行为</button>
+        <button class="opt" data-val="B">B. 没漏，95% 已经很高了</button>
+        <button class="opt" data-val="C">C. 应该改成看准确率</button>
+      </div>
+      <button class="check">检查</button>
+      <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+    </div>
+    <div class="task" data-task="ch17-q8" data-answer="C"
+         data-ok="对。风险管理套公式：删除操作影响范围大且不可逆，即使发生概率低也是高风险——应先说明计划并由人工确认（对应第29页上线清单「副作用可审批」）。"
+         data-no="A 把「可达性低」当安全依据，忽略了不可逆×高影响；B 的说法原文不支持。"
+         data-src="原文（第26页）：风险 = 可达性 × 影响范围 × 可逆性 × 发现难度；高：外部发布、删除、转账、权限变更。"
+         data-review="回到「06 关键概念拆解 · 风险评估公式」复习">
+      <div class="q">Q8（迁移）一个内网管理后台的「批量删除用户」按钮，平时几乎没人点、也很少被提到。按风险公式，它该被定为什么级别？</div>
+      <div class="opts">
+        <button class="opt" data-val="A">A. 低风险：可达性低，几乎不会被触发</button>
+        <button class="opt" data-val="B">B. 中风险：看当天操作量再定</button>
+        <button class="opt" data-val="C">C. 高风险：删除不可逆、影响范围大，即使概率低也要人工审批确认</button>
+      </div>
+      <button class="check">检查</button>
+      <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+    </div>
+  </section>
+
+  <section id="m09">
+    <div class="sec-head"><span class="sec-id">09</span><h2>误解与边界 <button class="voice-btn" data-voice-id="ch9">🎧 听这节</button></h2></div>
+    <div class="mis">
+      <h3>误解1：Harness 会限制模型能力，是负担</h3>
+      <p>为什么容易误解：约束看起来在「拦着」AI。原文真正说了：模型决定能力上限，工程系统决定能力能否以可接受的风险和成本落地；约束优先、可验证、渐进信任让能力可交付。原文没说：约束越多越好。避免方法：按「先定义禁止项和审批点，再扩展能力」的顺序做。</p>
+    </div>
+    <div class="mis">
+      <h3>误解2：上下文窗口越大，效果越好</h3>
+      <p>为什么容易误解：长窗口是新模型卖点。原文说：更长的上下文不等于更好的上下文；优先级、相关性和证据密度更重要；动态区内容该压缩就压缩。避免方法：按固定保护区+动态竞争区组织上下文。</p>
+    </div>
+    <div class="mis">
+      <h3>误解3：失败就重试，多试几次总能成</h3>
+      <p>为什么容易误解：重试是分布式系统常用手段。原文说：错误分类优先于重试次数；永久性错误盲重试无效，未知性错误要隔离人工复核；重试必须配合幂等键。避免方法：先分类，再选低/中/高风险对应策略。</p>
+    </div>
+    <div class="mis">
+      <h3>误解4：上了 MCP 等标准协议，安全和信任问题自动解决</h3>
+      <p>为什么容易误解：协议名字里有「标准」。原文说：标准协议降低集成成本，但不会自动解决授权、可信度和故障隔离；权限结果慎缓存，缓存命中也要保留审计信息。避免方法：接入前查 Schema 兼容、凭据隔离和降级方案。</p>
+    </div>
+    <div class="mis">
+      <h3>误解5：多 Agent 比单 Agent 强，加上就行</h3>
+      <p>为什么容易误解：人多力量大的直觉。原文说：多 Agent 的价值来自并行专业化，而不是简单增加模型调用次数；要警惕协作放大器——同一错误被多个角色复述、通信 Token 超过实际工作量。避免方法：委派要写清合同（子目标+输入工件+允许工具+验收标准+截止条件）。</p>
+    </div>
+  </section>
+
+  <section id="m10">
+    <div class="sec-head"><span class="sec-id">10</span><h2>背景知识缺口 <button class="voice-btn" data-voice-id="ch10">🎧 听这节</button></h2></div>
+    <div class="card paper">
+      <h3>缺口1：分布式系统基础（熔断、隔舱、背压）</h3>
+      <p>本章把这些当成已知概念使用。为什么重要：容错降级一章的落地需要这些机制的具体实现经验。下一步问题：熔断器的冷却期和探测恢复怎么设计？</p>
+    </div>
+    <div class="card paper">
+      <h3>缺口2：MCP 协议细节（现在可先不补）</h3>
+      <p>原文只从生态接入角度提 MCP。下一步问题：MCP 的资源/工具/模板模型和传统 RPC 的差别是什么？</p>
+    </div>
+    <div class="card paper">
+      <h3>缺口3：轨迹数据的采集与评估工程</h3>
+      <p>三级评估依赖轨迹数据，但原文未展开采集方案。下一步问题：怎么在不泄漏敏感原文的前提下记录完整轨迹（哈希、长度、脱敏摘要）？</p>
+    </div>
+  </section>
+
+  <section id="m11">
+    <div class="sec-head"><span class="sec-id">11</span><h2>复盘与学习报告 <button class="voice-btn" data-voice-id="ch11">🎧 听这节</button></h2></div>
+    <div class="card">
+      <h3><img class="sticker" src="https://lyzbcy.github.io/weshoto-study/img/sticker/final.png" alt="">本章收束</h3>
+      <p>• 模型输出只是提议；Harness 把提议转换成受约束、可验证、可追踪的行动。<br>• 可交付能力 = 模型能力 × 工具可用性 × 执行可靠性 × 治理覆盖率，任一项近零整体显著下降。<br>• 系统设计的重点不是让模型更敢做，而是让每一步更可控：先在受限场景稳定完成任务，再逐步扩大工具、权限和自主范围。</p>
+    </div>
+    <div id="wrongBox"><li style="color:#888;list-style:none">还没有错题。答错的题会自动收集到这里。</li></div>
+    <textarea id="report" readonly>点击「生成学习报告」看看你掌握了什么。</textarea>
+    <div class="btn-row">
+      <button id="genReport">生成学习报告</button>
+      <button id="copyReport">复制报告</button>
+    </div>
+    <p style="font-size:.85rem;margin-top:.8rem">仍不确定的地方建议追问：我们现有工具的接口离「好接口」标准差什么？哪些操作必须进入人工审批清单？AI 方向三章到此完成，回到目录页继续其他方向。</p>
+  </section>
+
+  <footer>
+    由 <a href="https://lyzbcy.github.io/" target="_blank" rel="noopener" style="color:#1d70b8;text-decoration:underline;font-weight:700">捞鱼</a> 制作 · 这个工具能帮你预习难啃的干货，但不能代替完整学习。学习愉快
+  </footer>
+</main>
+</div>
+<button id="voiceFab" aria-label="打开后台语音"><span class="fab-icon">🎧</span><span class="fab-text">后台语音</span></button>
+<div id="voicePlayer">
+  <button class="vp-close" aria-label="关闭">✕</button>
+  <div class="vp-head">🎧 后台语音 · 连续播放</div>
+  <div class="vp-title">—</div>
+  <div class="vp-controls">
+    <button class="vp-prev" aria-label="上一章">⏮</button>
+    <button class="vp-play" aria-label="播放/暂停">▶</button>
+    <button class="vp-next" aria-label="下一章">⏭</button>
+  </div>
+  <input class="vp-seek" type="range" min="0" max="1000" value="0" aria-label="进度">
+  <div class="vp-time"><span class="vp-cur">00:00</span><span class="vp-dur">00:00</span></div>
+  <div class="vp-sub">点开播放后，这里会同步显示字幕</div>
+</div>
+<script>
+(function(){
+  "use strict";
+  function $all(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));}
+  function selectedVals(t){return $all('.opt.selected',t).map(function(o){return o.getAttribute('data-val');}).sort();}
+  function setFb(t,state,html){var fb=t.querySelector('.feedback');if(!fb)return;fb.className='feedback'+(state?(' '+state):'');fb.innerHTML=html;}
+  function updateBar(){
+    var all=$all('.task'),done=$all('.task[data-answered="1"]');
+    var fill=document.getElementById('barFill'),num=document.getElementById('barNum');
+    if(fill)fill.style.width=all.length?(done.length/all.length*100)+'%':'0%';
+    if(num)num.textContent=done.length+' / '+all.length;
+  }
+  function renderWrong(){
+    var box=document.getElementById('wrongBox');if(!box)return;
+    var wrong=$all('.task[data-answered="1"][data-correct="0"]');
+    if(!wrong.length){box.innerHTML='<li style="color:#888">还没有错题。答错的题会自动收集到这里。</li>';return;}
+    box.innerHTML='';
+    wrong.forEach(function(t){var li=document.createElement('li');li.textContent='【'+(t.getAttribute('data-task')||'')+'】'+(t.getAttribute('data-review')||'回到对应模块复习');box.appendChild(li);});
+  }
+  function check(t){
+    var type=t.getAttribute('data-type'),ok=false;
+    if(type==='selects'){
+      var sels=$all('select.match',t),allok=true,empty=false;
+      sels.forEach(function(s){if(!s.value)empty=true;if(s.value!==s.getAttribute('data-correct'))allok=false;});
+      if(empty){setFb(t,'no','请先把每一项都选好再检查。');return;}
+      ok=allok;
+    }else{
+      var sel=selectedVals(t);
+      if(!sel.length){setFb(t,'no','请先选择一个选项再检查。');return;}
+      var ans=(t.getAttribute('data-answer')||'').split(',').map(function(x){return x.trim();}).sort();
+      ok=(sel.join('|')===ans.join('|'));
+    }
+    var body=ok?(t.getAttribute('data-ok')||'回答正确。'):(t.getAttribute('data-no')||'再想想。');
+    var src=t.getAttribute('data-src');
+    setFb(t,ok?'ok':'no',(ok?'✅ ':'❌ ')+body+(src?('<span class="src">'+src+'</span>'):''));
+    t.setAttribute('data-answered','1');t.setAttribute('data-correct',ok?'1':'0');
+    updateBar();renderWrong();
+  }
+  function genReport(){
+    var box=document.getElementById('report');if(!box)return;
+    var all=$all('.task'),done=$all('.task[data-answered="1"]'),right=$all('.task[data-answered="1"][data-correct="1"]');
+    var lines=['=== 学习报告 ===','完成题目：'+done.length+' / '+all.length,'答对：'+right.length+' 题',''];
+    var wrong=$all('.task[data-answered="1"][data-correct="0"]');
+    if(wrong.length){lines.push('我答错的题（建议复习）：');wrong.forEach(function(t){lines.push('- '+(t.getAttribute('data-task')||'')+'：'+(t.getAttribute('data-review')||''));});}
+    else{lines.push('暂无错题。');}
+    box.textContent=lines.join('\n');
+  }
+  document.addEventListener('click',function(e){
+    var c=e.target.closest?e.target:null;
+    var opt=c&&e.target.closest('.opt');
+    if(opt){var t=opt.closest('.task');if(!t)return;
+      if(t.getAttribute('data-multi')==='true'){opt.classList.toggle('selected');}
+      else{$all('.opt',t).forEach(function(o){o.classList.remove('selected');});opt.classList.add('selected');}
+      return;}
+    var btn=c&&e.target.closest('.check');
+    if(btn){var tk=btn.closest('.task');if(tk)check(tk);return;}
+    if(e.target&&e.target.id==='genReport'){genReport();return;}
+    if(e.target&&e.target.id==='copyReport'){var r=document.getElementById('report');if(r&&navigator.clipboard)navigator.clipboard.writeText(r.textContent);return;}
+  });
+  function init(){updateBar();renderWrong();}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+<script>
+(function(){
+  "use strict";
+  if(window.__voiceEngine) return;
+  window.__voiceEngine = true;
+  var listNode = document.getElementById('voicePlaylist');
+  if(!listNode){ return; }
+  var TRACKS = [];
+  try { TRACKS = JSON.parse(listNode.textContent.trim()); } catch(e){ return; }
+  if(!TRACKS.length) return;
+  var player = document.getElementById('voicePlayer');
+  var fab = document.getElementById('voiceFab');
+  var audio = new Audio(); audio.preload = 'metadata';
+  var cur = 0;
+  var ranges = [];
+  var total = 0;
+  var seeking = false;
+  function $(s){ return player ? player.querySelector(s) : null; }
+  function fmt(s){ s=Math.max(0,Math.floor(s||0)); var m=Math.floor(s/60), x=s%60;
+    return (m<10?'0':'')+m+':'+(x<10?'0':'')+x; }
+  var probe = TRACKS.map(function(){ return {dur:0}; });
+  function tryFinalize(){
+    if(probe.some(function(p){return !p.dur;})) return;
+    ranges = []; total = 0;
+    probe.forEach(function(p){ ranges.push({dur:p.dur, start:total}); total += p.dur; });
+    var d = $('.vp-dur'); if(d) d.textContent = fmt(total);
+    var sk = $('.vp-seek'); if(sk){ sk.max = Math.max(1000, Math.floor(total*10)); }
+  }
+  TRACKS.forEach(function(t, i){
+    var a = new Audio(); a.preload = 'metadata'; a.src = t.src;
+    a.addEventListener('loadedmetadata', function(){
+      probe[i].dur = a.duration || 0; tryFinalize();
+    });
+    a.addEventListener('error', function(){ probe[i].dur = 0; tryFinalize(); });
+  });
+  function load(i){
+    cur = i; audio.src = TRACKS[i].src;
+    var ti = $('.vp-title'); if(ti) ti.textContent = TRACKS[i].title || ('第 '+(i+1)+' 段');
+    markBtn(i);
+  }
+  function play(){ audio.play().then(function(){ show(); setPlayIcon(true); if(fab) fab.classList.add('beat'); }).catch(function(){}); }
+  function pause(){ audio.pause(); setPlayIcon(false); if(fab) fab.classList.remove('beat'); }
+  function toggle(){ audio.paused ? play() : pause(); }
+  function next(){ if(cur < TRACKS.length-1){ load(cur+1); play(); } else { pause(); } }
+  function prev(){
+    var abs = absTime();
+    if(cur > 0 && abs - ranges[cur].start < 3){ load(cur-1); play(); }
+    else { audio.currentTime = 0; }
+  }
+  function absTime(){ return ranges[cur] ? ranges[cur].start + (audio.currentTime||0) : (audio.currentTime||0); }
+  function setPlayIcon(on){ var b=$('.vp-play'); if(b) b.textContent = on ? '⏸' : '▶'; }
+  function show(){ if(player) player.classList.add('show'); }
+  function hide(){ if(player) player.classList.remove('show'); }
+  function markBtn(i){
+    document.querySelectorAll('.voice-btn[data-voice-id]').forEach(function(b){
+      b.classList.toggle('active', b.getAttribute('data-voice-id') === TRACKS[i].id);
+    });
+  }
+  audio.addEventListener('timeupdate', function(){
+    if(seeking) return;
+    if(!ranges[cur]) return;
+    var abs = absTime(); var sk = $('.vp-seek'); var c = $('.vp-cur');
+    if(sk && total) sk.value = Math.round(abs / total * (sk.max||1000));
+    if(c) c.textContent = fmt(abs);
+  });
+  audio.addEventListener('ended', function(){ if(cur < TRACKS.length-1){ load(cur+1); play(); }
+    else { setPlayIcon(false); if(fab) fab.classList.remove('beat'); } });
+  function seekToFraction(frac){
+    if(!total) return;
+    var target = Math.max(0, Math.min(total, frac * total));
+    var i = 0; while(i < ranges.length-1 && ranges[i].start + ranges[i].dur < target){ i++; }
+    if(i !== cur){ cur = i; audio.src = TRACKS[i].src;
+      var ti=$('.vp-title'); if(ti) ti.textContent = TRACKS[i].title||('第 '+(i+1)+' 段'); markBtn(i); }
+    audio.currentTime = target - ranges[i].start;
+    var c=$('.vp-cur'); if(c) c.textContent = fmt(target);
+  }
+  document.addEventListener('click', function(e){
+    var t = e.target;
+    var vb = t.closest ? t.closest('.voice-btn[data-voice-id]') : null;
+    if(vb){
+      var id = vb.getAttribute('data-voice-id'), idx = -1;
+      TRACKS.forEach(function(tr, k){ if(tr.id === id) idx = k; });
+      if(idx >= 0){ load(idx); play(); }
+      return;
+    }
+    if(t.id === 'voiceFab'){ show(); if(audio.paused && !audio.src){ load(0); } if(audio.paused){ play(); } return; }
+    if(!player || !player.contains(t)) return;
+    if(t.classList.contains('vp-play')){ toggle(); return; }
+    if(t.classList.contains('vp-prev')){ prev(); return; }
+    if(t.classList.contains('vp-next')){ next(); return; }
+    if(t.classList.contains('vp-close')){ pause(); hide(); return; }
+  });
+  var sk = $('.vp-seek');
+  if(sk){
+    sk.addEventListener('input', function(){ seeking = true;
+      if(total){ var c=$('.vp-cur'); if(c) c.textContent = fmt((sk.value/(sk.max||1000))*total); } });
+    sk.addEventListener('change', function(){ seekToFraction(sk.value/(sk.max||1000)); seeking = false; });
+  }
+})();
+</script>
+<script>
+(function(){
+  "use strict";
+  if(window.__subEngine) return;
+  window.__subEngine = true;
+  var listNode = document.getElementById("voicePlaylist");
+  if(!listNode) return;
+  var subBox = document.querySelector("#voicePlayer .vp-sub");
+  var curEl = document.querySelector("#voicePlayer .vp-cur");
+  var titleEl = document.querySelector("#voicePlayer .vp-title");
+  if(!subBox) return;
+  var subs = [];
+  var subCache = {};
+  var curSrc = "";
+  function esc(s){ var d=document.createElement("div"); d.textContent=s; return d.innerHTML; }
+  function mp3ToJson(src){
+    var m = src.replace(/^.*?([a-zA-Z0-9_\/.\-]+\.mp3)(?:\?.*)?$/i, "$1");
+    return m.replace(/\.mp3$/i, ".json");
+  }
+  function loadSubFor(src){
+    if(!src || src === curSrc) return;
+    curSrc = src;
+    var jsonUrl = mp3ToJson(src);
+    if(subCache[jsonUrl]){ subs = subCache[jsonUrl]; return; }
+    fetch(jsonUrl).then(function(r){
+      if(!r.ok) throw new Error(r.status);
+      return r.json();
+    }).then(function(arr){
+      subCache[jsonUrl] = Array.isArray(arr) ? arr : [];
+      subs = subCache[jsonUrl];
+    }).catch(function(){ subs = []; });
+  }
+  function parseTime(text){
+    var p = String(text).trim().split(":");
+    if(p.length === 2){
+      var m = parseInt(p[0], 10) || 0;
+      var s = parseInt(p[1], 10) || 0;
+      return m * 60 + s;
+    }
+    return parseFloat(text) || 0;
+  }
+  function renderSub(t){
+    if(!subs.length) return;
+    var hit = null, idx = -1;
+    for(var i = 0; i < subs.length; i++){
+      if(t >= subs[i].start && t < subs[i].end){ hit = subs[i]; idx = i; break; }
+    }
+    if(!hit){
+      var prev = null;
+      for(var j = 0; j < subs.length; j++){
+        if(subs[j].start <= t) prev = subs[j]; else break;
+      }
+      subBox.classList.remove("active");
+      subBox.innerHTML = prev ? esc(prev.text) : "";
+      return;
+    }
+    subBox.classList.add("active");
+    var prevHtml = idx > 0
+      ? '<span style="opacity:.45">' + esc(subs[idx - 1].text) + "</span> "
+      : "";
+    subBox.innerHTML = prevHtml + '<span class="cur">' + esc(hit.text) + "</span>";
+  }
+  function tick(){
+    if(!curEl) return;
+    var sec = parseTime(curEl.textContent);
+    renderSub(sec);
+  }
+  function onTitleChange(){
+    var TRACKS = [];
+    try { TRACKS = JSON.parse(listNode.textContent.trim()); } catch(e){ return; }
+    var title = titleEl ? titleEl.textContent.trim() : "";
+    for(var i = 0; i < TRACKS.length; i++){
+      if(TRACKS[i].title === title){ loadSubFor(TRACKS[i].src); return; }
+    }
+  }
+  if(window.MutationObserver){
+    var obs = new MutationObserver(function(){ tick(); onTitleChange(); });
+    if(curEl) obs.observe(curEl, { childList:true, characterData:true, subtree:true });
+    if(titleEl) obs.observe(titleEl, { childList:true, characterData:true, subtree:true });
+  } else {
+    setInterval(function(){ tick(); onTitleChange(); }, 300);
+  }
+  setTimeout(tick, 500);
+})();
+</script>
+</body>
+</html>

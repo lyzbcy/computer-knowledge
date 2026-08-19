@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 相关考试 · 研发岗管培生</title>
+<style>
+:root{
+  --primary:#2563eb; --primary-dark:#1e40af; --success:#16a34a; --danger:#dc2626;
+  --warn:#d97706; --bg:#f1f5f9; --card:#ffffff; --text:#1e293b; --muted:#64748b;
+  --border:#e2e8f0; --correct:#f0fdf4; --wrong:#fef2f2;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);line-height:1.7;}
+.wrap{max-width:880px;margin:0 auto;padding:24px 16px 80px;}
+/* header */
+.header{background:linear-gradient(135deg,#1e3a8a,#2563eb);color:#fff;border-radius:16px;padding:32px 28px;margin-bottom:20px;box-shadow:0 8px 24px rgba(37,99,235,.25);}
+.header h1{font-size:26px;margin-bottom:8px;}
+.header .sub{opacity:.9;font-size:14px;}
+.header .meta{display:flex;gap:16px;flex-wrap:wrap;margin-top:16px;font-size:13px;}
+.header .meta span{background:rgba(255,255,255,.15);padding:4px 12px;border-radius:999px;}
+/* notice */
+.notice{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 22px;margin-bottom:20px;font-size:14px;}
+.notice h3{font-size:15px;margin-bottom:10px;color:var(--primary-dark);}
+.notice li{margin-left:20px;margin-bottom:4px;color:var(--muted);}
+.notice b{color:var(--text);}
+/* sticky bar */
+.sticky{position:sticky;top:0;z-index:50;background:rgba(241,245,249,.95);backdrop-filter:blur(8px);padding:10px 0;margin-bottom:16px;}
+.sticky-inner{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;box-shadow:0 2px 8px rgba(0,0,0,.05);}
+.sticky .info{font-size:13px;color:var(--muted);}
+.sticky .spacer{flex:1;}
+.timer{font-variant-numeric:tabular-nums;font-weight:700;color:var(--primary);font-size:15px;}
+.btn{border:none;cursor:pointer;border-radius:8px;padding:9px 22px;font-size:14px;font-weight:600;transition:.15s;}
+.btn-primary{background:var(--primary);color:#fff;}
+.btn-primary:hover{background:var(--primary-dark);}
+.btn-ghost{background:#fff;color:var(--primary);border:1px solid var(--primary);}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+/* answer sheet */
+.sheet{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 18px;margin-bottom:20px;}
+.sheet h4{font-size:13px;color:var(--muted);margin-bottom:10px;font-weight:600;}
+.sheet-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(40px,1fr));gap:6px;}
+.sheet-item{width:40px;height:36px;border-radius:8px;border:1px solid var(--border);background:#fff;font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.12s;color:var(--muted);}
+.sheet-item.done{background:var(--primary);color:#fff;border-color:var(--primary);}
+.sheet-item.correct{background:var(--success);color:#fff;border-color:var(--success);}
+.sheet-item.wrong{background:var(--danger);color:#fff;border-color:var(--danger);}
+.sheet-item.partial{background:var(--warn);color:#fff;border-color:var(--warn);}
+.sheet-item.pending{background:#cbd5e1;color:#fff;border-color:#cbd5e1;}
+.sheet-item:hover{transform:scale(1.08);}
+/* question card */
+.q-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px 24px;margin-bottom:18px;}
+.q-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;}
+.q-num{background:var(--primary);color:#fff;border-radius:8px;min-width:34px;height:28px;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;padding:0 8px;}
+.q-type{font-size:12px;padding:2px 10px;border-radius:999px;font-weight:600;}
+.t-single{background:#dbeafe;color:#1d4ed8;}
+.t-multi{background:#fce7f3;color:#be185d;}
+.t-short{background:#d1fae5;color:#047857;}
+.q-chap{font-size:12px;color:var(--muted);}
+.q-pts{font-size:12px;color:var(--muted);margin-left:auto;}
+.q-text{font-size:15.5px;font-weight:600;margin-bottom:14px;white-space:pre-wrap;}
+.opts{display:flex;flex-direction:column;gap:8px;}
+.opt{display:flex;gap:10px;align-items:flex-start;border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;cursor:pointer;transition:.12s;font-size:14.5px;background:#fff;}
+.opt:hover{border-color:var(--primary);background:#f8faff;}
+.opt.sel{border-color:var(--primary);background:#eff6ff;}
+.opt .k{font-weight:700;color:var(--primary);flex-shrink:0;}
+.opt.ok{border-color:var(--success);background:var(--correct);}
+.opt.ok .k{color:var(--success);}
+.opt.bad{border-color:var(--danger);background:var(--wrong);}
+.opt.bad .k{color:var(--danger);}
+.opt.lock{cursor:default;}
+/* short answer */
+.short-ta{width:100%;min-height:160px;border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;font-size:14px;font-family:inherit;resize:vertical;line-height:1.7;}
+.short-ta:focus{outline:none;border-color:var(--primary);}
+.self-grade{margin-top:12px;display:none;align-items:center;gap:10px;background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:12px 14px;font-size:14px;flex-wrap:wrap;}
+.self-grade.show{display:flex;}
+.self-grade select{padding:6px 10px;border-radius:8px;border:1.5px solid var(--border);font-size:14px;}
+/* explain */
+.explain{display:none;margin-top:14px;border-radius:10px;padding:12px 16px;font-size:13.5px;border-left:4px solid var(--primary);background:#f8fafc;}
+.explain.show{display:block;}
+.explain .ans-line{font-weight:700;margin-bottom:6px;}
+.explain.ok{border-left-color:var(--success);background:var(--correct);}
+.explain.bad{border-left-color:var(--danger);background:var(--wrong);}
+.explain .src{color:var(--muted);margin-top:6px;font-size:13px;white-space:pre-wrap;}
+/* result panel */
+.result-panel{display:none;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:20px;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.06);}
+.result-panel.show{display:block;}
+.score-big{font-size:52px;font-weight:800;color:var(--primary);margin:6px 0;}
+.score-sub{color:var(--muted);font-size:14px;margin-bottom:14px;}
+.stat-row{display:flex;justify-content:center;gap:26px;flex-wrap:wrap;margin:14px 0;}
+.stat-row div{font-size:13px;color:var(--muted);}
+.stat-row b{display:block;font-size:22px;color:var(--text);}
+.footer-note{text-align:center;color:var(--muted);font-size:12px;margin-top:30px;}
+@media(max-width:640px){.header h1{font-size:20px;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <h1>AI 相关考试 · 研发岗管培生</h1>
+    <div class="sub">范围：Codex 快速上手与实战 / Harness 工程底座 / Skill 入门·调优·常用能力 · 考"场景应用判断"，不考名词背诵</div>
+    <div class="meta">
+      <span>方向：AI</span>
+      <span>建议时长：40 分钟</span>
+      <span>题数：20 题 · 总分 80 分</span>
+      <span>题型：单选 / 多选 / 简答（自评）</span>
+    </div>
+  </div>
+
+  <div class="notice">
+    <h3>考试说明</h3>
+    <ul>
+      <li>本卷面向<b>AI 方向管培生</b>，重点考查场景应用判断：给一个真实工作场景，判断该怎么给 Codex 下任务、该不该做成 Skill、Skill 怎么调优、系统底座怎么兜住风险。</li>
+      <li><b>单选 12 题 × 3 分</b>；<b>多选 6 题 × 4 分</b>（全对得 4 分，<b>漏选得 1 分，错选不得分</b>）；<b>简答 2 题 × 10 分</b>（提交后对照参考要点自评给分）。</li>
+      <li>点击下方答题卡格子可快速跳转到对应题目；已作答题目会高亮。</li>
+      <li>全部作答完后点击「提交判分」，系统自动评分并展示每题解析（含答案解析与出题原因，答案均可在培训资料中找到依据）；简答题需按参考要点自行评分并计入总分。</li>
+    </ul>
+  </div>
+
+  <div class="sticky">
+    <div class="sticky-inner">
+      <div class="info">已答 <b id="doneCnt">0</b> / 20</div>
+      <div class="info">用时 <span class="timer" id="timer">00:00</span></div>
+      <div class="spacer"></div>
+      <button class="btn btn-primary" id="submitBtn" onclick="submitExam()">提交判分</button>
+    </div>
+  </div>
+
+  <div class="sheet">
+    <h4>答题卡（点击跳转）</h4>
+    <div class="sheet-grid" id="sheetGrid"></div>
+  </div>
+
+  <div class="result-panel" id="resultPanel">
+    <h2 id="resTitle"></h2>
+    <div class="score-big" id="resScore">0</div>
+    <div class="score-sub" id="resSub"></div>
+    <div class="stat-row" id="resStat"></div>
+    <button class="btn btn-ghost" onclick="location.reload()">重新作答</button>
+  </div>
+
+  <div id="quizArea"></div>
+
+  <div class="footer-note">AI 相关考试 · 研发岗管培生 · 出题依据：Codex 快速上手与进阶 / Harness 工程底座 / Skill 入门与能力展示 / Codex 使用 / Skill 调优 / 常用 SKILLS 介绍 · 每题解析附资料出处</div>
+</div>
+
+<script>
+const EXAM_TITLE = "AI 相关考试 · 研发岗管培生";
+
+const questions = [
+// ================= 单选 12 题 × 3分 =================
+{ id:1, type:"single", chap:"Codex上手", points:3,
+  q:"你需要在终端里读一个本地仓库、跑测试命令，并对一个 bug 做小步修改，随时查看命令输出和 diff。按培训建议，应优先选择哪个入口？",
+  opts:[
+    {k:"A",t:"桌面 App：适合管理多个本地项目和较长任务"},
+    {k:"B",t:"CLI：适合在终端读仓库、运行命令并逐步修改"},
+    {k:"C",t:"Cloud / Web：适合远程仓库任务和后台并行分析"},
+    {k:"D",t:"IDE 插件：适合编辑器内的局部修改和代码审查"}
+  ],
+  answer:["B"],
+  explain:"答案 B。资料《Codex 快速上手》入口对比：CLI「适合在终端里读仓库、运行命令并逐步修改」「频繁看命令输出时选择 CLI」。A 桌面 App 适合项目、文件和较长任务的多任务工作台；C Cloud 适合远程仓库、长任务、PR；D IDE 适合正在编辑具体文件时看目录与 diff——三者都不是「终端 + 跑命令 + 小步修改」的最佳入口。\n📌 出题原因：考查「按任务选入口」的应用判断，而不是背入口清单。新人第一个常见错误就是入口选错导致效率低，这是上手 Codex 的第一决策点。"
+},
+{ id:2, type:"single", chap:"Codex核心场景", points:3,
+  q:"同事抱怨：「我目标说得很清楚了，Codex 还是乱改一气。」按《Codex 使用》的观点，除了说清目标，高质量输入还应补上哪一组要素？",
+  opts:[
+    {k:"A",t:"更长的背景介绍、更客气的语气、更多鼓励性描述"},
+    {k:"B",t:"给准目录和文件、说明可用命令、明确验证与验收方式"},
+    {k:"C",t:"让它先读完整个仓库、再读完所有文档、最后自行决定"},
+    {k:"D",t:"提高模型档位、开启完全访问权限、放开沙盒限制"}
+  ],
+  answer:["B"],
+  explain:"答案 B。《Codex 使用》开篇即强调：「目录、文件、命令、验证，才是高质量输入」，提示词模板为「目标 + 目录 + 原始材料 + 不能动什么 + 交付路径 + 验收方式」。A 与任务执行无关，口号再多也不如目录和验收方式；C 是放弃约束、放大范围，越接近生产入口越要把边界说清楚；D 用权限换效果，恰恰违背「受控执行比自由发挥更重要」。\n📌 出题原因：考查 Codex 高质量输入「四件套」（目录/文件/命令/验证）的场景应用。这是把 Codex 从聊天窗口变成受控执行器的关键能力。"
+},
+{ id:3, type:"single", chap:"实战案例", points:3,
+  q:"用 LLM Wiki 方式在 Obsidian 中搭建 AI 知识库，让 Codex 读取 raw/ 目录新增的论文和文章完成入库。下列做法符合资料中 Codex 边界的是：",
+  opts:[
+    {k:"A",t:"顺手把 raw/ 里的原文改写成统一格式，方便后续检索阅读"},
+    {k:"B",t:"为避免和旧页面冲突，一律新建页面而不更新已有概念页"},
+    {k:"C",t:"不修改原始文件，按命名与引用规则更新已有页面，说明新增、修改和待人工确认的内容"},
+    {k:"D",t:"把模型自己的理解和推断直接写进 Wiki，与资料原文合并存放"}
+  ],
+  answer:["C"],
+  explain:"答案 C。实战案例「Codex × LLM Wiki」三层结构明确规定：原始资料层「只读，不改写原文」；Wiki 层「创建、更新并维护交叉引用」，使用流程是「读取 raw/ 中新增的资料，不要修改原始文件……更新已有页面，必要时新建概念页，并说明新增、修改和待人工确认的内容」，且要「避免重复页面和无依据结论」。A 违反原始层只读；B 与「更新已有知识、建立交叉引用」的目标相反；D 会制造无依据结论。\n📌 出题原因：考查知识库实战案例中「原始层只读、Wiki 层更新、避免无依据结论」的边界判断。管培生做资料沉淀时最容易犯的就是改原文和堆重复页面。"
+},
+{ id:4, type:"single", chap:"Codex进阶", points:3,
+  q:"你要对一个陌生开源仓库做只读的代码审查和结构分析，只希望 Codex 输出结论、不改任何文件。按推荐的 profiles / 沙盒配置，最合适的是：",
+  opts:[
+    {k:"A",t:"coding：workspace-write + on-request，日常默认，读写都可以"},
+    {k:"B",t:"danger-full-access：移除本地沙盒限制，效率最高，先跑起来再说"},
+    {k:"C",t:"readonly：read-only + on-request，适合陌生仓库分析、项目地图和代码审查"},
+    {k:"D",t:"不配置任何边界，靠在提示词里写「请不要改文件」来保证只读"}
+  ],
+  answer:["C"],
+  explain:"答案 C。进阶教程 config.toml 推荐 profiles 明确写：readonly（read-only + on-request）用于「陌生仓库分析、项目地图、代码审查」，沙盒模式表中 read-only「主要用于读取与分析，陌生仓库、审查、方案阶段」。A 的 coding/workspace-write 允许写入工作区，与「只读」目标不符；B 「不作为日常默认」，权限越高任务范围应越小；D 只靠提示词约束没有沙盒兜底，违背「约束优先」原则——提示词不是安全边界。\n📌 出题原因：考查权限/沙盒配置与任务风险等级的匹配能力。「按风险选权限而不是按方便选权限」是 Codex 生产使用的底线思维。"
+},
+{ id:5, type:"single", chap:"Skill调优", points:3,
+  q:"客户意向识别 Skill 的 v4 版规则偏保守，很多边界客户被判成「否」。业务方这次明确表示：「宁可多看一些候选，也不能漏掉值得触达的客户。」v5 调优的正确方向和定位是：",
+  opts:[
+    {k:"A",t:"召回优先：先尽量找全未下单且可能值得触达的人，先捞候选，再用二次分析或业务规则精筛"},
+    {k:"B",t:"精度优先：继续收紧规则，宁可漏人也不能放进不合格客户"},
+    {k:"C",t:"召回优先：既然 Recall 大幅提升，输出结果可直接作为最终业务触达名单下发"},
+    {k:"D",t:"把提示词写得更长更细，把所有能想到的规则都加进去，自然两全其美"}
+  ],
+  answer:["A"],
+  explain:"答案 A。《Skill 调优》：v5「把目标改成召回优先：先尽量找全未下单且可能值得触达的人」「一句话：先捞候选，再用二次分析或业务规则精筛」。B 是 v4 的老路，与业务诉求相反；C 违反资料反复强调的「不要把召回版当最终名单」「适合作为第一层候选召回，不适合直接作为最终业务名单」；D 被资料直接否定：「Skill 调优不是把提示词写长，而是把业务目标变成可验证的判断顺序」。\n📌 出题原因：考查「调优先从业务目标开始」——怕漏人还是怕误判决定规则取舍，以及召回版的适用位置。这是只在调优资料中出现的核心方法论，也是业务方最容易误解的点。"
+},
+{ id:6, type:"single", chap:"Skill调优", points:3,
+  q:"v5（召回优先版）在 test 集上的结果如下解读，正确的是：",
+  opts:[
+    {k:"A",t:"Recall 从 55.67% 提升到 87.83%，漏召回（FN）从 266 条降到 73 条；代价是 Precision 微降、FP 增多，需要后续精筛"},
+    {k:"B",t:"Recall 提升到 87.83%，同时 Precision 也大幅提升，说明规则收紧后全面变好，无任何代价"},
+    {k:"C",t:"F1 从 59.59% 提升到 73.96%，说明模型已经完美，可以停止迭代直接全面上线"},
+    {k:"D",t:"FN 降到 73 条说明误判为高潜的负样本减少，候选池比 v4 更窄更精准"}
+  ],
+  answer:["A"],
+  explain:"答案 A。test 集指标：Recall 87.83%（v4 为 55.67%），FN 从 266 降到 73，F1 73.96%（v4 为 59.59%），Accuracy 62.25%→69.08%；代价页明确：Precision 63.88% 相比 v4 的 64.11% 小幅下降，FP 从 187 条增加到 298 条，售后场景 FP 80 条需要后续精筛。B 错在「Precision 大幅提升、无代价」；C 错在把指标改善等同于可上线最终名单；D 混淆概念——FN 是漏召回，FP 才是误判为高潜，FP 实际是增加的。\n📌 出题原因：考查用指标（Recall/Precision/F1/FN/FP）解读调优效果及其代价的能力。看不懂指标就会把「召回版」误当「最终名单」，这是调优资料中反复敲打的坑。"
+},
+{ id:7, type:"single", chap:"常用Skill", points:3,
+  q:"每周五下午你都要从 TAPD 里捞本周的自己任务、工时和进展，手工拼成周报。按「按任务选 skill」的原则，最合适的是：",
+  opts:[
+    {k:"A",t:"tapd：查需求、任务、迭代、工时，创建和补录 TAPD 信息"},
+    {k:"B",t:"wiki：个人知识库摄入、查询、健康检查和状态查看"},
+    {k:"C",t:"wecom-group-robot：把确认后的通知发送到指定群"},
+    {k:"D",t:"weekly-report：从 TAPD 自动生成个人或多人周报"}
+  ],
+  answer:["D"],
+  explain:"答案 D。《常用 SKILLS 介绍》任务分类表：weekly-report 的适合任务是「从 TAPD 自动生成个人或多人周报」，与场景完全对应。A 的 tapd 只负责查数和补录，不产出周报；B 的 wiki 服务知识库管理；C 只负责发通知。资料原则是「先判断任务属于哪类工作」——本任务的交付物是周报而非查询或通知。\n📌 出题原因：考查按任务目标（要得到什么结果）选 Skill，而不是按系统名称选。选错 Skill 是新人日常协作中最高频的浪费。"
+},
+{ id:8, type:"single", chap:"Skill入门", points:3,
+  q:"你新写了一个 Skill：该做的时候经常不被触发，不该做的时候偶尔又被加载进来干扰任务。问题最可能出在、以及正确改法是：",
+  opts:[
+    {k:"A",t:"SKILL.md 正文太长，把正文删到只剩一句话即可正确触发"},
+    {k:"B",t:"description 写得不到位：要同时写清能做什么和常见触发场景，过窄触发不到、过宽会误加载"},
+    {k:"C",t:"脚本有 bug：把 scripts/ 目录下所有脚本重写一遍并加日志"},
+    {k:"D",t:"Skill 缺少权限：在 description 里声明需要的系统权限即可获得"}
+  ],
+  answer:["B"],
+  explain:"答案 B。《Skill 入门》：「description 很重要：它既要说明能做什么，也要写出常见触发场景。描述过窄会触发不到，描述过宽会让无关任务也加载该 Skill」，Skill 的发现阶段就是「读取名称和 description」。A 混淆了渐进式加载机制——触发靠 description，正文长短不影响发现；C 与触发无关；D 违背资料明确说明：「Skill 自己不会增加权限，它只能使用当前账号已经拥有的能力」。\n📌 出题原因：考查 Skill 渐进式加载机制中 description 的作用。这是编写第一个 Skill 时最容易踩、也最能区分「用过」和「没用过」的考点。"
+},
+{ id:9, type:"single", chap:"Skill入门", points:3,
+  q:"企业微信的周报汇报页面没有稳定 API，必须用你当前已登录的账号打开页面、填写「已完成/进行中/阻塞/明日计划」并保存成功提示。资料建议的处理方式是：",
+  opts:[
+    {k:"A",t:"用 API 批量写入：结构化操作永远优先，没有接口就先推动补齐接口"},
+    {k:"B",t:"用 CUA 自动完成全部流程：包括猜测当天做了什么并自动填写，减少人工参与"},
+    {k:"C",t:"用 CUA 打开汇报页面：工作内容由其他 Skill 生成草稿，本人确认后 CUA 填写提交，保存成功提示作为证据"},
+    {k:"D",t:"整批填写后统一提交；页面刷新失效就从第一条记录全部重填一遍"}
+  ],
+  answer:["C"],
+  explain:"答案 C。《Skill 入门》CUA 章节：API 与 CUA 的选择——「页面没有接口、依赖当前登录态或需要页面证据时使用 CUA」；企业微信汇报示例：「工作内容先由其他 Skill 收集、去重并生成草稿；本人确认后，CUA 打开汇报页面，填写……提交后保存成功提示。CUA 不负责猜测当天做了什么」。A 不符合「没有稳定 API」的前提；B 恰好是被明确否定的「CUA 猜测内容」；D 违背「批量填表要逐条保存回执，页面刷新后从第一条未完成记录继续，不能整批从头重填」。\n📌 出题原因：考查 API 与 CUA 的选型判断及 CUA 的边界（不猜测、留证据、失败不重头）。这是把 AI 接入日常办公自动化的关键场景。"
+},
+{ id:10, type:"single", chap:"Skill入门", points:3,
+  q:"TAPD Skill 执行「创建一条技术需求」时，提交后接口超时、没有收到响应。按资料的测试用例约定，正确的处理是：",
+  opts:[
+    {k:"A",t:"立即重新提交一次，超时大概率是网络抖动，重复提交风险不大"},
+    {k:"B",t:"先按业务信息回查是否已经写入，确认没有记录后再决定是否重试"},
+    {k:"C",t:"直接判定为失败并向用户报告「创建失败」，本次任务终止"},
+    {k:"D",t:"切换账号重新登录后再原样提交，绕开超时的会话状态"}
+  ],
+  answer:["B"],
+  explain:"答案 B。《Skill 入门》TAPD 测试表明确规定：「创建超时：提交后没有收到响应 → 先按业务信息回查，再决定是否重试」，要点总结也是「写入前确认，写入后回查，超时先查结果」。A 会造成重复创建（重复执行用例也要求「提示已有记录，不重复创建」）；C 可能把已成功的写入误报为失败；D 属于「不要绕系统」的反面做法。\n📌 出题原因：考查写入类操作的超时幂等处理。这类判断直接决定生产系统里会不会产生脏数据，是 Skill 从「能跑」到「可托付」的分水岭。"
+},
+{ id:11, type:"single", chap:"Harness底座", points:3,
+  q:"关于 Harness（工程底座）与模型输出的关系，下列表述与资料主线一致的是：",
+  opts:[
+    {k:"A",t:"模型输出即最终行动：只要生成结果格式正确，就可以直接执行真实操作"},
+    {k:"B",t:"Harness 的核心目标是让模型「更敢做」，尽可能放开每一步的自主空间"},
+    {k:"C",t:"Harness 取代模型的领域推理和工具内部的业务实现，端到端负责结果"},
+    {k:"D",t:"模型或 Agent 输出只是「提议」，Harness 负责把提议转换成受约束、可验证、可追踪的行动"}
+  ],
+  answer:["D"],
+  explain:"答案 D。《Harness 工程》课程主线：「模型或 Agent 输出只是『提议』；Harness 负责把提议转换成受约束、可验证、可追踪的行动」；输出治理章：「模型输出首先是候选结果，只有通过解析、验证和授权后才能成为系统行动」。A 跳过了门控；B 与原文「系统设计的重点，不是让模型更敢做，而是让每一步都更可控」相反；C 违反底座边界——「底座不替代：模型的领域推理、工具内部的业务实现、模型训练与参数优化、业务部门定义的流程规则」。\n📌 出题原因：考查 Harness 工程的第一性理念。理解「输出是提议、底座负责约束和验证」，才能理解后面所有权限、门控、检查点设计的由来。"
+},
+{ id:12, type:"single", chap:"Harness底座", points:3,
+  q:"Agent 任务里，调用外部接口连续返回「权限不足（403）」，另一次调用遇到「请求被限流（429）」。按资料的错误分类策略，正确的处理分别是：",
+  opts:[
+    {k:"A",t:"两者都是临时性错误：都采用退避重试，多试几次总会成功"},
+    {k:"B",t:"权限不足是永久性错误，应修正或升级、不要盲重试；限流是临时性错误，采用退避重试并加抖动"},
+    {k:"C",t:"权限不足是临时性错误，稍后重试即可；限流是永久性错误，应立即放弃该工具"},
+    {k:"D",t:"两者都是未知性错误：隔离现场并转人工复核，不再做任何自动处理"}
+  ],
+  answer:["B"],
+  explain:"答案 B。《Harness 工程》恢复与预算章的错误分类表：临时性错误（限流、短时网络故障）→「退避重试，加抖动」；永久性错误（参数无效、权限不足）→「修正或升级，不要盲重试」；未知性错误（异常输出、状态不一致）→「隔离与人工复核，保留证据」。且明确「错误分类优先于重试次数」。A/D 不区分类型一刀切；C 把两类错误正好判反。\n📌 出题原因：考查错误分类驱动的恢复策略。盲目重试永久性错误是线上事故的常见来源，这是底座「为失败而设计」原则的直接应用。"
+},
+// ================= 多选 6 题 × 4分 =================
+{ id:13, type:"multi", chap:"Skill调优", points:4,
+  q:"【多选】SkillOpt 客户意向识别案例中，为了让样本「扩到能看出问题」，v5 调优在样本设计上做了哪些事？（漏选得 1 分，错选不得分）",
+  opts:[
+    {k:"A",t:"扩到 6000 条、正负样本各 3000 条，train/dev/test 划分为 3600/1200/1200"},
+    {k:"B",t:"样本覆盖已下单、表明过意向、高潜、高意向低跟进四类客户来源，以及售后、到店成交、价格优惠等多类业务场景"},
+    {k:"C",t:"对话长度分 11-20、21-50、50+ 三档，避免只在短会话上验证效果"},
+    {k:"D",t:"指标只要在几十条样本上跑通即可，样本太多反而拖慢调优节奏"}
+  ],
+  answer:["A","B","C"],
+  explain:"答案 ABC。《Skill 调优》样本页：6000 条样本「正负各 3000 条，train/dev/test 为 3600/1200/1200」；四类来源「已下单客户、表明过购买意向客户、高潜客户、高意向低跟进客户」；五类场景「售后/服务、到店/成交、价格/优惠、泛咨询/其他、型号/配置」；三类对话长度「11-20、21-50、50+，避免只在短会话上看效果」。D 与原文「样本太少时，指标容易抖，错题也不够覆盖业务边界」完全相反。\n📌 出题原因：考查调优方法论的样本设计三要素（规模均衡、来源场景覆盖、长度分层）。这是只在调优资料中出现、且决定指标可信度的实操能力。"
+},
+{ id:14, type:"multi", chap:"Codex核心场景", points:4,
+  q:"【多选】关于本机常用 codex 命令的用途，下列对应关系正确的有：（漏选得 1 分，错选不得分）",
+  opts:[
+    {k:"A",t:"codex exec：非交互执行任务，适合脚本、批处理和 CI"},
+    {k:"B",t:"codex review：交互式逐行讲解代码，边聊边改的教学命令"},
+    {k:"C",t:"codex doctor：检查安装、配置、认证、MCP、状态库和网络"},
+    {k:"D",t:"codex resume：恢复历史会话，继续上下文"}
+  ],
+  answer:["A","C","D"],
+  explain:"答案 ACD。《Codex 使用》本机常用命令表：codex exec「非交互执行任务，适合脚本、批处理和 CI」；codex doctor「检查安装、配置、认证、MCP、状态库和网络」；codex resume「恢复历史会话，继续上下文」。B 错：codex review 是「非交互代码 Review，优先找 bug、风险和缺测试」，不是交互式教学命令。\n📌 出题原因：考查核心命令的准确用途辨析。B 这类「真概念错配」（review 确实存在、但职责被换掉）是最常见的混淆点，也是 CI 脚本选型的基础。"
+},
+{ id:15, type:"multi", chap:"Codex进阶", points:4,
+  q:"【多选】关于 AGENTS.md，下列说法符合资料的有：（漏选得 1 分，错选不得分）",
+  opts:[
+    {k:"A",t:"建议包含项目概览和关键目录、安装/开发/测试/格式化命令、代码规范和禁改目录、安全边界与交付要求"},
+    {k:"B",t:"读取顺序是先全局规则再项目规则，从 Git 根目录走到当前目录，越靠近当前目录规则越具体，同目录 override 优先"},
+    {k:"C",t:"团队共同规则可以提交到仓库，个人路径、临时要求和本机习惯留在本地"},
+    {k:"D",t:"为方便新人上手，可以把 token 和密钥一起写进 AGENTS.md 提交到仓库"}
+  ],
+  answer:["A","B","C"],
+  explain:"答案 ABC。《Codex 快速上手》进阶教程 AGENTS.md 章：建议包含「项目概览和关键目录」「安装、开发、测试和格式化命令」「代码规范和禁改目录」「安全边界与交付要求」；读取机制「先全局规则，再项目规则，从 Git 根目录走到当前目录，越靠近当前目录，规则越具体，同目录 override 优先」；「团队共同规则可以提交到仓库；个人路径、临时要求和本机习惯留在本地」。D 与原文「任何规则文件都不要写 token、密钥或账号密码」直接冲突，属于安全红线。\n📌 出题原因：考查 AGENTS.md 的内容、合并机制与安全红线。它是团队沉淀 Codex 协作规范的主要载体，D 选项是必须刻进肌肉记忆的高压线。"
+},
+{ id:16, type:"multi", chap:"Codex进阶", points:4,
+  q:"【多选】关于 Automation 与 Hooks，下列说法正确的有：（漏选得 1 分，错选不得分）",
+  opts:[
+    {k:"A",t:"自动化提示词可以依赖旧对话中的结论，触发时模型会自动带出历史上下文"},
+    {k:"B",t:"Skill 更关注「怎么做」，Automation 更关注「什么时候自动去做」，流程稳定且重复发生时才适合自动触发"},
+    {k:"C",t:"PreToolUse 适合在工具调用前拦截明显危险命令；PostToolUse 在工具执行后只能检查结果并补反馈"},
+    {k:"D",t:"自动化仍受工作目录、沙盒、网络和权限限制，第一次应从低风险、只读任务开始"}
+  ],
+  answer:["B","C","D"],
+  explain:"答案 BCD。《Codex 快速上手》进阶教程：「Skill 更关注『怎么做』，Automation 更关注『什么时候自动去做』」「当流程稳定且重复发生时……自动触发」；Hooks 中 PreToolUse「在工具调用前拦截明显危险命令」、PostToolUse「工具已经执行，只能检查结果并补反馈」；「自动化仍受工作目录、沙盒、网络和权限限制」「自动化提示词要自包含，不要依赖旧对话……第一次先从低风险、只读任务开始」。A 恰好违反「自包含」要求，是最容易想当然的坑。\n📌 出题原因：考查自动化与 Hooks 的分工、边界与安全要求。把自动化当「无人值守自由发挥」是引入定时炸弹的典型路径。"
+},
+{ id:17, type:"multi", chap:"常用Skill", points:4,
+  q:"【多选】Codex 匹配到一个 Skill 后，按「使用 Skill 的标准动作」，下列做法正确的有：（漏选得 1 分，错选不得分）",
+  opts:[
+    {k:"A",t:"看到 skill 名称与任务相关就直接按记忆执行流程，节省读取说明的时间"},
+    {k:"B",t:"选中后完整读取 SKILL.md，不凭记忆执行"},
+    {k:"C",t:"只打开当前任务需要的 scripts、references、assets，而不是全部加载"},
+    {k:"D",t:"按流程优先使用现成脚本和本地约定，交付时报告产物、路径、验证结果和未完成风险"}
+  ],
+  answer:["B","C","D"],
+  explain:"答案 BCD。《常用 SKILLS 介绍》标准动作五步：识别场景 →「读取 SKILL.md：选中后完整读取说明，不凭记忆执行」→「读必要引用：只打开当前任务需要的 scripts、references、assets」→「按流程做事：优先用现成脚本和本地约定」→「交付验收：报告产物、路径、验证结果和未完成风险」。A 与第二步「不凭记忆执行」正面冲突，也是 Skill 执行走样的头号原因。\n📌 出题原因：考查 Skill 使用的标准动作与渐进加载纪律。同样的 Skill，「凭记忆瞎跑」和「按说明执行」的结果差异巨大，这题检验的是执行习惯。"
+},
+{ id:18, type:"multi", chap:"Harness底座", points:4,
+  q:"【多选】关于 Harness 的输出治理与消息事件设计，下列说法符合资料的有：（漏选得 1 分，错选不得分）",
+  opts:[
+    {k:"A",t:"流式展示的中间文本可以直接触发真实副作用，省去一轮确认、降低延迟"},
+    {k:"B",t:"模型输出是候选结果，要经过格式、能力、业务、安全、事实等层级的门控，通过后才成为系统行动"},
+    {k:"C",t:"任一关键门控失败即阻止副作用并返回可修正错误（一票否决）"},
+    {k:"D",t:"纠正优于沉默：错误结果应明确指出失败字段、期望范围和可选下一步，让模型能重新规划"}
+  ],
+  answer:["B","C","D"],
+  explain:"答案 BCD。《Harness 工程》输出治理章：「模型输出首先是候选结果，只有通过解析、验证和授权后才能成为系统行动」，门控分格式层/能力层/业务层/安全层/事实层，「任一关键门控失败即阻止副作用，返回可修正错误（一票否决）」，「纠正优于沉默：错误结果应明确指出失败字段、期望范围和可选下一步」。消息事件章明确「流式输出提升体验，但『展示中间文本』和『执行真实动作』必须是两条隔离通道」，A 恰好违反这条隔离原则。\n📌 出题原因：考查输出门控与流式隔离这两条底座安全设计。把「能说」当成「能做」是 Agent 事故的最高发来源，A 是精心设计的强干扰项。"
+},
+// ================= 简答 2 题 × 10分 =================
+{ id:19, type:"short", chap:"Skill调优", points:10,
+  q:"【简答·自评】你接手一个「客户意向识别」Skill：上线后业务抱怨漏掉了大量本该触达的潜在客户。请完整描述你的调优方案，至少覆盖：(1) 动手前先确定什么？为什么它决定规则取舍？(2) 样本怎么建（规模、来源、场景、长度、划分）？(3) 用哪些指标判断这轮调优有效、代价是什么？(4) 调优后的结果应该放在业务流程的什么位置使用？",
+  refAnswer:"(1) 先定业务目标：本轮是召回优先（怕漏人）还是精度优先（怕误判），或要求最终名单直接可用——目标不同规则取舍完全不同（本场景应选召回优先）；调优不是把提示词写长，而是把业务目标变成可验证的判断顺序（2 分）。(2) 样本扩到能看出问题：6000 条左右、正负均衡（各 3000），train/dev/test 按 3600/1200/1200 划分；来源覆盖已下单、表明过意向、高潜、高意向低跟进等类型；场景覆盖售后/到店成交/价格优惠/泛咨询/型号配置等；对话长度覆盖 11-20、21-50、50+ 三档，避免只在短会话验证；样本太少指标会抖、错题覆盖不了业务边界（3 分）。(3) 指标：Recall（v4→v5 从 55.67% 升到 87.83%）、FN 漏召回（266→73）明显下降说明有效；同时讲清代价：Precision 小幅下降（64.11%→63.88%）、FP 从 187 增至 298（售后场景 FP 偏多），F1 与 Accuracy 整体更平衡；请求错误率应为 0（3 分）。(4) 定位：召回版只作第一层候选召回，不能直接当最终名单；先用二次 LLM 精筛或业务规则过滤候选池再触达；调优过程要留下样本、提示词、预测、错题、指标和版本（2 分）。",
+  explain:"出处：《Skill 调优》全篇——业务目标页、样本页、v4→v5 变化页、test 集指标页、代价页、收束页。\n📌 出题原因：把调优方法论（目标→样本→指标→适用位置）完整链路考一遍，检验能否独立把一个『能跑』的 Skill 调到『适合业务目标』。漏掉任何一环（如只谈指标不谈定位）都会在真实业务里翻车。"
+},
+{ id:20, type:"short", chap:"Codex核心场景", points:10,
+  q:"【简答·自评】同事给 Codex 的任务只有一句：「帮我看看这个项目，顺便优化一下。」请回答：(1) 这句话缺了哪些要素、为什么会导致结果不可控？(2) 把它改写成一份合格的任务描述（写出目标、范围、约束、验证、交付等要素）。(3) 复杂任务执行时，为什么建议先让 Codex 只读建图、再小步执行？验收时除了看最终回答还应做什么？",
+  refAnswer:"(1) 缺目标（看什么、优化什么没说清）、缺背景、缺范围（没限定文件或模块）、缺约束（没写禁止事项）、缺验证方式、缺交付要求；任务不具体就无法控制修改范围、也无法判断是否完成，「帮我优化一下」式口号正是低质量输入的典型（3 分）。(2) 改写示例——目标：修复刷新后登录状态丢失的问题；背景：刷新页面后需要重新登录；范围：只检查 auth 模块和相关测试；约束：不改数据库、不加新依赖、不动其他模块；验证：运行 auth 相关测试并说明结果；交付：说明根因、改动文件、测试结果和剩余风险（要素齐全即可，具体问题可替换）（4 分）。(3) 先只读建图可以拿到当前结构、关键文件、风险和待确认决策，避免盲目动手；小步执行一次只做一个明确阶段，方向不对时容易停下和回退；判断任务完成不能只看最终回答：要检查 diff（有无越界改动、误删、无关配置修改）、运行验证（测试/构建/链接检查）、保留失败证据并区分本次改动与环境旧问题，最终仍需人工 review——Codex 负责执行和整理证据，是否接受由使用者判断（3 分）。",
+  explain:"出处：《Codex 快速上手》任务设计六要素、「从模糊到清晰」对比、任务执行与验证闭环六步；《Codex 使用》「少给口号，多给目录、文件、约束和验收方式」。\n📌 出题原因：任务设计是使用 Codex 的核心技能，也是原始资料与新资料共同强调的第一考点。会改写模糊需求 + 会走验证闭环，才算真正「会用 Codex 做事」而非「和 AI 聊天」。"
+}
+];
+
+// ============ state ============
+const state = { answers:{}, short:{}, submitted:false };
+const TYPE_NAME = {single:"单选",multi:"多选",short:"简答"};
+
+// ============ render ============
+function render(){
+  const area = document.getElementById("quizArea");
+  let html = "";
+  questions.forEach(q=>{
+    html += `<div class="q-card" id="q${q.id}">`;
+    html += `<div class="q-head"><span class="q-num">${q.id}</span><span class="q-type t-${q.type}">${TYPE_NAME[q.type]}</span><span class="q-chap">${q.chap}</span><span class="q-pts">${q.points} 分</span></div>`;
+    html += `<div class="q-text">${q.q}</div>`;
+    if(q.type==="single"||q.type==="multi"){
+      const multi = q.type==="multi";
+      html += `<div class="opts">`;
+      q.opts.forEach(o=>{
+        html += `<div class="opt" data-q="${q.id}" data-k="${o.k}" onclick="pick(${q.id},'${o.k}',${multi})"><span class="k">${o.k}</span><span>${o.t}</span></div>`;
+      });
+      html += `</div>`;
+    } else if(q.type==="short"){
+      html += `<textarea class="short-ta" id="shortTa_${q.id}" placeholder="在此作答……" oninput="state.short[${q.id}]=this.value;updateSheet()"></textarea>`;
+      html += `<div class="self-grade" id="selfGrade_${q.id}"><span>对照参考答案，自评给分：</span><select id="selfScore_${q.id}" onchange="applySelf(${q.id})"><option value="">选择分数</option>`;
+      for(let i=0;i<=q.points;i++) html += `<option value="${i}">${i} 分</option>`;
+      html += `</select><span id="selfTotal_${q.id}" style="font-weight:700;color:var(--warn)"></span></div>`;
+    }
+    html += `<div class="explain" id="ex${q.id}"></div>`;
+    html += `</div>`;
+  });
+  area.innerHTML = html;
+  renderSheet();
+}
+
+function renderSheet(){
+  const grid = document.getElementById("sheetGrid");
+  grid.innerHTML = questions.map(q=>`<div class="sheet-item" id="sh${q.id}" onclick="document.getElementById('q${q.id}').scrollIntoView({behavior:'smooth',block:'center'})">${q.id}</div>`).join("");
+  updateSheet();
+}
+
+function isDone(q){
+  if(q.type==="single"||q.type==="multi") return !!(state.answers[q.id]&&state.answers[q.id].length);
+  if(q.type==="short") return !!(state.short[q.id]&&state.short[q.id].trim().length);
+  return false;
+}
+function updateSheet(){
+  let done=0;
+  questions.forEach(q=>{
+    const el=document.getElementById("sh"+q.id);
+    if(el) el.className="sheet-item"+(isDone(q)?" done":"");
+    if(isDone(q)) done++;
+  });
+  document.getElementById("doneCnt").textContent=done;
+}
+
+function pick(id,k,multi){
+  if(state.submitted) return;
+  if(!state.answers[id]) state.answers[id]=[];
+  const arr=state.answers[id];
+  const i=arr.indexOf(k);
+  if(multi){ i>=0?arr.splice(i,1):arr.push(k); }
+  else { arr.length=0; arr.push(k); }
+  document.querySelectorAll(`.opt[data-q="${id}"]`).forEach(o=>o.classList.toggle("sel",arr.includes(o.dataset.k)));
+  updateSheet();
+}
+
+// ============ grading ============
+function gradeQ(q){
+  if(q.type==="single"){
+    const a=(state.answers[q.id]||[])[0];
+    return {score: a===q.answer[0]?q.points:0, correct: a===q.answer[0], user:a??"未作答"};
+  }
+  if(q.type==="multi"){
+    // 全对满分；无错选但漏选得 1 分；任何错选 0 分
+    const sel=state.answers[q.id]||[];
+    const user=sel.slice().sort().join("")||"未作答";
+    const hasWrong=sel.some(k=>!q.answer.includes(k));
+    if(hasWrong) return {score:0, correct:false, user};
+    if(sel.length===q.answer.length) return {score:q.points, correct:true, user};
+    return {score:1, correct:false, partial:true, user};
+  }
+  return {score:0, correct:null, user:"自评"};
+}
+
+function submitExam(){
+  const unanswered = questions.filter(q=>!isDone(q)).length;
+  if(!state.submitted && unanswered>0 && !confirm(`还有 ${unanswered} 题未作答，确定提交判分吗？`)) return;
+  state.submitted=true;
+  document.getElementById("submitBtn").disabled=true;
+
+  let auto=0, autoQ=0, correctCnt=0, partialCnt=0;
+  questions.forEach(q=>{
+    const g=gradeQ(q);
+    if(q.type!=="short"){
+      auto+=g.score; autoQ++;
+      if(g.correct) correctCnt++;
+      if(g.partial) partialCnt++;
+    }
+    showExplain(q,g);
+  });
+
+  const panel=document.getElementById("resultPanel");
+  const autoTotal = questions.filter(q=>q.type!=="short").reduce((s,q)=>s+q.points,0);
+  const TOTAL = questions.reduce((s,q)=>s+q.points,0);
+  const shortQs = questions.filter(q=>q.type==="short");
+  const saveBtn = `<button class="btn btn-primary" style="margin-left:12px" onclick="applySelfAll(${auto},${TOTAL})">已自评简答，计入总分</button>`;
+  document.getElementById("resTitle").textContent = auto>=autoTotal*0.8?"成绩不错！":"已提交判分";
+  document.getElementById("resScore").textContent = `${auto} / ${TOTAL}`;
+  document.getElementById("resSub").innerHTML = `客观题（单选/多选）自动判分：<b>${auto} / ${autoTotal}</b>（多选漏选得 1 分、错选不得分）；简答 ${shortQs.map(q=>q.id).join("、")} 题共 ${shortQs.reduce((s,q)=>s+q.points,0)} 分，请对照参考答案在各题处自评。${saveBtn}`;
+  document.getElementById("resStat").innerHTML = `<div><b>${correctCnt}/${autoQ}</b>客观题全对</div><div><b>${partialCnt}</b>题多选漏选</div><div><b>${TOTAL}</b>卷面总分</div>`;
+  panel.classList.add("show");
+  panel.scrollIntoView({behavior:"smooth"});
+
+  // reveal short self-grade panels
+  shortQs.forEach(q=>document.getElementById(`selfGrade_${q.id}`).classList.add("show"));
+  // lock inputs
+  document.querySelectorAll(".opt").forEach(o=>o.classList.add("lock"));
+  updateSheetAfter();
+  window._autoScore = auto; window._totalScore = TOTAL;
+}
+
+function applySelfAll(auto,total){
+  const shorts = questions.filter(q=>q.type==="short");
+  const selfSum = shorts.reduce((s,q)=>s+Number(document.getElementById(`selfScore_${q.id}`).value||0),0);
+  const fin = auto + selfSum;
+  document.getElementById("resScore").textContent = `${fin} / ${total}`;
+  document.getElementById("resSub").innerHTML = `客观题 ${auto} 分 + 简答自评 ${selfSum} 分（满分 ${shorts.reduce((s,q)=>s+q.points,0)}）= 最终得分 <b>${fin} / ${total}</b>。`;
+  shorts.forEach(q=>document.getElementById(`selfTotal_${q.id}`).textContent=`已计入`);
+}
+function applySelf(id){
+  const v=Number(document.getElementById(`selfScore_${id}`).value||0);
+  document.getElementById(`selfTotal_${id}`).textContent=`自评 ${v} 分（点上方按钮计入总分）`;
+}
+
+function showExplain(q,g){
+  const ex=document.getElementById("ex"+q.id);
+  let ansText="";
+  if(q.type==="single") ansText=`正确答案：${q.answer[0]}`;
+  else if(q.type==="multi") ansText=`正确答案：${q.answer.join("")}（漏选得 1 分，错选不得分）`;
+  else ansText=`参考答案要点（自评）：`;
+  let extra="";
+  if(q.type==="short") extra=`<div style="margin-top:8px;background:#fff;padding:10px;border-radius:8px;border:1px solid #fde68a"><b>参考答案：</b>${q.refAnswer}</div>`;
+  ex.className="explain show "+(g.correct===true?"ok":g.correct===false?"bad":"");
+  ex.innerHTML=`<div class="ans-line">${ansText}　<span style="color:var(--muted);font-weight:400">（你的作答：${g.user}，本题得 ${g.score} / ${q.points} 分）</span></div>${extra}<div class="src">${q.explain}</div>`;
+  if(q.type==="single"||q.type==="multi"){
+    document.querySelectorAll(`.opt[data-q="${q.id}"]`).forEach(o=>{
+      o.classList.remove("sel");
+      if(q.answer.includes(o.dataset.k)) o.classList.add("ok");
+      else if((state.answers[q.id]||[]).includes(o.dataset.k)) o.classList.add("bad");
+    });
+  }
+}
+
+function updateSheetAfter(){
+  questions.forEach(q=>{
+    const g=gradeQ(q);
+    const el=document.getElementById("sh"+q.id);
+    if(!el) return;
+    if(g.correct===true) el.className="sheet-item correct";
+    else if(g.correct===false&&g.score>0) el.className="sheet-item partial";
+    else if(g.correct===false) el.className="sheet-item wrong";
+    else el.className="sheet-item pending";
+  });
+}
+
+// ============ timer ============
+let sec=0;
+setInterval(()=>{
+  sec++;
+  const m=String(Math.floor(sec/60)).padStart(2,"0"), s=String(sec%60).padStart(2,"0");
+  document.getElementById("timer").textContent=`${m}:${s}`;
+},1000);
+
+render();
+</script>
+</body>
+</html>

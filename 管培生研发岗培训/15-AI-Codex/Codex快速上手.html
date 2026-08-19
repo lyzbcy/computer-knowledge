@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第15章 Codex 快速上手与进阶 · 学习地图</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Poppins:wght@400;600;700&family=Roboto+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#FAF6EB; --paper:#F3EDDD; --forest:#1E3A24; --sky:#BCD8EE; --sage:#AFCDA8;
+  --ink:#1A2018; --marker:#F5E08A; --brick:#B5482A;
+  --correct:#2F7D46; --wrong:#B5482A;
+  --font-display:"Archivo Black","Noto Sans SC","PingFang SC",sans-serif;
+  --font-head:"Poppins","Noto Sans SC","PingFang SC",sans-serif;
+  --font-body:-apple-system,"PingFang SC","Noto Sans SC",sans-serif;
+  --font-mono:"Roboto Mono","JetBrains Mono",monospace;
+  --radius-pill:999px; --radius-card:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--cream);color:var(--ink);font-family:var(--font-body);line-height:1.7}
+.layout{display:flex;min-height:100vh}
+/* ---- 左侧固定侧边栏 ---- */
+.sidebar{width:280px;flex-shrink:0;background:var(--forest);color:var(--cream);padding:1.6rem 1.3rem;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sidebar .brand{font-family:var(--font-display);font-size:1.05rem;line-height:1.35;color:var(--marker);margin-bottom:.4rem}
+.sidebar .sub{font-size:.78rem;opacity:.75;margin-bottom:1.2rem}
+.progress-wrap{background:rgba(255,255,255,.08);border-radius:var(--radius-pill);padding:.7rem .9rem;margin-bottom:1.2rem}
+.progress-wrap .plabel{font-size:.75rem;letter-spacing:.05em;opacity:.85;margin-bottom:.35rem}
+.pbar{background:rgba(255,255,255,.15);height:8px;border-radius:var(--radius-pill);overflow:hidden}
+#barFill{display:block;height:100%;width:0%;background:var(--marker);border-radius:var(--radius-pill);transition:width .3s}
+#barNum{font-family:var(--font-mono);font-size:.8rem;color:var(--marker)}
+.sidebar nav a{display:block;color:var(--cream);text-decoration:none;font-size:.82rem;padding:.34rem .5rem;border-radius:8px;opacity:.82}
+.sidebar nav a:hover{background:rgba(255,255,255,.12);opacity:1}
+.sidebar .nav-title{font-family:var(--font-head);font-weight:700;font-size:.78rem;letter-spacing:.12em;color:var(--sage);margin:.6rem 0 .3rem}
+/* ---- 主区单列 ---- */
+.main{flex:1;min-width:0;padding:2.2rem clamp(1rem,4vw,3.2rem) 4rem;max-width:860px}
+.hero{border:2px solid var(--forest);border-radius:var(--radius-card);background:var(--paper);padding:1.6rem 1.5rem;margin-bottom:2rem}
+.hero .chip{display:inline-block;background:var(--forest);color:var(--cream);font:600 .72rem/1 var(--font-head);letter-spacing:.1em;padding:.42em .9em;border-radius:var(--radius-pill);margin-bottom:.8rem}
+.hero h1{font-family:var(--font-display);font-size:clamp(1.5rem,4vw,2.2rem);line-height:1.25;margin-bottom:.5rem}
+.hero p{font-size:.95rem}
+.hero .mascot{float:right;width:72px;margin-left:1rem}
+section{margin-bottom:2.4rem}
+.sec-head{display:flex;align-items:baseline;gap:.7rem;border-bottom:2px solid var(--forest);padding-bottom:.5rem;margin-bottom:1.1rem}
+.sec-id{font-family:var(--font-mono);font-weight:600;font-size:.78rem;background:var(--sky);color:var(--forest);padding:.2em .6em;border-radius:var(--radius-pill)}
+.sec-head h2{font-family:var(--font-head);font-weight:700;font-size:1.15rem;color:var(--forest)}
+.card{background:#fff;border:1.5px solid var(--forest);border-radius:var(--radius-card);padding:1.1rem 1.2rem;margin-bottom:1rem}
+.card.paper{background:var(--paper)}
+.card h3{font-family:var(--font-head);font-size:.98rem;color:var(--forest);margin-bottom:.45rem}
+.card p{font-size:.92rem;margin-bottom:.45rem}
+.tag{display:inline-block;font:600 .7rem/1.4 var(--font-head);padding:.15em .7em;border-radius:var(--radius-pill);vertical-align:middle}
+.tag.bg{background:var(--sky);color:var(--forest)}
+.tag.fact{background:var(--sage);color:var(--forest)}
+.tag.judge{background:var(--marker);color:var(--ink)}
+.tag.inf{background:#E8DCC8;color:var(--ink)}
+.tag.eg{background:#F0C9B8;color:var(--brick)}
+.src-quote{display:block;background:var(--paper);border-left:4px solid var(--forest);padding:.5rem .8rem;font-size:.85rem;margin:.45rem 0;border-radius:0 8px 8px 0}
+.src{display:block;margin-top:.4rem;font-size:.8rem;color:var(--forest);background:var(--sky);border-radius:6px;padding:.15rem .6rem}
+.goal{display:flex;gap:.7rem;align-items:flex-start;background:#fff;border:1.5px solid var(--forest);border-radius:var(--radius-card);padding:.85rem 1rem;margin-bottom:.7rem}
+.goal .gno{font-family:var(--font-mono);font-weight:600;color:var(--brick);flex-shrink:0}
+.structure{font-family:var(--font-mono);font-size:.82rem;background:var(--forest);color:var(--cream);border-radius:var(--radius-card);padding:1rem 1.2rem;overflow-x:auto;white-space:pre;line-height:1.8}
+.concept-rel{font-size:.85rem;background:var(--marker);border-radius:8px;padding:.5rem .8rem;display:inline-block;margin:.3rem 0}
+/* ---- 互动题 ---- */
+.task{background:#fff;border:2px solid var(--forest);border-radius:var(--radius-card);padding:1.1rem 1.2rem;margin-bottom:1.2rem}
+.task .q{font-weight:600;font-size:.95rem;margin-bottom:.7rem}
+.task .opts{display:flex;flex-direction:column;gap:.5rem;margin-bottom:.8rem}
+.task .opt{text-align:left;border:1.5px solid var(--forest);background:var(--cream);border-radius:10px;padding:.5rem .8rem;font:inherit;font-size:.88rem;cursor:pointer}
+.task .opt:hover{background:var(--sky)}
+.task .opt.selected{background:var(--forest);color:var(--cream)}
+.task .check{border:2px solid var(--forest);background:var(--marker);color:var(--ink);font:700 .85rem var(--font-head);padding:.45em 1.3em;border-radius:var(--radius-pill);cursor:pointer}
+.task .feedback{display:block;margin-top:.8rem;font-size:.86rem;background:var(--paper);border-radius:8px;padding:.6rem .8rem}
+.task .feedback.ok{background:var(--sage)}
+.task .feedback.no{background:#F0C9B8}
+.task .feedback .src{display:block;margin-top:.35rem}
+select.match{font:inherit;font-size:.85rem;padding:.3rem .5rem;border:1.5px solid var(--forest);border-radius:8px;background:#fff;margin:.2rem .3rem .2rem 0}
+/* ---- 误解 ---- */
+.mis{background:#fff;border-left:5px solid var(--brick);border-radius:0 var(--radius-card) var(--radius-card) 0;padding:.9rem 1.1rem;margin-bottom:.9rem;box-shadow:none;border-top:1px solid #E5DEC9;border-right:1px solid #E5DEC9;border-bottom:1px solid #E5DEC9}
+.mis h3{color:var(--brick);font-size:.92rem;margin-bottom:.35rem}
+/* ---- 报告 ---- */
+#wrongBox{background:#fff;border:1.5px dashed var(--brick);border-radius:var(--radius-card);padding:.8rem 1rem;font-size:.85rem;margin-bottom:1rem}
+#report{width:100%;min-height:9rem;background:var(--forest);color:var(--cream);font-family:var(--font-mono);font-size:.8rem;border:none;border-radius:var(--radius-card);padding:.9rem 1rem;white-space:pre-wrap;margin-bottom:.7rem}
+.btn-row{display:flex;gap:.7rem;flex-wrap:wrap}
+.btn-row button{border:2px solid var(--forest);background:var(--marker);font:700 .85rem var(--font-head);padding:.5em 1.2em;border-radius:var(--radius-pill);cursor:pointer}
+footer{border-top:2px solid var(--forest);margin-top:2rem;padding-top:1rem;font-size:.82rem;color:var(--ink)}
+.sticker{width:40px;vertical-align:middle;margin-right:.4rem}
+/* ---- 语音 ---- */
+.voice-btn{display:inline-block;vertical-align:middle;margin-left:.6em;padding:.25em .8em;border:1px solid var(--forest);border-radius:var(--radius-pill);background:var(--cream);color:var(--forest);font:600 .8rem/1.2 var(--font-body);cursor:pointer;transition:background .15s}
+.voice-btn:hover{background:var(--sage)}
+.voice-btn.active{background:var(--forest);color:var(--cream)}
+#voiceFab{position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:9998;display:flex;align-items:center;flex-direction:row;background:var(--forest);color:var(--cream);border:none;cursor:pointer;height:5em;padding:0 .55em;border-radius:16px 0 0 16px;box-shadow:-4px 0 14px rgba(0,0,0,.18);font-family:var(--font-head);font-size:.85rem;overflow:hidden;transition:width .42s cubic-bezier(.4,0,.2,1),box-shadow .3s ease;width:1.9em}
+#voiceFab .fab-icon{font-size:1.15rem;writing-mode:vertical-rl;text-orientation:upright;letter-spacing:.1em;white-space:nowrap;flex-shrink:0}
+#voiceFab .fab-text{white-space:nowrap;opacity:0;margin-left:.6em;transition:opacity .28s ease .12s}
+#voiceFab:hover{width:8.6em;box-shadow:-6px 0 22px rgba(0,0,0,.25)}
+#voiceFab:hover .fab-text{opacity:1}
+#voiceFab.beat{animation:voiceBeat 1.6s ease-in-out infinite}
+@keyframes voiceBeat{0%,100%{box-shadow:-4px 0 14px rgba(0,0,0,.18)}50%{box-shadow:-4px 0 20px rgba(181,72,42,.5)}}
+#voicePlayer{position:fixed;left:50%;bottom:1rem;transform:translateX(-50%) translateY(140%);width:min(92vw,380px);padding:1rem 1.1rem 1.1rem;background:var(--cream);border:2px solid var(--forest);border-radius:26px;box-shadow:0 8px 28px rgba(0,0,0,.16);z-index:9999;transition:transform .28s ease;text-align:center;font-family:var(--font-body)}
+#voicePlayer.show{transform:translateX(-50%) translateY(0)}
+#voicePlayer .vp-head{font-size:.75rem;color:var(--forest);opacity:.8;letter-spacing:.05em}
+#voicePlayer .vp-title{font:700 1rem/1.35 var(--font-body);color:var(--ink);margin:.25rem 0 .7rem;padding:0 .2rem;word-break:break-word}
+#voicePlayer .vp-play{width:3.6rem;height:3.6rem;border:none;border-radius:50%;background:var(--forest);color:var(--cream);font-size:1.3rem;cursor:pointer;margin:0 auto .7rem;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 0 #142710;transition:transform .1s,box-shadow .1s}
+#voicePlayer .vp-play:active{transform:translateY(2px);box-shadow:0 1px 0 #142710}
+#voicePlayer .vp-prev,#voicePlayer .vp-next{width:2.3rem;height:2.3rem;border:1.5px solid var(--forest);border-radius:50%;background:var(--cream);color:var(--forest);font-size:.9rem;cursor:pointer}
+#voicePlayer .vp-controls{display:flex;align-items:center;justify-content:center;gap:1.2rem;margin-bottom:.7rem}
+#voicePlayer .vp-seek{width:100%;margin:.2rem 0;cursor:pointer;accent-color:var(--forest)}
+#voicePlayer .vp-time{display:flex;justify-content:space-between;font:600 .72rem/1 var(--font-mono);color:var(--ink);opacity:.75}
+#voicePlayer .vp-close{position:absolute;top:.5rem;right:.6rem;width:1.5rem;height:1.5rem;border:none;background:transparent;color:var(--ink);font-size:1rem;cursor:pointer;opacity:.5}
+#voicePlayer .vp-sub{min-height:2.6em;max-height:3.9em;overflow:hidden;font:.85rem/1.5 var(--font-body);color:var(--ink);opacity:.55;margin:.2rem 0 .5rem;padding:0 .3rem;transition:opacity .2s;text-align:center}
+#voicePlayer .vp-sub.active{opacity:1}
+#voicePlayer .vp-sub .cur{color:var(--forest);font-weight:600}
+@media(max-width:820px){
+  .layout{flex-direction:column}
+  .sidebar{position:static;width:100%;height:auto}
+  .hero .mascot{float:none;display:block;margin:0 0 .8rem}
+}
+</style>
+</head>
+<body>
+<script type="application/json" id="voicePlaylist">
+[
+ {"id":"ch1","title":"学习目标与阅读路径","src":"audio-ai1/ch1.mp3"},
+ {"id":"ch2","title":"零基础背景包","src":"audio-ai1/ch2.mp3"},
+ {"id":"ch3","title":"原文问题定位","src":"audio-ai1/ch3.mp3"},
+ {"id":"ch4","title":"原文结构地图","src":"audio-ai1/ch4.mp3"},
+ {"id":"ch5","title":"核心判断与依据","src":"audio-ai1/ch5.mp3"},
+ {"id":"ch6","title":"关键概念拆解","src":"audio-ai1/ch6.mp3"},
+ {"id":"ch7","title":"苏格拉底式阅读关卡","src":"audio-ai1/ch7.mp3"},
+ {"id":"ch8","title":"闯关式任务","src":"audio-ai1/ch8.mp3"},
+ {"id":"ch9","title":"误解与边界","src":"audio-ai1/ch9.mp3"},
+ {"id":"ch10","title":"背景知识缺口","src":"audio-ai1/ch10.mp3"},
+ {"id":"ch11","title":"复盘与学习报告","src":"audio-ai1/ch11.mp3"}
+]
+</script>
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand">AI · 第15章<br>Codex 快速上手</div>
+  <div class="sub">微盛研发管培生 · AI 方向 01</div>
+  <div class="progress-wrap">
+    <div class="plabel">任务进度 <span id="barNum">0 / 8</span></div>
+    <div class="pbar"><span id="barFill"></span></div>
+  </div>
+  <nav>
+    <div class="nav-title">本章路线</div>
+    <a href="#m01">01 学习目标与阅读路径</a>
+    <a href="#m02">02 零基础背景包</a>
+    <a href="#m03">03 原文问题定位</a>
+    <a href="#m04">04 原文结构地图</a>
+    <a href="#m05">05 核心判断与依据</a>
+    <a href="#m06">06 关键概念拆解</a>
+    <a href="#m07">07 苏格拉底式关卡</a>
+    <a href="#m08">08 闯关式任务</a>
+    <a href="#m09">09 误解与边界</a>
+    <a href="#m10">10 背景知识缺口</a>
+    <a href="#m11">11 复盘与学习报告</a>
+  </nav>
+</aside>
+<main class="main">
+  <div class="hero">
+    <img class="mascot" src="https://lyzbcy.github.io/weshoto-study/img/sticker/mascot.png" alt="">
+    <span class="chip">AI 01 / 培训拆分版</span>
+    <h1>Codex 快速上手与进阶</h1>
+    <p>从选入口、写清任务，到执行验证闭环、权限与上下文管理。本章你将学会：怎么把 Codex 当成一个受控执行器来用，而不是又一个聊天窗口。</p>
+  </div>
+
+  <section id="m01">
+    <div class="sec-head"><span class="sec-id">01</span><h2>学习目标与阅读路径 <button class="voice-btn" data-voice-id="ch1">🎧 听这节</button></h2></div>
+    <div class="goal"><span class="gno">目标1</span><div>能说出 Codex 的五个入口（CLI / 桌面 App / Cloud / IDE / ChatGPT）各自适合什么任务，并解释「先跑通一个入口的最小闭环」</div></div>
+    <div class="goal"><span class="gno">目标2</span><div>能复述任务六要素（目标、背景、范围、约束、验证、交付），并把一句模糊需求改写成清晰任务</div></div>
+    <div class="goal"><span class="gno">目标3</span><div>能复述任务执行的六步闭环，并解释为什么「判断任务完成不能只看最终回答」</div></div>
+    <div class="goal"><span class="gno">目标4</span><div>能指出至少 2 个容易误解的地方（如「权限开满更高效」「上下文只有当前问题」）</div></div>
+    <div class="goal"><span class="gno">目标5</span><div>能提出 1 个后续追问（比如：我们团队的 AGENTS.md 第一版该写什么）</div></div>
+  </section>
+
+  <section id="m02">
+    <div class="sec-head"><span class="sec-id">02</span><h2>零基础背景包 <button class="voice-btn" data-voice-id="ch2">🎧 听这节</button></h2></div>
+    <div class="card">
+      <h3><span class="tag bg">背景补充</span> Codex 是什么</h3>
+      <p>OpenAI 出的 AI 编程代理：能读仓库、改文件、跑命令、执行多步任务，不只是问答。同一套能力提供桌面 App、CLI、Cloud、IDE 等多个入口。</p>
+      <p>为什么现在需要知道：本章全部内容都围绕「怎么用好这个代理」展开。</p>
+    </div>
+    <div class="card">
+      <h3><span class="tag bg">背景补充</span> CLI 与终端</h3>
+      <p>CLI（命令行界面）是在终端里通过文字命令操作电脑的方式。适合读命令输出、逐步修改，程序员日常高频使用。</p>
+      <p>为什么现在需要知道：CLI 是 Codex 五个入口之一，「本地快速迭代」首选它。</p>
+    </div>
+    <div class="card">
+      <h3><span class="tag bg">背景补充</span> diff（改动对比）</h3>
+      <p>把修改前后的文件内容逐行对比展示，多了什么、删了什么一目了然。代码评审的基本单位。</p>
+      <p>为什么现在需要知道：任务闭环里「检查 diff」是判断有没有越界改动的关键步骤。</p>
+    </div>
+    <div class="card">
+      <h3><span class="tag bg">背景补充</span> 沙盒与审批</h3>
+      <p>沙盒规定 AI 能写哪些目录、能不能联网、能运行什么；审批规定什么操作必须暂停问你。两者合起来限制 AI 的行动边界。</p>
+      <p>为什么现在需要知道：进阶教程的权限管理、安全边界都建立在这两个概念上。它不是本文的主张，只是帮助你读懂原文。</p>
+    </div>
+    <div class="card">
+      <h3><span class="tag bg">背景补充</span> MCP（Model Context Protocol）</h3>
+      <p>让 AI 连接外部工具的协议，比如通过 MCP 让 Codex 操作 Draw.io 画图。启用后会携带工具信息进入上下文。</p>
+      <p>为什么现在需要知道：实战案例一（Draw.io MCP）依赖它。</p>
+    </div>
+  </section>
+
+  <section id="m03">
+    <div class="sec-head"><span class="sec-id">03</span><h2>原文问题定位 <button class="voice-btn" data-voice-id="ch3">🎧 听这节</button></h2></div>
+    <div class="card">
+      <h3>表面在讲什么</h3>
+      <p>Codex 的安装、入口选择、第一个任务、任务设计与验证闭环，加上进阶的上下文、权限、自动化配置和三个实战案例。<span class="tag fact">事实</span></p>
+    </div>
+    <div class="card">
+      <h3>深层在回答什么问题</h3>
+      <p>「怎么让 AI 真正干成活，而不是聊得开心？」配套培训的原话是：把 Codex 当成<strong>受控执行器</strong>，而不是另一个聊天窗口。<span class="tag judge">判断</span></p>
+      <span class="src-quote">原文依据（AI 01 第1页导语）：「把 Codex 当成本地工程和资料协作的受控执行器，而不是另一个聊天窗口。目录、文件、命令、验证，才是高质量输入。」</span>
+    </div>
+    <div class="card">
+      <h3>如果只记一个问题</h3>
+      <p>记这个：<strong>一个任务怎样才算「完成」？</strong>——不是 Codex 说做完了就完了，而是目标文件按要求修改、没有越界改动、关键命令/链接/页面已验证、失败原因有记录。</p>
+    </div>
+  </section>
+
+  <section id="m04">
+    <div class="sec-head"><span class="sec-id">04</span><h2>原文结构地图 <button class="voice-btn" data-voice-id="ch4">🎧 听这节</button></h2></div>
+    <p style="font-size:.88rem;margin-bottom:.6rem">结构类型判断：<strong>机制流程型</strong>（入口 → 第一个任务 → 任务设计 → 执行闭环 → 进阶治理 → 案例），从「会用」递进到「用稳」。</p>
+    <div class="structure">Codex 是什么：五个入口，各承其职                    [快速上手·01]
+  ├─ CLI ─ 本地快速迭代：修 bug、补测试、跑命令        [快速上手·01]
+  ├─ 桌面 App ─ 本地多任务工作台：项目、Skills、自动化   [快速上手·01]
+  ├─ Cloud / Web ─ 较长或并行任务：仓库任务、PR          [快速上手·01]
+  └─ IDE / ChatGPT ─ 编辑器上下文 / 对话中分派           [快速上手·01]
+        │ 递进：先跑通最小闭环
+        ▼
+第一个任务：空文件夹生成网页，简单、低风险、易检查    [快速上手·06]
+        │ 递进：任务本身怎么写
+        ▼
+任务设计六要素 + 大任务拆分 + 让它暴露不确定性        [快速上手·07]
+        │ 递进：执行过程怎么控制
+        ▼
+执行与验证闭环六步：写清→建图→小步→diff→验证→记录   [快速上手·08]
+  「判断任务是否完成，不能只看最终回答」
+        │ 递进：从会用到用稳（进阶教程）
+        ▼
+上下文逐轮累积 / AGENTS.md / Skills / 权限 / 沙盒     [进阶·01–09]
+  「权限越高，任务范围应越小」
+        │ 例证：三个实战
+        ▼
+Draw.io MCP 画图 · LLM Wiki 知识库 · Chrome 控浏览器   [实战案例]</div>
+  </section>
+
+  <section id="m05">
+    <div class="sec-head"><span class="sec-id">05</span><h2>核心判断与依据 <button class="voice-btn" data-voice-id="ch5">🎧 听这节</button></h2></div>
+    <div class="card">
+      <h3>判断1：先跑通一个入口的最小闭环，不要全配置</h3>
+      <p><strong>核心判断：</strong>入门第一原则是「选一个入口跑通最小闭环」，不要一开始同时配置 App、CLI、Cloud 和第三方服务。</p>
+      <span class="src-quote">原文依据（快速上手·01）：「先选一个入口跑通最小闭环，再学习其他入口。不要一开始同时配置 App、CLI、Cloud 和第三方服务。」</span>
+      <p><span class="tag judge">判断</span> 为什么重要：把学习成本压到最低，先建立正反馈。误读：以为「全部入口都配上才算入门」。</p>
+    </div>
+    <div class="card">
+      <h3>判断2：任务六要素，不要只写「帮我优化一下」</h3>
+      <p><strong>核心判断：</strong>一个完整任务应说明目标、背景、范围、约束、验证方式和最终交付；任务越具体，越容易控制修改范围、判断是否完成。</p>
+      <span class="src-quote">原文依据（快速上手·07）：「不要只写‘帮我优化一下’。任务越具体，越容易控制修改范围，也越容易判断是否完成。」</span>
+      <p><span class="tag judge">判断</span> 为什么重要：任务描述就是给 AI 的控制面。误读：把写长提示词当目标——要素齐比字数多重要。</p>
+    </div>
+    <div class="card">
+      <h3>判断3：判断任务完成不能只看最终回答</h3>
+      <p><strong>核心判断：</strong>稳定任务包含六步（写清任务→先建图→小步执行→检查 diff→运行验证→记录结果）；Codex 负责执行和整理证据，最终是否接受由使用者判断。</p>
+      <span class="src-quote">原文依据（快速上手·08）：「判断任务是否完成，不能只看最终回答。」「仍然需要人工 review：Codex 负责执行和整理证据，最终是否接受由使用者判断。」</span>
+      <p><span class="tag judge">判断</span> 为什么重要：这是使用 Codex 的安全底线。误读：「AI 说测试过了」就等于测试过了。</p>
+    </div>
+    <div class="card">
+      <h3>判断4：权限越高，任务范围应越小</h3>
+      <p><strong>核心判断：</strong>权限与任务范围成反比约束：完全访问只适合范围明确的特殊本机任务、临时使用；删除、发布、支付、生产凭据必须亲自把关。</p>
+      <span class="src-quote">原文依据（进阶·04）：「权限越高，任务范围应越小。」「必须亲自把关：删除、迁移、发布和部署；支付、账单和权限修改；生产服务和敏感凭据。」</span>
+      <p><span class="tag judge">判断</span> 为什么重要：防止「图省事开满权限」造成不可逆事故。误读：默认权限太烦，早点换完全访问。</p>
+    </div>
+    <div class="card">
+      <h3>判断5：上下文逐轮累积，稳定长前缀才能命中缓存</h3>
+      <p><strong>核心判断：</strong>每次请求带上的不只是当前问题，还包括历史对话、项目规则、工具定义、读过的文件等；内容过长时早期内容可能被压缩成摘要。</p>
+      <span class="src-quote">原文依据（进阶·01）：「上下文会逐轮累积……内容过长时，较早内容可能被压缩成摘要。」「Prompt caching：稳定的长前缀更容易命中缓存。精简 AGENTS.md，只保留需要的 Skills 和 MCP，并保持规则顺序稳定。」</span>
+      <p><span class="tag fact">事实</span> 为什么重要：解释了为什么对话越长越「忘事」、为什么规则文件要精简稳定。误读：以为每次只发当前这句。</p>
+    </div>
+    <div class="card">
+      <h3>判断6：AGENTS.md / Skill / Plugin 各管一层</h3>
+      <p><strong>核心判断：</strong>AGENTS.md 是项目内所有任务遵守的规则（项目工作守则）；Skill 是某类重复任务怎么做（专项操作手册）；Plugin 是打包分发多种能力（可安装工具箱）。</p>
+      <span class="src-quote">原文依据（进阶·03 概念对比表）：「AGENTS.md：项目内所有任务遵守什么规则——项目工作守则；Skill：某类重复任务应该怎么做——专项操作手册；Plugin：如何打包、安装和分发多种能力——可安装工具箱。」</span>
+      <p><span class="tag judge">判断</span> 为什么重要：决定你把一条经验写到哪一层。误读：什么都塞进 AGENTS.md。</p>
+    </div>
+    <div class="card">
+      <h3>判断7：手机端是跟进工具，不是决策工具</h3>
+      <p><strong>核心判断：</strong>手机远程操控适合查看进展、回复问题、处理审批；不适合大范围合并前的最终 review、生产环境操作和长时间阅读大量 diff。</p>
+      <span class="src-quote">原文依据（快速上手·09「不适合怎么用」清单）：「大范围代码合并前的最终 review；生产环境、密钥、账单和部署；长时间阅读大量 diff。」</span>
+      <p><span class="tag judge">判断</span> 为什么重要：划清移动端使用边界。误读：在手机上顺手点了生产部署审批。</p>
+    </div>
+  </section>
+
+  <section id="m06">
+    <div class="sec-head"><span class="sec-id">06</span><h2>关键概念拆解 <button class="voice-btn" data-voice-id="ch6">🎧 听这节</button></h2></div>
+    <div class="card">
+      <h3>Chat（对话）vs Project（项目）</h3>
+      <p>作者用法：对话适合问问题和一次性任务，不同对话相互独立、不默认共享工作目录；项目适合操作本地文件，同一项目多个对话围绕同一工作目录协作。</p>
+      <span class="concept-rel">只问问题 → Chat ｜ 要改文件、持续迭代 → Project</span>
+      <span class="src-quote">原文依据（快速上手·05）：「只问问题可以使用对话；需要改文件、写代码、做文档或持续迭代时，优先选择项目。」</span>
+      <p>不要误解成：对话之间天然共享上下文——它们是独立的。</p>
+    </div>
+    <div class="card">
+      <h3>任务六要素</h3>
+      <p>作者用法：目标（一句话说明结果）、背景（现象与上下文）、范围（限定文件或模块）、约束（禁止事项）、验证（命令或检查方式）、交付（如何汇报）。</p>
+      <span class="src-quote">原文依据（快速上手·07 要素表）。</span>
+      <p>不要误解成：六项都要写成一段话——分项写清才好核对。</p>
+    </div>
+    <div class="card">
+      <h3>AGENTS.md</h3>
+      <p>作者用法：面向 coding agent 的 README，写项目结构、命令、规范和边界；按全局→项目根→当前目录逐层发现并合并，越近越具体，同目录 override 优先。</p>
+      <span class="src-quote">原文依据（进阶·02）：「AGENTS.md 是面向 coding agent 的 README……减少每次新对话的重复解释。」</span>
+      <p>不要误解成：个人临时偏好也往里塞——团队规则与个人偏好分开，任何规则文件都不要写 token、密钥。</p>
+    </div>
+    <div class="card">
+      <h3>Skills / Plugins / Automation / Hooks</h3>
+      <p>作者用法：Skill 管「怎么做」的固定流程；Plugin 打包分发多种能力；Automation 管「什么时候自动去做」；Hooks 是生命周期扩展，在固定时机运行可审查脚本。</p>
+      <span class="concept-rel">Skill=怎么做 ｜ Automation=什么时候做 ｜ Hooks=固定时机的确定性检查</span>
+      <span class="src-quote">原文依据（进阶·05–06）。</span>
+      <p>不要误解成：装了 Plugin 就自动有权限——仍受沙盒、审批和登录状态限制。</p>
+    </div>
+    <div class="card">
+      <h3>Thread / Worktree / Handoff / Subagent</h3>
+      <p>作者用法：thread 是长期任务线；worktree 是并行 Git 代码工作区；handoff 负责搬移任务及其 Git 状态；subagent 是单次任务里的临时协作者。</p>
+      <span class="src-quote">原文依据（进阶·08）：「thread 是长期任务线；worktree 是并行代码空间；handoff 负责搬移任务；subagent 是单次任务里的临时协作者。」</span>
+      <p>不要误解成：多开线程就并行高效——后台检查频率过高反而浪费上下文。</p>
+    </div>
+    <div class="card">
+      <h3>沙盒三模式（read-only / workspace-write / danger-full-access）</h3>
+      <p>作者用法：read-only 用于陌生仓库、审查、方案阶段；workspace-write 是日常默认；danger-full-access 移除本地沙盒限制，不作为日常默认。</p>
+      <span class="src-quote">原文依据（进阶·07 模式表）。</span>
+      <p>不要误解成：full-access 更强更好——它是给「范围明确的特殊本机任务、临时使用」的。</p>
+    </div>
+  </section>
+
+  <section id="m07">
+    <div class="sec-head"><span class="sec-id">07</span><h2>苏格拉底式阅读关卡 <button class="voice-btn" data-voice-id="ch7">🎧 听这节</button></h2></div>
+    <div class="task" data-task="ch15-q1" data-answer="B"
+         data-ok="对。原文建议：桌面 App 完成第一个任务，CLI 建立本地闭环，IDE 进入日常开发，Cloud 处理长任务——先跑通一个，再学其他。"
+         data-no="答错可能想一步到位全配置。原文明确说「不要一开始同时配置 App、CLI、Cloud 和第三方服务」。"
+         data-src="原文：先选一个入口跑通最小闭环，再学习其他入口。"
+         data-review="回到「05 核心判断与依据 · 判断1」复习">
+      <div class="q">Q1 培训给第一次学习 Codex 的人的建议路径是什么？</div>
+      <div class="opts">
+        <button class="opt" data-val="A">A. 把 App、CLI、Cloud 和第三方 API 一次性配齐再开始</button>
+        <button class="opt" data-val="B">B. 先选一个入口跑通最小闭环（如桌面 App 完成第一个任务），再学其他入口</button>
+        <button class="opt" data-val="C">C. 直接从连接第三方 API 开始，功能最全</button>
+      </div>
+      <button class="check">检查</button>
+      <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+    </div>
+    <div class="task" data-task="ch15-q2" data-answer="C"
+         data-ok="对。六要素是：目标、背景、范围、约束、验证、交付。「帮我优化登录逻辑」缺了其中几乎全部，尤其是范围和验证。"
+         data-no="注意任务六要素的完整清单——「目标、背景、范围、约束、验证、交付」，对照看少了哪几项。"
+         data-src="原文（快速上手·07）：一个完整任务应说明目标、背景、范围、约束、验证方式和最终交付。"
+         data-review="回到「06 关键概念拆解 · 任务六要素」复习">
+      <div class="q">Q2 「帮我优化一下登录逻辑」这句任务描述，相比六要素缺得最致命的是什么？</div>
+      <div class="opts">
+        <button class="opt" data-val="A">A. 字数太少，显得不礼貌</button>
+        <button class="opt" data-val="B">B. 没有指定用哪个模型</button>
+        <button class="opt" data-val="C">C. 没有范围（改哪些文件）、没有验证（怎么算修好）、没有完成标准</button>
+      </div>
+      <button class="check">检查</button>
+      <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+    </div>
+    <div class="task" data-task="ch15-q3" data-answer="A,B,D,E,F" data-multi="true"
+         data-ok="对。写清任务、先建图、小步执行、检查 diff、运行验证、记录结果，六步齐了（C「直接采纳最终回答」恰恰是原文否定的做法）。"
+         data-no="注意 C：原文说「判断任务是否完成，不能只看最终回答」，直接采纳不在闭环里。"
+         data-src="原文（快速上手·08）：写清任务→先建图→小步执行→检查 diff→运行验证→记录结果。"
+         data-review="回到「04 原文结构地图」复习执行闭环一节">
+      <div class="q">Q3（多选）任务执行与验证闭环包含哪些步骤？</div>
+      <div class="opts">
+        <button class="opt" data-val="A">A. 写清任务</button>
+        <button class="opt" data-val="B">B. 先让 Codex 只读建图</button>
+        <button class="opt" data-val="C">C. 看最终回答满意就直接采纳</button>
+        <button class="opt" data-val="D">D. 检查 diff 和运行验证</button>
+        <button class="opt" data-val="E">E. 小步执行，一次一个阶段</button>
+        <button class="opt" data-val="F">F. 记录结果和失败原因</button>
+      </div>
+      <button class="check">检查</button>
+      <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+    </div>
+  </section>
+
+  <section id="m08">
+    <div class="sec-head"><span class="sec-id">08</span><h2>闯关式任务 <button class="voice-btn" data-voice-id="ch8">🎧 听这节</button></h2></div>
+    <div class="task" data-task="ch15-q4" data-type="selects"
+         data-ok="全对。AGENTS.md 是项目守则、Skill 是专项操作手册、Plugin 是可安装工具箱、Automation 是定时自动触发——四层职责一条不混。"
+         data-no="有配错。回忆类比：守则=AGENTS.md，手册=Skill，工具箱=Plugin，定时器=Automation。"
+         data-src="原文（进阶·03、05）：AGENTS.md/Skill/Plugin 概念表；Skill 更关注怎么做，Automation 更关注什么时候自动去做。"
+         data-review="回到「06 关键概念拆解」复习">
+      <div class="q">Q4（匹配）把扩展机制和它的定位配对：</div>
+      项目内所有任务遵守的规则（项目工作守则） <select class="match" data-correct="AGENTS.md"><option value="">选择</option><option>AGENTS.md</option><option>Skill</option><option>Plugin</option><option>Automation</option></select><br>
+      某类重复任务应该怎么做（专项操作手册） <select class="match" data-correct="Skill"><option value="">选择</option><option>AGENTS.md</option><option>Skill</option><option>Plugin</option><option>Automation</option></select><br>
+      打包、安装和分发多种能力（可安装工具箱） <select class="match" data-correct="Plugin"><option value="">选择</option><option>AGENTS.md</option><option>Skill</option><option>Plugin</option><option>Automation</option></select><br>
+      定时或持续自动触发任务 <select class="match" data-correct="Automation"><option value="">选择</option><option>AGENTS.md</option><option>Skill</option><option>Plugin</option><option>Automation</option></select>
+      <br><button class="check">检查</button>
+      <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+    </div>
+    <div class="task" data-task="ch15-q5" data-answer="B"
+         data-ok="对。「权限越高，任务范围应越小」——完全访问只适合范围明确的特殊本机任务、临时使用，且删除/发布/支付必须亲自把关。"
+         data-no="方向反了。原文的逻辑是权限与范围互相约束：开大权限的同时必须收小任务范围。"
+         data-src="原文（进阶·04）：权限越高，任务范围应越小。"
+         data-review="回到「05 核心判断与依据 · 判断4」复习">
+      <div class="q">Q5 原文对「权限」与「任务范围」关系的判断是？</div>
+      <div class="opts">
+        <button class="opt" data-val="A">A. 权限开得越高，越可以放心交给它大任务</button>
+        <button class="opt" data-val="B">B. 权限越高，任务范围应越小</button>
+        <button class="opt" data-val="C">C. 权限和任务范围没有关系</button>
+      </div>
+      <button class="check">检查</button>
+      <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+    </div>
+    <div class="task" data-task="ch15-q6" data-answer="A,C,D,E" data-multi="true"
+         data-ok="对。历史对话、项目规则（AGENTS.md）、工具定义/MCP、读过的文件和终端输出都会进入上下文（B「只有当前问题」错误）。"
+         data-no="B 恰恰是最常见的误解：上下文是逐轮累积的，不只是当前这句。"
+         data-src="原文（进阶·01）：每次请求带上的不只是当前问题，还可能包括历史对话、项目规则、工具定义、读过的文件、终端输出和已调用 Skill 的说明。"
+         data-review="回到「05 核心判断与依据 · 判断5」复习">
+      <div class="q">Q6（多选）一次 Codex 请求的上下文可能包含哪些内容？</div>
+      <div class="opts">
+        <button class="opt" data-val="A">A. 历史对话</button>
+        <button class="opt" data-val="B">B. 只有当前这一句问题</button>
+        <button class="opt" data-val="C">C. AGENTS.md 等项目规则</button>
+        <button class="opt" data-val="D">D. 读过的文件和终端输出</button>
+        <button class="opt" data-val="E">E. 工具定义和已调用 Skill 的说明</button>
+      </div>
+      <button class="check">检查</button>
+      <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+    </div>
+    <div class="task" data-task="ch15-q7" data-answer="B"
+         data-ok="对。这是原文给的对比例子：模糊写法「帮我优化登录逻辑」→ 清晰写法包含目标（修复刷新后登录状态丢失）、范围（auth 模块）、约束（不改数据库）、验证（跑 auth 测试）、交付（说明根因和风险）。"
+         data-no="A 仍然缺范围、约束和验证；C 把范围不必要地扩大了。对照任务六要素逐项检查。"
+         data-src="原文（快速上手·07）「从模糊到清晰」示例。"
+         data-review="回到「06 关键概念拆解 · 任务六要素」复习">
+      <div class="q">Q7（纠错）下面哪个是对「帮我优化登录逻辑」最符合六要素的改写？</div>
+      <div class="opts">
+        <button class="opt" data-val="A">A. 请用最先进的模型，认真仔细地帮我优化登录逻辑</button>
+        <button class="opt" data-val="B">B. 目标：修复刷新后登录状态丢失；范围：只查 auth 模块和相关测试；约束：不改数据库和后端接口；验证：运行 auth 相关测试；交付：说明根因、改动和风险</button>
+        <button class="opt" data-val="C">B 的基础上再加「顺便重构整个用户系统」</button>
+      </div>
+      <button class="check">检查</button>
+      <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+    </div>
+    <div class="task" data-task="ch15-q8" data-answer="A"
+         data-ok="对。手机端适合查看进展、回复问题、处理审批，但「大范围代码合并前的最终 review」「生产环境、密钥、账单和部署」不适合在手机上做——回电脑完成 review、验证和提交。"
+         data-no="这恰是原文列出的「不适合」场景：最终 review 和生产相关操作要回到电脑做。"
+         data-src="原文（快速上手·09）：不适合大范围代码合并前的最终 review、生产环境、密钥、账单和部署。"
+         data-review="回到「05 核心判断与依据 · 判断7」复习">
+      <div class="q">Q8（迁移）你在地铁上用手机看到 Codex 完成了一个 MR，请求你审批合并到主分支。按本章观点该怎么做？</div>
+      <div class="opts">
+        <button class="opt" data-val="A">A. 手机上只看进展和回复问题，最终 review 和合并回电脑做完再批</button>
+        <button class="opt" data-val="B">B. 地铁上闲着也是闲着，直接点批准合并</button>
+        <button class="opt" data-val="C">C. 手机不适合用 Codex，以后任务都别在手机上看</button>
+      </div>
+      <button class="check">检查</button>
+      <div class="feedback" aria-live="polite">选择后点击检查，这里会显示反馈。</div>
+    </div>
+  </section>
+
+  <section id="m09">
+    <div class="sec-head"><span class="sec-id">09</span><h2>误解与边界 <button class="voice-btn" data-voice-id="ch9">🎧 听这节</button></h2></div>
+    <div class="mis">
+      <h3>误解1：把 Codex 当聊天窗口，说一句「帮我看看」就够了</h3>
+      <p>为什么容易误解：日常聊天习惯。原文真正说了：目录、文件、命令、验证才是高质量输入；任务要写目标、背景、范围、约束、验证、交付。原文没说：提示词越长越好。避免方法：每次发任务前对照六要素。</p>
+    </div>
+    <div class="mis">
+      <h3>误解2：AI 说「已完成」就等于完成了</h3>
+      <p>为什么容易误解：AI 回答语气自信。原文明确说：判断任务是否完成，不能只看最终回答；仍然需要人工 review。避免方法：检查 diff、跑验证命令、看完成标准四条。</p>
+    </div>
+    <div class="mis">
+      <h3>误解3：默认权限太麻烦，早点开完全访问</h3>
+      <p>为什么容易误解：审批打断心流。原文说：权限越高任务范围应越小；完全访问「不作为日常默认」；删除、发布、支付、生产凭据必须亲自把关。避免方法：先默认权限，审批频繁再考虑自动审核，长期稳定后才写自定义配置。</p>
+    </div>
+    <div class="mis">
+      <h3>误解4：装了 Plugin / Skill 就自动获得了权限和能力</h3>
+      <p>为什么容易误解：插件名字听起来像授权。原文说：安装 Plugin 不等于自动获得权限，仍受沙盒、审批和外部服务登录状态限制。避免方法：安装前检查来源、读写范围、外部连接和脚本行为。</p>
+    </div>
+    <div class="mis">
+      <h3>误解5：第一次练习就拿重要项目目录开刀</h3>
+      <p>为什么容易误解：想直接解决手头工作。原文说：不要选择包含生产凭据、客户资料、个人隐私或大量未备份文件的目录；第一个任务应简单、低风险、容易检查。避免方法：新建空文件夹做第一个任务。</p>
+    </div>
+  </section>
+
+  <section id="m10">
+    <div class="sec-head"><span class="sec-id">10</span><h2>背景知识缺口 <button class="voice-btn" data-voice-id="ch10">🎧 听这节</button></h2></div>
+    <div class="card paper">
+      <h3>缺口1：Git worktree 的底层机制（现在可先不补）</h3>
+      <p>原文只用 worktree 做「并行代码工作区」的概念解释。为什么重要：想做「后台改代码不影响当前工作区」需要懂 Git 分支工作区机制。下一步问题：worktree 和 branch/clone 的区别是什么？</p>
+    </div>
+    <div class="card paper">
+      <h3>缺口2：config.toml 与 provider 配置细节（原文明确说入门先跳过）</h3>
+      <p>第三方 API 配置属于进阶，且有密钥泄露、账单超额等风险。下一步问题：确有多供应商需求时，如何安全地配置 provider 与鉴权？</p>
+    </div>
+    <div class="card paper">
+      <h3>缺口3：Skills 的编写与调优（下一章专门讲）</h3>
+      <p>本章只讲了 Skill「是什么、放哪层」。怎么写 SKILL.md、怎么调优，是第16章的内容。下一步问题：一个重复任务怎么从「每次重新描述」沉淀成 Skill？</p>
+    </div>
+  </section>
+
+  <section id="m11">
+    <div class="sec-head"><span class="sec-id">11</span><h2>复盘与学习报告 <button class="voice-btn" data-voice-id="ch11">🎧 听这节</button></h2></div>
+    <div class="card">
+      <h3><img class="sticker" src="https://lyzbcy.github.io/weshoto-study/img/sticker/final.png" alt="">本章收束</h3>
+      <p>• 少给口号，多给目录、文件、约束和验收方式。<br>• 判断任务是否完成，不能只看最终回答：diff、验证、记录缺一不可。<br>• 权限越高，任务范围应越小；把稳定规则写进 AGENTS.md，把重复流程沉淀成 Skill 或 Automation，把访问边界固化到权限和配置中。</p>
+    </div>
+    <div id="wrongBox"><li style="color:#888;list-style:none">还没有错题。答错的题会自动收集到这里。</li></div>
+    <textarea id="report" readonly>点击「生成学习报告」看看你掌握了什么。</textarea>
+    <div class="btn-row">
+      <button id="genReport">生成学习报告</button>
+      <button id="copyReport">复制报告</button>
+    </div>
+    <p style="font-size:.85rem;margin-top:.8rem">仍不确定的地方建议追问：我们团队的 AGENTS.md 第一版该写哪四条？哪些操作必须留在人工审批清单里？下一章进入 Skills 入门与调优。</p>
+  </section>
+
+  <footer>
+    由 <a href="https://lyzbcy.github.io/" target="_blank" rel="noopener" style="color:#1d70b8;text-decoration:underline;font-weight:700">捞鱼</a> 制作 · 这个工具能帮你预习难啃的干货，但不能代替完整学习。学习愉快
+  </footer>
+</main>
+</div>
+<button id="voiceFab" aria-label="打开后台语音"><span class="fab-icon">🎧</span><span class="fab-text">后台语音</span></button>
+<div id="voicePlayer">
+  <button class="vp-close" aria-label="关闭">✕</button>
+  <div class="vp-head">🎧 后台语音 · 连续播放</div>
+  <div class="vp-title">—</div>
+  <div class="vp-controls">
+    <button class="vp-prev" aria-label="上一章">⏮</button>
+    <button class="vp-play" aria-label="播放/暂停">▶</button>
+    <button class="vp-next" aria-label="下一章">⏭</button>
+  </div>
+  <input class="vp-seek" type="range" min="0" max="1000" value="0" aria-label="进度">
+  <div class="vp-time"><span class="vp-cur">00:00</span><span class="vp-dur">00:00</span></div>
+  <div class="vp-sub">点开播放后，这里会同步显示字幕</div>
+</div>
+<script>
+(function(){
+  "use strict";
+  function $all(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));}
+  function selectedVals(t){return $all('.opt.selected',t).map(function(o){return o.getAttribute('data-val');}).sort();}
+  function setFb(t,state,html){var fb=t.querySelector('.feedback');if(!fb)return;fb.className='feedback'+(state?(' '+state):'');fb.innerHTML=html;}
+  function updateBar(){
+    var all=$all('.task'),done=$all('.task[data-answered="1"]');
+    var fill=document.getElementById('barFill'),num=document.getElementById('barNum');
+    if(fill)fill.style.width=all.length?(done.length/all.length*100)+'%':'0%';
+    if(num)num.textContent=done.length+' / '+all.length;
+  }
+  function renderWrong(){
+    var box=document.getElementById('wrongBox');if(!box)return;
+    var wrong=$all('.task[data-answered="1"][data-correct="0"]');
+    if(!wrong.length){box.innerHTML='<li style="color:#888">还没有错题。答错的题会自动收集到这里。</li>';return;}
+    box.innerHTML='';
+    wrong.forEach(function(t){var li=document.createElement('li');li.textContent='【'+(t.getAttribute('data-task')||'')+'】'+(t.getAttribute('data-review')||'回到对应模块复习');box.appendChild(li);});
+  }
+  function check(t){
+    var type=t.getAttribute('data-type'),ok=false;
+    if(type==='selects'){
+      var sels=$all('select.match',t),allok=true,empty=false;
+      sels.forEach(function(s){if(!s.value)empty=true;if(s.value!==s.getAttribute('data-correct'))allok=false;});
+      if(empty){setFb(t,'no','请先把每一项都选好再检查。');return;}
+      ok=allok;
+    }else{
+      var sel=selectedVals(t);
+      if(!sel.length){setFb(t,'no','请先选择一个选项再检查。');return;}
+      var ans=(t.getAttribute('data-answer')||'').split(',').map(function(x){return x.trim();}).sort();
+      ok=(sel.join('|')===ans.join('|'));
+    }
+    var body=ok?(t.getAttribute('data-ok')||'回答正确。'):(t.getAttribute('data-no')||'再想想。');
+    var src=t.getAttribute('data-src');
+    setFb(t,ok?'ok':'no',(ok?'✅ ':'❌ ')+body+(src?('<span class="src">'+src+'</span>'):''));
+    t.setAttribute('data-answered','1');t.setAttribute('data-correct',ok?'1':'0');
+    updateBar();renderWrong();
+  }
+  function genReport(){
+    var box=document.getElementById('report');if(!box)return;
+    var all=$all('.task'),done=$all('.task[data-answered="1"]'),right=$all('.task[data-answered="1"][data-correct="1"]');
+    var lines=['=== 学习报告 ===','完成题目：'+done.length+' / '+all.length,'答对：'+right.length+' 题',''];
+    var wrong=$all('.task[data-answered="1"][data-correct="0"]');
+    if(wrong.length){lines.push('我答错的题（建议复习）：');wrong.forEach(function(t){lines.push('- '+(t.getAttribute('data-task')||'')+'：'+(t.getAttribute('data-review')||''));});}
+    else{lines.push('暂无错题。');}
+    box.textContent=lines.join('\n');
+  }
+  document.addEventListener('click',function(e){
+    var c=e.target.closest?e.target:null;
+    var opt=c&&e.target.closest('.opt');
+    if(opt){var t=opt.closest('.task');if(!t)return;
+      if(t.getAttribute('data-multi')==='true'){opt.classList.toggle('selected');}
+      else{$all('.opt',t).forEach(function(o){o.classList.remove('selected');});opt.classList.add('selected');}
+      return;}
+    var btn=c&&e.target.closest('.check');
+    if(btn){var tk=btn.closest('.task');if(tk)check(tk);return;}
+    if(e.target&&e.target.id==='genReport'){genReport();return;}
+    if(e.target&&e.target.id==='copyReport'){var r=document.getElementById('report');if(r&&navigator.clipboard)navigator.clipboard.writeText(r.textContent);return;}
+  });
+  function init(){updateBar();renderWrong();}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+<script>
+(function(){
+  "use strict";
+  if(window.__voiceEngine) return;
+  window.__voiceEngine = true;
+  var listNode = document.getElementById('voicePlaylist');
+  if(!listNode){ return; }
+  var TRACKS = [];
+  try { TRACKS = JSON.parse(listNode.textContent.trim()); } catch(e){ return; }
+  if(!TRACKS.length) return;
+  var player = document.getElementById('voicePlayer');
+  var fab = document.getElementById('voiceFab');
+  var audio = new Audio(); audio.preload = 'metadata';
+  var cur = 0;
+  var ranges = [];
+  var total = 0;
+  var seeking = false;
+  function $(s){ return player ? player.querySelector(s) : null; }
+  function fmt(s){ s=Math.max(0,Math.floor(s||0)); var m=Math.floor(s/60), x=s%60;
+    return (m<10?'0':'')+m+':'+(x<10?'0':'')+x; }
+  var probe = TRACKS.map(function(){ return {dur:0}; });
+  function tryFinalize(){
+    if(probe.some(function(p){return !p.dur;})) return;
+    ranges = []; total = 0;
+    probe.forEach(function(p){ ranges.push({dur:p.dur, start:total}); total += p.dur; });
+    var d = $('.vp-dur'); if(d) d.textContent = fmt(total);
+    var sk = $('.vp-seek'); if(sk){ sk.max = Math.max(1000, Math.floor(total*10)); }
+  }
+  TRACKS.forEach(function(t, i){
+    var a = new Audio(); a.preload = 'metadata'; a.src = t.src;
+    a.addEventListener('loadedmetadata', function(){
+      probe[i].dur = a.duration || 0; tryFinalize();
+    });
+    a.addEventListener('error', function(){ probe[i].dur = 0; tryFinalize(); });
+  });
+  function load(i){
+    cur = i; audio.src = TRACKS[i].src;
+    var ti = $('.vp-title'); if(ti) ti.textContent = TRACKS[i].title || ('第 '+(i+1)+' 段');
+    markBtn(i);
+  }
+  function play(){ audio.play().then(function(){ show(); setPlayIcon(true); if(fab) fab.classList.add('beat'); }).catch(function(){}); }
+  function pause(){ audio.pause(); setPlayIcon(false); if(fab) fab.classList.remove('beat'); }
+  function toggle(){ audio.paused ? play() : pause(); }
+  function next(){ if(cur < TRACKS.length-1){ load(cur+1); play(); } else { pause(); } }
+  function prev(){
+    var abs = absTime();
+    if(cur > 0 && abs - ranges[cur].start < 3){ load(cur-1); play(); }
+    else { audio.currentTime = 0; }
+  }
+  function absTime(){ return ranges[cur] ? ranges[cur].start + (audio.currentTime||0) : (audio.currentTime||0); }
+  function setPlayIcon(on){ var b=$('.vp-play'); if(b) b.textContent = on ? '⏸' : '▶'; }
+  function show(){ if(player) player.classList.add('show'); }
+  function hide(){ if(player) player.classList.remove('show'); }
+  function markBtn(i){
+    document.querySelectorAll('.voice-btn[data-voice-id]').forEach(function(b){
+      b.classList.toggle('active', b.getAttribute('data-voice-id') === TRACKS[i].id);
+    });
+  }
+  audio.addEventListener('timeupdate', function(){
+    if(seeking) return;
+    if(!ranges[cur]) return;
+    var abs = absTime(); var sk = $('.vp-seek'); var c = $('.vp-cur');
+    if(sk && total) sk.value = Math.round(abs / total * (sk.max||1000));
+    if(c) c.textContent = fmt(abs);
+  });
+  audio.addEventListener('ended', function(){ if(cur < TRACKS.length-1){ load(cur+1); play(); }
+    else { setPlayIcon(false); if(fab) fab.classList.remove('beat'); } });
+  function seekToFraction(frac){
+    if(!total) return;
+    var target = Math.max(0, Math.min(total, frac * total));
+    var i = 0; while(i < ranges.length-1 && ranges[i].start + ranges[i].dur < target){ i++; }
+    if(i !== cur){ cur = i; audio.src = TRACKS[i].src;
+      var ti=$('.vp-title'); if(ti) ti.textContent = TRACKS[i].title||('第 '+(i+1)+' 段'); markBtn(i); }
+    audio.currentTime = target - ranges[i].start;
+    var c=$('.vp-cur'); if(c) c.textContent = fmt(target);
+  }
+  document.addEventListener('click', function(e){
+    var t = e.target;
+    var vb = t.closest ? t.closest('.voice-btn[data-voice-id]') : null;
+    if(vb){
+      var id = vb.getAttribute('data-voice-id'), idx = -1;
+      TRACKS.forEach(function(tr, k){ if(tr.id === id) idx = k; });
+      if(idx >= 0){ load(idx); play(); }
+      return;
+    }
+    if(t.id === 'voiceFab'){ show(); if(audio.paused && !audio.src){ load(0); } if(audio.paused){ play(); } return; }
+    if(!player || !player.contains(t)) return;
+    if(t.classList.contains('vp-play')){ toggle(); return; }
+    if(t.classList.contains('vp-prev')){ prev(); return; }
+    if(t.classList.contains('vp-next')){ next(); return; }
+    if(t.classList.contains('vp-close')){ pause(); hide(); return; }
+  });
+  var sk = $('.vp-seek');
+  if(sk){
+    sk.addEventListener('input', function(){ seeking = true;
+      if(total){ var c=$('.vp-cur'); if(c) c.textContent = fmt((sk.value/(sk.max||1000))*total); } });
+    sk.addEventListener('change', function(){ seekToFraction(sk.value/(sk.max||1000)); seeking = false; });
+  }
+})();
+</script>
+<script>
+(function(){
+  "use strict";
+  if(window.__subEngine) return;
+  window.__subEngine = true;
+  var listNode = document.getElementById("voicePlaylist");
+  if(!listNode) return;
+  var subBox = document.querySelector("#voicePlayer .vp-sub");
+  var curEl = document.querySelector("#voicePlayer .vp-cur");
+  var titleEl = document.querySelector("#voicePlayer .vp-title");
+  if(!subBox) return;
+  var subs = [];
+  var subCache = {};
+  var curSrc = "";
+  function esc(s){ var d=document.createElement("div"); d.textContent=s; return d.innerHTML; }
+  function mp3ToJson(src){
+    var m = src.replace(/^.*?([a-zA-Z0-9_\/.\-]+\.mp3)(?:\?.*)?$/i, "$1");
+    return m.replace(/\.mp3$/i, ".json");
+  }
+  function loadSubFor(src){
+    if(!src || src === curSrc) return;
+    curSrc = src;
+    var jsonUrl = mp3ToJson(src);
+    if(subCache[jsonUrl]){ subs = subCache[jsonUrl]; return; }
+    fetch(jsonUrl).then(function(r){
+      if(!r.ok) throw new Error(r.status);
+      return r.json();
+    }).then(function(arr){
+      subCache[jsonUrl] = Array.isArray(arr) ? arr : [];
+      subs = subCache[jsonUrl];
+    }).catch(function(){ subs = []; });
+  }
+  function parseTime(text){
+    var p = String(text).trim().split(":");
+    if(p.length === 2){
+      var m = parseInt(p[0], 10) || 0;
+      var s = parseInt(p[1], 10) || 0;
+      return m * 60 + s;
+    }
+    return parseFloat(text) || 0;
+  }
+  function renderSub(t){
+    if(!subs.length) return;
+    var hit = null, idx = -1;
+    for(var i = 0; i < subs.length; i++){
+      if(t >= subs[i].start && t < subs[i].end){ hit = subs[i]; idx = i; break; }
+    }
+    if(!hit){
+      var prev = null;
+      for(var j = 0; j < subs.length; j++){
+        if(subs[j].start <= t) prev = subs[j]; else break;
+      }
+      subBox.classList.remove("active");
+      subBox.innerHTML = prev ? esc(prev.text) : "";
+      return;
+    }
+    subBox.classList.add("active");
+    var prevHtml = idx > 0
+      ? '<span style="opacity:.45">' + esc(subs[idx - 1].text) + "</span> "
+      : "";
+    subBox.innerHTML = prevHtml + '<span class="cur">' + esc(hit.text) + "</span>";
+  }
+  function tick(){
+    if(!curEl) return;
+    var sec = parseTime(curEl.textContent);
+    renderSub(sec);
+  }
+  function onTitleChange(){
+    var TRACKS = [];
+    try { TRACKS = JSON.parse(listNode.textContent.trim()); } catch(e){ return; }
+    var title = titleEl ? titleEl.textContent.trim() : "";
+    for(var i = 0; i < TRACKS.length; i++){
+      if(TRACKS[i].title === title){ loadSubFor(TRACKS[i].src); return; }
+    }
+  }
+  if(window.MutationObserver){
+    var obs = new MutationObserver(function(){ tick(); onTitleChange(); });
+    if(curEl) obs.observe(curEl, { childList:true, characterData:true, subtree:true });
+    if(titleEl) obs.observe(titleEl, { childList:true, characterData:true, subtree:true });
+  } else {
+    setInterval(function(){ tick(); onTitleChange(); }, 300);
+  }
+  setTimeout(tick, 500);
+})();
+</script>
+</body>
+</html>
